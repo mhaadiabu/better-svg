@@ -1,0 +1,3 @@
+{
+  "extends": "@reactsvg/config/tsconfig.base.json"
+}

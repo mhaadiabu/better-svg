@@ -73,8 +73,60 @@ reactsvg/
 ├── apps/
 │   ├── web/         # Frontend application (React + TanStack Router)
 ├── packages/
+│   ├── svg/         # Publishable inline SVG React component
 │   ├── ui/          # Shared shadcn/ui components and styles
 ```
+
+## SVG Library (web)
+
+This repo ships a publishable package: `@mhaadiau/svg`.
+
+```bash
+pnpm add @mhaadiau/svg
+```
+
+```tsx
+import { SVG } from "@mhaadiau/svg/react";
+
+<SVG src={logoUrl} className="h-6 w-6 text-current" />;
+<SVG
+  src="https://cdn.example.com/icon.svg"
+  loading={<span>Loading…</span>}
+  fallback={<span>Failed to load</span>}
+  sanitize
+/>;
+```
+
+### How it works
+
+1. Resolves `src` as inline markup, `data:` URL, or a remote URL (fetch).
+2. Parses the SVG with `DOMParser`, sanitizes unsafe elements/attributes, and extracts the root `<svg>` attributes.
+3. Renders an inline `<svg>` with the original inner markup so SVG features work without `<img>` restrictions.
+
+### Props
+
+All standard `React.SVGProps<SVGSVGElement>` are supported and override SVG markup attributes. Extra props:
+
+| Prop           | Type                       | Default  | Purpose                                                                   |
+| -------------- | -------------------------- | -------- | ------------------------------------------------------------------------- |
+| `src`          | `string`                   | required | Inline SVG string, `data:` URL, or remote URL.                            |
+| `sanitize`     | `boolean`                  | `true`   | Removes scripts, event handlers, unsafe `href`s, and embedded HTML nodes. |
+| `cache`        | `boolean`                  | `true`   | Cache remote SVG markup in memory by `src`.                               |
+| `fetchOptions` | `RequestInit`              | —        | Passed to `fetch` for remote SVGs.                                        |
+| `loading`      | `ReactNode`                | —        | Rendered while fetching/parsing.                                          |
+| `fallback`     | `ReactNode`                | —        | Rendered when parsing/fetching fails.                                     |
+| `onSvgLoad`    | `(markup: string) => void` | —        | Called after markup is resolved.                                          |
+| `onSvgError`   | `(error: Error) => void`   | —        | Called when loading/parsing fails.                                        |
+
+### Security
+
+`sanitize` is on by default. It strips `<script>`, `<foreignObject>`, `<iframe>`, `<object>`, `<embed>`, inline event handlers, and unsafe `href`/`xlink:href` URLs. Keep it enabled for any untrusted SVG input. If you disable sanitization, only use trusted SVG content.
+
+### Edge cases
+
+- Remote SVGs require CORS headers. Use `fetchOptions` for credentials/headers.
+- On the server, DOM parsing is unavailable; render a placeholder with `loading` to avoid a blank SSR pass.
+- `fetchOptions` should be memoized to avoid re-fetching on every render.
 
 ## Available Scripts
 

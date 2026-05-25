@@ -79,14 +79,14 @@ reactsvg/
 
 ## SVG Library (web)
 
-This repo ships a publishable package: `@mhaadiau/svg`.
+This repo ships a publishable package: `@mhaadiabu/svg`.
 
 ```bash
-pnpm add @mhaadiau/svg
+pnpm add @mhaadiabu/svg
 ```
 
 ```tsx
-import { SVG } from "@mhaadiau/svg/react";
+import { SVG } from "@mhaadiabu/svg/react";
 
 <SVG src={logoUrl} className="h-6 w-6 text-current" />;
 <SVG

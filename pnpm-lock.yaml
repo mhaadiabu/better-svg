@@ -72,6 +72,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.4.0(react-hook-form@7.76.1(react@19.2.6))
+      '@mhaadi/svg':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@reactsvg/env':
         specifier: workspace:*
         version: link:../../packages/env
@@ -1177,6 +1180,12 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@mhaadi/svg@0.1.0':
+    resolution: {integrity: sha512-UX1c+289AgP3QQr1Y67ZMngubOs+Aaa5lVSen8rL+aV+0WWxgX9IHbvwMdFCwOO4P+iTICV/K3X6POeXg5E3tw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
 
   '@modelcontextprotocol/sdk@1.29.0':
     resolution: {integrity: sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ==}
@@ -4744,6 +4753,11 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@mhaadi/svg@0.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+    dependencies:
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
   '@modelcontextprotocol/sdk@1.29.0(zod@3.25.76)':
     dependencies:

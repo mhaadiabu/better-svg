@@ -1,5 +1,5 @@
 {
-  "name": "@mhaadiabu/svg",
+  "name": "@mhaadi/svg",
   "version": "0.1.0",
   "description": "Inline SVG rendering for React.",
   "files": [

@@ -16,3 +16,5 @@ catalog:
   "@types/react": ^19.2.15
   "@types/react-dom": ^19.2.3
   alchemy: ^0.91.2
+minimumReleaseAgeExclude:
+  - '@mhaadi/svg@0.1.0'

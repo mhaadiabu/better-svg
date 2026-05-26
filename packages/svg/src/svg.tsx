@@ -1,4 +1,5 @@
 import * as React from "react";
+import { resolveSvgSource, type SvgNameInput } from "./local-svg";
 
 type ParsedSvg = {
   attrs: Record<string, string>;
@@ -172,11 +173,21 @@ const resolveMarkup = async (
   return markup;
 };
 
+type SvgSourceProps =
+  | {
+      src: string;
+      name?: never;
+    }
+  | {
+      name: SvgNameInput;
+      src?: never;
+    };
+
 export type SvgProps = Omit<
   React.SVGProps<SVGSVGElement>,
   "children" | "dangerouslySetInnerHTML"
-> & {
-  src: string;
+> &
+  SvgSourceProps & {
   fetchOptions?: RequestInit;
   cache?: boolean;
   sanitize?: boolean;
@@ -184,12 +195,13 @@ export type SvgProps = Omit<
   fallback?: React.ReactNode;
   onSvgLoad?: (markup: string) => void;
   onSvgError?: (error: Error) => void;
-};
+  };
 
 export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
   (
     {
       src,
+      name,
       fetchOptions,
       cache = true,
       sanitize = true,
@@ -207,6 +219,11 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState<Error | null>(null);
 
+    const resolvedSource = React.useMemo(
+      () => (name ? resolveSvgSource(name) : src),
+      [name, src],
+    );
+
     React.useEffect(() => {
       let active = true;
       const controller = new AbortController();
@@ -214,7 +231,18 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
       setError(null);
       setContent(null);
 
-      resolveMarkup(src, fetchOptions, controller.signal, cache)
+      if (!resolvedSource) {
+        const err = new Error("Either name or src is required.");
+        setError(err);
+        setIsLoading(false);
+        onSvgError?.(err);
+        return () => {
+          active = false;
+          controller.abort();
+        };
+      }
+
+      resolveMarkup(resolvedSource, fetchOptions, controller.signal, cache)
         .then((markup) => {
           if (!active) return;
           const parsed = parseSvgMarkup(markup, sanitize);
@@ -238,7 +266,14 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
         active = false;
         controller.abort();
       };
-    }, [src, fetchOptions, cache, sanitize, onSvgLoad, onSvgError]);
+    }, [
+      resolvedSource,
+      fetchOptions,
+      cache,
+      sanitize,
+      onSvgLoad,
+      onSvgError,
+    ]);
 
     if (isLoading) {
       return loading ? <>{loading}</> : null;

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@mhaadi/svg": "^0.1.0",
     "@reactsvg/env": "workspace:*",
     "@reactsvg/ui": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",

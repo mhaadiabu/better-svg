@@ -79,16 +79,17 @@ reactsvg/
 
 ## SVG Library (web)
 
-This repo ships a publishable package: `@mhaadiabu/svg`.
+This repo ships a publishable package: `@mhaadi/svg`.
 
 ```bash
-pnpm add @mhaadiabu/svg
+pnpm add @mhaadi/svg
 ```
 
 ```tsx
-import { SVG } from "@mhaadiabu/svg/react";
+import { SVG } from "@mhaadi/svg/react";
 
 <SVG src={logoUrl} className="h-6 w-6 text-current" />;
+<SVG name="logo" className="h-6 w-6" />;
 <SVG
   src="https://cdn.example.com/icon.svg"
   loading={<span>Loading…</span>}
@@ -109,7 +110,8 @@ All standard `React.SVGProps<SVGSVGElement>` are supported and override SVG mark
 
 | Prop           | Type                       | Default  | Purpose                                                                   |
 | -------------- | -------------------------- | -------- | ------------------------------------------------------------------------- |
-| `src`          | `string`                   | required | Inline SVG string, `data:` URL, or remote URL.                            |
+| `src`          | `string`                   | —        | Inline SVG string, `data:` URL, or remote URL.                            |
+| `name`         | `SvgName`                  | —        | Resolves from `src/assets/svg` → `app/assets/svg` → `public/assets/svg`.  |
 | `sanitize`     | `boolean`                  | `true`   | Removes scripts, event handlers, unsafe `href`s, and embedded HTML nodes. |
 | `cache`        | `boolean`                  | `true`   | Cache remote SVG markup in memory by `src`.                               |
 | `fetchOptions` | `RequestInit`              | —        | Passed to `fetch` for remote SVGs.                                        |
@@ -124,6 +126,7 @@ All standard `React.SVGProps<SVGSVGElement>` are supported and override SVG mark
 
 ### Edge cases
 
+- `name` is optional and expects a local SVG name (no import needed). If not found in `src/` or `app/`, it falls back to `/assets/svg/{name}.svg` (public).
 - Remote SVGs require CORS headers. Use `fetchOptions` for credentials/headers.
 - On the server, DOM parsing is unavailable; render a placeholder with `loading` to avoid a blank SSR pass.
 - `fetchOptions` should be memoized to avoid re-fetching on every render.

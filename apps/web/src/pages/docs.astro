@@ -1,0 +1,631 @@
+---
+import Base from "../layouts/Base.astro";
+
+const sections = [
+  { id: "overview", label: "Overview" },
+  { id: "installation", label: "Installation" },
+  { id: "usage", label: "Usage" },
+  { id: "props", label: "Props" },
+  { id: "source-types", label: "Source Types" },
+  { id: "security", label: "Security" },
+  { id: "edge-cases", label: "Edge Cases" },
+  { id: "examples", label: "Examples" },
+];
+
+const strippedElements = [
+  { elem: "<script>", reason: "Arbitrary JS execution" },
+  { elem: "<foreignObject>", reason: "Embedded HTML injection" },
+  { elem: "<iframe>", reason: "External frame embedding" },
+  { elem: "<object>", reason: "Plugin execution vector" },
+  { elem: "<embed>", reason: "Plugin execution vector" },
+  { elem: "on* attributes", reason: "Inline event handler XSS" },
+  { elem: "unsafe href", reason: "javascript: URL injection" },
+  { elem: "unsafe xlink:href", reason: "XLink javascript: URLs" },
+];
+
+const edgeCaseItems = [
+  {
+    title: "Server-side rendering (SSR)",
+    body: "DOM parsing is unavailable on the server. Use the loading prop to render a placeholder during SSR — otherwise the component renders nothing on the first pass.",
+    code: `<SVG
+  src={remoteUrl}
+  loading={<div class="h-6 w-6 bg-zinc-800 rounded animate-pulse" />}
+/>`,
+  },
+  {
+    title: "Remote SVGs & CORS",
+    body: "Remote SVGs require the server to send appropriate CORS headers. Use fetchOptions to pass credentials or custom headers for authenticated endpoints.",
+    code: `<SVG
+  src="https://api.example.com/icon.svg"
+  fetchOptions={useMemo(() => ({
+    headers: { Authorization: "Bearer token" },
+    credentials: "include",
+  }), [])}
+/>`,
+  },
+  {
+    title: "Memoize fetchOptions",
+    body: "fetchOptions should be stable across renders — memoize it with useMemo to prevent unnecessary re-fetches on every render cycle.",
+    code: `const opts = useMemo(
+  () => ({ headers: { Accept: "image/svg+xml" } }),
+  []
+);
+<SVG src={url} fetchOptions={opts} />`,
+  },
+  {
+    title: "name prop fallback chain",
+    body: "The name prop looks for the file in src/assets/svg/, app/assets/svg/, then public/assets/svg/. If not found anywhere, it falls back to /assets/svg/{name}.svg in public.",
+    code: `// Expects file at one of:
+// src/assets/svg/logo.svg
+// app/assets/svg/logo.svg
+// public/assets/svg/logo.svg
+<SVG name="logo" />`,
+  },
+];
+---
+
+<Base
+  title="Docs — BetterSVG"
+  description="Full API reference and usage guide for @mhaadi/svg — the inline SVG React component."
+>
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-[#1a1a1a] bg-coal/90 backdrop-blur-md">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <svg class="h-5 w-5 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none">
+          <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
+          <path d="M4 16 Q12 10 20 16 Q12 22 4 16Z" fill="currentColor" opacity="0.4"/>
+        </svg>
+        <span class="font-display text-lg tracking-wider text-[#e8e8e8]">BETTERSVG</span>
+      </a>
+
+      <div class="flex items-center gap-6">
+        <span class="hidden sm:block font-mono text-xs text-acid border border-acid/30 rounded-none px-2 py-1">Docs</span>
+        <a href="https://github.com/mhaadi/bettersvg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
+        <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">npm</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile sidebar toggle -->
+  <button id="docs-mobile-sidebar-btn" class="lg:hidden fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-none border border-[#2e2e2e] bg-coal/95 backdrop-blur-sm px-4 py-2.5 text-xs font-mono text-zinc-muted hover:text-acid hover:border-acid transition-colors shadow-lg">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M3 6h18M3 12h18M3 18h18"/>
+    </svg>
+    Sections
+  </button>
+
+  <!-- Mobile sidebar overlay -->
+  <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
+  <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden">
+    <p class="px-3 mb-3 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">@mhaadi/svg</p>
+    <nav class="flex flex-col gap-0.5">
+      {sections.map((s) => (
+        <a href={`#${s.id}`} class="sidebar-link mobile-sidebar-link" data-section={s.id}>
+          {s.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+
+  <div class="min-h-screen pt-[65px]">
+    <div class="mx-auto max-w-7xl px-4">
+      <div class="flex gap-0">
+
+        <!-- SIDEBAR -->
+        <aside class="hidden lg:block w-60 shrink-0 sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto border-r border-[#1a1a1a] py-8 pr-4">
+          <div class="mb-6">
+            <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">@mhaadi/svg</p>
+            <p class="px-3 text-xs text-zinc-muted">API Reference</p>
+          </div>
+
+          <!-- Version badge -->
+          <div class="mt-8 mx-3 rounded-none border border-[#2e2e2e] bg-[#111111] p-3">
+            <p class="font-mono text-[10px] text-[#3a3a3a] mb-1">CURRENT VERSION</p>
+            <p class="font-mono text-sm text-acid">v0.1.0</p>
+          </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="flex-1 min-w-0 px-6 lg:px-10 py-12">
+
+          <!-- Page header -->
+          <div class="mb-16 pb-8 border-b border-[#1a1a1a]">
+            <div class="mb-3 flex items-center gap-2 font-mono text-xs text-zinc-muted">
+              <span>@mhaadi/svg</span>
+              <span class="text-[#2e2e2e]">/</span>
+              <span class="text-acid">API Reference</span>
+            </div>
+            <h1 class="font-display text-6xl tracking-wider text-[#e8e8e8] leading-none mb-4">DOCS</h1>
+            <p class="text-zinc-muted max-w-xl leading-relaxed">
+              Complete reference for the <code class="rounded-none bg-[#1a1a1a] px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">{"<SVG>"}</code> component.
+              Resolves, sanitizes, and renders SVGs inline in React — from any source.
+            </p>
+          </div>
+
+          <!-- OVERVIEW -->
+          <section id="overview" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Overview</h2>
+            <p class="docs-body">
+              <code class="inline-code">@mhaadi/svg</code> exposes a single React component —{" "}
+              <code class="inline-code">{"<SVG>"}</code> — that resolves SVG content from three source types
+              (inline markup, <code class="inline-code">data:</code> URIs, remote URLs), sanitizes unsafe content,
+              and renders a true <code class="inline-code">{"<svg>"}</code> element with full React prop forwarding.
+              No <code class="inline-code">{"<img>"}</code> wrappers. No restrictions.
+            </p>
+
+            <div class="mt-6 grid sm:grid-cols-3 gap-4">
+              {[
+                { label: "Zero dependencies", icon: "⬡" },
+                { label: "TypeScript-first", icon: "⬡" },
+                { label: "Sanitized by default", icon: "⬡" },
+              ].map((badge) => (
+                <div class="flex items-center gap-2 rounded-none border border-[#2e2e2e] bg-[#111111] px-4 py-3">
+                  <span class="text-acid text-xs">{badge.icon}</span>
+                  <span class="font-mono text-xs text-zinc-muted">{badge.label}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <!-- INSTALLATION -->
+          <section id="installation" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Installation</h2>
+            <p class="docs-body">Install from npm with your package manager of choice:</p>
+
+            <div class="mt-4 space-y-3">
+              {[
+                { pm: "pnpm", cmd: "pnpm add @mhaadi/svg" },
+                { pm: "npm", cmd: "npm install @mhaadi/svg" },
+                { pm: "yarn", cmd: "yarn add @mhaadi/svg" },
+                { pm: "bun", cmd: "bun add @mhaadi/svg" },
+              ].map((pkg) => (
+                <div class="code-block" data-lang={pkg.pm}>
+                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]">{pkg.cmd}</pre>
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-6 rounded-none border border-[#2e2e2e] bg-[#111111] p-4">
+              <p class="font-mono text-xs text-zinc-muted">
+                <span class="text-acid">Requires:</span> React 18+ · TypeScript 5+ (optional but recommended)
+              </p>
+            </div>
+          </section>
+
+          <!-- USAGE -->
+          <section id="usage" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Usage</h2>
+            <p class="docs-body">Import the component from the React entry point:</p>
+
+            <div class="mt-4 code-block" data-lang="tsx">
+              <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+
+<span class="token-comment">{"// From a local name (resolves from src/assets/svg, app/assets/svg, or public/assets/svg)"}</span>
+<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">MyComponent</span><span class="token-punct">()</span> <span class="token-punct">{"{"}</span>
+  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
+    <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+      <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span>
+      <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-current"</span>
+      <span class="token-prop">aria-label</span><span class="token-punct">=</span><span class="token-string">"Logo"</span>
+    <span class="token-punct">{"/>"}</span>
+  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
+<span class="token-punct">{"}"}</span></pre>
+            </div>
+
+            <div class="mt-6 code-block" data-lang="tsx">
+              <pre class="p-5 text-sm leading-7"><span class="token-comment">{"// From a remote URL with loading and fallback states"}</span>
+<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
+  <span class="token-prop">sanitize</span>
+  <span class="token-prop">loading</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">Spinner</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
+  <span class="token-prop">fallback</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">FallbackIcon</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
+  <span class="token-prop">onSvgLoad</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">(</span>markup<span class="token-punct">)</span> <span class="token-punct">{"=>"}</span> console<span class="token-punct">.</span>log<span class="token-punct">(</span>markup<span class="token-punct">)</span><span class="token-punct">{"}"}</span>
+<span class="token-punct">{"/>"}</span></pre>
+            </div>
+
+            <div class="mt-6 code-block" data-lang="tsx">
+              <pre class="p-5 text-sm leading-7"><span class="token-comment">{"// From an inline SVG string"}</span>
+<span class="token-keyword">const</span> LOGO <span class="token-punct">=</span> <span class="token-string">{"`<svg viewBox='0 0 24 24'>...</svg>`"}</span><span class="token-punct">;</span>
+
+<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>LOGO<span class="token-punct">{"}"}</span>
+  <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8 text-emerald-400"</span>
+<span class="token-punct">{"/>"}</span></pre>
+            </div>
+          </section>
+
+          <!-- PROPS -->
+          <section id="props" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Props</h2>
+            <p class="docs-body">
+              All standard <code class="inline-code">React.SVGProps{"<SVGSVGElement>"}</code> are supported and
+              override any attributes parsed from SVG markup. The following extra props are available:
+            </p>
+
+            <div class="mt-6 rounded-none border border-[#2e2e2e] overflow-hidden prop-table-wrapper">
+              <table class="prop-table">
+                <thead>
+                  <tr>
+                    <th>Prop</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { prop: "src", type: "string", def: "—", desc: "Inline SVG string, data: URL, or remote URL." },
+                    { prop: "name", type: "SvgName", def: "—", desc: "Resolves from src/assets/svg → app/assets/svg → public/assets/svg." },
+                    { prop: "sanitize", type: "boolean", def: "true", desc: "Removes scripts, event handlers, unsafe hrefs, and embedded HTML." },
+                    { prop: "cache", type: "boolean", def: "true", desc: "Cache remote SVG markup in memory by src URL." },
+                    { prop: "fetchOptions", type: "RequestInit", def: "—", desc: "Passed to fetch() for remote SVGs. Memoize to avoid re-fetching." },
+                    { prop: "loading", type: "ReactNode", def: "—", desc: "Rendered while fetching or parsing SVG." },
+                    { prop: "fallback", type: "ReactNode", def: "—", desc: "Rendered when loading or parsing fails." },
+                    { prop: "onSvgLoad", type: "(markup: string) => void", def: "—", desc: "Called after markup is successfully resolved." },
+                    { prop: "onSvgError", type: "(error: Error) => void", def: "—", desc: "Called when loading or parsing fails." },
+                  ].map((row) => (
+                    <tr>
+                      <td><code class="font-mono text-xs text-acid">{row.prop}</code></td>
+                      <td><code class="font-mono text-xs text-[#e8c97e]">{row.type}</code></td>
+                      <td><code class="font-mono text-xs text-zinc-muted">{row.def}</code></td>
+                      <td class="text-zinc-muted text-sm">{row.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- SOURCE TYPES -->
+          <section id="source-types" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Source Types</h2>
+            <p class="docs-body">The component resolves SVG content from three source types, checked in this order:</p>
+
+            <div class="mt-6 space-y-4">
+              <!-- Inline -->
+              <div class="rounded-none border border-[#2e2e2e] bg-[#111111] p-5">
+                <div class="flex items-start gap-4">
+                  <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-acid/30 font-display text-base text-acid">1</div>
+                  <div class="flex-1">
+                    <h3 class="mb-1 font-semibold text-[#e8e8e8]">Inline SVG markup</h3>
+                    <p class="text-sm text-zinc-muted mb-3">A raw SVG string starting with <code class="inline-code">{"<svg"}</code>. Parsed by DOMParser, sanitized, then inlined.</p>
+                    <div class="code-block" data-lang="tsx">
+                      <pre class="px-4 py-3 text-sm"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">{"'<svg viewBox=\"0 0 24 24\">…</svg>'"}</span> <span class="token-punct">{"/>"}</span></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- data: -->
+              <div class="rounded-none border border-[#2e2e2e] bg-[#111111] p-5">
+                <div class="flex items-start gap-4">
+                  <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-[#2e2e2e] font-display text-base text-zinc-muted">2</div>
+                  <div class="flex-1">
+                    <h3 class="mb-1 font-semibold text-[#e8e8e8]">data: URI</h3>
+                    <p class="text-sm text-zinc-muted mb-3">A <code class="inline-code">data:image/svg+xml,…</code> or base64-encoded data URL. Decoded and inlined.</p>
+                    <div class="code-block" data-lang="tsx">
+                      <pre class="px-4 py-3 text-sm"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"data:image/svg+xml,%3Csvg…"</span> <span class="token-punct">{"/>"}</span></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Remote -->
+              <div class="rounded-none border border-[#2e2e2e] bg-[#111111] p-5">
+                <div class="flex items-start gap-4">
+                  <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-[#2e2e2e] font-display text-base text-zinc-muted">3</div>
+                  <div class="flex-1">
+                    <h3 class="mb-1 font-semibold text-[#e8e8e8]">Remote URL</h3>
+                    <p class="text-sm text-zinc-muted mb-3">Any <code class="inline-code">https://</code> URL. Fetched, parsed, cached in memory by URL, then inlined.</p>
+                    <div class="code-block" data-lang="tsx">
+                      <pre class="px-4 py-3 text-sm"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span> <span class="token-prop">cache</span> <span class="token-punct">{"/>"}</span></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Local name -->
+              <div class="rounded-none border border-acid/20 bg-acid/5 p-5">
+                <div class="flex items-start gap-4">
+                  <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-acid/40 font-display text-base text-acid">★</div>
+                  <div class="flex-1">
+                    <h3 class="mb-1 font-semibold text-[#e8e8e8]">Local name (via <code class="inline-code text-sm">name</code> prop)</h3>
+                    <p class="text-sm text-zinc-muted mb-3">
+                      No path or URL needed. Provide a filename without extension.
+                      Resolved in order: <code class="inline-code">src/assets/svg/</code> → <code class="inline-code">app/assets/svg/</code> → <code class="inline-code">public/assets/svg/</code>
+                    </p>
+                    <div class="code-block" data-lang="tsx">
+                      <pre class="px-4 py-3 text-sm"><span class="token-comment">{"// resolves to /assets/svg/logo.svg"}</span>
+<span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span> <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6"</span> <span class="token-punct">{"/>"}</span></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SECURITY -->
+          <section id="security" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Security</h2>
+            <p class="docs-body">
+              Sanitization is <strong class="text-[#e8e8e8]">enabled by default</strong> (<code class="inline-code">sanitize=true</code>).
+              When active, the following are stripped from every SVG before rendering:
+            </p>
+
+            <div class="mt-6 grid sm:grid-cols-2 gap-3">
+              {strippedElements.map((item) => (
+                <div class="flex items-start gap-3 rounded-none border border-[#2e2e2e] bg-[#111111] px-4 py-3">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-acid" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 14s5.333-2.667 5.333-6.667V3.333L8 1.333 2.667 3.333v4C2.667 11.333 8 14 8 14z" stroke="currentColor" stroke-width="1.2"/>
+                  </svg>
+                  <div>
+                    <code class="font-mono text-xs text-[#e8e8e8]">{item.elem}</code>
+                    <p class="mt-0.5 text-xs text-zinc-muted">{item.reason}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-6 rounded-none border border-amber-900/40 bg-amber-950/20 p-4">
+              <div class="flex gap-3">
+                <span class="mt-0.5 text-amber-400">⚠</span>
+                <div>
+                  <p class="text-sm font-semibold text-amber-400 mb-1">When to disable sanitization</p>
+                  <p class="text-sm text-zinc-muted">
+                    Only set <code class="inline-code">sanitize=false</code> when you <strong class="text-[#e8e8e8]">fully trust and control</strong> the SVG source.
+                    Never disable sanitization for user-generated content, third-party CDNs, or any untrusted input.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- EDGE CASES -->
+          <section id="edge-cases" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Edge Cases</h2>
+
+            <div class="mt-4 space-y-6">
+              {edgeCaseItems.map((item) => (
+                <div>
+                  <h3 class="mb-2 font-semibold text-[#e8e8e8]">{item.title}</h3>
+                  <p class="mb-3 text-sm text-zinc-muted leading-relaxed">{item.body}</p>
+                  <div class="code-block" data-lang="tsx">
+                    <pre class="px-4 py-3 text-sm text-[#e8e8e8]">{item.code}</pre>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <!-- EXAMPLES -->
+          <section id="examples" class="mb-16 scroll-mt-20">
+            <h2 class="docs-heading">Examples</h2>
+
+            <div class="space-y-8">
+              <!-- Example 1: Icon button -->
+              <div>
+                <div class="mb-3 flex items-center gap-2">
+                  <span class="h-1 w-4 bg-acid rounded-none"></span>
+                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor</h3>
+                </div>
+                <div class="code-block" data-lang="tsx">
+                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+
+<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">IconButton</span><span class="token-punct">{"({ "}</span>label<span class="token-punct">{" })"}</span> <span class="token-punct">{"{"}</span>
+  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
+    <span class="token-punct">{"<"}</span><span class="token-component">button</span>
+      <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"flex items-center gap-2 text-emerald-400 hover:text-emerald-300"</span>
+    <span class="token-punct">{">"}</span>
+      <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+        <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"arrow-right"</span>
+        <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-4 w-4 text-current"</span>
+        <span class="token-prop">aria-hidden</span>
+      <span class="token-punct">{"/>"}</span>
+      <span class="token-punct">{"{"}</span>label<span class="token-punct">{"}"}</span>
+    <span class="token-punct">{"</"}</span><span class="token-component">button</span><span class="token-punct">{">"}</span>
+  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
+<span class="token-punct">{"}"}</span></pre>
+                </div>
+              </div>
+
+              <!-- Example 2: Avatar with remote SVG -->
+              <div>
+                <div class="mb-3 flex items-center gap-2">
+                  <span class="h-1 w-4 bg-acid rounded-none"></span>
+                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading</h3>
+                </div>
+                <div class="code-block" data-lang="tsx">
+                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+
+<span class="token-keyword">const</span> <span class="token-component">Skeleton</span> <span class="token-punct">=</span> <span class="token-punct">{"() =>"}</span>
+  <span class="token-punct">{"<"}</span><span class="token-component">div</span> <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8 rounded bg-zinc-800 animate-pulse"</span> <span class="token-punct">{"/>"}</span><span class="token-punct">;</span>
+
+<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">RemoteIcon</span><span class="token-punct">{"({ "}</span>url<span class="token-punct">{" })"}</span> <span class="token-punct">{"{"}</span>
+  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
+    <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+      <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>url<span class="token-punct">{"}"}</span>
+      <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8"</span>
+      <span class="token-prop">sanitize</span>
+      <span class="token-prop">cache</span>
+      <span class="token-prop">loading</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">Skeleton</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
+      <span class="token-prop">fallback</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">Skeleton</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
+    <span class="token-punct">{"/>"}</span>
+  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
+<span class="token-punct">{"}"}</span></pre>
+                </div>
+              </div>
+
+              <!-- Example 3: Dynamic SVG gallery -->
+              <div>
+                <div class="mb-3 flex items-center gap-2">
+                  <span class="h-1 w-4 bg-acid rounded-none"></span>
+                  <h3 class="font-semibold text-[#e8e8e8]">Dynamic icon gallery from a name list</h3>
+                </div>
+                <div class="code-block" data-lang="tsx">
+                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+<span class="token-keyword">import</span> <span class="token-type">{"{ SvgName }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg"</span><span class="token-punct">;</span>
+
+<span class="token-keyword">const</span> icons<span class="token-punct">:</span> <span class="token-type">SvgName</span><span class="token-punct">[]</span> <span class="token-punct">=</span> <span class="token-punct">["</span><span class="token-string">logo</span><span class="token-punct">", "</span><span class="token-string">arrow</span><span class="token-punct">", "</span><span class="token-string">star</span><span class="token-punct">"];</span>
+
+<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">IconGallery</span><span class="token-punct">()</span> <span class="token-punct">{"{"}</span>
+  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
+    <span class="token-punct">{"<"}</span><span class="token-component">div</span> <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"flex gap-4"</span><span class="token-punct">{">"}</span>
+      <span class="token-punct">{"{"}</span>icons<span class="token-punct">.</span>map<span class="token-punct">{"((name) =>"}</span> <span class="token-punct">{"("}</span>
+        <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+          <span class="token-prop">key</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>name<span class="token-punct">{"}"}</span>
+          <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>name<span class="token-punct">{"}"}</span>
+          <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-zinc-400"</span>
+        <span class="token-punct">{"/>"}</span>
+      <span class="token-punct">{"))"}</span><span class="token-punct">{"}"}</span>
+    <span class="token-punct">{"</"}</span><span class="token-component">div</span><span class="token-punct">{">"}</span>
+  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
+<span class="token-punct">{"}"}</span></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Bottom nav -->
+          <div class="border-t border-[#1a1a1a] pt-8 flex items-center justify-between">
+            <div></div>
+            <a href="/" class="flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
+              Back to landing page
+              <svg class="h-4 w-4 rotate-180 transition-transform group-hover:-translate-x-1" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </main>
+
+        <!-- RIGHT TOC (optional desktop) -->
+        <div class="hidden lg:block w-48 shrink-0 sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto py-8 pl-6 border-l border-[#1a1a1a]">
+          <p class="mb-3 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
+          <nav class="flex flex-col gap-0.5">
+            {sections.map((s) => (
+              <a href={`#${s.id}`} class="sidebar-link text-xs" data-toc={s.id}>
+                {s.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .docs-heading {
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    letter-spacing: 0.05em;
+    color: #e8e8e8;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .docs-body {
+    color: var(--color-zinc-muted);
+    line-height: 1.625;
+  }
+  .inline-code {
+    border-radius: 0;
+    background: #1a1a1a;
+    padding: 0.125rem 0.375rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: #e8e8e8;
+  }
+</style>
+
+<script>
+  let cleanup = () => {};
+
+  function initDocsPage() {
+    cleanup();
+
+    // Active sidebar highlight on scroll
+    const sectionEls = document.querySelectorAll("section[id]");
+    const sidebarLinks = document.querySelectorAll(".sidebar-link");
+
+    function updateActive() {
+      let active = "";
+      sectionEls.forEach((el) => {
+        const top = (el as HTMLElement).offsetTop - 120;
+        if (window.scrollY >= top) active = el.id;
+      });
+      sidebarLinks.forEach((a) => {
+        const id = a.getAttribute("data-section") || a.getAttribute("data-toc");
+        a.classList.toggle("active", id === active);
+      });
+    }
+
+    window.addEventListener("scroll", updateActive, { passive: true });
+    updateActive();
+
+    // Mobile sidebar
+    const mobileSidebarBtn = document.getElementById("docs-mobile-sidebar-btn");
+    const mobileOverlay = document.getElementById("docs-mobile-overlay");
+    const mobilePanel = document.getElementById("docs-mobile-panel");
+
+    function openMobileSidebar() {
+      mobileOverlay?.classList.add("open");
+      mobilePanel?.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+    function closeMobileSidebar() {
+      mobileOverlay?.classList.remove("open");
+      mobilePanel?.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    mobileSidebarBtn?.addEventListener("click", openMobileSidebar);
+    mobileOverlay?.addEventListener("click", closeMobileSidebar);
+    const mobileLinks = Array.from(document.querySelectorAll(".mobile-sidebar-link"));
+    mobileLinks.forEach((link) => {
+      link.addEventListener("click", closeMobileSidebar);
+    });
+
+    // Copy button for all code blocks
+    function initCopyButtons() {
+      document.querySelectorAll(".code-block").forEach((block) => {
+        if (block.querySelector(".copy-btn")) return;
+        const button = document.createElement("button");
+        button.className = "copy-btn";
+        button.setAttribute("aria-label", "Copy code");
+        button.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+        button.addEventListener("click", () => {
+          const pre = block.querySelector("pre");
+          if (!pre) return;
+          const text = pre.textContent || "";
+          navigator.clipboard.writeText(text.replace(/^\$\s*/, "")).then(() => {
+            button.classList.add("copied");
+            button.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+            setTimeout(() => {
+              button.classList.remove("copied");
+              button.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+            }, 2000);
+          });
+        });
+        block.appendChild(button);
+      });
+    }
+    initCopyButtons();
+
+    cleanup = () => {
+      window.removeEventListener("scroll", updateActive);
+      mobileSidebarBtn?.removeEventListener("click", openMobileSidebar);
+      mobileOverlay?.removeEventListener("click", closeMobileSidebar);
+      mobileLinks.forEach((link) => {
+        link.removeEventListener("click", closeMobileSidebar);
+      });
+    };
+  }
+
+  document.addEventListener("astro:page-load", initDocsPage);
+  document.addEventListener("astro:before-swap", () => cleanup());
+  initDocsPage();
+</script>

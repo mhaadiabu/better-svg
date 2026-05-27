@@ -1,5 +1,5 @@
 {
-  "name": "reactsvg",
+  "name": "better-svg",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -11,18 +11,18 @@
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:web": "turbo -F web dev",
-    "deploy": "turbo -F @reactsvg/infra deploy",
-    "destroy": "turbo -F @reactsvg/infra destroy",
+    "deploy": "turbo -F @better-svg/infra deploy",
+    "destroy": "turbo -F @better-svg/infra destroy",
     "check": "oxlint && oxfmt --write"
   },
   "dependencies": {
-    "@reactsvg/env": "workspace:*",
+    "@better-svg/env": "workspace:*",
     "dotenv": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251213.0",
-    "@reactsvg/config": "workspace:*",
+    "@better-svg/config": "workspace:*",
     "oxfmt": "^0.46.0",
     "oxlint": "^1.61.0",
     "turbo": "^2.8.12",

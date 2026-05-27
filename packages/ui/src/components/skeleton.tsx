@@ -1,4 +1,4 @@
-import { cn } from "@reactsvg/ui/lib/utils";
+import { cn } from "@better-svg/ui/lib/utils";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (

@@ -1,5 +1,5 @@
 {
-  "name": "@reactsvg/infra",
+  "name": "@better-svg/infra",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@reactsvg/config": "workspace:*",
+    "@better-svg/config": "workspace:*",
     "alchemy": "catalog:",
     "typescript": "catalog:"
   }

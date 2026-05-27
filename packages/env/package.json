@@ -1,5 +1,5 @@
 {
-  "name": "@reactsvg/env",
+  "name": "@better-svg/env",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,8 +12,8 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@reactsvg/config": "workspace:*",
-    "@reactsvg/infra": "workspace:*",
+    "@better-svg/config": "workspace:*",
+    "@better-svg/infra": "workspace:*",
     "typescript": "catalog:"
   }
 }

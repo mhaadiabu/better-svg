@@ -1,4 +1,4 @@
-import { cn } from "@reactsvg/ui/lib/utils";
+import { cn } from "@better-svg/ui/lib/utils";
 import * as React from "react";
 
 function Card({

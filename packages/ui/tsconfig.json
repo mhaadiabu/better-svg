@@ -1,11 +1,11 @@
 {
-  "extends": "@reactsvg/config/tsconfig.base.json",
+  "extends": "@better-svg/config/tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": [],
     "paths": {
-      "@reactsvg/ui/*": ["./src/*"]
+      "@better-svg/ui/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

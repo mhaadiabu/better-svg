@@ -1,5 +1,5 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
-import { cn } from "@reactsvg/ui/lib/utils";
+import { cn } from "@better-svg/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const buttonVariants = cva(

@@ -5,7 +5,7 @@ import { config } from "dotenv";
 config({ path: "./.env" });
 config({ path: "../../apps/web/.env" });
 
-const app = await alchemy("reactsvg");
+const app = await alchemy("better-svg");
 
 export const web = await Vite("web", {
   cwd: "../../apps/web",

@@ -12,11 +12,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@reactsvg/ui/components",
-    "utils": "@reactsvg/ui/lib/utils",
-    "hooks": "@reactsvg/ui/hooks",
-    "lib": "@reactsvg/ui/lib",
-    "ui": "@reactsvg/ui/components"
+    "components": "@better-svg/ui/components",
+    "utils": "@better-svg/ui/lib/utils",
+    "hooks": "@better-svg/ui/hooks",
+    "lib": "@better-svg/ui/lib",
+    "ui": "@better-svg/ui/components"
   },
   "menuColor": "default",
   "menuAccent": "subtle",

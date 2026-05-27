@@ -27,7 +27,7 @@
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
-    "@reactsvg/config": "workspace:*",
+    "@better-svg/config": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "react": "catalog:",

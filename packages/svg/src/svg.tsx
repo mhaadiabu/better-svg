@@ -183,18 +183,15 @@ type SvgSourceProps =
       src?: never;
     };
 
-export type SvgProps = Omit<
-  React.SVGProps<SVGSVGElement>,
-  "children" | "dangerouslySetInnerHTML"
-> &
+export type SvgProps = Omit<React.SVGProps<SVGSVGElement>, "children" | "dangerouslySetInnerHTML"> &
   SvgSourceProps & {
-  fetchOptions?: RequestInit;
-  cache?: boolean;
-  sanitize?: boolean;
-  loading?: React.ReactNode;
-  fallback?: React.ReactNode;
-  onSvgLoad?: (markup: string) => void;
-  onSvgError?: (error: Error) => void;
+    fetchOptions?: RequestInit;
+    cache?: boolean;
+    sanitize?: boolean;
+    loading?: React.ReactNode;
+    fallback?: React.ReactNode;
+    onSvgLoad?: (markup: string) => void;
+    onSvgError?: (error: Error) => void;
   };
 
 export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
@@ -219,10 +216,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState<Error | null>(null);
 
-    const resolvedSource = React.useMemo(
-      () => (name ? resolveSvgSource(name) : src),
-      [name, src],
-    );
+    const resolvedSource = React.useMemo(() => (name ? resolveSvgSource(name) : src), [name, src]);
 
     React.useEffect(() => {
       let active = true;
@@ -266,14 +260,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
         active = false;
         controller.abort();
       };
-    }, [
-      resolvedSource,
-      fetchOptions,
-      cache,
-      sanitize,
-      onSvgLoad,
-      onSvgError,
-    ]);
+    }, [resolvedSource, fetchOptions, cache, sanitize, onSvgLoad, onSvgError]);
 
     if (isLoading) {
       return loading ? <>{loading}</> : null;

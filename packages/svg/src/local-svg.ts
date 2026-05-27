@@ -15,10 +15,12 @@ const appSvgs: SvgModuleMap = glob
   : {};
 
 const normalizeName = (value: string) =>
-  value.trim().replace(/^\/+/, "").replace(/\.svg$/i, "");
+  value
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\.svg$/i, "");
 
-const pathToName = (path: string) =>
-  normalizeName(path.replace(/^\/(src|app)\/assets\/svg\//, ""));
+const pathToName = (path: string) => normalizeName(path.replace(/^\/(src|app)\/assets\/svg\//, ""));
 
 const localSvgByName: Record<string, string> = {};
 

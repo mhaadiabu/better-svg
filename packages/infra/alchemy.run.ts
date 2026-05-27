@@ -13,6 +13,13 @@ export const web = await Vite("web", {
   bindings: {
     VITE_SERVER_URL: alchemy.env.VITE_SERVER_URL!,
   },
+  build: {
+    command: "pnpm build",
+  },
+  dev: {
+    command: "pnpm dev:bare -- --host 0.0.0.0 --port 4321",
+    domain: "localhost:4321",
+  },
 });
 
 console.log(`Web    -> ${web.url}`);

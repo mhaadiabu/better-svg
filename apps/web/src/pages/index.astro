@@ -51,7 +51,7 @@ const featureCards = [
 <Base title="BetterSVG — Inline SVG for React">
   <!-- NAV -->
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-[#1a1a1a] bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
       <a href="/" class="flex items-center gap-2.5 group">
         <svg class="h-6 w-6 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
@@ -89,7 +89,7 @@ const featureCards = [
   </nav>
 
   <!-- HERO -->
-  <section class="relative min-h-screen overflow-x-hidden pt-20">
+  <section class="relative min-h-screen min-h-0 lg:min-h-screen overflow-x-hidden pt-16 lg:pt-20">
     <!-- Background grid -->
     <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-100 pointer-events-none"></div>
 
@@ -107,7 +107,7 @@ const featureCards = [
     <!-- Scan line effect -->
     <div class="scan-line"></div>
 
-    <div class="relative mx-auto max-w-6xl px-6 pt-20 pb-32 lg:pt-28">
+    <div class="relative mx-auto max-w-6xl px-6 pt-10 pb-16 lg:pt-28 lg:pb-32">
       <div class="grid lg:grid-cols-2 lg:gap-16 items-center">
 
         <!-- Left: Text -->
@@ -239,8 +239,8 @@ const featureCards = [
   </div>
 
   <!-- FEATURES GRID -->
-  <section id="features" class="mx-auto max-w-6xl px-6 py-28">
-    <div class="mb-16 flex items-end justify-between gap-4">
+  <section id="features" class="mx-auto max-w-6xl px-6 py-16 lg:py-28">
+    <div class="mb-10 lg:mb-16 flex items-end justify-between gap-4">
       <div>
         <p class="mb-2 font-mono text-xs tracking-widest text-acid uppercase">Why BetterSVG</p>
         <h2 class="font-display text-5xl tracking-wider text-[#e8e8e8]">FEATURES</h2>
@@ -268,7 +268,7 @@ const featureCards = [
 
   <!-- SECURITY CALLOUT -->
   <section class="border-t border-[#1a1a1a]">
-    <div class="mx-auto max-w-6xl px-6 py-20">
+    <div class="mx-auto max-w-6xl px-6 py-12 lg:py-20">
       <div class="relative overflow-hidden border border-[#2e2e2e] bg-[#111111] p-8 lg:p-12">
         <!-- Corner accent -->
         <div class="absolute top-0 right-0 h-px w-24 bg-acid"></div>
@@ -312,7 +312,7 @@ const featureCards = [
 
   <!-- CTA FOOTER BAND -->
   <section class="border-t border-[#1a1a1a] bg-[#0d0d0d]">
-    <div class="mx-auto max-w-6xl px-6 py-24 text-center">
+    <div class="mx-auto max-w-6xl px-6 py-16 lg:py-24 text-center">
       <h2 class="font-display text-[clamp(3rem,8vw,6rem)] tracking-wider text-[#e8e8e8] leading-none">
         SHIP<br/><span class="text-acid acid-glow">BETTER SVG</span><span class="opacity-30"> TODAY.</span>
       </h2>

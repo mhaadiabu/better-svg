@@ -107,6 +107,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 /* Custom scrollbar */
@@ -148,9 +149,8 @@ code {
 .code-block {
   background: #111111;
   border: 1px solid #2e2e2e;
-  border-radius: 0;
-  overflow-x: auto;
   position: relative;
+  max-width: 100%;
 }
 
 .code-block::before {
@@ -165,40 +165,103 @@ code {
   letter-spacing: 0.1em;
   pointer-events: none;
 }
+.code-block.has-header::before {
+  display: none;
+}
 
-/* Copy button on code blocks */
-.code-block .copy-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
+.code-block-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 0;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid #2e2e2e;
+  background: #0d0d0d;
+  min-height: 34px;
+}
+
+.code-block-lang {
+  font-size: 10px;
+  font-family: "JetBrains Mono", monospace;
+  color: #6b6b6b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.code-block-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.code-block-body {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.code-block-body pre {
+  margin: 0;
+  white-space: pre;
+  overflow-x: visible;
+}
+
+.code-block-body.is-wrapped pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: visible;
+}
+
+/* Copy & wrap button styles */
+.code-block .copy-btn,
+.code-block .wrap-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
   border: 1px solid #2e2e2e;
-  background: #0a0a0a;
+  background: transparent;
   color: #6b6b6b;
   cursor: pointer;
-  opacity: 0;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease;
-  z-index: 2;
+  font-size: 10px;
+  font-family: "JetBrains Mono", monospace;
+  transition: color 0.15s, border-color 0.15s;
+  border-radius: 0;
+  line-height: 1;
 }
-.code-block:hover .copy-btn {
+
+.code-block .copy-btn {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: auto;
+  height: auto;
   opacity: 1;
+  background: transparent;
+  border-radius: 0;
+  z-index: auto;
 }
+
+.code-block .wrap-btn:hover,
 .code-block .copy-btn:hover {
   color: #b9ff4b;
   border-color: #b9ff4b;
 }
+
 .code-block .copy-btn.copied {
-  opacity: 1;
   color: #b9ff4b;
   border-color: #b9ff4b;
+}
+
+.code-block .copy-btn svg,
+.code-block .wrap-btn svg {
+  flex-shrink: 0;
+}
+
+.wrap-btn {
+  display: none;
+}
+.code-block.has-wrap .wrap-btn {
+  display: inline-flex;
 }
 
 /* Token colors for manual syntax highlighting */

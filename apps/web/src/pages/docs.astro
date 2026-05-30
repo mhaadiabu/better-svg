@@ -589,31 +589,88 @@ const edgeCaseItems = [
       link.addEventListener("click", closeMobileSidebar);
     });
 
-    // Copy button for all code blocks
-    function initCopyButtons() {
+    // Code blocks: header, copy & wrap buttons
+    function initCodeBlocks() {
       document.querySelectorAll(".code-block").forEach((block) => {
-        if (block.querySelector(".copy-btn")) return;
-        const button = document.createElement("button");
-        button.className = "copy-btn";
-        button.setAttribute("aria-label", "Copy code");
-        button.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
-        button.addEventListener("click", () => {
+        if (block.querySelector(".code-block-header")) return;
+
+        block.classList.add("has-header");
+
+        const lang = block.getAttribute("data-lang") || "";
+
+        const header = document.createElement("div");
+        header.className = "code-block-header";
+
+        const langEl = document.createElement("span");
+        langEl.className = "code-block-lang";
+        langEl.textContent = lang;
+        header.appendChild(langEl);
+
+        const actions = document.createElement("div");
+        actions.className = "code-block-actions";
+
+        // Wrap button
+        const wrapBtn = document.createElement("button");
+        wrapBtn.className = "wrap-btn";
+        wrapBtn.setAttribute("aria-label", "Toggle word wrap");
+        wrapBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
+        wrapBtn.addEventListener("click", () => {
+          const body = block.querySelector(".code-block-body");
+          if (body) {
+            body.classList.toggle("is-wrapped");
+            const on = body.classList.contains("is-wrapped");
+            wrapBtn.innerHTML = on
+              ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg> Unwrap`
+              : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
+          }
+        });
+        actions.appendChild(wrapBtn);
+
+        // Copy button
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "copy-btn";
+        copyBtn.setAttribute("aria-label", "Copy code");
+        copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
+        copyBtn.addEventListener("click", () => {
           const pre = block.querySelector("pre");
           if (!pre) return;
           const text = pre.textContent || "";
           navigator.clipboard.writeText(text.replace(/^\$\s*/, "")).then(() => {
-            button.classList.add("copied");
-            button.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+            copyBtn.classList.add("copied");
+            copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
             setTimeout(() => {
-              button.classList.remove("copied");
-              button.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+              copyBtn.classList.remove("copied");
+              copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
             }, 2000);
           });
         });
-        block.appendChild(button);
+        actions.appendChild(copyBtn);
+
+        header.appendChild(actions);
+
+        // Wrap pre in scrollable body
+        const pre = block.querySelector("pre");
+        if (pre) {
+          pre.classList.remove("overflow-x-auto");
+          pre.style.overflowX = "";
+          const body = document.createElement("div");
+          body.className = "code-block-body";
+          pre.parentNode.insertBefore(body, pre);
+          body.appendChild(pre);
+        }
+
+        block.insertBefore(header, block.firstChild);
+
+        // Only show wrap button if content overflows
+        requestAnimationFrame(() => {
+          const body = block.querySelector(".code-block-body");
+          if (body && body.scrollWidth > body.clientWidth + 1) {
+            block.classList.add("has-wrap");
+          }
+        });
       });
     }
-    initCopyButtons();
+    initCodeBlocks();
 
     cleanup = () => {
       window.removeEventListener("scroll", updateActive);

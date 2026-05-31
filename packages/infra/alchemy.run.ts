@@ -1,11 +1,14 @@
 import alchemy from "alchemy";
 import { Vite } from "alchemy/cloudflare";
+import { CloudflareStateStore } from "alchemy/state";
 import { config } from "dotenv";
 
 config({ path: "./.env" });
 config({ path: "../../apps/web/.env" });
 
-const app = await alchemy("better-svg");
+const app = await alchemy("better-svg", {
+  stateStore: (scope) => new CloudflareStateStore(scope),
+});
 
 export const web = await Vite("web", {
   cwd: "../../apps/web",

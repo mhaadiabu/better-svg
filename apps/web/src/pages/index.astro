@@ -50,7 +50,7 @@ const featureCards = [
 
 <Base title="BetterSVG — Inline SVG for React">
   <!-- NAV -->
-  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-[#1a1a1a] bg-coal/90 backdrop-blur-md">
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
       <a href="/" class="flex items-center gap-2.5 group">
         <svg class="h-6 w-6 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,7 +79,7 @@ const featureCards = [
     </div>
 
     <!-- Mobile menu -->
-    <div id="mobile-menu" class="hidden border-t border-[#1a1a1a] px-6 py-4 md:hidden">
+    <div id="mobile-menu" class="hidden border-t border-coal-2 px-6 py-4 md:hidden">
       <div class="flex flex-col gap-4">
         <a href="/docs" class="text-sm text-zinc-muted hover:text-acid transition-colors">Docs</a>
         <a href="https://github.com/mhaadiabu/better-svg" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
@@ -113,7 +113,7 @@ const featureCards = [
         <!-- Left: Text -->
         <div>
           <!-- Badge -->
-          <div class="mb-8 inline-flex items-center gap-2 border border-[#2e2e2e] bg-[#111111] px-3 py-1.5 animate-fade-in delay-100">
+          <div class="mb-8 inline-flex items-center gap-2 border border-coal-4 bg-coal-1 px-3 py-1.5 animate-fade-in delay-100">
             <span class="h-1.5 w-1.5 bg-acid animate-pulse"></span>
             <span class="font-mono text-xs text-zinc-muted">v0.1.0 — now on npm</span>
           </div>
@@ -152,7 +152,7 @@ const featureCards = [
             <a
               href="https://github.com/mhaadiabu/better-svg"
               target="_blank"
-              class="flex items-center gap-2 border border-[#2e2e2e] px-5 py-2.5 text-sm text-zinc-muted transition-all hover:border-acid hover:text-acid"
+              class="flex items-center gap-2 border border-coal-4 px-5 py-2.5 text-sm text-zinc-muted transition-all hover:border-acid hover:text-acid"
             >
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.34-3.369-1.34-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
@@ -166,14 +166,14 @@ const featureCards = [
         <div class="mt-12 lg:mt-0 animate-fade-in delay-700">
           <div class="relative">
             <!-- Floating label -->
-            <div class="absolute -top-3 right-4 z-10 border border-[#2e2e2e] bg-coal px-2 py-0.5 font-mono text-[10px] text-zinc-muted">
+            <div class="absolute -top-3 right-4 z-10 border border-coal-4 bg-coal px-2 py-0.5 font-mono text-[10px] text-zinc-muted">
               usage.tsx
             </div>
 
             <!-- Glow behind card -->
             <div class="absolute -inset-px bg-gradient-to-br from-acid/10 via-transparent to-transparent blur-xl"></div>
 
-            <div class="relative code-block border-[#2e2e2e]" data-lang="tsx">
+            <div class="relative code-block border-coal-4" data-lang="tsx">
               <pre class="p-5 text-sm leading-7 overflow-x-auto"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
 
 <span class="token-comment">{"// ── From a local name"}</span>
@@ -198,7 +198,7 @@ const featureCards = [
             </div>
 
             <!-- Animated SVG demo orb -->
-            <div class="mt-4 flex items-center justify-center gap-6 border border-[#1a1a1a] bg-[#111111] px-6 py-4">
+            <div class="mt-4 flex items-center justify-center gap-6 border border-coal-2 bg-coal-1 px-6 py-4">
               <span class="font-mono text-xs text-zinc-muted">rendered output →</span>
               <svg class="h-10 w-10 text-acid animate-float" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                 <rect x="6" y="6" width="52" height="52" rx="0" fill="currentColor" opacity="0.15"/>
@@ -221,7 +221,7 @@ const featureCards = [
   </section>
 
   <!-- MARQUEE strip -->
-  <div class="overflow-hidden border-y border-[#1a1a1a] bg-[#111111] py-3">
+  <div class="overflow-hidden border-y border-coal-2 bg-coal-1 py-3">
     <div class="marquee-track flex whitespace-nowrap gap-0">
       {
         Array.from({ length: 2 }).map(() => (
@@ -253,10 +253,10 @@ const featureCards = [
       </a>
     </div>
 
-    <div class="grid gap-px bg-[#1a1a1a] sm:grid-cols-2 lg:grid-cols-3 overflow-hidden border border-[#1a1a1a]">
+    <div class="grid gap-px bg-coal-2 sm:grid-cols-2 lg:grid-cols-3 overflow-hidden border border-coal-2">
       {featureCards.map((feature) => (
-        <div class="group bg-coal p-7 hover:bg-[#111111] transition-colors">
-          <div class="mb-4 flex h-10 w-10 items-center justify-center border border-[#2e2e2e] bg-[#111111] group-hover:border-acid/30 transition-colors">
+        <div class="group bg-coal p-7 hover:bg-coal-1 transition-colors">
+          <div class="mb-4 flex h-10 w-10 items-center justify-center border border-coal-4 bg-coal-1 group-hover:border-acid/30 transition-colors">
             <svg class="h-5 w-5 text-acid" viewBox="0 0 24 24" fill="none" set:html={feature.icon} />
           </div>
           <h3 class="mb-2 font-semibold text-[#e8e8e8]">{feature.title}</h3>
@@ -267,9 +267,9 @@ const featureCards = [
   </section>
 
   <!-- SECURITY CALLOUT -->
-  <section class="border-t border-[#1a1a1a]">
+  <section class="border-t border-coal-2">
     <div class="mx-auto max-w-6xl px-6 py-12 lg:py-20">
-      <div class="relative overflow-hidden border border-[#2e2e2e] bg-[#111111] p-8 lg:p-12">
+      <div class="relative overflow-hidden border border-coal-4 bg-coal-1 p-8 lg:p-12">
         <!-- Corner accent -->
         <div class="absolute top-0 right-0 h-px w-24 bg-acid"></div>
         <div class="absolute top-0 right-0 h-24 w-px bg-acid"></div>
@@ -284,11 +284,11 @@ const featureCards = [
             </div>
             <h2 class="mb-4 font-display text-4xl tracking-wider text-[#e8e8e8]">SANITIZE ON BY DEFAULT</h2>
             <p class="text-zinc-muted leading-relaxed">
-              The <code class="bg-[#1a1a1a] px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">sanitize</code> prop is
+              The <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">sanitize</code> prop is
               <span class="text-[#e8e8e8]"> enabled by default</span>. It strips{" "}
-              <code class="bg-[#1a1a1a] px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">&lt;script&gt;</code>,
-              <code class="bg-[#1a1a1a] px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">&lt;foreignObject&gt;</code>,
-              inline event handlers, and unsafe <code class="bg-[#1a1a1a] px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">href</code>s
+              <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">&lt;script&gt;</code>,
+              <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">&lt;foreignObject&gt;</code>,
+              inline event handlers, and unsafe <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">href</code>s
               from every SVG. Only disable it when you fully trust the source.
             </p>
           </div>
@@ -311,7 +311,7 @@ const featureCards = [
   </section>
 
   <!-- CTA FOOTER BAND -->
-  <section class="border-t border-[#1a1a1a] bg-[#0d0d0d]">
+  <section class="border-t border-coal-2 bg-[#0d0d0d]">
     <div class="mx-auto max-w-6xl px-6 py-16 lg:py-24 text-center">
       <h2 class="font-display text-[clamp(3rem,8vw,6rem)] tracking-wider text-[#e8e8e8] leading-none">
         SHIP<br/><span class="text-acid acid-glow">BETTER SVG</span><span class="opacity-30"> TODAY.</span>
@@ -323,7 +323,7 @@ const featureCards = [
         <a href="/docs" class="bg-acid px-8 py-3 font-semibold text-coal hover:bg-acid-dim transition-colors">
           Read the docs
         </a>
-        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="border border-[#2e2e2e] px-8 py-3 text-zinc-muted hover:border-acid hover:text-acid transition-colors">
+        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="border border-coal-4 px-8 py-3 text-zinc-muted hover:border-acid hover:text-acid transition-colors">
           View on GitHub
         </a>
       </div>
@@ -331,7 +331,7 @@ const featureCards = [
   </section>
 
   <!-- FOOTER -->
-  <footer class="border-t border-[#1a1a1a] bg-coal">
+  <footer class="border-t border-coal-2 bg-coal">
     <div class="mx-auto max-w-6xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-2.5">
         <svg class="h-5 w-5 text-acid" viewBox="0 0 24 24" fill="none">

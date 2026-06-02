@@ -115,7 +115,7 @@ const featureCards = [
           <!-- Badge -->
           <div class="mb-8 inline-flex items-center gap-2 border border-coal-4 bg-coal-1 px-3 py-1.5 animate-fade-in delay-100">
             <span class="h-1.5 w-1.5 bg-acid animate-pulse"></span>
-            <span class="font-mono text-xs text-zinc-muted">v0.1.0 — now on npm</span>
+            <span class="font-mono text-xs text-zinc-muted">v0.1.1 — now on npm</span>
           </div>
 
           <!-- Headline -->
@@ -171,7 +171,7 @@ const featureCards = [
             </div>
 
             <!-- Glow behind card -->
-            <div class="absolute -inset-px bg-gradient-to-br from-acid/10 via-transparent to-transparent blur-xl"></div>
+            <div class="absolute -inset-px bg-linear-to-br from-acid/10 via-transparent to-transparent blur-xl"></div>
 
             <div class="relative code-block border-coal-4" data-lang="tsx">
               <pre class="p-5 text-sm leading-7 overflow-x-auto"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
@@ -444,7 +444,7 @@ const featureCards = [
 
         // Wrap pre in scrollable body
         const pre = block.querySelector("pre");
-        if (pre) {
+        if (pre?.parentNode) {
           pre.classList.remove("overflow-x-auto");
           pre.style.overflowX = "";
           const body = document.createElement("div");

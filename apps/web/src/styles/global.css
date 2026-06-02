@@ -100,7 +100,8 @@ html {
   text-size-adjust: 100%;
 }
 
-html, body {
+html,
+body {
   background-color: #0a0a0a;
   color: #e8e8e8;
   font-family: "DM Sans", sans-serif;
@@ -230,7 +231,9 @@ code {
   cursor: pointer;
   font-size: 10px;
   font-family: "JetBrains Mono", monospace;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
   border-radius: 0;
   line-height: 1;
 }

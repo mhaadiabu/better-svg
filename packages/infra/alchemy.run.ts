@@ -12,7 +12,10 @@ const app = await alchemy("better-svg", {
 
 export const web = await Vite("web", {
   cwd: "../../apps/web",
-  assets: "dist",
+  assets: {
+    directory: "dist",
+    run_worker_first: true,
+  },
   bindings: {
     VITE_SERVER_URL: alchemy.env.VITE_SERVER_URL!,
   },
@@ -23,6 +26,17 @@ export const web = await Vite("web", {
     command: "pnpm dev:bare -- --host 0.0.0.0 --port 4321",
     domain: "localhost:4321",
   },
+  script: `
+    export default {
+      async fetch(request, env) {
+        const url = new URL(request.url);
+        if (url.hostname.endsWith(".workers.dev")) {
+          return Response.redirect("https://svg.mhaadi.dev" + url.pathname + url.search, 301);
+        }
+        return env.ASSETS.fetch(request);
+      }
+    };
+  `,
 });
 
 console.log(`Web    -> ${web.url}`);

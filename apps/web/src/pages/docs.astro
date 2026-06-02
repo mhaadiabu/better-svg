@@ -243,7 +243,7 @@ const edgeCaseItems = [
               override any attributes parsed from SVG markup. The following extra props are available:
             </p>
 
-            <div class="mt-6 rounded-none border border-[#2e2e2e] overflow-hidden prop-table-wrapper">
+            <div class="mt-6 rounded-none border border-[#2e2e2e] overflow-x-auto prop-table-wrapper">
               <table class="prop-table">
                 <thead>
                   <tr>
@@ -662,12 +662,23 @@ const edgeCaseItems = [
         block.insertBefore(header, block.firstChild);
 
         // Only show wrap button if content overflows
-        requestAnimationFrame(() => {
-          const body = block.querySelector(".code-block-body");
-          if (body && body.scrollWidth > body.clientWidth + 1) {
-            block.classList.add("has-wrap");
-          }
-        });
+        const bodyEl = block.querySelector(".code-block-body");
+        if (bodyEl) {
+          const checkWrap = () => {
+            // If it's currently wrapped, we can't accurately check natural scrollWidth.
+            // But we can check if it needs wrapping when not wrapped.
+            if (!bodyEl.classList.contains("is-wrapped")) {
+              if (bodyEl.scrollWidth > bodyEl.clientWidth + 1) {
+                block.classList.add("has-wrap");
+              } else {
+                block.classList.remove("has-wrap");
+              }
+            }
+          };
+          requestAnimationFrame(checkWrap);
+          const ro = new ResizeObserver(checkWrap);
+          ro.observe(bodyEl);
+        }
       });
     }
     initCodeBlocks();

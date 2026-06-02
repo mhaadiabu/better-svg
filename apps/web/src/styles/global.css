@@ -100,7 +100,7 @@ html {
   text-size-adjust: 100%;
 }
 
-body {
+html, body {
   background-color: #0a0a0a;
   color: #e8e8e8;
   font-family: "DM Sans", sans-serif;
@@ -197,6 +197,12 @@ code {
 .code-block-body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Fallback before JS applies code-block-body */
+.code-block > pre {
+  overflow-x: auto;
+  margin: 0;
 }
 
 .code-block-body pre {

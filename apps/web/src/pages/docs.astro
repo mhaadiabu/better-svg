@@ -87,14 +87,6 @@ const edgeCaseItems = [
     </div>
   </nav>
 
-  <!-- Mobile sidebar toggle -->
-  <button id="docs-mobile-sidebar-btn" class="lg:hidden fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-none border border-coal-4 bg-coal/95 backdrop-blur-sm px-4 py-2.5 text-xs font-mono text-zinc-muted hover:text-acid hover:border-acid transition-colors shadow-lg">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <path d="M3 6h18M3 12h18M3 18h18"/>
-    </svg>
-    Sections
-  </button>
-
   <!-- Mobile sidebar overlay -->
   <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
   <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden">
@@ -109,6 +101,23 @@ const edgeCaseItems = [
   </div>
 
   <div class="min-h-screen pt-13 lg:pt-16.25 overflow-x-clip">
+    <!-- Mobile sections menu trigger -->
+    <button id="docs-mobile-sidebar-btn" class="lg:hidden sticky top-13 lg:top-16.25 z-30 w-full flex items-center justify-between gap-2 border-b border-coal-2 bg-coal/95 backdrop-blur-md px-4 py-2.5 text-xs font-mono text-zinc-muted hover:text-acid transition-colors">
+      <span class="flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="8" y1="6" x2="21" y2="6"/>
+          <line x1="8" y1="12" x2="21" y2="12"/>
+          <line x1="8" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="3.01" y2="6"/>
+          <line x1="3" y1="12" x2="3.01" y2="12"/>
+          <line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+        On this page
+      </span>
+      <svg id="docs-mobile-sidebar-chevron" class="transition-transform" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </button>
     <div class="mx-auto max-w-7xl px-4">
       <div class="flex gap-0">
 
@@ -133,7 +142,7 @@ const edgeCaseItems = [
           <div class="mb-10 lg:mb-16 pb-8 border-b border-coal-2">
             <div class="mb-3 flex items-center gap-2 font-mono text-xs text-zinc-muted">
               <span>@mhaadi/svg</span>
-              <span class="text-[#2e2e2e]">/</span>
+              <span class="text-coal-4">/</span>
               <span class="text-acid">API Reference</span>
             </div>
             <h1 class="font-display text-6xl tracking-wider text-[#e8e8e8] leading-none mb-4">DOCS</h1>
@@ -570,16 +579,19 @@ const edgeCaseItems = [
     const mobileSidebarBtn = document.getElementById("docs-mobile-sidebar-btn");
     const mobileOverlay = document.getElementById("docs-mobile-overlay");
     const mobilePanel = document.getElementById("docs-mobile-panel");
+    const mobileChevron = document.getElementById("docs-mobile-sidebar-chevron");
 
     function openMobileSidebar() {
       mobileOverlay?.classList.add("open");
       mobilePanel?.classList.add("open");
       document.body.style.overflow = "hidden";
+      mobileChevron?.classList.add("rotate-180");
     }
     function closeMobileSidebar() {
       mobileOverlay?.classList.remove("open");
       mobilePanel?.classList.remove("open");
       document.body.style.overflow = "";
+      mobileChevron?.classList.remove("rotate-180");
     }
 
     mobileSidebarBtn?.addEventListener("click", openMobileSidebar);

@@ -51,7 +51,7 @@ const featureCards = [
 <Base title="BetterSVG — Inline SVG for React">
   <!-- NAV -->
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 lg:px-4 py-3 lg:py-4">
       <a href="/" class="flex items-center gap-2.5 group">
         <svg class="h-6 w-6 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
@@ -79,7 +79,7 @@ const featureCards = [
     </div>
 
     <!-- Mobile menu -->
-    <div id="mobile-menu" class="hidden border-t border-coal-2 px-6 py-4 md:hidden">
+    <div id="mobile-menu" class="hidden border-t border-coal-2 px-4 py-4 md:hidden">
       <div class="flex flex-col gap-4">
         <a href="/docs" class="text-sm text-zinc-muted hover:text-acid transition-colors">Docs</a>
         <a href="https://github.com/mhaadiabu/better-svg" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
@@ -89,7 +89,7 @@ const featureCards = [
   </nav>
 
   <!-- HERO -->
-  <section class="relative min-h-screen min-h-0 lg:min-h-screen overflow-x-hidden pt-16 lg:pt-20">
+  <section class="relative lg:min-h-screen overflow-x-hidden pt-16 lg:pt-20">
     <!-- Background grid -->
     <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-100 pointer-events-none"></div>
 
@@ -107,11 +107,11 @@ const featureCards = [
     <!-- Scan line effect -->
     <div class="scan-line"></div>
 
-    <div class="relative mx-auto max-w-6xl px-6 pt-10 pb-16 lg:pt-28 lg:pb-32">
+    <div class="relative mx-auto max-w-6xl px-4 pt-10 pb-16 lg:pt-28 lg:pb-32">
       <div class="grid lg:grid-cols-2 lg:gap-16 items-center">
 
         <!-- Left: Text -->
-        <div>
+        <div class="min-w-0">
           <!-- Badge -->
           <div class="mb-8 inline-flex items-center gap-2 border border-coal-4 bg-coal-1 px-3 py-1.5 animate-fade-in delay-100">
             <span class="h-1.5 w-1.5 bg-acid animate-pulse"></span>
@@ -163,7 +163,7 @@ const featureCards = [
         </div>
 
         <!-- Right: Code demo -->
-        <div class="mt-12 lg:mt-0 animate-fade-in delay-700">
+        <div class="mt-12 lg:mt-0 animate-fade-in delay-700 min-w-0">
           <div class="relative">
             <!-- Floating label -->
             <div class="absolute -top-3 right-4 z-10 border border-coal-4 bg-coal px-2 py-0.5 font-mono text-[10px] text-zinc-muted">
@@ -198,7 +198,7 @@ const featureCards = [
             </div>
 
             <!-- Animated SVG demo orb -->
-            <div class="mt-4 flex items-center justify-center gap-6 border border-coal-2 bg-coal-1 px-6 py-4">
+            <div class="mt-4 flex items-center justify-center gap-6 border border-coal-2 bg-coal-1 px-4 py-4">
               <span class="font-mono text-xs text-zinc-muted">rendered output →</span>
               <svg class="h-10 w-10 text-acid animate-float" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                 <rect x="6" y="6" width="52" height="52" rx="0" fill="currentColor" opacity="0.15"/>
@@ -227,7 +227,7 @@ const featureCards = [
         Array.from({ length: 2 }).map(() => (
           <span class="inline-flex shrink-0 gap-0">
             {marqueeItems.map((item) => (
-              <span class="inline-flex items-center gap-4 px-6 font-mono text-xs text-zinc-muted uppercase tracking-widest">
+              <span class="inline-flex items-center gap-4 px-4 font-mono text-xs text-zinc-muted uppercase tracking-widest">
                 <span class="h-1 w-1 bg-acid/40 shrink-0"></span>
                 {item}
               </span>
@@ -239,7 +239,7 @@ const featureCards = [
   </div>
 
   <!-- FEATURES GRID -->
-  <section id="features" class="mx-auto max-w-6xl px-6 py-16 lg:py-28">
+  <section id="features" class="mx-auto max-w-6xl px-4 py-16 lg:py-28">
     <div class="mb-10 lg:mb-16 flex items-end justify-between gap-4">
       <div>
         <p class="mb-2 font-mono text-xs tracking-widest text-acid uppercase">Why BetterSVG</p>
@@ -268,7 +268,7 @@ const featureCards = [
 
   <!-- SECURITY CALLOUT -->
   <section class="border-t border-coal-2">
-    <div class="mx-auto max-w-6xl px-6 py-12 lg:py-20">
+    <div class="mx-auto max-w-6xl px-4 py-12 lg:py-20">
       <div class="relative overflow-hidden border border-coal-4 bg-coal-1 p-8 lg:p-12">
         <!-- Corner accent -->
         <div class="absolute top-0 right-0 h-px w-24 bg-acid"></div>
@@ -292,7 +292,7 @@ const featureCards = [
               from every SVG. Only disable it when you fully trust the source.
             </p>
           </div>
-          <div class="code-block" data-lang="tsx">
+          <div class="code-block min-w-0" data-lang="tsx">
             <pre class="p-5 text-sm leading-7"><span class="token-comment">{"// ✓ Safe — untrusted source"}</span>
 <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
   <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>untrustedMarkup<span class="token-punct">{"}"}</span>
@@ -312,7 +312,7 @@ const featureCards = [
 
   <!-- CTA FOOTER BAND -->
   <section class="border-t border-coal-2 bg-[#0d0d0d]">
-    <div class="mx-auto max-w-6xl px-6 py-16 lg:py-24 text-center">
+    <div class="mx-auto max-w-6xl px-4 py-16 lg:py-24 text-center">
       <h2 class="font-display text-[clamp(3rem,8vw,6rem)] tracking-wider text-[#e8e8e8] leading-none">
         SHIP<br/><span class="text-acid acid-glow">BETTER SVG</span><span class="opacity-30"> TODAY.</span>
       </h2>
@@ -332,7 +332,7 @@ const featureCards = [
 
   <!-- FOOTER -->
   <footer class="border-t border-coal-2 bg-coal">
-    <div class="mx-auto max-w-6xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-2.5">
         <svg class="h-5 w-5 text-acid" viewBox="0 0 24 24" fill="none">
           <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>

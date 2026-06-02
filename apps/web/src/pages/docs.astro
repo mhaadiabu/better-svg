@@ -70,7 +70,7 @@ const edgeCaseItems = [
 >
   <!-- NAV -->
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 lg:px-4 py-3 lg:py-4">
       <a href="/" class="flex items-center gap-2.5 group">
         <svg class="h-5 w-5 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none">
           <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
@@ -108,12 +108,12 @@ const edgeCaseItems = [
     </nav>
   </div>
 
-  <div class="min-h-screen pt-[52px] lg:pt-[65px]">
+  <div class="min-h-screen pt-13 lg:pt-16.25 overflow-x-clip">
     <div class="mx-auto max-w-7xl px-4">
       <div class="flex gap-0">
 
         <!-- SIDEBAR -->
-        <aside class="hidden lg:block w-60 shrink-0 sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto border-r border-coal-2 py-8 pr-4">
+        <aside class="hidden lg:block w-60 shrink-0 sticky top-16.25 h-[calc(100vh-65px)] overflow-y-auto border-r border-coal-2 py-8 pr-4">
           <div class="mb-6">
             <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">@mhaadi/svg</p>
             <p class="px-3 text-xs text-zinc-muted">API Reference</p>
@@ -144,7 +144,7 @@ const edgeCaseItems = [
           </div>
 
           <!-- OVERVIEW -->
-          <section id="overview" class="mb-16 scroll-mt-20">
+          <section id="overview" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Overview</h2>
             <p class="docs-body">
               <code class="inline-code">@mhaadi/svg</code> exposes a single React component —{" "}
@@ -169,7 +169,7 @@ const edgeCaseItems = [
           </section>
 
           <!-- INSTALLATION -->
-          <section id="installation" class="mb-16 scroll-mt-20">
+          <section id="installation" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Installation</h2>
             <p class="docs-body">Install from npm with your package manager of choice:</p>
 
@@ -194,7 +194,7 @@ const edgeCaseItems = [
           </section>
 
           <!-- USAGE -->
-          <section id="usage" class="mb-16 scroll-mt-20">
+          <section id="usage" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Usage</h2>
             <p class="docs-body">Import the component from the React entry point:</p>
 
@@ -236,7 +236,7 @@ const edgeCaseItems = [
           </section>
 
           <!-- PROPS -->
-          <section id="props" class="mb-16 scroll-mt-20">
+          <section id="props" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Props</h2>
             <p class="docs-body">
               All standard <code class="inline-code">React.SVGProps{"<SVGSVGElement>"}</code> are supported and
@@ -278,7 +278,7 @@ const edgeCaseItems = [
           </section>
 
           <!-- SOURCE TYPES -->
-          <section id="source-types" class="mb-16 scroll-mt-20">
+          <section id="source-types" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Source Types</h2>
             <p class="docs-body">The component resolves SVG content from three source types, checked in this order:</p>
 
@@ -287,7 +287,7 @@ const edgeCaseItems = [
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <div class="flex items-start gap-4">
                   <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-acid/30 font-display text-base text-acid">1</div>
-                  <div class="flex-1">
+                  <div class="flex-1 min-w-0">
                     <h3 class="mb-1 font-semibold text-[#e8e8e8]">Inline SVG markup</h3>
                     <p class="text-sm text-zinc-muted mb-3">A raw SVG string starting with <code class="inline-code">{"<svg"}</code>. Parsed by DOMParser, sanitized, then inlined.</p>
                     <div class="code-block" data-lang="tsx">
@@ -301,7 +301,7 @@ const edgeCaseItems = [
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <div class="flex items-start gap-4">
                   <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-coal-4 font-display text-base text-zinc-muted">2</div>
-                  <div class="flex-1">
+                  <div class="flex-1 min-w-0">
                     <h3 class="mb-1 font-semibold text-[#e8e8e8]">data: URI</h3>
                     <p class="text-sm text-zinc-muted mb-3">A <code class="inline-code">data:image/svg+xml,…</code> or base64-encoded data URL. Decoded and inlined.</p>
                     <div class="code-block" data-lang="tsx">
@@ -315,7 +315,7 @@ const edgeCaseItems = [
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <div class="flex items-start gap-4">
                   <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-coal-4 font-display text-base text-zinc-muted">3</div>
-                  <div class="flex-1">
+                  <div class="flex-1 min-w-0">
                     <h3 class="mb-1 font-semibold text-[#e8e8e8]">Remote URL</h3>
                     <p class="text-sm text-zinc-muted mb-3">Any <code class="inline-code">https://</code> URL. Fetched, parsed, cached in memory by URL, then inlined.</p>
                     <div class="code-block" data-lang="tsx">
@@ -329,7 +329,7 @@ const edgeCaseItems = [
               <div class="rounded-none border border-acid/20 bg-acid/5 p-5">
                 <div class="flex items-start gap-4">
                   <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-acid/40 font-display text-base text-acid">★</div>
-                  <div class="flex-1">
+                  <div class="flex-1 min-w-0">
                     <h3 class="mb-1 font-semibold text-[#e8e8e8]">Local name (via <code class="inline-code text-sm">name</code> prop)</h3>
                     <p class="text-sm text-zinc-muted mb-3">
                       No path or URL needed. Provide a filename without extension.
@@ -346,7 +346,7 @@ const edgeCaseItems = [
           </section>
 
           <!-- SECURITY -->
-          <section id="security" class="mb-16 scroll-mt-20">
+          <section id="security" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Security</h2>
             <p class="docs-body">
               Sanitization is <strong class="text-[#e8e8e8]">enabled by default</strong> (<code class="inline-code">sanitize=true</code>).
@@ -382,7 +382,7 @@ const edgeCaseItems = [
           </section>
 
           <!-- EDGE CASES -->
-          <section id="edge-cases" class="mb-16 scroll-mt-20">
+          <section id="edge-cases" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Edge Cases</h2>
 
             <div class="mt-4 space-y-6">
@@ -399,7 +399,7 @@ const edgeCaseItems = [
           </section>
 
           <!-- EXAMPLES -->
-          <section id="examples" class="mb-16 scroll-mt-20">
+          <section id="examples" class="mb-16 scroll-mt-24">
             <h2 class="docs-heading">Examples</h2>
 
             <div class="space-y-8">
@@ -499,7 +499,7 @@ const edgeCaseItems = [
         </main>
 
         <!-- RIGHT TOC (optional desktop) -->
-        <div class="hidden lg:block w-48 shrink-0 sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto py-8 pl-6 border-l border-coal-2">
+        <div class="hidden lg:block w-48 shrink-0 sticky top-16.25 h-[calc(100vh-65px)] overflow-y-auto py-8 pl-6 border-l border-coal-2">
           <p class="mb-3 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
           <nav class="flex flex-col gap-0.5">
             {sections.map((s) => (
@@ -650,7 +650,7 @@ const edgeCaseItems = [
 
         // Wrap pre in scrollable body
         const pre = block.querySelector("pre");
-        if (pre) {
+        if (pre?.parentNode) {
           pre.classList.remove("overflow-x-auto");
           pre.style.overflowX = "";
           const body = document.createElement("div");

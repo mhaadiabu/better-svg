@@ -36,20 +36,20 @@ Svg(name: 'logo', width: 24, height: 24)
 
 ## API
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `src` | `String?` | Inline SVG, `data:` URL, or remote URL |
-| `name` | `String?` | Resolve a local SVG by name |
-| `width` | `double?` | Render width |
-| `height` | `double?` | Render height |
-| `color` | `Color?` | Override `currentColor` |
-| `cache` | `bool` (default `true`) | Cache remote SVG markup in memory |
-| `sanitize` | `bool` (default `true`) | Remove unsafe SVG content before rendering |
-| `loading` | `Widget?` | Render while loading or parsing |
-| `fallback` | `Widget?` | Render when loading fails |
-| `placeholderBuilder` | `Widget Function(BuildContext)?` | Alias for `loading` |
-| `fetchHeaders` | `Map<String, String>?` | Headers passed to the fetch client |
-| `onSvgLoad` | `void Function(String)?` | Called with the resolved markup |
-| `onSvgError` | `void Function(Object)?` | Called on fetch or parse failure |
-| `httpClient` | `http.Client?` | Inject a custom HTTP client (testing) |
-| `localResolver` | `String? Function(String)?` | Resolve a `name` to a URL or inline string |
+| Prop                 | Type                             | Description                                |
+| -------------------- | -------------------------------- | ------------------------------------------ |
+| `src`                | `String?`                        | Inline SVG, `data:` URL, or remote URL     |
+| `name`               | `String?`                        | Resolve a local SVG by name                |
+| `width`              | `double?`                        | Render width                               |
+| `height`             | `double?`                        | Render height                              |
+| `color`              | `Color?`                         | Override `currentColor`                    |
+| `cache`              | `bool` (default `true`)          | Cache remote SVG markup in memory          |
+| `sanitize`           | `bool` (default `true`)          | Remove unsafe SVG content before rendering |
+| `loading`            | `Widget?`                        | Render while loading or parsing            |
+| `fallback`           | `Widget?`                        | Render when loading fails                  |
+| `placeholderBuilder` | `Widget Function(BuildContext)?` | Alias for `loading`                        |
+| `fetchHeaders`       | `Map<String, String>?`           | Headers passed to the fetch client         |
+| `onSvgLoad`          | `void Function(String)?`         | Called with the resolved markup            |
+| `onSvgError`         | `void Function(Object)?`         | Called on fetch or parse failure           |
+| `httpClient`         | `http.Client?`                   | Inject a custom HTTP client (testing)      |
+| `localResolver`      | `String? Function(String)?`      | Resolve a `name` to a URL or inline string |

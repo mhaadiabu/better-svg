@@ -1,5 +1,13 @@
 import * as React from "react";
-import { resolveSvgSource, type SvgNameInput } from "./local-svg";
+import {
+  domParserAvailable,
+  hasUnsafeUrl,
+  isSafeUrl,
+  resolveMarkup,
+  resolveSource,
+  toCamelCase,
+  type SvgNameInput,
+} from "./core";
 
 type ParsedSvg = {
   attrs: Record<string, string>;
@@ -10,88 +18,6 @@ type ParsedSvg = {
 
 const svgCache = new Map<string, string>();
 
-const canUseDOM =
-  typeof window !== "undefined" &&
-  typeof document !== "undefined" &&
-  typeof DOMParser !== "undefined";
-
-const isInlineSvg = (source: string) => {
-  const trimmed = source.trim();
-  return trimmed.startsWith("<svg") || trimmed.startsWith("<?xml");
-};
-
-const decodeDataUrl = (source: string) => {
-  const match = source.match(/^data:image\/svg\+xml(?:;charset=[^;,]+)?(;base64)?,(.*)$/i);
-  if (!match) return null;
-  const isBase64 = Boolean(match[1]);
-  const data = match[2] ?? "";
-  try {
-    if (isBase64) {
-      if (typeof atob === "function") return atob(data);
-      return null;
-    }
-    return decodeURIComponent(data);
-  } catch {
-    return null;
-  }
-};
-
-const isSafeUrl = (value: string) => {
-  const trimmed = value.trim().replace(/^['"]|['"]$/g, "");
-  if (!trimmed || trimmed.startsWith("#")) return true;
-  if (trimmed.startsWith("//")) return true;
-  const schemeMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
-  if (!schemeMatch) return true;
-  const scheme = schemeMatch[1];
-  if (!scheme) return false;
-  const normalized = scheme.toLowerCase();
-  if (normalized === "http" || normalized === "https" || normalized === "blob") {
-    return true;
-  }
-  if (normalized === "data") return /^data:image\//i.test(trimmed);
-  return false;
-};
-
-const hasUnsafeUrl = (value: string) => {
-  const pattern = /url\(([^)]+)\)/gi;
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(value))) {
-    const raw = match[1]?.trim() ?? "";
-    if (!isSafeUrl(raw)) return true;
-  }
-  return false;
-};
-
-const sanitizeSvg = (root: SVGElement) => {
-  root
-    .querySelectorAll("script, foreignObject, iframe, object, embed")
-    .forEach((node) => node.remove());
-
-  const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-  let current: Element | null = root;
-  while (current) {
-    for (const attr of Array.from(current.attributes)) {
-      const name = attr.name;
-      if (name.startsWith("on")) {
-        current.removeAttribute(name);
-        continue;
-      }
-      if (name === "style" && hasUnsafeUrl(attr.value)) {
-        current.removeAttribute(name);
-        continue;
-      }
-      if (name === "href" || name === "xlink:href") {
-        if (!isSafeUrl(attr.value)) {
-          current.removeAttribute(name);
-        }
-      }
-    }
-    current = walker.nextNode() as Element | null;
-  }
-};
-
-const toCamelCase = (value: string) => value.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
-
 const parseInlineStyle = (styleText: string) => {
   const styles: Record<string, string> = {};
   for (const entry of styleText.split(";")) {
@@ -100,28 +26,46 @@ const parseInlineStyle = (styleText: string) => {
     const prop = rawProp.trim();
     const value = rawValue.join(":").trim();
     if (!prop || !value) continue;
-    if (prop.startsWith("--")) {
-      styles[prop] = value;
-      continue;
-    }
-    styles[toCamelCase(prop)] = value;
+    styles[prop.startsWith("--") ? prop : toCamelCase(prop)] = value;
   }
   return Object.keys(styles).length > 0 ? (styles as React.CSSProperties) : undefined;
 };
 
 const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => {
-  if (!canUseDOM) return null;
+  if (!domParserAvailable()) return null;
   const parser = new DOMParser();
   const parsedDocument = parser.parseFromString(markup, "image/svg+xml");
   if (parsedDocument.querySelector("parsererror")) return null;
   const svg = parsedDocument.querySelector("svg");
   if (!svg) return null;
-  if (sanitize) sanitizeSvg(svg);
+
+  if (sanitize) {
+    svg
+      .querySelectorAll("script, foreignObject, iframe, object, embed")
+      .forEach((node) => node.remove());
+    const walker = svg.ownerDocument.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
+    let current: Element | null = svg;
+    while (current) {
+      for (const attr of Array.from(current.attributes)) {
+        const name = attr.name;
+        if (name.startsWith("on")) {
+          current.removeAttribute(name);
+          continue;
+        }
+        if (name === "style" && hasUnsafeUrl(attr.value)) {
+          current.removeAttribute(name);
+          continue;
+        }
+        if (name === "href" || name === "xlink:href") {
+          if (!isSafeUrl(attr.value)) current.removeAttribute(name);
+        }
+      }
+      current = walker.nextNode() as Element | null;
+    }
+  }
 
   const attrs: Record<string, string> = {};
-  for (const attr of Array.from(svg.attributes)) {
-    attrs[attr.name] = attr.value;
-  }
+  for (const attr of Array.from(svg.attributes)) attrs[attr.name] = attr.value;
 
   const className = attrs.class;
   if (className) delete attrs.class;
@@ -136,52 +80,9 @@ const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => 
   };
 };
 
-const resolveMarkup = async (
-  source: string,
-  fetchOptions: RequestInit | undefined,
-  signal: AbortSignal,
-  cache: boolean,
-) => {
-  const trimmed = source.trim();
-  if (!trimmed) {
-    throw new Error("SVG src is required.");
-  }
-  if (isInlineSvg(trimmed)) return trimmed;
-  const dataSvg = decodeDataUrl(trimmed);
-  if (dataSvg) return dataSvg;
-  if (cache && svgCache.has(source)) {
-    return svgCache.get(source) ?? trimmed;
-  }
-
-  const headers = new Headers(fetchOptions?.headers);
-  if (!headers.has("Accept")) {
-    headers.set("Accept", "image/svg+xml");
-  }
-
-  const response = await fetch(source, {
-    ...fetchOptions,
-    headers,
-    signal,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch SVG: ${response.status} ${response.statusText}`);
-  }
-
-  const markup = await response.text();
-  if (cache) svgCache.set(source, markup);
-  return markup;
-};
-
 type SvgSourceProps =
-  | {
-      src: string;
-      name?: never;
-    }
-  | {
-      name: SvgNameInput;
-      src?: never;
-    };
+  | { src: string; name?: never }
+  | { name: SvgNameInput; src?: never };
 
 export type SvgProps = Omit<React.SVGProps<SVGSVGElement>, "children" | "dangerouslySetInnerHTML"> &
   SvgSourceProps & {
@@ -216,7 +117,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState<Error | null>(null);
 
-    const resolvedSource = React.useMemo(() => (name ? resolveSvgSource(name) : src), [name, src]);
+    const resolvedSource = React.useMemo(() => resolveSource(src, name), [name, src]);
 
     React.useEffect(() => {
       let active = true;
@@ -236,16 +137,34 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
         };
       }
 
-      resolveMarkup(resolvedSource, fetchOptions, controller.signal, cache)
+      const runWithCached = (markup: string) => {
+        const parsed = parseSvgMarkup(markup, sanitize);
+        if (!parsed) throw new Error("SVG markup is invalid or unavailable in this environment.");
+        setContent(parsed);
+        setIsLoading(false);
+        onSvgLoad?.(markup);
+      };
+
+      if (cache && svgCache.has(resolvedSource)) {
+        try {
+          runWithCached(svgCache.get(resolvedSource) ?? "");
+        } catch (err) {
+          if (!active) return;
+          const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
+          setError(normalized);
+          setIsLoading(false);
+          onSvgError?.(normalized);
+        }
+        return () => {
+          active = false;
+          controller.abort();
+        };
+      }
+
+      resolveMarkup(resolvedSource, { fetchOptions, signal: controller.signal, cache })
         .then((markup) => {
           if (!active) return;
-          const parsed = parseSvgMarkup(markup, sanitize);
-          if (!parsed) {
-            throw new Error("SVG markup is invalid or unavailable in this environment.");
-          }
-          setContent(parsed);
-          setIsLoading(false);
-          onSvgLoad?.(markup);
+          runWithCached(markup);
         })
         .catch((err) => {
           if (!active) return;

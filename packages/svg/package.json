@@ -23,6 +23,10 @@
       "types": "./dist/native.d.ts",
       "import": "./dist/native.js"
     },
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "import": "./dist/vue/index.js"
+    },
     "./svelte": {
       "types": "./dist/svelte/SVG.svelte.d.ts",
       "svelte": "./dist/svelte/SVG.svelte",
@@ -48,7 +52,8 @@
     "react-native": "^0.85.3",
     "react-native-svg": "^15.15.5",
     "svelte": "^5.56.3",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vue": "^3.5.35"
   },
   "peerDependencies": {
     "react": ">=18",
@@ -65,6 +70,9 @@
       "optional": true
     },
     "svelte": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   }

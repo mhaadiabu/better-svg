@@ -1,21 +1,16 @@
-# BetterSVG
+# @mhaadi/svg
 
-Inline SVG rendering for React, React Native, Vue, Svelte, and Flutter. Same
-mental model across frameworks: `src` or `name`, optional sanitization, loading
-and fallback states, and a shared core for URL safety and markup parsing.
+Inline SVG rendering for React, React Native, Vue, and Svelte from a single
+npm package. Same mental model across frameworks: `src` or `name`, optional
+sanitization, loading and fallback states, and a shared core for URL safety
+and markup parsing.
+
+For Flutter, see [`svg_flutter`](../flutter/README.md).
 
 ## Install
 
-React, React Native, Vue, and Svelte ship from a single npm package:
-
 ```bash
 pnpm add @mhaadi/svg
-```
-
-Flutter ships from a separate pub package:
-
-```bash
-flutter pub add svg_flutter
 ```
 
 ## React
@@ -94,58 +89,41 @@ Loading and fallback are exposed as named slots:
 </SVG>
 ```
 
-## Flutter
-
-```dart
-import 'package:svg_flutter/svg_flutter.dart';
-
-Svg(
-  src: 'https://cdn.example.com/icon.svg',
-  width: 24,
-  height: 24,
-  color: const Color(0xFF111827),
-)
-
-Svg(name: 'logo', width: 24, height: 24)
-```
-
-Renders via `flutter_svg`'s `SvgPicture.string`.
-
 ## API
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `src` | `string` | Inline SVG string, `data:` URL, or remote URL |
-| `name` | `string` | Resolve a local SVG by name |
-| `sanitize` | `boolean` (default `true`) | Remove unsafe SVG content before rendering |
-| `cache` | `boolean` (default `true`) | Cache remote SVG markup in memory |
-| `fetchOptions` | `RequestInit` | Options passed to `fetch` |
-| `loading` | slot / `ReactNode` / `Widget?` | Render while SVG is loading or parsing |
-| `fallback` | slot / `ReactNode` / `Widget?` | Render when loading fails |
-| `onSvgLoad` | function | Called when SVG markup is resolved |
-| `onSvgError` | function | Called when loading or parsing fails |
+| Prop           | Type                       | Description                                   |
+| -------------- | -------------------------- | --------------------------------------------- |
+| `src`          | `string`                   | Inline SVG string, `data:` URL, or remote URL |
+| `name`         | `SvgName`                  | Resolve a local SVG by name (no extension)    |
+| `sanitize`     | `boolean` (default `true`) | Remove unsafe SVG content before rendering    |
+| `cache`        | `boolean` (default `true`) | Cache remote SVG markup in memory             |
+| `fetchOptions` | `RequestInit`              | Options passed to `fetch`                     |
+| `loading`      | slot / `ReactNode`         | Render while SVG is loading or parsing        |
+| `fallback`     | slot / `ReactNode`         | Render when loading fails                     |
+| `onSvgLoad`    | function                   | Called when SVG markup is resolved            |
+| `onSvgError`   | function                   | Called when loading or parsing fails          |
 
-React Native and Flutter also accept `width`, `height`, and a `color` override
-for `currentColor`. React Native accepts `fill`, `stroke`, and `strokeWidth`
-overrides; Vue/Svelte accept the same via props.
+React Native also accepts `width`, `height`, `color`, `fill`, `stroke`, and
+`strokeWidth` overrides. Vue and Svelte accept the same set of root-level SVG
+attributes (including `width`, `height`, `viewBox`, `fill`, `stroke`,
+`role`, `aria-label`, `aria-hidden`).
 
 ## Security
 
-`sanitize` is enabled by default. Sanitization removes `<script>`, `<foreignObject>`,
-`<iframe>`, `<object>`, and `<embed>`, plus inline event handlers and unsafe
-`href`/`xlink:href` and CSS `url(...)` references. Keep it on for any untrusted
-SVG input.
+`sanitize` is enabled by default. Sanitization removes `<script>`,
+`<foreignObject>`, `<iframe>`, `<object>`, and `<embed>`, plus inline event
+handlers and unsafe `href`/`xlink:href` and CSS `url(...)` references. Keep
+it on for any untrusted SVG input.
 
 ## Subpath Exports
 
-| Import | Target |
-| --- | --- |
-| `@mhaadi/svg` | default React entry |
-| `@mhaadi/svg/react` | React 18+ |
+| Import                     | Target                            |
+| -------------------------- | --------------------------------- |
+| `@mhaadi/svg`              | default React entry               |
+| `@mhaadi/svg/react`        | React 18+                         |
 | `@mhaadi/svg/react-native` | React Native + `react-native-svg` |
-| `@mhaadi/svg/vue` | Vue 3 |
-| `@mhaadi/svg/svelte` | Svelte 5 (runes) |
-| `package:svg_flutter/svg_flutter.dart` | Flutter + `flutter_svg` |
+| `@mhaadi/svg/vue`          | Vue 3                             |
+| `@mhaadi/svg/svelte`       | Svelte 5 (runes)                  |
 
 ## Scripts
 
@@ -153,12 +131,3 @@ SVG input.
 - `pnpm run build`: Build all packages and apps
 - `pnpm run check-types`: Check TypeScript types
 - `pnpm run check`: Run Oxlint and Oxfmt
-
-## Repo Structure
-
-```text
-apps/web              Web demo
-packages/svg          @mhaadi/svg (React, RN, Vue, Svelte)
-packages/ui           Shared UI primitives
-packages/flutter      svg_flutter (Dart, flutter_svg)
-```

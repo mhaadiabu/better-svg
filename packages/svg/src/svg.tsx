@@ -80,9 +80,7 @@ const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => 
   };
 };
 
-type SvgSourceProps =
-  | { src: string; name?: never }
-  | { name: SvgNameInput; src?: never };
+type SvgSourceProps = { src: string; name?: never } | { name: SvgNameInput; src?: never };
 
 export type SvgProps = Omit<React.SVGProps<SVGSVGElement>, "children" | "dangerouslySetInnerHTML"> &
   SvgSourceProps & {

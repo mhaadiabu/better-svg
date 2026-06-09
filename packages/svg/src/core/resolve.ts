@@ -7,10 +7,7 @@ export type ResolveOptions = {
   cache: boolean;
 };
 
-export const resolveMarkup = async (
-  source: string,
-  options: ResolveOptions,
-): Promise<string> => {
+export const resolveMarkup = async (source: string, options: ResolveOptions): Promise<string> => {
   const trimmed = source.trim();
   if (!trimmed) throw new Error("SVG src is required.");
   if (isInlineSvg(trimmed)) return trimmed;

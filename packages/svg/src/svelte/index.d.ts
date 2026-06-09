@@ -6,4 +6,3 @@ export default SVG;
 
 export { createSvgController, parseSvgMarkup } from "./runtime";
 export type { SvelteSvgProps, SvgState, ParsedSvg } from "./runtime";
-

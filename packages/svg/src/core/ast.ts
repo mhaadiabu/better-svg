@@ -9,13 +9,7 @@ export type SvgNode = {
   text?: string;
 };
 
-const DANGEROUS_TAGS = new Set([
-  "script",
-  "foreignobject",
-  "iframe",
-  "object",
-  "embed",
-]);
+const DANGEROUS_TAGS = new Set(["script", "foreignobject", "iframe", "object", "embed"]);
 
 const VOID_ELEMENTS = new Set([
   "area",
@@ -44,17 +38,10 @@ const decodeEntities = (value: string) =>
     .replace(/&amp;/g, "&");
 
 const encodeAttr = (value: string) =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const encodeText = (value: string) =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export const domParserAvailable = () =>
   typeof window !== "undefined" &&
@@ -211,9 +198,7 @@ export const renderNode = (node: SvgNode): string => {
   if (node.tag === "#text") {
     return encodeText(node.text ?? "");
   }
-  const attrText = node.attrs
-    .map((attr) => ` ${attr.name}="${encodeAttr(attr.value)}"`)
-    .join("");
+  const attrText = node.attrs.map((attr) => ` ${attr.name}="${encodeAttr(attr.value)}"`).join("");
   if (VOID_ELEMENTS.has(node.tag.toLowerCase()) || node.children.length === 0) {
     return `<${node.tag}${attrText}/>`;
   }

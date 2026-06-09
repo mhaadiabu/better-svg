@@ -1,4 +1,13 @@
-import { defineComponent, ref, computed, watch, onBeforeUnmount, h, type PropType, type Slot } from "vue";
+import {
+  defineComponent,
+  ref,
+  computed,
+  watch,
+  onBeforeUnmount,
+  h,
+  type PropType,
+  type Slot,
+} from "vue";
 import {
   domParserAvailable,
   parseInlineStyle,
@@ -30,7 +39,9 @@ const toCamelCaseStyle = (style: Record<string, string>): Record<string, string>
 
 export { toCamelCaseStyle };
 
-const styleToText = (style: string | Record<string, string | number> | undefined): string | undefined => {
+const styleToText = (
+  style: string | Record<string, string | number> | undefined,
+): string | undefined => {
   if (!style) return undefined;
   if (typeof style === "string") return style;
   return Object.entries(style)
@@ -49,7 +60,9 @@ const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => 
   if (!svg) return null;
 
   if (sanitize) {
-    svg.querySelectorAll("script, foreignObject, iframe, object, embed").forEach((node) => node.remove());
+    svg
+      .querySelectorAll("script, foreignObject, iframe, object, embed")
+      .forEach((node) => node.remove());
     const walker = svg.ownerDocument.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
     let current: Element | null = svg;
     while (current) {
@@ -81,7 +94,9 @@ const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => 
   let style: string | undefined;
   if (attrs.style) {
     const parsed = toCamelCaseStyle(parseInlineStyle(attrs.style));
-    const text = Object.entries(parsed).map(([k, v]) => `${k}:${v}`).join(";");
+    const text = Object.entries(parsed)
+      .map(([k, v]) => `${k}:${v}`)
+      .join(";");
     if (text) style = text;
     delete attrs.style;
   }
@@ -102,8 +117,14 @@ export const SVG = defineComponent({
     fetchOptions: { type: Object as PropType<RequestInit | undefined>, default: undefined },
     cache: { type: Boolean, default: true },
     sanitize: { type: Boolean, default: true },
-    onSvgLoad: { type: Function as PropType<((markup: string) => void) | undefined>, default: undefined },
-    onSvgError: { type: Function as PropType<((error: Error) => void) | undefined>, default: undefined },
+    onSvgLoad: {
+      type: Function as PropType<((markup: string) => void) | undefined>,
+      default: undefined,
+    },
+    onSvgError: {
+      type: Function as PropType<((error: Error) => void) | undefined>,
+      default: undefined,
+    },
     width: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
     height: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
     viewBox: { type: String as PropType<string | undefined>, default: undefined },
@@ -111,9 +132,15 @@ export const SVG = defineComponent({
     stroke: { type: String as PropType<string | undefined>, default: undefined },
     role: { type: String as PropType<string | undefined>, default: undefined },
     ariaLabel: { type: String as PropType<string | undefined>, default: undefined },
-    ariaHidden: { type: [Boolean, String] as PropType<boolean | "true" | "false" | undefined>, default: undefined },
+    ariaHidden: {
+      type: [Boolean, String] as PropType<boolean | "true" | "false" | undefined>,
+      default: undefined,
+    },
     class: { type: String as PropType<string | undefined>, default: undefined },
-    style: { type: [String, Object] as PropType<string | Record<string, string | number> | undefined>, default: undefined },
+    style: {
+      type: [String, Object] as PropType<string | Record<string, string | number> | undefined>,
+      default: undefined,
+    },
   },
   emits: ["svg-load", "svg-error"],
   setup(props, { slots, emit }) {
@@ -206,7 +233,10 @@ export const SVG = defineComponent({
       if (props.width !== undefined) out.width = props.width;
       if (props.height !== undefined) out.height = props.height;
       if (props.viewBox !== undefined) out.viewBox = props.viewBox;
-      else if (!state.value.content.attrs.viewBox && (props.width !== undefined || props.height !== undefined)) {
+      else if (
+        !state.value.content.attrs.viewBox &&
+        (props.width !== undefined || props.height !== undefined)
+      ) {
         out.viewBox = state.value.content.attrs.viewBox ?? "0 0 24 24";
       }
       if (props.fill !== undefined) out.fill = props.fill;

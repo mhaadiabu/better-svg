@@ -114,10 +114,7 @@ export const createSvgController = () => {
   let cache = svgCache;
   let lastSource: string | null = null;
 
-  const load = async (
-    props: SvelteSvgProps,
-    update: (state: SvgState) => void,
-  ) => {
+  const load = async (props: SvelteSvgProps, update: (state: SvgState) => void) => {
     if (current) current.abort();
     const controller = new AbortController();
     current = controller;

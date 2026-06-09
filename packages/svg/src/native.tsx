@@ -1,7 +1,35 @@
 import * as React from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
-import { Svg, G, Path, Rect, Circle, Ellipse, Line, Polyline, Polygon, Text as SvgText, TSpan, Defs, LinearGradient, RadialGradient, Stop, ClipPath, Mask, Use, Symbol as SvgSymbol, Image as SvgImage } from "react-native-svg";
-import { parseAndSanitize, resolveMarkup, resolveSource, type SvgAttribute, type SvgNameInput, type SvgNode } from "./core";
+import {
+  Svg,
+  G,
+  Path,
+  Rect,
+  Circle,
+  Ellipse,
+  Line,
+  Polyline,
+  Polygon,
+  Text as SvgText,
+  TSpan,
+  Defs,
+  LinearGradient,
+  RadialGradient,
+  Stop,
+  ClipPath,
+  Mask,
+  Use,
+  Symbol as SvgSymbol,
+  Image as SvgImage,
+} from "react-native-svg";
+import {
+  parseAndSanitize,
+  resolveMarkup,
+  resolveSource,
+  type SvgAttribute,
+  type SvgNameInput,
+  type SvgNode,
+} from "./core";
 
 const TAG_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
   svg: Svg as unknown as React.ComponentType<Record<string, unknown>>,
@@ -112,7 +140,10 @@ type StyleOverride = {
   color?: string;
 };
 
-const buildStyle = (attrs: SvgAttribute[], override: StyleOverride): Record<string, string | number> | undefined => {
+const buildStyle = (
+  attrs: SvgAttribute[],
+  override: StyleOverride,
+): Record<string, string | number> | undefined => {
   const styleAttr = attrs.find((a) => a.name === "style");
   const style: Record<string, string | number> = {};
   if (styleAttr) {
@@ -196,9 +227,7 @@ export const renderSvgNode = (
   );
 };
 
-type SvgSourceProps =
-  | { src: string; name?: never }
-  | { name: SvgNameInput; src?: never };
+type SvgSourceProps = { src: string; name?: never } | { name: SvgNameInput; src?: never };
 
 export type NativeSvgProps = SvgSourceProps & {
   width?: number | string;

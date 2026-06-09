@@ -454,6 +454,36 @@ code {
   border-left-color: #b9ff4b;
 }
 
+/* Framework picker (sidebar) */
+.fw-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8125rem;
+  color: #6b6b6b;
+  border-left: 2px solid transparent;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+.fw-picker-item:hover {
+  color: #e8e8e8;
+  background: rgba(185, 255, 75, 0.04);
+}
+.fw-picker-item.active {
+  color: #b9ff4b;
+  border-left-color: #b9ff4b;
+  background: rgba(185, 255, 75, 0.04);
+}
+
 /* Glow effect */
 .acid-glow {
   text-shadow: 0 0 30px rgba(185, 255, 75, 0.4);

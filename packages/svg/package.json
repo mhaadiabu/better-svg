@@ -1,7 +1,7 @@
 {
   "name": "@mhaadi/svg",
   "version": "0.1.1",
-  "description": "Inline SVG rendering for React.",
+  "description": "Inline SVG rendering for React, React Native, Vue, and Svelte.",
   "files": [
     "dist"
   ],
@@ -17,6 +17,10 @@
     "./react": {
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
+    },
+    "./react-native": {
+      "types": "./dist/native.d.ts",
+      "import": "./dist/native.js"
     }
   },
   "publishConfig": {
@@ -30,12 +34,26 @@
     "@better-svg/config": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/react-native": "^0.73.0",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-native": "^0.85.3",
+    "react-native-svg": "^15.15.5",
     "typescript": "catalog:"
   },
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    },
+    "react-native-svg": {
+      "optional": true
+    }
   }
 }

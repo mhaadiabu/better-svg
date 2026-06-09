@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - "!**/flutter"
 allowBuilds:
   esbuild: true
   msw: true

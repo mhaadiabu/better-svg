@@ -454,34 +454,37 @@ code {
   border-left-color: #b9ff4b;
 }
 
-/* Framework picker (sidebar) */
-.fw-picker-item {
+/* Framework picker trigger (shared between SSR fallback and hydrated React island) */
+.fw-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   width: 100%;
-  padding: 6px 12px;
   font-family: "JetBrains Mono", monospace;
   font-size: 0.8125rem;
-  color: #6b6b6b;
-  border-left: 2px solid transparent;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    color 0.2s,
-    border-color 0.2s,
-    background 0.2s;
-}
-.fw-picker-item:hover {
   color: #e8e8e8;
-  background: rgba(185, 255, 75, 0.04);
+  background-color: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 0;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
 }
-.fw-picker-item.active {
-  color: #b9ff4b;
-  border-left-color: #b9ff4b;
-  background: rgba(185, 255, 75, 0.04);
+.fw-trigger-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+.fw-trigger-chevron {
+  color: #6b6b6b;
+  transition: transform 0.15s;
+  flex-shrink: 0;
 }
 
 /* Glow effect */

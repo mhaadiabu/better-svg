@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { FrameworkSelect } from "../components/FrameworkSelect.tsx";
 
 const frameworks = [
   { id: "react", label: "React", sub: "@mhaadi/svg/react" },
@@ -66,19 +67,23 @@ const flutterNotes = [
   <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
   <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden">
     <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
-    <div class="flex flex-col gap-0.5 mb-5" role="tablist" aria-label="Framework (mobile)">
-      {frameworks.map((fw) => (
-        <button
-          type="button"
-          role="tab"
-          data-fw={fw.id}
-          class="fw-picker-item"
-          aria-selected="false"
-        >
-          <span>{fw.label}</span>
-          <span class="text-[10px] text-zinc-muted">{fw.sub}</span>
-        </button>
-      ))}
+    <div class="px-3 mb-5">
+      <FrameworkSelect
+        client:only="react"
+        frameworks={frameworks}
+        initial="react"
+      >
+        <div slot="fallback" class="fw-trigger" aria-hidden="true">
+          <span class="fw-trigger-content">
+            <span class="text-[#e8e8e8]">React</span>
+            <span class="text-zinc-muted">·</span>
+            <span class="text-zinc-muted truncate">@mhaadi/svg/react</span>
+          </span>
+          <svg class="fw-trigger-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </div>
+      </FrameworkSelect>
     </div>
 
     <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
@@ -113,50 +118,47 @@ const flutterNotes = [
         <path d="m6 9 6 6 6-6"/>
       </svg>
     </button>
-    <div class="mx-auto max-w-7xl px-4">
-      <div class="flex gap-0">
-
-        <!-- SIDEBAR -->
-        <aside class="hidden lg:block w-60 shrink-0 sticky top-16.25 h-[calc(100vh-65px)] overflow-y-auto border-r border-coal-2 py-8 pr-4">
+    <!-- LEFT SIDEBAR (fixed) -->
+    <aside class="hidden lg:block fixed left-0 top-16.25 bottom-0 w-60 overflow-y-auto border-r border-coal-2 py-8 pr-4">
+      <div class="mx-auto max-w-7xl px-4 flex flex-col h-full">
+        <div>
           <div class="mb-6">
             <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">@mhaadi/svg</p>
             <p class="px-3 text-xs text-zinc-muted">API Reference</p>
           </div>
 
           <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
-          <div class="flex flex-col gap-0.5 mb-6" role="tablist" aria-label="Framework">
-            {frameworks.map((fw) => (
-              <button
-                type="button"
-                role="tab"
-                data-fw={fw.id}
-                class="fw-picker-item"
-                aria-selected="false"
-              >
-                <span>{fw.label}</span>
-                <span class="text-[10px] text-zinc-muted">{fw.sub}</span>
-              </button>
-            ))}
+          <div class="px-3 mb-6">
+            <FrameworkSelect
+              client:only="react"
+              frameworks={frameworks}
+              initial="react"
+            >
+              <div slot="fallback" class="fw-trigger" aria-hidden="true">
+                <span class="fw-trigger-content">
+                  <span class="text-[#e8e8e8]">React</span>
+                  <span class="text-zinc-muted">·</span>
+                  <span class="text-zinc-muted truncate">@mhaadi/svg/react</span>
+                </span>
+                <svg class="fw-trigger-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
+              </div>
+            </FrameworkSelect>
           </div>
-
-          <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
-          <nav class="flex flex-col gap-0.5">
-            {sections.map((s) => (
-              <a href={`#${s.id}`} class="sidebar-link" data-section={s.id}>
-                {s.label}
-              </a>
-            ))}
-          </nav>
 
           <!-- Version badge -->
           <div class="mt-8 mx-3 rounded-none border border-coal-4 bg-coal-1 p-3">
             <p class="font-mono text-[10px] text-[#3a3a3a] mb-1">CURRENT VERSION</p>
             <p class="font-mono text-sm text-acid">v0.1.1</p>
           </div>
-        </aside>
+        </div>
+      </div>
+    </aside>
 
-        <!-- CONTENT -->
-        <main class="flex-1 min-w-0 px-4 lg:px-10 py-8 lg:py-12">
+    <!-- CONTENT (with left/right sidebar offsets) -->
+    <div class="lg:pl-60 lg:pr-48">
+      <main class="min-w-0 max-w-4xl mx-auto px-4 lg:px-10 py-8 lg:py-12">
 
           <!-- Page header -->
           <div class="mb-10 lg:mb-16 pb-8 border-b border-coal-2">
@@ -1044,20 +1046,19 @@ const flutterNotes = [
             </a>
           </div>
         </main>
-
-        <!-- RIGHT TOC (optional desktop) -->
-        <div class="hidden lg:block w-48 shrink-0 sticky top-16.25 h-[calc(100vh-65px)] overflow-y-auto py-8 pl-6 border-l border-coal-2">
-          <p class="mb-3 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
-          <nav class="flex flex-col gap-0.5">
-            {sections.map((s) => (
-              <a href={`#${s.id}`} class="sidebar-link text-xs" data-toc={s.id}>
-                {s.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-
       </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR (fixed) -->
+    <div class="hidden lg:block fixed right-0 top-16.25 bottom-0 w-48 overflow-y-auto py-8 pl-6 border-l border-coal-2">
+      <p class="mb-3 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
+      <nav class="flex flex-col gap-0.5">
+        {sections.map((s) => (
+          <a href={`#${s.id}`} class="sidebar-link text-xs" data-toc={s.id}>
+            {s.label}
+          </a>
+        ))}
+      </nav>
     </div>
   </div>
 </Base>
@@ -1094,10 +1095,7 @@ const flutterNotes = [
   function initDocsPage() {
     cleanup();
 
-    // ── Framework switcher (sidebar) ──────────────────────────────
-    const fwTabs = Array.from(
-      document.querySelectorAll<HTMLButtonElement>(".fw-picker-item"),
-    );
+    // ── Framework (React island dispatches 'framework-change') ────
     const fwGroups = Array.from(
       document.querySelectorAll<HTMLElement>("[data-fw-show]"),
     );
@@ -1108,15 +1106,11 @@ const flutterNotes = [
       svelte: "Svelte",
       flutter: "Flutter",
     };
+    const validFwIds = Object.keys(fwLabels);
     const mobileCurrent = document.getElementById("docs-mobile-current-fw");
 
-    const setFramework = (fw: string) => {
-      if (!fw) return;
-      fwTabs.forEach((tab) => {
-        const active = tab.dataset.fw === fw;
-        tab.classList.toggle("active", active);
-        tab.setAttribute("aria-selected", active ? "true" : "false");
-      });
+    const applyFramework = (fw: string) => {
+      if (!fw || !validFwIds.includes(fw)) return;
       fwGroups.forEach((el) => {
         const allowed = (el.dataset.fwShow || "").split(/\s+/).filter(Boolean);
         el.classList.toggle("hidden", !allowed.includes(fw));
@@ -1124,26 +1118,25 @@ const flutterNotes = [
       if (mobileCurrent) {
         mobileCurrent.textContent = fwLabels[fw] || fw;
       }
-      try {
-        localStorage.setItem("bettersvg:framework", fw);
-      } catch {}
     };
 
-    // Restore preference
+    // Pre-apply from localStorage to avoid flash before React hydrates
     let initialFw = "react";
     try {
       const saved = localStorage.getItem("bettersvg:framework");
-      if (saved && fwTabs.some((t) => t.dataset.fw === saved)) initialFw = saved;
+      if (saved && validFwIds.includes(saved)) initialFw = saved;
     } catch {}
-    setFramework(initialFw);
+    applyFramework(initialFw);
 
-    fwTabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        setFramework(tab.dataset.fw || "react");
-        // Close mobile panel after picking
-        closeMobileSidebar();
-      });
-    });
+    const onFrameworkChange = (e: Event) => {
+      const id = (e as CustomEvent<{ id: string }>).detail?.id;
+      if (id) {
+        applyFramework(id);
+        // Close the mobile panel after picking on small screens
+        if (window.innerWidth < 1024) closeMobileSidebar();
+      }
+    };
+    window.addEventListener("framework-change", onFrameworkChange);
 
     // ── Active sidebar highlight on scroll ────────────────────────
     const sectionEls = document.querySelectorAll("section[id]");
@@ -1286,6 +1279,7 @@ const flutterNotes = [
 
     cleanup = () => {
       window.removeEventListener("scroll", updateActive);
+      window.removeEventListener("framework-change", onFrameworkChange);
       mobileSidebarBtn?.removeEventListener("click", openMobileSidebar);
       mobileOverlay?.removeEventListener("click", closeMobileSidebar);
       mobileLinks.forEach((link) => {

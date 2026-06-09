@@ -2,53 +2,64 @@
 import Base from "../layouts/Base.astro";
 
 const marqueeItems = [
-  "inline SVG",
+  "React",
+  "React Native",
+  "Vue",
+  "Svelte",
+  "Flutter",
+  "inline rendering",
   "zero wrappers",
-  "full sanitization",
+  "sanitized by default",
   "remote URLs",
   "local names",
   "data: URIs",
-  "caching",
-  "React props",
-  "TypeScript",
-  "zero deps",
+  "memory caching",
+  "loading & fallback",
+];
+
+const frameworkBadges = [
+  { name: "React", sub: "@mhaadi/svg/react" },
+  { name: "React Native", sub: "@mhaadi/svg/react-native" },
+  { name: "Vue", sub: "@mhaadi/svg/vue" },
+  { name: "Svelte", sub: "@mhaadi/svg/svelte" },
+  { name: "Flutter", sub: "svg_flutter" },
 ];
 
 const featureCards = [
   {
     icon: `<path d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.728 12.728.707.707M1 12h2m18 0h2M4.22 19.78l.707-.707M18.071 5.929l.707-.707" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
     title: "Inline rendering",
-    desc: "Renders actual <svg> elements — not <img> tags — so CSS currentColor, animations, and JavaScript all work natively.",
+    desc: "Renders actual <svg> elements — not <img> tags — so CSS currentColor, animations, and JavaScript all work natively across every adapter.",
   },
   {
     icon: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
     title: "Built-in sanitization",
-    desc: "Strips <script>, event handlers, unsafe hrefs, and embedded HTML by default. Safely render untrusted SVG content.",
+    desc: "Strips <script>, event handlers, unsafe hrefs, and embedded HTML by default. Safely render untrusted SVG content in any framework.",
   },
   {
     icon: `<path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" stroke="currentColor" stroke-width="1.5"/><polyline points="13 2 13 9 20 9" stroke="currentColor" stroke-width="1.5"/>`,
-    title: "Three source types",
-    desc: "Pass an inline SVG string, a data: URL, a remote HTTPS URL, or just a local name. One component, all cases.",
+    title: "Four source types",
+    desc: "Pass an inline SVG string, a data: URL, a remote HTTPS URL, or just a local name. One mental model, every source.",
   },
   {
     icon: `<ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" stroke-width="1.5"/><path d="M2 12c0 2.21 4.477 4 10 4s10-1.79 10-4" stroke="currentColor" stroke-width="1.5"/><path d="M2 16c0 2.21 4.477 4 10 4s10-1.79 10-4" stroke="currentColor" stroke-width="1.5"/>`,
     title: "Memory caching",
-    desc: "Remote SVGs are cached in-memory by URL. Eliminates duplicate network requests on re-render.",
+    desc: "Remote SVGs are cached in-memory by URL. Eliminates duplicate network requests on re-render in every adapter.",
   },
   {
     icon: `<polyline points="16 18 22 12 16 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="8 6 2 12 8 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
-    title: "Full React props",
-    desc: "All SVGProps<SVGSVGElement> are forwarded and override markup attributes. className, onClick, aria-*, everything.",
+    title: "Full prop forwarding",
+    desc: "Every standard SVG attribute is forwarded and overrides markup attributes. className, onClick, aria-*, width, height, color — everything.",
   },
   {
     icon: `<path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
     title: "Loading & fallback",
-    desc: "Render a loading node while fetching and a fallback node on error. Smooth UX for async SVGs.",
+    desc: "Render a loading state while fetching and a fallback state on error. Slots in Vue, snippets in Svelte, Widgets in Flutter.",
   },
 ];
 ---
 
-<Base title="BetterSVG — Inline SVG for React">
+<Base title="BetterSVG — Inline SVG for React, React Native, Vue, Svelte, Flutter">
   <!-- NAV -->
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 lg:px-4 py-3 lg:py-4">
@@ -127,8 +138,9 @@ const featureCards = [
 
           <!-- Sub -->
           <p class="mt-8 max-w-md text-base text-zinc-muted leading-relaxed animate-fade-up delay-400">
-            Resolve, sanitize, and render SVGs inline in React.
-            From local names to remote URLs — with full control over props, caching, and security.
+            Resolve, sanitize, and render SVGs inline in React, React Native, Vue,
+            Svelte, and Flutter. From local names to remote URLs — with full control
+            over props, caching, and security.
           </p>
 
           <!-- Install snippet -->
@@ -136,6 +148,21 @@ const featureCards = [
             <div class="code-block max-w-sm" data-lang="sh">
               <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">pnpm add @mhaadi/svg</span></pre>
             </div>
+            <div class="code-block max-w-sm mt-2" data-lang="sh">
+              <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">flutter pub add svg_flutter</span></pre>
+            </div>
+          </div>
+
+          <!-- Framework pills -->
+          <div class="mt-6 flex flex-wrap items-center gap-2 animate-fade-up delay-[650ms]">
+            {frameworkBadges.map((fw) => (
+              <div class="flex items-center gap-2 border border-coal-4 bg-coal-1 px-2.5 py-1 font-mono text-[11px]">
+                <span class="h-1 w-1 bg-acid shrink-0"></span>
+                <span class="text-[#e8e8e8]">{fw.name}</span>
+                <span class="text-zinc-muted">·</span>
+                <span class="text-zinc-muted">{fw.sub}</span>
+              </div>
+            ))}
           </div>
 
           <!-- CTA buttons -->
@@ -238,6 +265,145 @@ const featureCards = [
     </div>
   </div>
 
+  <!-- FRAMEWORKS -->
+  <section id="frameworks" class="border-y border-coal-2 bg-coal-1">
+    <div class="mx-auto max-w-6xl px-4 py-16 lg:py-24">
+      <div class="mb-10 lg:mb-14 flex items-end justify-between gap-4">
+        <div>
+          <p class="mb-2 font-mono text-xs tracking-widest text-acid uppercase">Five adapters, one mental model</p>
+          <h2 class="font-display text-5xl tracking-wider text-[#e8e8e8]">FRAMEWORKS</h2>
+        </div>
+        <a href="/docs" class="hidden sm:flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
+          Read the API
+          <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid gap-px bg-coal-2 sm:grid-cols-2 lg:grid-cols-5 overflow-hidden border border-coal-2">
+        {frameworkBadges.map((fw) => (
+          <a href="/docs" class="group bg-coal p-6 hover:bg-coal-1 transition-colors flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <span class="h-1.5 w-1.5 bg-acid shrink-0"></span>
+              <span class="font-mono text-[10px] tracking-widest text-zinc-muted uppercase">Adapter</span>
+            </div>
+            <h3 class="font-display text-2xl tracking-wider text-[#e8e8e8]">{fw.name}</h3>
+            <code class="font-mono text-[11px] text-zinc-muted break-all">{fw.sub}</code>
+            <div class="mt-auto flex items-center gap-1.5 font-mono text-[11px] text-zinc-muted group-hover:text-acid transition-colors">
+              Read docs
+              <svg class="h-3 w-3 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- Code preview per framework -->
+      <div class="mt-10 lg:mt-14 grid gap-4 lg:grid-cols-2">
+        <!-- React -->
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <span class="h-1 w-4 bg-acid rounded-none"></span>
+            <h3 class="font-semibold text-[#e8e8e8]">React</h3>
+            <code class="font-mono text-[11px] text-zinc-muted">@mhaadi/svg/react</code>
+          </div>
+          <div class="code-block" data-lang="tsx">
+            <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+
+<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
+  <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-current"</span>
+  <span class="token-prop">loading</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">"Loading…"</span><span class="token-punct">{"}"}</span>
+  <span class="token-prop">fallback</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">"Failed"</span><span class="token-punct">{"}"}</span>
+<span class="token-punct">{"/>"}</span></pre>
+          </div>
+        </div>
+
+        <!-- React Native -->
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <span class="h-1 w-4 bg-acid rounded-none"></span>
+            <h3 class="font-semibold text-[#e8e8e8]">React Native</h3>
+            <code class="font-mono text-[11px] text-zinc-muted">@mhaadi/svg/react-native</code>
+          </div>
+          <div class="code-block" data-lang="tsx">
+            <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react-native"</span><span class="token-punct">;</span>
+
+<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+  <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span>
+  <span class="token-prop">width</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
+  <span class="token-prop">height</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
+  <span class="token-prop">color</span><span class="token-punct">=</span><span class="token-string">"#111827"</span>
+<span class="token-punct">{"/>"}</span></pre>
+          </div>
+        </div>
+
+        <!-- Vue -->
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <span class="h-1 w-4 bg-acid rounded-none"></span>
+            <h3 class="font-semibold text-[#e8e8e8]">Vue 3</h3>
+            <code class="font-mono text-[11px] text-zinc-muted">@mhaadi/svg/vue</code>
+          </div>
+          <div class="code-block" data-lang="vue">
+            <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">setup</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
+  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/vue"</span><span class="token-punct">;</span>
+<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+
+<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
+  <span class="token-prop">:width</span><span class="token-punct">=</span><span class="token-string">24</span>
+  <span class="token-prop">:height</span><span class="token-punct">=</span><span class="token-string">24</span>
+<span class="token-punct">{"/>"}</span></pre>
+          </div>
+        </div>
+
+        <!-- Svelte -->
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <span class="h-1 w-4 bg-acid rounded-none"></span>
+            <h3 class="font-semibold text-[#e8e8e8]">Svelte 5</h3>
+            <code class="font-mono text-[11px] text-zinc-muted">@mhaadi/svg/svelte</code>
+          </div>
+          <div class="code-block" data-lang="svelte">
+            <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
+  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/svelte"</span><span class="token-punct">;</span>
+<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+
+<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
+  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
+  <span class="token-prop">width</span><span class="token-punct">=</span><span class="token-string">"24"</span>
+  <span class="token-prop">height</span><span class="token-punct">=</span><span class="token-string">"24"</span>
+<span class="token-punct">{"/>"}</span></pre>
+          </div>
+        </div>
+
+        <!-- Flutter (full width) -->
+        <div class="lg:col-span-2">
+          <div class="mb-3 flex items-center gap-2">
+            <span class="h-1 w-4 bg-acid rounded-none"></span>
+            <h3 class="font-semibold text-[#e8e8e8]">Flutter</h3>
+            <code class="font-mono text-[11px] text-zinc-muted">svg_flutter</code>
+          </div>
+          <div class="code-block" data-lang="dart">
+            <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-string">'package:svg_flutter/svg_flutter.dart'</span><span class="token-punct">;</span>
+
+<span class="token-component">Svg</span><span class="token-punct">(</span>
+  <span class="token-prop">src</span><span class="token-punct">:</span> <span class="token-string">'https://cdn.example.com/icon.svg'</span><span class="token-punct">,</span>
+  <span class="token-prop">width</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
+  <span class="token-prop">height</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
+  <span class="token-prop">color</span><span class="token-punct">:</span> <span class="token-keyword">const</span> <span class="token-component">Color</span><span class="token-punct">(</span><span class="token-string">0xFF111827</span><span class="token-punct">),</span>
+  <span class="token-prop">loading</span><span class="token-punct">:</span> <span class="token-keyword">const</span> <span class="token-component">CircularProgressIndicator</span><span class="token-punct">(),</span>
+  <span class="token-prop">fallback</span><span class="token-punct">:</span> <span class="token-keyword">const</span> <span class="token-component">Icon</span><span class="token-punct">(</span><span class="token-component">Icons</span><span class="token-punct">.</span>broken_image<span class="token-punct">),</span>
+<span class="token-punct">)</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FEATURES GRID -->
   <section id="features" class="mx-auto max-w-6xl px-4 py-16 lg:py-28">
     <div class="mb-10 lg:mb-16 flex items-end justify-between gap-4">
@@ -260,6 +426,7 @@ const featureCards = [
             <svg class="h-5 w-5 text-acid" viewBox="0 0 24 24" fill="none" set:html={feature.icon} />
           </div>
           <h3 class="mb-2 font-semibold text-[#e8e8e8]">{feature.title}</h3>
+          <p class="text-sm text-zinc-muted leading-relaxed">{feature.desc}</p>
           <p class="text-sm text-zinc-muted leading-relaxed">{feature.desc}</p>
         </div>
       ))}
@@ -317,7 +484,8 @@ const featureCards = [
         SHIP<br/><span class="text-acid acid-glow">BETTER SVG</span><span class="opacity-30"> TODAY.</span>
       </h2>
       <p class="mt-6 mx-auto max-w-md text-zinc-muted">
-        One component. Every SVG format. Zero compromises on security or performance.
+        One mental model. Five frameworks. Every SVG format. Zero compromises on
+        security or performance.
       </p>
       <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
         <a href="/docs" class="bg-acid px-8 py-3 font-semibold text-coal hover:bg-acid-dim transition-colors">

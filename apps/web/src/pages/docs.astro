@@ -1,14 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
-import { FrameworkSelect } from "../components/FrameworkSelect.tsx";
-
-const frameworks = [
-  { id: "react", label: "React", sub: "@mhaadi/svg/react" },
-  { id: "react-native", label: "React Native", sub: "@mhaadi/svg/react-native" },
-  { id: "vue", label: "Vue", sub: "@mhaadi/svg/vue" },
-  { id: "svelte", label: "Svelte", sub: "@mhaadi/svg/svelte" },
-  { id: "flutter", label: "Flutter", sub: "svg_flutter" },
-];
+import FrameworkPicker from "../components/FrameworkPicker.astro";
+import { frameworks } from "../data/frameworks";
 
 const sections = [
   { id: "overview", label: "Overview" },
@@ -68,22 +61,11 @@ const flutterNotes = [
   <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden">
     <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
     <div class="px-3 mb-5">
-      <FrameworkSelect
-        client:only="react"
+      <FrameworkPicker
         frameworks={frameworks}
         initial="react"
-      >
-        <div slot="fallback" class="fw-trigger" aria-hidden="true">
-          <span class="fw-trigger-content">
-            <span class="text-[#e8e8e8]">React</span>
-            <span class="text-zinc-muted">·</span>
-            <span class="text-zinc-muted truncate">@mhaadi/svg/react</span>
-          </span>
-          <svg class="fw-trigger-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m6 9 6 6 6-6"/>
-          </svg>
-        </div>
-      </FrameworkSelect>
+        id="fw-picker-mobile"
+      />
     </div>
 
     <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
@@ -129,22 +111,11 @@ const flutterNotes = [
 
           <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
           <div class="px-3 mb-6">
-            <FrameworkSelect
-              client:only="react"
+            <FrameworkPicker
               frameworks={frameworks}
               initial="react"
-            >
-              <div slot="fallback" class="fw-trigger" aria-hidden="true">
-                <span class="fw-trigger-content">
-                  <span class="text-[#e8e8e8]">React</span>
-                  <span class="text-zinc-muted">·</span>
-                  <span class="text-zinc-muted truncate">@mhaadi/svg/react</span>
-                </span>
-                <svg class="fw-trigger-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </div>
-            </FrameworkSelect>
+              id="fw-picker-desktop"
+            />
           </div>
 
           <!-- Version badge -->
@@ -1095,48 +1066,9 @@ const flutterNotes = [
   function initDocsPage() {
     cleanup();
 
-    // ── Framework (React island dispatches 'framework-change') ────
-    const fwGroups = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-fw-show]"),
-    );
-    const fwLabels: Record<string, string> = {
-      react: "React",
-      "react-native": "React Native",
-      vue: "Vue",
-      svelte: "Svelte",
-      flutter: "Flutter",
-    };
-    const validFwIds = Object.keys(fwLabels);
-    const mobileCurrent = document.getElementById("docs-mobile-current-fw");
-
-    const applyFramework = (fw: string) => {
-      if (!fw || !validFwIds.includes(fw)) return;
-      fwGroups.forEach((el) => {
-        const allowed = (el.dataset.fwShow || "").split(/\s+/).filter(Boolean);
-        el.classList.toggle("hidden", !allowed.includes(fw));
-      });
-      if (mobileCurrent) {
-        mobileCurrent.textContent = fwLabels[fw] || fw;
-      }
-    };
-
-    // Pre-apply from localStorage to avoid flash before React hydrates
-    let initialFw = "react";
-    try {
-      const saved = localStorage.getItem("bettersvg:framework");
-      if (saved && validFwIds.includes(saved)) initialFw = saved;
-    } catch {}
-    applyFramework(initialFw);
-
-    const onFrameworkChange = (e: Event) => {
-      const id = (e as CustomEvent<{ id: string }>).detail?.id;
-      if (id) {
-        applyFramework(id);
-        // Close the mobile panel after picking on small screens
-        if (window.innerWidth < 1024) closeMobileSidebar();
-      }
-    };
-    window.addEventListener("framework-change", onFrameworkChange);
+    // Framework switching is handled by FrameworkPicker.astro (which
+    // imports the data and wires the `data-fw-show` toggling itself).
+    // We only handle scroll-spy + mobile sidebar here.
 
     // ── Active sidebar highlight on scroll ────────────────────────
     const sectionEls = document.querySelectorAll("section[id]");
@@ -1279,7 +1211,6 @@ const flutterNotes = [
 
     cleanup = () => {
       window.removeEventListener("scroll", updateActive);
-      window.removeEventListener("framework-change", onFrameworkChange);
       mobileSidebarBtn?.removeEventListener("click", openMobileSidebar);
       mobileOverlay?.removeEventListener("click", closeMobileSidebar);
       mobileLinks.forEach((link) => {

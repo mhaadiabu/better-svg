@@ -1,0 +1,428 @@
+---
+import type { Framework } from "../data/frameworks";
+
+type Props = {
+  frameworks: Framework[];
+  initial?: string;
+  id?: string;
+};
+
+const { frameworks, initial = "react", id = "fw-picker" } = Astro.props;
+const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
+---
+
+<div
+  class="fw-picker"
+  data-fw-picker
+  data-initial={initial}
+  id={id}
+>
+  <button
+    type="button"
+    class="fw-trigger"
+    data-fw-trigger
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-label="Select framework"
+  >
+    <span class="fw-trigger-content">
+      <span data-fw-value class="text-[#e8e8e8]">{current.label}</span>
+      <span class="text-zinc-muted">·</span>
+      <span data-fw-value-sub class="text-zinc-muted truncate">{current.sub}</span>
+    </span>
+    <svg
+      class="fw-trigger-chevron"
+      data-fw-chevron
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m6 9 6 6 6-6"></path>
+    </svg>
+  </button>
+
+  <div class="fw-content" data-fw-content role="listbox" aria-label="Frameworks" hidden>
+    {frameworks.map((fw) => (
+      <div
+        role="option"
+        tabindex="-1"
+        data-fw-option
+        data-value={fw.id}
+        class:list={["fw-option", { "is-selected": fw.id === initial }]}
+        aria-selected={fw.id === initial ? "true" : "false"}
+      >
+        <span class="fw-option-label">{fw.label}</span>
+        <span class="fw-option-sub">{fw.sub}</span>
+        <svg
+          class="fw-option-check"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          hidden={fw.id !== initial}
+        >
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .fw-picker {
+    position: relative;
+    width: 100%;
+  }
+  .fw-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8125rem;
+    color: #e8e8e8;
+    background-color: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 0;
+    padding: 6px 10px;
+    cursor: pointer;
+    text-align: left;
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+    font-family: inherit;
+  }
+  .fw-trigger:hover {
+    border-color: #3a3a3a;
+    background-color: #181818;
+  }
+  .fw-trigger:focus-visible,
+  .fw-trigger[aria-expanded="true"] {
+    outline: none;
+    border-color: #b9ff4b;
+    background-color: #181818;
+  }
+  .fw-trigger-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+  }
+  .fw-trigger-chevron {
+    color: #6b6b6b;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  .fw-trigger[aria-expanded="true"] .fw-trigger-chevron {
+    transform: rotate(180deg);
+    color: #b9ff4b;
+  }
+  .fw-content {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 60;
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 0;
+    max-height: 280px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    padding: 4px;
+  }
+  .fw-content[hidden] {
+    display: none;
+  }
+  .fw-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px 6px 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8125rem;
+    color: #e8e8e8;
+    cursor: pointer;
+    border-radius: 0;
+    outline: none;
+    user-select: none;
+    position: relative;
+  }
+  .fw-option[data-highlighted] {
+    background-color: #181818;
+    color: #b9ff4b;
+  }
+  .fw-option.is-selected {
+    color: #b9ff4b;
+  }
+  .fw-option-label {
+    flex-shrink: 0;
+  }
+  .fw-option-sub {
+    color: #6b6b6b;
+    font-size: 0.75rem;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fw-option[data-highlighted] .fw-option-sub,
+  .fw-option.is-selected .fw-option-sub {
+    color: #8a8a8a;
+  }
+  .fw-option-check {
+    margin-left: auto;
+    color: #b9ff4b;
+    flex-shrink: 0;
+  }
+  .fw-option-check[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  type PickerEl = HTMLElement & { _initialized?: boolean };
+
+  const STORAGE_KEY = "bettersvg:framework";
+  const validIds = new Set([
+    "react",
+    "react-native",
+    "vue",
+    "svelte",
+    "flutter",
+  ]);
+
+  const labels: Record<string, { label: string; sub: string }> = {
+    react: { label: "React", sub: "@mhaadi/svg/react" },
+    "react-native": { label: "React Native", sub: "@mhaadi/svg/react-native" },
+    vue: { label: "Vue", sub: "@mhaadi/svg/vue" },
+    svelte: { label: "Svelte", sub: "@mhaadi/svg/svelte" },
+    flutter: { label: "Flutter", sub: "svg_flutter" },
+  };
+
+  const applyFramework = (id: string) => {
+    if (!validIds.has(id)) return;
+    document
+      .querySelectorAll<HTMLElement>("[data-fw-show]")
+      .forEach((el) => {
+        const allowed = (el.dataset.fwShow || "").split(/\s+/).filter(Boolean);
+        el.classList.toggle("hidden", !allowed.includes(id));
+      });
+    const trigger = document.getElementById("docs-mobile-current-fw");
+    if (trigger) trigger.textContent = labels[id]?.label ?? id;
+  };
+
+  const readSaved = (): string | null => {
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      if (v && validIds.has(v)) return v;
+    } catch {}
+    return null;
+  };
+
+  const writeSaved = (id: string) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, id);
+    } catch {}
+  };
+
+  const setPickerValue = (
+    picker: HTMLElement,
+    id: string,
+    opts: { close?: boolean } = {},
+  ) => {
+    const labels = picker.querySelectorAll<HTMLElement>("[data-fw-option]");
+    let labelText = id;
+    let subText = "";
+    labels.forEach((opt) => {
+      const isSel = opt.dataset.value === id;
+      opt.classList.toggle("is-selected", isSel);
+      opt.setAttribute("aria-selected", isSel ? "true" : "false");
+      const check = opt.querySelector<HTMLElement>(".fw-option-check");
+      if (check) check.hidden = !isSel;
+      if (isSel) {
+        const label = opt.querySelector<HTMLElement>(".fw-option-label")?.textContent ?? id;
+        const sub = opt.querySelector<HTMLElement>(".fw-option-sub")?.textContent ?? "";
+        labelText = label;
+        subText = sub;
+      }
+    });
+    const valueEl = picker.querySelector<HTMLElement>("[data-fw-value]");
+    const subEl = picker.querySelector<HTMLElement>("[data-fw-value-sub]");
+    if (valueEl) valueEl.textContent = labelText;
+    if (subEl) subEl.textContent = subText;
+    if (opts.close) {
+      const content = picker.querySelector<HTMLElement>("[data-fw-content]");
+      const trigger = picker.querySelector<HTMLElement>("[data-fw-trigger]");
+      if (content) content.hidden = true;
+      if (trigger) trigger.setAttribute("aria-expanded", "false");
+    }
+  };
+
+  const highlightNext = (picker: HTMLElement, dir: 1 | -1) => {
+    const options = Array.from(
+      picker.querySelectorAll<HTMLElement>("[data-fw-option]"),
+    );
+    if (!options.length) return;
+    const currentIdx = options.findIndex(
+      (o) => o.getAttribute("data-highlighted") === "true",
+    );
+    let nextIdx = currentIdx + dir;
+    if (currentIdx < 0) nextIdx = dir === 1 ? 0 : options.length - 1;
+    if (nextIdx < 0) nextIdx = options.length - 1;
+    if (nextIdx >= options.length) nextIdx = 0;
+    options.forEach((o) => o.setAttribute("data-highlighted", "false"));
+    options[nextIdx].setAttribute("data-highlighted", "true");
+    options[nextIdx].scrollIntoView({ block: "nearest" });
+  };
+
+  const initPicker = (picker: PickerEl) => {
+    if (picker._initialized) return;
+    picker._initialized = true;
+
+    const trigger = picker.querySelector<HTMLButtonElement>("[data-fw-trigger]");
+    const content = picker.querySelector<HTMLElement>("[data-fw-content]");
+    const options = picker.querySelectorAll<HTMLElement>("[data-fw-option]");
+
+    // Apply the saved value (overrides the SSR default).
+    const saved = readSaved();
+    const initial = picker.dataset.initial ?? "react";
+    const startWith = saved ?? initial;
+    if (startWith !== initial) {
+      setPickerValue(picker, startWith);
+    }
+    applyFramework(startWith);
+
+    trigger?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!trigger || !content) return;
+      const expanded = trigger.getAttribute("aria-expanded") === "true";
+      // Close any other open pickers
+      document
+        .querySelectorAll<HTMLElement>("[data-fw-picker]")
+        .forEach((other) => {
+          if (other === picker) return;
+          const t = other.querySelector<HTMLElement>("[data-fw-trigger]");
+          const c = other.querySelector<HTMLElement>("[data-fw-content]");
+          if (t) t.setAttribute("aria-expanded", "false");
+          if (c) c.hidden = true;
+        });
+      trigger.setAttribute("aria-expanded", expanded ? "false" : "true");
+      content.hidden = expanded;
+    });
+
+    options.forEach((opt) => {
+      opt.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = opt.dataset.value || "";
+        if (!id) return;
+        writeSaved(id);
+        setPickerValue(picker, id, { close: true });
+        applyFramework(id);
+        trigger?.focus();
+      });
+      opt.addEventListener("mouseenter", () => {
+        options.forEach((o) => o.setAttribute("data-highlighted", "false"));
+        opt.setAttribute("data-highlighted", "true");
+      });
+    });
+
+    trigger?.addEventListener("keydown", (e) => {
+      const ke = e as KeyboardEvent;
+      const isOpen = trigger.getAttribute("aria-expanded") === "true";
+      if (ke.key === "ArrowDown" || ke.key === "Enter" || ke.key === " ") {
+        ke.preventDefault();
+        if (!isOpen) {
+          trigger.setAttribute("aria-expanded", "true");
+          if (content) content.hidden = false;
+          return;
+        }
+        highlightNext(picker, 1);
+      } else if (ke.key === "ArrowUp") {
+        ke.preventDefault();
+        if (!isOpen) {
+          trigger.setAttribute("aria-expanded", "true");
+          if (content) content.hidden = false;
+          return;
+        }
+        highlightNext(picker, -1);
+      } else if (ke.key === "Escape") {
+        if (isOpen) {
+          trigger.setAttribute("aria-expanded", "false");
+          if (content) content.hidden = true;
+        }
+      }
+    });
+
+    content?.addEventListener("keydown", (e) => {
+      const ke = e as KeyboardEvent;
+      if (ke.key === "Escape") {
+        trigger?.setAttribute("aria-expanded", "false");
+        if (content) content.hidden = true;
+        trigger?.focus();
+      } else if (ke.key === "Enter") {
+        const highlighted = Array.from(options).find(
+          (o) => o.getAttribute("data-highlighted") === "true",
+        );
+        if (highlighted) {
+          const id = highlighted.dataset.value || "";
+          if (id) {
+            writeSaved(id);
+            setPickerValue(picker, id, { close: true });
+            applyFramework(id);
+            trigger?.focus();
+          }
+        }
+      }
+    });
+  };
+
+  const closeAllPickers = () => {
+    document
+      .querySelectorAll<HTMLElement>("[data-fw-picker]")
+      .forEach((picker) => {
+        const trigger = picker.querySelector<HTMLElement>("[data-fw-trigger]");
+        const content = picker.querySelector<HTMLElement>("[data-fw-content]");
+        if (trigger) trigger.setAttribute("aria-expanded", "false");
+        if (content) content.hidden = true;
+      });
+  };
+
+  document.addEventListener("click", (e) => {
+    const target = e.target as Node;
+    let inside = false;
+    document.querySelectorAll<HTMLElement>("[data-fw-picker]").forEach((p) => {
+      if (p.contains(target)) inside = true;
+    });
+    if (!inside) closeAllPickers();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAllPickers();
+  });
+
+  const initAll = () => {
+    document
+      .querySelectorAll<PickerEl>("[data-fw-picker]")
+      .forEach(initPicker);
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAll);
+  } else {
+    initAll();
+  }
+  document.addEventListener("astro:page-load", initAll);
+</script>

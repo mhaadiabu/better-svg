@@ -11,18 +11,12 @@
     "check-types": "astro check"
   },
   "dependencies": {
-    "@astrojs/react": "^5.0.7",
-    "@radix-ui/react-select": "^2.3.0",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^5.7.10",
-    "react": "catalog:",
-    "react-dom": "catalog:",
     "sharp": "^0.33.5",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
     "typescript": "catalog:"
   }
 }

@@ -1,18 +1,10 @@
 type SvgModuleMap = Record<string, string>;
 
-type ImportMetaGlob = (
-  patterns: string | string[],
-  options: { eager: true; import: "default" },
-) => Record<string, string>;
+type RegisterOptions = {
+  override?: boolean;
+};
 
-const glob = (import.meta as ImportMeta & { glob?: ImportMetaGlob }).glob;
-
-const srcSvgs: SvgModuleMap = glob
-  ? glob("/src/assets/svg/**/*.svg", { eager: true, import: "default" })
-  : {};
-const appSvgs: SvgModuleMap = glob
-  ? glob("/app/assets/svg/**/*.svg", { eager: true, import: "default" })
-  : {};
+const localSvgByName = new Map<string, string>();
 
 const normalizeName = (value: string) =>
   value
@@ -22,26 +14,22 @@ const normalizeName = (value: string) =>
 
 const pathToName = (path: string) => normalizeName(path.replace(/^\/(src|app)\/assets\/svg\//, ""));
 
-const localSvgByName: Record<string, string> = {};
-
-const register = (modules: SvgModuleMap, override: boolean) => {
-  for (const [path, url] of Object.entries(modules)) {
+export const registerLocalSvgs = (entries: SvgModuleMap, options: RegisterOptions = {}) => {
+  const override = options.override ?? true;
+  for (const [path, url] of Object.entries(entries)) {
     const name = pathToName(path);
     if (!name) continue;
-    if (!override && localSvgByName[name]) continue;
-    localSvgByName[name] = url;
+    if (!override && localSvgByName.has(name)) continue;
+    localSvgByName.set(name, url);
   }
 };
 
-register(appSvgs, false);
-register(srcSvgs, true);
-
-export type SvgName = keyof typeof localSvgByName;
-export type SvgNameInput = SvgName | (string & {});
-
-export const resolveSvgSource = (name: SvgNameInput) => {
+export const resolveSvgSource = (name: string) => {
   const normalized = normalizeName(name);
-  const local = localSvgByName[normalized];
+  const local = localSvgByName.get(normalized);
   if (local) return local;
   return `/assets/svg/${normalized}.svg`;
 };
+
+export type SvgName = string;
+export type SvgNameInput = SvgName;

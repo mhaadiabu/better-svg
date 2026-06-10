@@ -31,6 +31,10 @@
       "types": "./dist/svelte/SVG.svelte.d.ts",
       "svelte": "./dist/svelte/SVG.svelte",
       "import": "./dist/svelte/SVG.svelte.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
     }
   },
   "publishConfig": {

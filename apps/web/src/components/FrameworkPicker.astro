@@ -241,6 +241,25 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
     } catch {}
   };
 
+  const readUrlParam = (): string | null => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const fw = params.get("fw");
+      if (fw && validIds.has(fw)) return fw;
+    } catch {}
+    return null;
+  };
+
+  const writeUrlParam = (id: string) => {
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("fw") !== id) {
+        url.searchParams.set("fw", id);
+        history.replaceState(null, "", url.toString());
+      }
+    } catch {}
+  };
+
   const setPickerValue = (
     picker: HTMLElement,
     id: string,
@@ -297,10 +316,15 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
     const content = picker.querySelector<HTMLElement>("[data-fw-content]");
     const options = picker.querySelectorAll<HTMLElement>("[data-fw-option]");
 
-    // Apply the saved value (overrides the SSR default).
+    // Priority: URL param (?fw=) > localStorage > SSR default.
+    // Sync localStorage to URL so the choice persists for future visits.
+    const urlParam = readUrlParam();
     const saved = readSaved();
     const initial = picker.dataset.initial ?? "react";
-    const startWith = saved ?? initial;
+    const startWith = urlParam ?? saved ?? initial;
+    if (urlParam && urlParam !== saved) {
+      writeSaved(urlParam);
+    }
     if (startWith !== initial) {
       setPickerValue(picker, startWith);
     }
@@ -330,6 +354,7 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
         const id = opt.dataset.value || "";
         if (!id) return;
         writeSaved(id);
+        writeUrlParam(id);
         setPickerValue(picker, id, { close: true });
         applyFramework(id);
         trigger?.focus();
@@ -381,6 +406,7 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
           const id = highlighted.dataset.value || "";
           if (id) {
             writeSaved(id);
+            writeUrlParam(id);
             setPickerValue(picker, id, { close: true });
             applyFramework(id);
             trigger?.focus();

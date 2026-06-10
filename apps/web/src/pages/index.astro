@@ -132,8 +132,8 @@ const featureCards = [
 
         <!-- Headline -->
         <h1 class="font-display leading-none tracking-wider animate-fade-up delay-200">
-          <span class="block text-[clamp(3rem,9vw,7rem)] text-[#e8e8e8]">BETTER</span>
-          <span class="block text-[clamp(3rem,9vw,7rem)] text-acid acid-glow">SVG</span>
+          <span class="inline-block lg:block mr-3 text-[clamp(3rem,9vw,7rem)] text-[#e8e8e8]">BETTER</span><!--
+          --><span class="inline-block lg:block text-[clamp(3rem,9vw,7rem)] text-acid acid-glow">SVG</span>
           <span class="block text-[clamp(1.25rem,2.5vw,1.75rem)] text-zinc-muted font-mono font-light tracking-normal mt-2">Inline SVG done right.</span>
         </h1>
 
@@ -143,28 +143,6 @@ const featureCards = [
           Svelte, and Flutter. From local names to remote URLs — with full control
           over props, caching, and security.
         </p>
-
-        <!-- Install snippet -->
-        <div class="mt-8 animate-fade-up delay-500">
-          <div class="code-block max-w-sm" data-lang="sh">
-            <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">pnpm add @mhaadi/svg</span></pre>
-          </div>
-          <div class="code-block max-w-sm mt-2" data-lang="sh">
-            <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">flutter pub add svg_flutter</span></pre>
-          </div>
-        </div>
-
-        <!-- Framework pills -->
-        <div class="mt-6 flex flex-wrap items-center gap-2 animate-fade-up delay-[650ms]">
-          {frameworkBadges.map((fw) => (
-            <div class="flex items-center gap-2 border border-coal-4 bg-coal-1 px-2.5 py-1 font-mono text-[11px]">
-              <span class="h-1 w-1 bg-acid shrink-0"></span>
-              <span class="text-[#e8e8e8]">{fw.name}</span>
-              <span class="text-zinc-muted">·</span>
-              <span class="text-zinc-muted">{fw.sub}</span>
-            </div>
-          ))}
-        </div>
 
         <!-- CTA buttons -->
         <div class="mt-8 flex flex-wrap items-center gap-4 animate-fade-up delay-600">
@@ -276,6 +254,16 @@ const featureCards = [
                 <path d="M32 8 L56 52 L8 52Z" fill="currentColor" opacity="0.15"/>
                 <path d="M32 20 L46 44 L18 44Z" fill="currentColor" opacity="0.6"/>
               </svg>
+            </div>
+
+            <!-- Install snippet -->
+            <div class="mt-4">
+              <div class="code-block max-w-sm" data-lang="sh">
+                <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">pnpm add @mhaadi/svg</span></pre>
+              </div>
+              <div class="code-block max-w-sm mt-2" data-lang="sh">
+                <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">flutter pub add svg_flutter</span></pre>
+              </div>
             </div>
           </div>
         </div>

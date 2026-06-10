@@ -1074,7 +1074,16 @@ const flutterNotes = [
     const sectionEls = document.querySelectorAll("section[id]");
     const sidebarLinks = document.querySelectorAll(".sidebar-link");
     const sectionLabels: Record<string, string> = {};
-    sections.forEach((s) => (sectionLabels[s.id] = s.label));
+    sidebarLinks.forEach((a) => {
+      const id = a.getAttribute("data-section") || a.getAttribute("data-toc");
+      if (id) sectionLabels[id] = a.textContent?.trim() ?? id;
+    });
+
+    // ── Mobile sidebar (declare before use to avoid TDZ) ─────────
+    const mobileSidebarBtn = document.getElementById("docs-mobile-sidebar-btn");
+    const mobileOverlay = document.getElementById("docs-mobile-overlay");
+    const mobilePanel = document.getElementById("docs-mobile-panel");
+    const mobileChevron = document.getElementById("docs-mobile-sidebar-chevron");
     const mobileSection = mobileSidebarBtn?.querySelector("[data-mobile-section]");
 
     function updateActive() {
@@ -1096,11 +1105,6 @@ const flutterNotes = [
     updateActive();
 
     // ── Mobile sidebar ────────────────────────────────────────────
-    const mobileSidebarBtn = document.getElementById("docs-mobile-sidebar-btn");
-    const mobileOverlay = document.getElementById("docs-mobile-overlay");
-    const mobilePanel = document.getElementById("docs-mobile-panel");
-    const mobileChevron = document.getElementById("docs-mobile-sidebar-chevron");
-
     function openMobileSidebar() {
       mobileOverlay?.classList.add("open");
       mobilePanel?.classList.add("open");

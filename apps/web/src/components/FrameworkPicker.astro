@@ -68,7 +68,6 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          hidden={fw.id !== initial}
         >
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
@@ -118,6 +117,10 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
     gap: 6px;
     min-width: 0;
     flex: 1;
+  }
+  .fw-trigger [data-fw-value] {
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .fw-trigger-chevron {
     color: #6b6b6b;
@@ -187,7 +190,7 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
     color: #b9ff4b;
     flex-shrink: 0;
   }
-  .fw-option-check[hidden] {
+  .fw-option:not(.is-selected) .fw-option-check {
     display: none;
   }
 </style>
@@ -250,8 +253,6 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
       const isSel = opt.dataset.value === id;
       opt.classList.toggle("is-selected", isSel);
       opt.setAttribute("aria-selected", isSel ? "true" : "false");
-      const check = opt.querySelector<HTMLElement>(".fw-option-check");
-      if (check) check.hidden = !isSel;
       if (isSel) {
         const label = opt.querySelector<HTMLElement>(".fw-option-label")?.textContent ?? id;
         const sub = opt.querySelector<HTMLElement>(".fw-option-sub")?.textContent ?? "";

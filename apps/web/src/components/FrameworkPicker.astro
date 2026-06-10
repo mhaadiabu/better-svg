@@ -159,7 +159,7 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
     user-select: none;
     position: relative;
   }
-  .fw-option[data-highlighted] {
+  .fw-option[data-highlighted="true"] {
     background-color: #181818;
     color: #b9ff4b;
   }
@@ -178,7 +178,7 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .fw-option[data-highlighted] .fw-option-sub,
+  .fw-option[data-highlighted="true"] .fw-option-sub,
   .fw-option.is-selected .fw-option-sub {
     color: #8a8a8a;
   }

@@ -1021,11 +1021,11 @@ const flutterNotes = [
     </div>
 
     <!-- RIGHT SIDEBAR (fixed) -->
-    <div class="hidden lg:block fixed right-0 top-16.25 bottom-0 w-48 overflow-y-auto py-8 pl-6 border-l border-coal-2">
-      <p class="mb-3 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
-      <nav class="flex flex-col gap-0.5">
+    <div class="hidden lg:block fixed right-0 top-16.25 bottom-0 w-48 overflow-y-auto py-8 border-l border-coal-2">
+      <p class="mb-3 pl-6 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
+      <nav class="flex flex-col gap-0.5 -ml-px">
         {sections.map((s) => (
-          <a href={`#${s.id}`} class="sidebar-link text-xs" data-toc={s.id}>
+          <a href={`#${s.id}`} class="sidebar-link text-xs pl-6" data-toc={s.id}>
             {s.label}
           </a>
         ))}

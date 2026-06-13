@@ -1,13 +1,16 @@
 import alchemy from "alchemy";
 import { Vite } from "alchemy/cloudflare";
-import { CloudflareStateStore } from "alchemy/state";
+import { CloudflareStateStore, FileSystemStateStore } from "alchemy/state";
 import { config } from "dotenv";
 
 config({ path: "./.env" });
 config({ path: "../../apps/web/.env" });
 
 const app = await alchemy("better-svg", {
-  stateStore: (scope) => new CloudflareStateStore(scope),
+  stateStore: (scope) =>
+    process.env.ALCHEMY_STATE_TOKEN
+      ? new CloudflareStateStore(scope)
+      : new FileSystemStateStore(scope),
 });
 
 export const web = await Vite("web", {

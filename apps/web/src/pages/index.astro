@@ -567,12 +567,18 @@ const featureCards = [
         block.insertBefore(header, block.firstChild);
 
         // Only show wrap button if content overflows
-        requestAnimationFrame(() => {
-          const body = block.querySelector(".code-block-body");
-          if (body && body.scrollWidth > body.clientWidth + 1) {
-            block.classList.add("has-wrap");
-          }
-        });
+        const bodyEl = block.querySelector(".code-block-body");
+        if (bodyEl) {
+          const checkWrap = () => {
+            if (!bodyEl.classList.contains("is-wrapped")) {
+              const overflows = bodyEl.scrollWidth > bodyEl.clientWidth + 1;
+              block.classList.toggle("has-wrap", overflows);
+            }
+          };
+          requestAnimationFrame(checkWrap);
+          const ro = new ResizeObserver(checkWrap);
+          ro.observe(bodyEl);
+        }
       });
     }
     initCodeBlocks();

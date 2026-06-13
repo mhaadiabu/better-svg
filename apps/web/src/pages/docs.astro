@@ -1219,11 +1219,8 @@ const flutterNotes = [
         if (bodyEl) {
           const checkWrap = () => {
             if (!bodyEl.classList.contains("is-wrapped")) {
-              if (bodyEl.scrollWidth > bodyEl.clientWidth + 1) {
-                block.classList.add("has-wrap");
-              } else {
-                block.classList.remove("has-wrap");
-              }
+              const overflows = bodyEl.scrollWidth > bodyEl.clientWidth + 1;
+              block.classList.toggle("has-wrap", overflows);
             }
           };
           requestAnimationFrame(checkWrap);

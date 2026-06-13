@@ -516,8 +516,9 @@ const flutterNotes = [
                 <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                   <h3 class="mb-2 font-semibold text-[#e8e8e8]">Vue 3</h3>
                   <p class="text-sm text-zinc-muted mb-3">
-                    Slots for loading/fallback, events for load/error, and root-level SVG attributes
-                    (width, height, viewBox, fill, stroke, role, aria-label, aria-hidden).
+                    Root-level SVG attributes (width, height, viewBox, fill, stroke, role,
+                    aria-label, aria-hidden) are forwarded. Events are kebab-cased
+                    (<code class="inline-code">svg-load</code>, <code class="inline-code">svg-error</code>).
                   </p>
                   <div class="code-block" data-lang="vue">
                     <pre class="p-4 text-sm leading-6"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span>

@@ -19,9 +19,11 @@ export const web = await Vite("web", {
     directory: "dist",
     run_worker_first: true,
   },
-  bindings: {
-    VITE_SERVER_URL: alchemy.env.VITE_SERVER_URL!,
-  },
+  bindings: process.env.VITE_SERVER_URL
+    ? {
+        VITE_SERVER_URL: process.env.VITE_SERVER_URL,
+      }
+    : {},
   build: {
     command: "pnpm build",
   },

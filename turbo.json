@@ -18,7 +18,18 @@
       "persistent": true
     },
     "deploy": {
-      "cache": false
+      "cache": false,
+      "env": [
+        "CLOUDFLARE_API_TOKEN",
+        "CLOUDFLARE_API_KEY",
+        "CLOUDFLARE_ACCOUNT_ID",
+        "CLOUDFLARE_EMAIL",
+        "ALCHEMY_STATE_TOKEN",
+        "ALCHEMY_CI_STATE_STORE_CHECK",
+        "ALCHEMY_PROFILE",
+        "CLOUDFLARE_PROFILE",
+        "VITE_SERVER_URL"
+      ]
     },
     "destroy": {
       "cache": false

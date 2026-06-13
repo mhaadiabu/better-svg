@@ -18,6 +18,7 @@
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.4",
     "typescript": "catalog:"
   }
 }

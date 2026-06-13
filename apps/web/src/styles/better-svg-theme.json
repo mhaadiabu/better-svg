@@ -1,11 +1,13 @@
 {
   "name": "better-svg",
   "type": "dark",
-  "colors": {
-    "editor.background": "#111111",
-    "editor.foreground": "#e8e8e8"
-  },
-  "tokenColors": [
+  "settings": [
+    {
+      "settings": {
+        "background": "#111111",
+        "foreground": "#e8e8e8"
+      }
+    },
     {
       "scope": ["comment", "punctuation.definition.comment"],
       "settings": {
@@ -43,10 +45,7 @@
       }
     },
     {
-      "scope": [
-        "entity.name.type",
-        "support.type"
-      ],
+      "scope": ["entity.name.type", "support.type"],
       "settings": {
         "foreground": "#e8c97e"
       }

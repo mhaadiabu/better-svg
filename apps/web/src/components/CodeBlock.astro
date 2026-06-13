@@ -38,7 +38,7 @@ const shellHtml = isShell
   {isShell ? (
     <Fragment set:html={shellHtml} />
   ) : (
-    <Code code={code} lang={lang} theme={betterSvgTheme} />
+    <Code code={code} lang={lang as any} theme={betterSvgTheme as any} />
   )}
 </div>
 

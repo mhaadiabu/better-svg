@@ -10,7 +10,6 @@ const app = await alchemy("better-svg", {
   stateStore: (scope) =>
     process.env.ALCHEMY_STATE_TOKEN
       ? new CloudflareStateStore(scope, {
-          stateToken: process.env.ALCHEMY_STATE_TOKEN as any,
           accountId: process.env.CLOUDFLARE_ACCOUNT_ID || undefined,
           apiToken: (process.env.CLOUDFLARE_API_TOKEN || undefined) as any,
         })

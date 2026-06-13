@@ -1,0 +1,78 @@
+{
+  "name": "better-svg",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#111111",
+    "editor.foreground": "#e8e8e8"
+  },
+  "tokenColors": [
+    {
+      "scope": ["comment", "punctuation.definition.comment"],
+      "settings": {
+        "foreground": "#4a4a4a",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "scope": ["keyword", "storage.type", "storage.modifier"],
+      "settings": {
+        "foreground": "#b9ff4b"
+      }
+    },
+    {
+      "scope": ["string", "string.quoted", "string.template"],
+      "settings": {
+        "foreground": "#76d9b0"
+      }
+    },
+    {
+      "scope": ["constant.numeric", "constant.language"],
+      "settings": {
+        "foreground": "#f8c8d4"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.tag",
+        "entity.name.function",
+        "support.class",
+        "support.function"
+      ],
+      "settings": {
+        "foreground": "#79b8ff"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.type",
+        "support.type"
+      ],
+      "settings": {
+        "foreground": "#e8c97e"
+      }
+    },
+    {
+      "scope": [
+        "variable.other.property",
+        "variable.other.object.property",
+        "meta.property-name",
+        "entity.other.attribute-name"
+      ],
+      "settings": {
+        "foreground": "#ffb347"
+      }
+    },
+    {
+      "scope": ["punctuation", "meta.brace", "meta.tag punctuation"],
+      "settings": {
+        "foreground": "#555555"
+      }
+    },
+    {
+      "scope": ["variable", "source"],
+      "settings": {
+        "foreground": "#e8e8e8"
+      }
+    }
+  ]
+}

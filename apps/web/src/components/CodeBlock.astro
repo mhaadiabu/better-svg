@@ -1,0 +1,56 @@
+---
+import { Code } from "astro:components";
+import betterSvgTheme from "../styles/better-svg-theme.json";
+
+interface Props {
+  code: string;
+  lang: string;
+  file?: string;
+  class?: string;
+}
+
+const { code, lang, file, class: className } = Astro.props;
+
+const shellLangs = new Set(["sh", "bash", "shell", "zsh"]);
+const isShell = shellLangs.has(lang);
+
+function renderShellLine(line: string) {
+  const match = line.match(/^(\$\s*)(.*)$/);
+  if (!match) {
+    return `<span class="text-[#e8e8e8]">${line}</span>`;
+  }
+  return `<span class="token-comment">${match[1]}</span><span class="text-[#e8e8e8]">${match[2]}</span>`;
+}
+
+const shellHtml = isShell
+  ? `<pre class="text-sm" tabindex="0"><code>${code
+      .split("\n")
+      .map(renderShellLine)
+      .join("\n")}</code></pre>`
+  : null;
+---
+
+<div
+  class:list={["code-block", className]}
+  data-lang={lang}
+  data-file={file}
+>
+  {isShell ? (
+    <Fragment set:html={shellHtml} />
+  ) : (
+    <Code code={code} lang={lang} theme={betterSvgTheme} />
+  )}
+</div>
+
+<style is:global>
+  .code-block pre.astro-code {
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+  }
+  .code-block pre.astro-code code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.875rem;
+    line-height: 1.75rem;
+  }
+</style>

@@ -11,3 +11,11 @@ export const frameworks: Framework[] = [
   { id: "svelte", label: "Svelte", sub: "@mhaadi/svg/svelte" },
   { id: "flutter", label: "Flutter", sub: "svg_flutter" },
 ];
+
+export const frameworkLabels: Record<string, { label: string; sub: string }> = {
+  react: frameworks[0],
+  "react-native": frameworks[1],
+  vue: frameworks[2],
+  svelte: frameworks[3],
+  flutter: frameworks[4],
+};

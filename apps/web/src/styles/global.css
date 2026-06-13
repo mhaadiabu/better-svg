@@ -111,6 +111,24 @@ body {
   overscroll-behavior-x: none;
 }
 
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  z-index: 100;
+  padding: 8px 12px;
+  background: #b9ff4b;
+  color: #0a0a0a;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  text-decoration: none;
+  transition: top 0.15s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -198,6 +216,11 @@ code {
 .code-block-body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  padding: 16px 20px;
+}
+
+.code-block-body pre.astro-code {
+  padding: 0;
 }
 
 /* Fallback before JS applies code-block-body */
@@ -271,6 +294,27 @@ code {
 }
 .code-block.has-wrap .wrap-btn {
   display: inline-flex;
+}
+
+/* Tooltip shown on copy */
+.code-block-tooltip {
+  position: fixed;
+  z-index: 100;
+  padding: 4px 8px;
+  background: #b9ff4b;
+  color: #0a0a0a;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+.code-block-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Token colors for manual syntax highlighting */
@@ -401,6 +445,23 @@ code {
   pointer-events: none;
 }
 
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  .scan-line {
+    animation: none;
+    opacity: 0.5;
+  }
+  .animate-float {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* Prop table */
 .prop-table-wrapper {
   overflow-x: auto;
@@ -457,6 +518,42 @@ code {
 /* Glow effect */
 .acid-glow {
   text-shadow: 0 0 30px rgba(185, 255, 75, 0.4);
+}
+
+/* Docs search */
+#docs-search-results {
+  max-height: 320px;
+  overflow-y: auto;
+}
+#docs-search-results:not(.hidden) {
+  display: block;
+}
+.docs-search-result {
+  display: block;
+  padding: 8px 12px;
+  border-bottom: 1px solid #1a1a1a;
+  color: #e8e8e8;
+  font-size: 0.8125rem;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.docs-search-result:last-child {
+  border-bottom: none;
+}
+.docs-search-result:hover,
+.docs-search-result.is-active {
+  background: rgba(185, 255, 75, 0.08);
+  color: #b9ff4b;
+}
+.docs-search-result mark {
+  background: transparent;
+  color: #b9ff4b;
+  font-weight: 500;
+}
+.docs-search-empty {
+  padding: 12px;
+  color: #6b6b6b;
+  font-size: 0.8125rem;
 }
 
 /* Mobile docs sidebar */

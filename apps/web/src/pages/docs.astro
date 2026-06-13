@@ -2,6 +2,9 @@
 import Base from "../layouts/Base.astro";
 import FrameworkPicker from "../components/FrameworkPicker.astro";
 import { frameworks } from "../data/frameworks";
+import svgPkg from "../../../../packages/svg/package.json";
+
+const version = svgPkg.version;
 
 const sections = [
   { id: "overview", label: "Overview" },
@@ -26,12 +29,15 @@ const strippedElements = [
   { elem: "unsafe xlink:href", reason: "XLink javascript: URLs" },
 ];
 
+import CodeBlock from "../components/CodeBlock.astro";
+
 const flutterNotes = [
   "svg_flutter is a separate pub package and is not a subpath of @mhaadi/svg.",
   "It depends on flutter_svg (peer) and http for remote fetching.",
   "Sanitization is performed against the raw markup before passing to SvgPicture.string.",
 ];
 ---
+
 
 <Base
   title="Docs — BetterSVG"
@@ -48,7 +54,18 @@ const flutterNotes = [
         <span class="font-display text-lg tracking-wider text-[#e8e8e8]">BETTERSVG</span>
       </a>
 
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-4 md:gap-6">
+        <div class="relative hidden md:block">
+          <input
+            id="docs-search"
+            type="search"
+            placeholder="Search docs..."
+            class="w-48 lg:w-64 border border-coal-4 bg-coal-1 px-3 py-1.5 text-xs font-mono text-[#e8e8e8] placeholder:text-zinc-muted focus:border-acid focus:outline-none transition-colors"
+            aria-label="Search documentation"
+            autocomplete="off"
+          />
+          <div id="docs-search-results" class="absolute right-0 top-full mt-2 w-72 border border-coal-4 bg-coal-1 shadow-xl hidden" role="listbox" aria-label="Search results"></div>
+        </div>
         <span class="hidden sm:block font-mono text-xs text-acid border border-acid/30 rounded-none px-2 py-1">Docs</span>
         <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
         <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">npm</a>
@@ -58,7 +75,7 @@ const flutterNotes = [
 
   <!-- Mobile sidebar overlay -->
   <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
-  <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden">
+  <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden" role="dialog" aria-modal="true" aria-label="Docs menu" tabindex="-1">
     <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
     <div class="px-3 mb-5">
       <FrameworkPicker
@@ -121,7 +138,7 @@ const flutterNotes = [
           <!-- Version badge -->
           <div class="mt-8 mx-3 rounded-none border border-coal-4 bg-coal-1 p-3">
             <p class="font-mono text-[10px] text-[#3a3a3a] mb-1">CURRENT VERSION</p>
-            <p class="font-mono text-sm text-acid">v0.2.1</p>
+            <p class="font-mono text-sm text-acid">v{version}</p>
           </div>
         </div>
       </div>
@@ -129,7 +146,7 @@ const flutterNotes = [
 
     <!-- CONTENT (with left/right sidebar offsets) -->
     <div class="lg:pl-60 lg:pr-48">
-      <main class="min-w-0 max-w-4xl mx-auto px-4 lg:px-10 py-8 lg:py-12">
+      <main id="main-content" class="min-w-0 max-w-4xl mx-auto px-4 lg:px-10 py-8 lg:py-12">
 
           <!-- Page header -->
           <div class="mb-10 lg:mb-16 pb-8 border-b border-coal-2">
@@ -152,9 +169,8 @@ const flutterNotes = [
             <h2 class="docs-heading">Overview</h2>
             <p class="docs-body">
               <code class="inline-code">@mhaadi/svg</code> exposes a single component —{" "}
-              <code class="inline-code">{"<SVG>"}</code> — that resolves SVG content from four source types
-              (inline markup, <code class="inline-code">data:</code> URIs, remote URLs, or a local{" "}
-              <code class="inline-code">name</code>), sanitizes unsafe content, and renders a true{" "}
+              <code class="inline-code">{"<SVG>"}</code> — that resolves SVG content from any source,
+              sanitizes unsafe markup, and renders a true{" "}
               <code class="inline-code">{"<svg>"}</code> element with full prop forwarding. Available for
               <strong class="text-[#e8e8e8]"> React, React Native, Vue, Svelte</strong> via subpath exports
               on a single npm package, and for <strong class="text-[#e8e8e8]">Flutter</strong> via the
@@ -194,7 +210,7 @@ const flutterNotes = [
                     { pm: "bun", cmd: "bun add @mhaadi/svg" },
                   ].map((pkg) => (
                     <div class="code-block" data-lang={pkg.pm}>
-                      <pre class="px-4 py-3 text-sm text-[#e8e8e8]">{pkg.cmd}</pre>
+                      <pre class="text-sm text-[#e8e8e8]">{pkg.cmd}</pre>
                     </div>
                   ))}
                 </div>
@@ -211,15 +227,11 @@ const flutterNotes = [
               <!-- Flutter -->
               <div data-fw-show="flutter" class="hidden">
                 <p class="mb-3 text-sm text-[#e8e8e8] font-semibold">Flutter</p>
-                <div class="code-block" data-lang="sh">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]">flutter pub add svg_flutter</pre>
-                </div>
+                                <CodeBlock code={`flutter pub add svg_flutter`} lang="sh" />
                 <p class="mt-3 text-sm text-zinc-muted">Or add to <code class="inline-code">pubspec.yaml</code>:</p>
-                <div class="code-block mt-3" data-lang="yaml">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]">dependencies:
+                                <CodeBlock code={`dependencies:
   svg_flutter: ^0.1.0
-  flutter_svg: ^2.0.10</pre>
-                </div>
+  flutter_svg: ^2.0.10`} lang="yaml" />
                 <div class="mt-3 rounded-none border border-coal-4 bg-coal-1 p-4">
                   <p class="font-mono text-xs text-zinc-muted">
                     <span class="text-acid">Requires:</span> Flutter 3.22+ · Dart 3.4+ · flutter_svg 2.x
@@ -236,59 +248,51 @@ const flutterNotes = [
 
             <!-- React -->
             <div data-fw-show="react">
-              <div class="mt-4 code-block" data-lang="tsx">
-                <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+                              <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
-<span class="token-comment">{"// From a local name (resolves from src/assets/svg, app/assets/svg, or public/assets/svg)"}</span>
-<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">MyComponent</span><span class="token-punct">()</span> <span class="token-punct">{"{"}</span>
-  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
-    <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-      <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span>
-      <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-current"</span>
-      <span class="token-prop">aria-label</span><span class="token-punct">=</span><span class="token-string">"Logo"</span>
-    <span class="token-punct">{"/>"}</span>
-  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
-<span class="token-punct">{"}"}</span></pre>
-              </div>
+// From a local name (resolves from src/assets/svg, app/assets/svg, or public/assets/svg)
+export function MyComponent() {
+  return (
+    <SVG
+      name="logo"
+      className="h-6 w-6 text-current"
+      aria-label="Logo"
+    />
+  );
+}`} lang="tsx" />
 
-              <div class="mt-6 code-block" data-lang="tsx">
-                <pre class="p-5 text-sm leading-7"><span class="token-comment">{"// From a remote URL with loading and fallback states"}</span>
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
-  <span class="token-prop">sanitize</span>
-  <span class="token-prop">loading</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">Spinner</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">fallback</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">FallbackIcon</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">onSvgLoad</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">(</span>markup<span class="token-punct">)</span> <span class="token-punct">{"=>"}</span> console<span class="token-punct">.</span>log<span class="token-punct">(</span>markup<span class="token-punct">)</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"/>"}</span></pre>
-              </div>
+                              <CodeBlock code={`// From a remote URL with loading and fallback states
+<SVG
+  src="https://cdn.example.com/icon.svg"
+  sanitize
+  loading={<Spinner />}
+  fallback={<FallbackIcon />}
+  onSvgLoad={(markup) => console.log(markup)}
+/>`} lang="tsx" />
 
-              <div class="mt-6 code-block" data-lang="tsx">
-                <pre class="p-5 text-sm leading-7"><span class="token-comment">{"// From an inline SVG string"}</span>
-<span class="token-keyword">const</span> LOGO <span class="token-punct">=</span> <span class="token-string">{"`<svg viewBox='0 0 24 24'>...</svg>`"}</span><span class="token-punct">;</span>
+                              <CodeBlock code={`// From an inline SVG string
+const LOGO = \`<svg viewBox='0 0 24 24'>...</svg>\`;
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>LOGO<span class="token-punct">{"}"}</span>
-  <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8 text-emerald-400"</span>
-<span class="token-punct">{"/>"}</span></pre>
-              </div>
+<SVG
+  src={LOGO}
+  className="h-8 w-8 text-emerald-400"
+/>`} lang="tsx" />
             </div>
 
             <!-- React Native -->
             <div data-fw-show="react-native" class="hidden">
-              <div class="mt-4 code-block" data-lang="tsx">
-                <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react-native"</span><span class="token-punct">;</span>
+                              <CodeBlock code={`import { SVG } from "@mhaadi/svg/react-native";
 
-<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">MyIcon</span><span class="token-punct">()</span> <span class="token-punct">{"{"}</span>
-  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
-    <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-      <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span>
-      <span class="token-prop">width</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
-      <span class="token-prop">height</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
-      <span class="token-prop">color</span><span class="token-punct">=</span><span class="token-string">"#111827"</span>
-    <span class="token-punct">{"/>"}</span>
-  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
-<span class="token-punct">{"}"}</span></pre>
-              </div>
+export function MyIcon() {
+  return (
+    <SVG
+      name="logo"
+      width={24}
+      height={24}
+      color="#111827"
+    />
+  );
+}`} lang="tsx" />
 
               <p class="docs-body mt-6">
                 The renderer parses the SVG into an AST and emits a{" "}
@@ -308,25 +312,23 @@ const flutterNotes = [
 
             <!-- Vue -->
             <div data-fw-show="vue" class="hidden">
-              <div class="mt-4 code-block" data-lang="vue">
-                <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">setup</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/vue"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+                              <CodeBlock code={`<script setup lang="ts">
+  import { SVG } from "@mhaadi/svg/vue";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-component">template</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-    <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
-    <span class="token-prop">:width</span><span class="token-punct">=</span><span class="token-string">24</span>
-    <span class="token-prop">:height</span><span class="token-punct">=</span><span class="token-string">24</span>
-    <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-current"</span>
-  <span class="token-punct">{"/>"}</span>
+<template>
+  <SVG
+    src="https://cdn.example.com/icon.svg"
+    :width=24
+    :height=24
+    class="h-6 w-6 text-current"
+  />
 
-  <span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"/icon.svg"</span><span class="token-punct">{">"}</span>
-    <span class="token-punct">{"<"}</span><span class="token-keyword">template</span> <span class="token-prop">#loading</span><span class="token-punct">{">"}</span>Loading…<span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-    <span class="token-punct">{"<"}</span><span class="token-keyword">template</span> <span class="token-prop">#fallback</span><span class="token-punct">{">"}</span>Failed<span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"</"}</span><span class="token-component">SVG</span><span class="token-punct">{">"}</span>
-<span class="token-punct">{"</"}</span><span class="token-component">template</span><span class="token-punct">{">"}</span></pre>
-              </div>
+  <SVG src="/icon.svg">
+    <template #loading>Loading…</template>
+    <template #fallback>Failed</template>
+  </SVG>
+</template>`} lang="vue" />
               <p class="docs-body mt-4">
                 Loading and fallback are exposed as named slots. <code class="inline-code">svg-load</code> and{" "}
                 <code class="inline-code">svg-error</code> events are emitted when the markup resolves or fails.
@@ -335,22 +337,20 @@ const flutterNotes = [
 
             <!-- Svelte -->
             <div data-fw-show="svelte" class="hidden">
-              <div class="mt-4 code-block" data-lang="svelte">
-                <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/svelte"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+                              <CodeBlock code={`<script lang="ts">
+  import { SVG } from "@mhaadi/svg/svelte";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
-  <span class="token-prop">width</span><span class="token-punct">=</span><span class="token-string">"24"</span>
-  <span class="token-prop">height</span><span class="token-punct">=</span><span class="token-string">"24"</span>
-<span class="token-punct">{"/>"}</span>
+<SVG
+  src="https://cdn.example.com/icon.svg"
+  width="24"
+  height="24"
+/>
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"/icon.svg"</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"{#"}</span><span class="token-keyword">snippet</span> loading<span class="token-punct">(){"}"}</span>Loading…<span class="token-punct">{"{/"}</span><span class="token-keyword">snippet</span><span class="token-punct">{"}"}</span>
-  <span class="token-punct">{"{#"}</span><span class="token-keyword">snippet</span> fallback<span class="token-punct">(){"}"}</span>Failed<span class="token-punct">{"{/"}</span><span class="token-keyword">snippet</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"</"}</span><span class="token-component">SVG</span><span class="token-punct">{">"}</span></pre>
-              </div>
+<SVG src="/icon.svg">
+  {#snippet loading()}Loading…{/snippet}
+  {#snippet fallback()}Failed{/snippet}
+</SVG>`} lang="svelte" />
               <p class="docs-body mt-4">
                 Svelte 5 uses the runes API. Pass <code class="inline-code">loading</code> and{" "}
                 <code class="inline-code">fallback</code> as snippets.
@@ -359,25 +359,23 @@ const flutterNotes = [
 
             <!-- Flutter -->
             <div data-fw-show="flutter" class="hidden">
-              <div class="mt-4 code-block" data-lang="dart">
-                <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-string">'package:svg_flutter/svg_flutter.dart'</span><span class="token-punct">;</span>
+                              <CodeBlock code={`import 'package:svg_flutter/svg_flutter.dart';
 
-<span class="token-keyword">class</span> <span class="token-component">MyIcon</span> <span class="token-keyword">extends</span> <span class="token-component">StatelessWidget</span> <span class="token-punct">{"{"}</span>
-  <span class="token-keyword">const</span> <span class="token-component">MyIcon</span><span class="token-punct">({"{"}</span><span class="token-keyword">super</span><span class="token-punct">.</span>key<span class="token-punct">{"}"});</span>
+class MyIcon extends StatelessWidget {
+  const MyIcon({super.key});
 
-  <span class="token-keyword">@override</span>
-  <span class="token-component">Widget</span> <span class="token-prop">build</span><span class="token-punct">(</span><span class="token-component">BuildContext</span> context<span class="token-punct">)</span> <span class="token-punct">{"{"}</span>
-    <span class="token-keyword">return</span> <span class="token-keyword">const</span> <span class="token-component">Svg</span><span class="token-punct">(</span>
-      <span class="token-prop">src</span><span class="token-punct">:</span> <span class="token-string">'https://cdn.example.com/icon.svg'</span><span class="token-punct">,</span>
-      <span class="token-prop">width</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
-      <span class="token-prop">height</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
-      <span class="token-prop">color</span><span class="token-punct">:</span> <span class="token-component">Color</span><span class="token-punct">(</span><span class="token-string">0xFF111827</span><span class="token-punct">),</span>
-      <span class="token-prop">loading</span><span class="token-punct">:</span> <span class="token-component">CircularProgressIndicator</span><span class="token-punct">(),</span>
-      <span class="token-prop">fallback</span><span class="token-punct">:</span> <span class="token-component">Icon</span><span class="token-punct">(</span><span class="token-component">Icons</span><span class="token-punct">.</span>broken_image<span class="token-punct">),</span>
-    <span class="token-punct">);</span>
-  <span class="token-punct">{"}"}</span>
-<span class="token-punct">{"}"}</span></pre>
-              </div>
+  @override
+  Widget build(BuildContext context) {
+    return const Svg(
+      src: 'https://cdn.example.com/icon.svg',
+      width: 24,
+      height: 24,
+      color: Color(0xFF111827),
+      loading: CircularProgressIndicator(),
+      fallback: Icon(Icons.broken_image),
+    );
+  }
+}`} lang="dart" />
               <p class="docs-body mt-4">
                 svg_flutter renders via <code class="inline-code">flutter_svg</code>'s{" "}
                 <code class="inline-code">SvgPicture.string</code>. Sanitization runs against the raw markup
@@ -479,12 +477,10 @@ const flutterNotes = [
                     and override any attributes parsed from SVG markup. Forwarded via{" "}
                     <code class="inline-code">React.forwardRef</code>.
                   </p>
-                  <div class="code-block" data-lang="tsx">
-                    <pre class="p-4 text-sm leading-6"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
-<span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-type">SvgName</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg"</span><span class="token-punct">;</span>
+                                  <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
+import { SvgName } from "@mhaadi/svg";
 
-<span class="token-keyword">const</span> icons<span class="token-punct">:</span> <span class="token-type">SvgName</span><span class="token-punct">[]</span> <span class="token-punct">=</span> <span class="token-punct">["</span><span class="token-string">logo</span><span class="token-punct">", "</span><span class="token-string">arrow</span><span class="token-punct">"];</span></pre>
-                  </div>
+const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
                 </div>
               </div>
 
@@ -496,18 +492,16 @@ const flutterNotes = [
                     Accepts the standard source props plus size, color, and paint overrides
                     that are translated to <code class="inline-code">react-native-svg</code> props.
                   </p>
-                  <div class="code-block" data-lang="tsx">
-                    <pre class="p-4 text-sm leading-6"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span>
-  <span class="token-prop">width</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">height</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">color</span><span class="token-punct">=</span><span class="token-string">"#111827"</span>
-  <span class="token-prop">fill</span><span class="token-punct">=</span><span class="token-string">"none"</span>
-  <span class="token-prop">stroke</span><span class="token-punct">=</span><span class="token-string">"currentColor"</span>
-  <span class="token-prop">strokeWidth</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">1.5</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">style</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"{"}</span> margin<span class="token-punct">:</span> <span class="token-string">8</span> <span class="token-punct">{"}"}</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"/>"}</span></pre>
-                  </div>
+                                  <CodeBlock code={`<SVG
+  name="logo"
+  width={24}
+  height={24}
+  color="#111827"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth={1.5}
+  style={{ margin: 8 }}
+/>`} lang="tsx" />
                 </div>
               </div>
 
@@ -520,20 +514,18 @@ const flutterNotes = [
                     aria-label, aria-hidden) are forwarded. Events are kebab-cased
                     (<code class="inline-code">svg-load</code>, <code class="inline-code">svg-error</code>).
                   </p>
-                  <div class="code-block" data-lang="vue">
-                    <pre class="p-4 text-sm leading-6"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">@svg-load</span><span class="token-punct">=</span><span class="token-string">"onLoad"</span>
-  <span class="token-prop">@svg-error</span><span class="token-punct">=</span><span class="token-string">"onError"</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"/icon.svg"</span>
-  <span class="token-prop">:width</span><span class="token-punct">=</span><span class="token-string">24</span>
-  <span class="token-prop">:height</span><span class="token-punct">=</span><span class="token-string">24</span>
-  <span class="token-prop">role</span><span class="token-punct">=</span><span class="token-string">"img"</span>
-  <span class="token-prop">aria-label</span><span class="token-punct">=</span><span class="token-string">"Icon"</span>
-<span class="token-punct">{">"}</span>
-  <span class="token-punct">{"<"}</span><span class="token-keyword">template</span> <span class="token-prop">#loading</span><span class="token-punct">{">"}</span><span class="token-component">Spinner</span><span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"<"}</span><span class="token-keyword">template</span> <span class="token-prop">#fallback</span><span class="token-punct">{">"}</span><span class="token-component">Fallback</span><span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-<span class="token-punct">{"</"}</span><span class="token-component">SVG</span><span class="token-punct">{">"}</span></pre>
-                  </div>
+                                  <CodeBlock code={`<SVG
+  @svg-load="onLoad"
+  @svg-error="onError"
+  src="/icon.svg"
+  :width=24
+  :height=24
+  role="img"
+  aria-label="Icon"
+>
+  <template #loading>Spinner</template>
+  <template #fallback>Fallback</template>
+</SVG>`} lang="vue" />
                 </div>
               </div>
 
@@ -547,15 +539,13 @@ const flutterNotes = [
                     <code class="inline-code">loading</code> and <code class="inline-code">fallback</code>{" "}
                     props.
                   </p>
-                  <div class="code-block" data-lang="svelte">
-                    <pre class="p-4 text-sm leading-6"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"/icon.svg"</span>
-  <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-current"</span>
-<span class="token-punct">{">"}</span>
-  <span class="token-punct">{"{#"}</span><span class="token-keyword">snippet</span> loading<span class="token-punct">(){"}"}</span><span class="token-component">Spinner</span><span class="token-punct">{"{/"}</span><span class="token-keyword">snippet</span><span class="token-punct">{"}"}</span>
-  <span class="token-punct">{"{#"}</span><span class="token-keyword">snippet</span> fallback<span class="token-punct">(){"}"}</span><span class="token-component">Fallback</span><span class="token-punct">{"{/"}</span><span class="token-keyword">snippet</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"</"}</span><span class="token-component">SVG</span><span class="token-punct">{">"}</span></pre>
-                  </div>
+                                  <CodeBlock code={`<SVG
+  src="/icon.svg"
+  class="h-6 w-6 text-current"
+>
+  {#snippet loading()}Spinner{/snippet}
+  {#snippet fallback()}Fallback{/snippet}
+</SVG>`} lang="svelte" />
                 </div>
               </div>
 
@@ -571,26 +561,24 @@ const flutterNotes = [
                     <code class="inline-code">httpClient</code> and{" "}
                     <code class="inline-code">localResolver</code> for asset lookups.
                   </p>
-                  <div class="code-block" data-lang="dart">
-                    <pre class="p-4 text-sm leading-6"><span class="token-keyword">import</span> <span class="token-string">'package:http/http.dart'</span> <span class="token-keyword">as</span> http<span class="token-punct">;</span>
-<span class="token-keyword">import</span> <span class="token-string">'package:svg_flutter/svg_flutter.dart'</span><span class="token-punct">;</span>
+                                  <CodeBlock code={`import 'package:http/http.dart' as http;
+import 'package:svg_flutter/svg_flutter.dart';
 
-<span class="token-component">Svg</span><span class="token-punct">(</span>
-  <span class="token-prop">src</span><span class="token-punct">:</span> <span class="token-string">'https://cdn.example.com/icon.svg'</span><span class="token-punct">,</span>
-  <span class="token-prop">width</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
-  <span class="token-prop">height</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
-  <span class="token-prop">color</span><span class="token-punct">:</span> <span class="token-keyword">const</span> <span class="token-component">Color</span><span class="token-punct">(</span><span class="token-string">0xFF111827</span><span class="token-punct">),</span>
-  <span class="token-prop">fit</span><span class="token-punct">:</span> <span class="token-component">BoxFit</span><span class="token-punct">.</span>contain<span class="token-punct">,</span>
-  <span class="token-prop">alignment</span><span class="token-punct">:</span> <span class="token-component">Alignment</span><span class="token-punct">.</span>center<span class="token-punct">,</span>
-  <span class="token-prop">matchTextDirection</span><span class="token-punct">:</span> <span class="token-keyword">true</span><span class="token-punct">,</span>
-  <span class="token-prop">allowDrawingOutsideViewBox</span><span class="token-punct">:</span> <span class="token-keyword">false</span><span class="token-punct">,</span>
-  <span class="token-prop">httpClient</span><span class="token-punct">:</span> <span class="token-component">http</span><span class="token-punct">.</span><span class="token-component">Client</span><span class="token-punct">(),</span>
-  <span class="token-prop">localResolver</span><span class="token-punct">:</span> <span class="token-punct">(</span>name<span class="token-punct">)</span> <span class="token-punct">{"=>"}</span> rootBundle<span class="token-punct">.</span>loadString<span class="token-punct">(</span><span class="token-string">'assets/icons/$name.svg'</span><span class="token-punct">),</span>
-  <span class="token-prop">fetchHeaders</span><span class="token-punct">:</span> <span class="token-punct">{"{"}</span><span class="token-string">'Authorization'</span><span class="token-punct">:</span> <span class="token-string">'Bearer ...'</span><span class="token-punct">{"}"},</span>
-  <span class="token-prop">onSvgLoad</span><span class="token-punct">:</span> <span class="token-punct">(</span>m<span class="token-punct">)</span> <span class="token-punct">{"=>"}</span> debugPrint<span class="token-punct">(</span>m<span class="token-punct">.</span>length<span class="token-punct">.</span>toString<span class="token-punct">()),</span>
-  <span class="token-prop">onSvgError</span><span class="token-punct">:</span> <span class="token-punct">(</span>e<span class="token-punct">)</span> <span class="token-punct">{"=>"}</span> debugPrint<span class="token-punct">(</span>e<span class="token-punct">.</span>toString<span class="token-punct">()),</span>
-<span class="token-punct">)</span></pre>
-                  </div>
+Svg(
+  src: 'https://cdn.example.com/icon.svg',
+  width: 24,
+  height: 24,
+  color: const Color(0xFF111827),
+  fit: BoxFit.contain,
+  alignment: Alignment.center,
+  matchTextDirection: true,
+  allowDrawingOutsideViewBox: false,
+  httpClient: http.Client(),
+  localResolver: (name) => rootBundle.loadString('assets/icons/$name.svg'),
+  fetchHeaders: {'Authorization': 'Bearer ...'},
+  onSvgLoad: (m) => debugPrint(m.length.toString()),
+  onSvgError: (e) => debugPrint(e.toString()),
+)`} lang="dart" />
                   <p class="mt-3 text-sm text-zinc-muted">
                     Flutter also exposes a <code class="inline-code">placeholderBuilder</code> alias for{" "}
                     <code class="inline-code">loading</code>, mirroring{" "}
@@ -701,12 +689,10 @@ const flutterNotes = [
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
                   DOM parsing is unavailable on the server. Use the <code class="inline-code">loading</code> prop to render a placeholder during SSR — otherwise the component renders nothing on the first pass.
                 </p>
-                <div class="code-block" data-lang="tsx">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>remoteUrl<span class="token-punct">{"}"}</span>
-  <span class="token-prop">loading</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">div</span> <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 bg-zinc-800 rounded animate-pulse"</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"/>"}</span></pre>
-                </div>
+                                <CodeBlock code={`<SVG
+  src={remoteUrl}
+  loading={<div className="h-6 w-6 bg-zinc-800 rounded animate-pulse" />}
+/>`} lang="tsx" />
               </div>
 
               <div>
@@ -714,15 +700,13 @@ const flutterNotes = [
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
                   Remote SVGs require the server to send appropriate CORS headers. Use <code class="inline-code">fetchOptions</code> to pass credentials or custom headers.
                 </p>
-                <div class="code-block" data-lang="tsx">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]"><span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://api.example.com/icon.svg"</span>
-  <span class="token-prop">fetchOptions</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>useMemo<span class="token-punct">(</span><span class="token-punct">()</span> <span class="token-punct">{"=>"}</span> <span class="token-punct">({"{"}</span>
-    headers<span class="token-punct">:</span> <span class="token-punct">{"{"}</span> Authorization<span class="token-punct">:</span> <span class="token-string">"Bearer token"</span> <span class="token-punct">{"}"}</span><span class="token-punct">,</span>
-    credentials<span class="token-punct">:</span> <span class="token-string">"include"</span><span class="token-punct">,</span>
-  <span class="token-punct">{"}"}</span><span class="token-punct">),</span> <span class="token-punct">[]</span><span class="token-punct">)</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"/>"}</span></pre>
-                </div>
+                                <CodeBlock code={`<SVG
+  src="https://api.example.com/icon.svg"
+  fetchOptions={useMemo(() => ({
+    headers: { Authorization: "Bearer token" },
+    credentials: "include",
+  }), [])}
+/>`} lang="tsx" />
               </div>
 
               <div>
@@ -730,27 +714,22 @@ const flutterNotes = [
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
                   <code class="inline-code">fetchOptions</code> should be stable across renders — memoize it to prevent unnecessary re-fetches.
                 </p>
-                <div class="code-block" data-lang="tsx">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]"><span class="token-keyword">const</span> opts <span class="token-punct">=</span> useMemo<span class="token-punct">(</span>
-  <span class="token-punct">()</span> <span class="token-punct">{"=>"}</span> <span class="token-punct">({"{"}</span> headers<span class="token-punct">:</span> <span class="token-punct">{"{"}</span> Accept<span class="token-punct">:</span> <span class="token-string">"image/svg+xml"</span> <span class="token-punct">{"}"}</span> <span class="token-punct">{"}"}</span><span class="token-punct">),</span>
-  <span class="token-punct">[]</span>
-<span class="token-punct">);</span>
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>url<span class="token-punct">{"}"}</span> <span class="token-prop">fetchOptions</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>opts<span class="token-punct">{"}"}</span> <span class="token-punct">{"/>"}</span></pre>
-                </div>
+                                <CodeBlock code={`const opts = useMemo(
+  () => ({ headers: { Accept: "image/svg+xml" } }),
+  []
+);
+<SVG src={url} fetchOptions={opts} />`} lang="tsx" />
               </div>
 
               <div>
                 <h3 class="mb-2 font-semibold text-[#e8e8e8]">name prop fallback chain</h3>
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
-                  The <code class="inline-code">name</code> prop looks for the file in <code class="inline-code">src/assets/svg/</code>, then <code class="inline-code">app/assets/svg/</code>, then <code class="inline-code">public/assets/svg/</code>. If not found anywhere, it falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code> in public.
+                  If the named SVG is not found in <code class="inline-code">src/assets/svg/</code>,{" "}
+                  <code class="inline-code">app/assets/svg/</code>, or <code class="inline-code">public/assets/svg/</code>, it
+                  falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code> in public.
                 </p>
-                <div class="code-block" data-lang="tsx">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]"><span class="token-comment">{"// Expects file at one of:"}</span>
-<span class="token-comment">{"// src/assets/svg/logo.svg"}</span>
-<span class="token-comment">{"// app/assets/svg/logo.svg"}</span>
-<span class="token-comment">{"// public/assets/svg/logo.svg"}</span>
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span> <span class="token-punct">{"/>"}</span></pre>
-                </div>
+                                <CodeBlock code={`// Searches src/app/public/assets/svg, then:
+<SVG name="logo" />`} lang="tsx" />
               </div>
 
               <div data-fw-show="flutter" class="hidden">
@@ -758,12 +737,10 @@ const flutterNotes = [
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
                   Inject your own <code class="inline-code">http.Client</code> for testing or to share a connection pool. The widget takes ownership of the client lifecycle unless you supply your own.
                 </p>
-                <div class="code-block" data-lang="dart">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]">Svg(
+                                <CodeBlock code={`Svg(
   src: 'https://example.com/icon.svg',
   httpClient: myClient,
-)</pre>
-                </div>
+)`} lang="dart" />
               </div>
 
               <div data-fw-show="flutter" class="hidden">
@@ -771,12 +748,10 @@ const flutterNotes = [
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
                   By default, <code class="inline-code">name</code> falls back to <code class="inline-code">assets/svg/{"{name}"}.svg</code>. Pass a custom <code class="inline-code">localResolver</code> to integrate with <code class="inline-code">rootBundle</code> or your own asset pipeline.
                 </p>
-                <div class="code-block" data-lang="dart">
-                  <pre class="px-4 py-3 text-sm text-[#e8e8e8]">Svg(
+                                <CodeBlock code={`Svg(
   name: 'logo',
   localResolver: (name) async => rootBundle.loadString('assets/icons/$name.svg'),
-)</pre>
-                </div>
+)`} lang="dart" />
               </div>
             </div>
           </section>
@@ -786,30 +761,53 @@ const flutterNotes = [
             <h2 class="docs-heading">Examples</h2>
 
             <div class="space-y-8">
-              <!-- Example 1: Icon button (React default) -->
-              <div data-fw-show="react react-native">
+              <!-- Example 1: Icon button -->
+              <div data-fw-show="react">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor — React / React Native</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor — React</h3>
                 </div>
-                <div class="code-block" data-lang="tsx">
-                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+                                <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
-<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">IconButton</span><span class="token-punct">{"({ "}</span>label<span class="token-punct">{" })"}</span> <span class="token-punct">{"{"}</span>
-  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
-    <span class="token-punct">{"<"}</span><span class="token-component">button</span>
-      <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"flex items-center gap-2 text-emerald-400 hover:text-emerald-300"</span>
-    <span class="token-punct">{">"}</span>
-      <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-        <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"arrow-right"</span>
-        <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-4 w-4 text-current"</span>
-        <span class="token-prop">aria-hidden</span>
-      <span class="token-punct">{"/>"}</span>
-      <span class="token-punct">{"{"}</span>label<span class="token-punct">{"}"}</span>
-    <span class="token-punct">{"</"}</span><span class="token-component">button</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
-<span class="token-punct">{"}"}</span></pre>
+export function IconButton({ label }) {
+  return (
+    <button
+      className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300"
+    >
+      <SVG
+        name="arrow-right"
+        className="h-4 w-4 text-current"
+        aria-hidden
+      />
+      {label}
+    </button>
+  );
+}`} lang="tsx" />
+              </div>
+
+              <div data-fw-show="react-native" class="hidden">
+                <div class="mb-3 flex items-center gap-2">
+                  <span class="h-1 w-4 bg-acid rounded-none"></span>
+                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor — React Native</h3>
                 </div>
+                                <CodeBlock code={`import { TouchableOpacity, "}Text  } from "react-native";
+import { SVG } from "@mhaadi/svg/react-native";
+
+export function IconButton({ label }) {
+  return (
+    <TouchableOpacity
+      style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+    >
+      <SVG
+        name="arrow-right"
+        width={16}
+        height={16}
+        color="#10b981"
+      />
+      <Text style={{ color: "#10b981" }}>{label}</Text>
+    </TouchableOpacity>
+  );
+}`} lang="tsx" />
               </div>
 
               <div data-fw-show="vue svelte" class="hidden">
@@ -818,38 +816,34 @@ const flutterNotes = [
                   <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor — Vue / Svelte</h3>
                 </div>
                 <div data-fw-show="vue">
-                  <div class="code-block" data-lang="vue">
-                    <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">setup</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/vue"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+                                  <CodeBlock code={`<script setup lang="ts">
+  import { SVG } from "@mhaadi/svg/vue";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"<"}</span><span class="token-component">button</span> <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"flex items-center gap-2 text-emerald-400 hover:text-emerald-300"</span><span class="token-punct">{">"}</span>
-    <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-      <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"arrow-right"</span>
-      <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"h-4 w-4 text-current"</span>
-      <span class="token-prop">aria-hidden</span>
-    <span class="token-punct">{"/>"}</span>
-    <span class="token-punct">{"{"}</span><span class="token-punct">{"{ "}</span>label <span class="token-punct">{"}"}</span><span class="token-punct">{"}"}</span>
-  <span class="token-punct">{"</"}</span><span class="token-component">button</span><span class="token-punct">{">"}</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span></pre>
-                  </div>
+<template>
+  <button class="flex items-center gap-2 text-emerald-400 hover:text-emerald-300">
+    <SVG
+      name="arrow-right"
+      class="h-4 w-4 text-current"
+      aria-hidden
+    />
+    {{ label }}
+  </button>
+</template>`} lang="vue" />
                 </div>
                 <div data-fw-show="svelte" class="hidden">
-                  <div class="code-block" data-lang="svelte">
-                    <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/svelte"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+                                  <CodeBlock code={`<script lang="ts">
+  import { SVG } from "@mhaadi/svg/svelte";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-component">button</span> <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"flex items-center gap-2 text-emerald-400 hover:text-emerald-300"</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-    <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"arrow-right"</span>
-    <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"h-4 w-4 text-current"</span>
-    <span class="token-prop">aria-hidden</span>
-  <span class="token-punct">{"/>"}</span>
-  <span class="token-punct">{"{"</span>label<span class="token-punct">}</span>
-<span class="token-punct">{"</"}</span><span class="token-component">button</span><span class="token-punct">{">"}</span></pre>
-                  </div>
+<button class="flex items-center gap-2 text-emerald-400 hover:text-emerald-300">
+  <SVG
+    name="arrow-right"
+    class="h-4 w-4 text-current"
+    aria-hidden
+  />
+  {"{"label}
+</button>`} lang="svelte" />
                 </div>
               </div>
 
@@ -858,54 +852,76 @@ const flutterNotes = [
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
                   <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor — Flutter</h3>
                 </div>
-                <div class="code-block" data-lang="dart">
-                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-string">'package:flutter/material.dart'</span><span class="token-punct">;</span>
-<span class="token-keyword">import</span> <span class="token-string">'package:svg_flutter/svg_flutter.dart'</span><span class="token-punct">;</span>
+                                <CodeBlock code={`import 'package:flutter/material.dart';
+import 'package:svg_flutter/svg_flutter.dart';
 
-<span class="token-keyword">class</span> <span class="token-component">IconButton</span> <span class="token-keyword">extends</span> <span class="token-component">StatelessWidget</span> <span class="token-punct">{"{"}</span>
-  <span class="token-keyword">const</span> <span class="token-component">IconButton</span><span class="token-punct">({"{"}</span><span class="token-keyword">super</span><span class="token-punct">.</span>key<span class="token-punct">,</span> <span class="token-keyword">required</span> <span class="token-keyword">this</span><span class="token-punct">.</span>label<span class="token-punct">{"}"});</span>
-  <span class="token-keyword">final</span> <span class="token-component">String</span> label<span class="token-punct">;</span>
+class IconButton extends StatelessWidget {
+  const IconButton({super.key, required this.label});
+  final String label;
 
-  <span class="token-keyword">@override</span>
-  <span class="token-component">Widget</span> <span class="token-prop">build</span><span class="token-punct">(</span><span class="token-component">BuildContext</span> context<span class="token-punct">)</span> <span class="token-punct">{"{"}</span>
-    <span class="token-keyword">return</span> <span class="token-component">Row</span><span class="token-punct">(</span>
-      mainAxisSize<span class="token-punct">:</span> <span class="token-component">MainAxisSize</span><span class="token-punct">.</span>min<span class="token-punct">,</span>
-      children<span class="token-punct">:</span> <span class="token-punct">[</span>
-        <span class="token-keyword">const</span> <span class="token-component">Svg</span><span class="token-punct">(</span>name<span class="token-punct">:</span> <span class="token-string">'arrow-right'</span><span class="token-punct">,</span> width<span class="token-punct">:</span> <span class="token-string">16</span><span class="token-punct">,</span> height<span class="token-punct">:</span> <span class="token-string">16</span><span class="token-punct">),</span>
-        <span class="token-keyword">const</span> <span class="token-component">SizedBox</span><span class="token-punct">(</span>width<span class="token-punct">:</span> <span class="token-string">8</span><span class="token-punct">),</span>
-        <span class="token-component">Text</span><span class="token-punct">(</span>label<span class="token-punct">),</span>
-      <span class="token-punct">],</span>
-    <span class="token-punct">);</span>
-  <span class="token-punct">{"}"}</span>
-<span class="token-punct">{"}"}</span></pre>
-                </div>
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Svg(name: 'arrow-right', width: 16, height: 16),
+        const SizedBox(width: 8),
+        Text(label),
+      ],
+    );
+  }
+}`} lang="dart" />
               </div>
 
               <!-- Example 2: Remote SVG with skeleton -->
-              <div data-fw-show="react react-native">
+              <div data-fw-show="react">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — React / React Native</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — React</h3>
                 </div>
-                <div class="code-block" data-lang="tsx">
-                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+                                <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
-<span class="token-keyword">const</span> <span class="token-component">Skeleton</span> <span class="token-punct">=</span> <span class="token-punct">{"() =>"}</span>
-  <span class="token-punct">{"<"}</span><span class="token-component">div</span> <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8 rounded bg-zinc-800 animate-pulse"</span> <span class="token-punct">{"/>"}</span><span class="token-punct">;</span>
+const Skeleton = () =>
+  <div className="h-8 w-8 rounded bg-zinc-800 animate-pulse" />;
 
-<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">RemoteIcon</span><span class="token-punct">{"({ "}</span>url<span class="token-punct">{" })"}</span> <span class="token-punct">{"{"}</span>
-  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
-    <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-      <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>url<span class="token-punct">{"}"}</span>
-      <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8"</span>
-      <span class="token-prop">sanitize</span>
-      <span class="token-prop">cache</span>
-      <span class="token-prop">loading</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">Skeleton</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
-      <span class="token-prop">fallback</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-punct">{"<"}</span><span class="token-component">Skeleton</span> <span class="token-punct">{"/>"}</span><span class="token-punct">{"}"}</span>
-    <span class="token-punct">{"/>"}</span>
-  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
-<span class="token-punct">{"}"}</span></pre>
+export function RemoteIcon({ url }) {
+  return (
+    <SVG
+      src={url}
+      className="h-8 w-8"
+      sanitize
+      cache
+      loading={<Skeleton />}
+      fallback={<Skeleton />}
+    />
+  );
+}`} lang="tsx" />
+              </div>
+
+              <div data-fw-show="react-native" class="hidden">
+                <div class="mb-3 flex items-center gap-2">
+                  <span class="h-1 w-4 bg-acid rounded-none"></span>
+                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — React Native</h3>
                 </div>
+                                <CodeBlock code={`import { View  } from "react-native";
+import { SVG } from "@mhaadi/svg/react-native";
+
+const Skeleton = () =>
+  <View style={{ width: 32, height: 32, borderRadius: 4, backgroundColor: "#27272a" }} />;
+
+export function RemoteIcon({ url }) {
+  return (
+    <SVG
+      src={url}
+      width={32}
+      height={32}
+      sanitize
+      cache
+      loading={<Skeleton />}
+      fallback={<Skeleton />}
+    />
+  );
+}`} lang="tsx" />
               </div>
 
               <div data-fw-show="vue" class="hidden">
@@ -913,23 +929,21 @@ const flutterNotes = [
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
                   <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — Vue</h3>
                 </div>
-                <div class="code-block" data-lang="vue">
-                  <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">setup</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/vue"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+                                <CodeBlock code={`<script setup lang="ts">
+  import { SVG } from "@mhaadi/svg/vue";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-    <span class="token-prop">:src</span><span class="token-punct">=</span><span class="token-string">url</span>
-    <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8"</span>
-    <span class="token-prop">sanitize</span>
-    <span class="token-prop">cache</span>
-  <span class="token-punct">{">"}</span>
-    <span class="token-punct">{"<"}</span><span class="token-keyword">template</span> <span class="token-prop">#loading</span><span class="token-punct">{">"}</span><span class="token-component">Skeleton</span><span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-    <span class="token-punct">{"<"}</span><span class="token-keyword">template</span> <span class="token-prop">#fallback</span><span class="token-punct">{">"}</span><span class="token-component">Skeleton</span><span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"</"}</span><span class="token-component">SVG</span><span class="token-punct">{">"}</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">template</span><span class="token-punct">{">"}</span></pre>
-                </div>
+<template>
+  <SVG
+    :src=url
+    class="h-8 w-8"
+    sanitize
+    cache
+  >
+    <template #loading>Skeleton</template>
+    <template #fallback>Skeleton</template>
+  </SVG>
+</template>`} lang="vue" />
               </div>
 
               <div data-fw-show="svelte" class="hidden">
@@ -937,16 +951,14 @@ const flutterNotes = [
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
                   <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — Svelte</h3>
                 </div>
-                <div class="code-block" data-lang="svelte">
-                  <pre class="p-5 text-sm leading-7"><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/svelte"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+                                <CodeBlock code={`<script lang="ts">
+  import { SVG } from "@mhaadi/svg/svelte";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span> <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"</span>url<span class="token-punct">}</span><span class="token-punct">{"}"}</span> <span class="token-prop">class</span><span class="token-punct">=</span><span class="token-string">"h-8 w-8"</span> <span class="token-prop">sanitize</span> <span class="token-prop">cache</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{"{#"}</span><span class="token-keyword">snippet</span> loading<span class="token-punct">(){"}"}</span><span class="token-component">Skeleton</span><span class="token-punct">{"{/"}</span><span class="token-keyword">snippet</span><span class="token-punct">{"}"}</span>
-  <span class="token-punct">{"{#"}</span><span class="token-keyword">snippet</span> fallback<span class="token-punct">(){"}"}</span><span class="token-component">Skeleton</span><span class="token-punct">{"{/"}</span><span class="token-keyword">snippet</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"</"}</span><span class="token-component">SVG</span><span class="token-punct">{">"}</span></pre>
-                </div>
+<SVG src={"url}{"} class="h-8 w-8" sanitize cache>
+  {#snippet loading()}Skeleton{/snippet}
+  {#snippet fallback()}Skeleton{/snippet}
+</SVG>`} lang="svelte" />
               </div>
 
               <div data-fw-show="flutter" class="hidden">
@@ -954,23 +966,21 @@ const flutterNotes = [
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
                   <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — Flutter</h3>
                 </div>
-                <div class="code-block" data-lang="dart">
-                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">const</span> <span class="token-component">Skeleton</span> <span class="token-punct">=</span> <span class="token-component">SizedBox</span><span class="token-punct">(</span>
-  width<span class="token-punct">:</span> <span class="token-string">32</span><span class="token-punct">,</span>
-  height<span class="token-punct">:</span> <span class="token-string">32</span><span class="token-punct">,</span>
-  child<span class="token-punct">:</span> <span class="token-component">CircularProgressIndicator</span><span class="token-punct">(</span>strokeWidth<span class="token-punct">:</span> <span class="token-string">2</span><span class="token-punct">),</span>
-<span class="token-punct">);</span>
+                                <CodeBlock code={`const Skeleton = SizedBox(
+  width: 32,
+  height: 32,
+  child: CircularProgressIndicator(strokeWidth: 2),
+);
 
-<span class="token-component">Svg</span><span class="token-punct">(</span>
-  <span class="token-prop">src</span><span class="token-punct">:</span> url<span class="token-punct">,</span>
-  <span class="token-prop">width</span><span class="token-punct">:</span> <span class="token-string">32</span><span class="token-punct">,</span>
-  <span class="token-prop">height</span><span class="token-punct">:</span> <span class="token-string">32</span><span class="token-punct">,</span>
-  <span class="token-prop">sanitize</span><span class="token-punct">:</span> <span class="token-keyword">true</span><span class="token-punct">,</span>
-  <span class="token-prop">cache</span><span class="token-punct">:</span> <span class="token-keyword">true</span><span class="token-punct">,</span>
-  <span class="token-prop">loading</span><span class="token-punct">:</span> <span class="token-component">Skeleton</span><span class="token-punct">,</span>
-  <span class="token-prop">fallback</span><span class="token-punct">:</span> <span class="token-component">Skeleton</span><span class="token-punct">,</span>
-<span class="token-punct">)</span></pre>
-                </div>
+Svg(
+  src: url,
+  width: 32,
+  height: 32,
+  sanitize: true,
+  cache: true,
+  loading: Skeleton,
+  fallback: Skeleton,
+)`} lang="dart" />
               </div>
 
               <!-- Example 3: Dynamic gallery (typed names) -->
@@ -979,26 +989,24 @@ const flutterNotes = [
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
                   <h3 class="font-semibold text-[#e8e8e8]">Dynamic icon gallery from a name list — React</h3>
                 </div>
-                <div class="code-block" data-lang="tsx">
-                  <pre class="p-5 text-sm leading-7"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
-<span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-type">SvgName</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg"</span><span class="token-punct">;</span>
+                                <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
+import { SvgName } from "@mhaadi/svg";
 
-<span class="token-keyword">const</span> icons<span class="token-punct">:</span> <span class="token-type">SvgName</span><span class="token-punct">[]</span> <span class="token-punct">=</span> <span class="token-punct">["</span><span class="token-string">logo</span><span class="token-punct">", "</span><span class="token-string">arrow</span><span class="token-punct">", "</span><span class="token-string">star</span><span class="token-punct">"];</span>
+const icons: SvgName[] = ["logo", "arrow", "star"];
 
-<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-component">IconGallery</span><span class="token-punct">()</span> <span class="token-punct">{"{"}</span>
-  <span class="token-keyword">return</span> <span class="token-punct">{"("}</span>
-    <span class="token-punct">{"<"}</span><span class="token-component">div</span> <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"flex gap-4"</span><span class="token-punct">{">"}</span>
-      <span class="token-punct">{"{"}</span>icons<span class="token-punct">.</span>map<span class="token-punct">{"((name) =>"}</span> <span class="token-punct">{"("}</span>
-        <span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-          <span class="token-prop">key</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>name<span class="token-punct">{"}"}</span>
-          <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>name<span class="token-punct">{"}"}</span>
-          <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-zinc-400"</span>
-        <span class="token-punct">{"/>"}</span>
-      <span class="token-punct">{"))"}</span><span class="token-punct">{"}"}</span>
-    <span class="token-punct">{"</"}</span><span class="token-component">div</span><span class="token-punct">{">"}</span>
-  <span class="token-punct">{")"}</span><span class="token-punct">;</span>
-<span class="token-punct">{"}"}</span></pre>
-                </div>
+export function IconGallery() {
+  return (
+    <div className="flex gap-4">
+      {icons.map((name) => (
+        <SVG
+          key={name}
+          name={name}
+          className="h-6 w-6 text-zinc-400"
+        />
+      ))}
+    </div>
+  );
+}`} lang="tsx" />
                 <p class="mt-3 text-sm text-zinc-muted">
                   <code class="inline-code">SvgName</code> is a string literal union derived from the SVGs
                   present in <code class="inline-code">src/assets/svg/</code> at build time. It gives you
@@ -1009,15 +1017,23 @@ const flutterNotes = [
           </section>
 
           <!-- Bottom nav -->
-          <div class="border-t border-coal-2 pt-8 flex items-center justify-between">
-            <div></div>
-            <a href="/" class="flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
+          <nav id="docs-bottom-nav" class="border-t border-coal-2 pt-8 flex items-center justify-between" aria-label="Section navigation">
+            <a id="docs-prev-link" href="#overview" class="flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
+              <svg class="h-4 w-4 transition-transform group-hover:-translate-x-1" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span id="docs-prev-label">Previous</span>
+            </a>
+            <a href="/" class="hidden sm:flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors">
               Back to landing page
-              <svg class="h-4 w-4 rotate-180 transition-transform group-hover:-translate-x-1" viewBox="0 0 16 16" fill="none">
+            </a>
+            <a id="docs-next-link" href="#installation" class="flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
+              <span id="docs-next-label">Next</span>
+              <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none">
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </a>
-          </div>
+          </nav>
         </main>
       </div>
     </div>
@@ -1063,6 +1079,9 @@ const flutterNotes = [
 </style>
 
 <script>
+  import { initCodeBlocks } from "../scripts/code-block";
+  import Fuse from "fuse.js";
+
   let cleanup = () => {};
 
   function initDocsPage() {
@@ -1088,6 +1107,12 @@ const flutterNotes = [
     const mobileChevron = document.getElementById("docs-mobile-sidebar-chevron");
     const mobileSection = mobileSidebarBtn?.querySelector("[data-mobile-section]");
 
+    const sectionOrder = Array.from(sectionEls).map((el) => el.id);
+    const prevLink = document.getElementById("docs-prev-link") as HTMLAnchorElement | null;
+    const nextLink = document.getElementById("docs-next-link") as HTMLAnchorElement | null;
+    const prevLabel = document.getElementById("docs-prev-label");
+    const nextLabel = document.getElementById("docs-next-label");
+
     function updateActive() {
       const els = Array.from(sectionEls) as HTMLElement[];
       const trigger = window.scrollY + 80;
@@ -1105,6 +1130,28 @@ const flutterNotes = [
       });
       if (mobileSection) {
         mobileSection.textContent = sectionLabels[active] || "Overview";
+      }
+
+      const idx = sectionOrder.indexOf(active);
+      if (prevLink && prevLabel) {
+        if (idx > 0) {
+          const prevId = sectionOrder[idx - 1];
+          prevLink.href = `#${prevId}`;
+          prevLabel.textContent = `← ${sectionLabels[prevId]}`;
+          prevLink.classList.remove("invisible");
+        } else {
+          prevLink.classList.add("invisible");
+        }
+      }
+      if (nextLink && nextLabel) {
+        if (idx >= 0 && idx < sectionOrder.length - 1) {
+          const nextId = sectionOrder[idx + 1];
+          nextLink.href = `#${nextId}`;
+          nextLabel.textContent = `${sectionLabels[nextId]} →`;
+          nextLink.classList.remove("invisible");
+        } else {
+          nextLink.classList.add("invisible");
+        }
       }
     }
 
@@ -1133,12 +1180,17 @@ const flutterNotes = [
       mobilePanel?.classList.add("open");
       document.body.style.overflow = "hidden";
       mobileChevron?.classList.add("rotate-180");
+      window.setTimeout(() => {
+        const firstLink = mobilePanel?.querySelector<HTMLElement>(".mobile-sidebar-link");
+        (firstLink || mobilePanel)?.focus();
+      }, 0);
     }
     function closeMobileSidebar() {
       mobileOverlay?.classList.remove("open");
       mobilePanel?.classList.remove("open");
       document.body.style.overflow = "";
       mobileChevron?.classList.remove("rotate-180");
+      mobileSidebarBtn?.focus();
     }
 
     mobileSidebarBtn?.addEventListener("click", openMobileSidebar);
@@ -1148,90 +1200,96 @@ const flutterNotes = [
       link.addEventListener("click", closeMobileSidebar);
     });
 
-    // ── Code blocks: header, copy & wrap buttons ──────────────────
-    function initCodeBlocks() {
-      document.querySelectorAll(".code-block").forEach((block) => {
-        if (block.querySelector(".code-block-header")) return;
-
-        block.classList.add("has-header");
-
-        const lang = block.getAttribute("data-lang") || "";
-
-        const header = document.createElement("div");
-        header.className = "code-block-header";
-
-        const langEl = document.createElement("span");
-        langEl.className = "code-block-lang";
-        langEl.textContent = lang;
-        header.appendChild(langEl);
-
-        const actions = document.createElement("div");
-        actions.className = "code-block-actions";
-
-        const wrapBtn = document.createElement("button");
-        wrapBtn.className = "wrap-btn";
-        wrapBtn.setAttribute("aria-label", "Toggle word wrap");
-        wrapBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
-        wrapBtn.addEventListener("click", () => {
-          const body = block.querySelector(".code-block-body");
-          if (body) {
-            body.classList.toggle("is-wrapped");
-            const on = body.classList.contains("is-wrapped");
-            wrapBtn.innerHTML = on
-              ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg> Unwrap`
-              : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
-          }
-        });
-        actions.appendChild(wrapBtn);
-
-        const copyBtn = document.createElement("button");
-        copyBtn.className = "copy-btn";
-        copyBtn.setAttribute("aria-label", "Copy code");
-        copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
-        copyBtn.addEventListener("click", () => {
-          const pre = block.querySelector("pre");
-          if (!pre) return;
-          const text = pre.textContent || "";
-          navigator.clipboard.writeText(text.replace(/^\$\s*/, "")).then(() => {
-            copyBtn.classList.add("copied");
-            copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
-            setTimeout(() => {
-              copyBtn.classList.remove("copied");
-              copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
-            }, 2000);
-          });
-        });
-        actions.appendChild(copyBtn);
-
-        header.appendChild(actions);
-
-        const pre = block.querySelector("pre");
-        if (pre?.parentNode) {
-          pre.classList.remove("overflow-x-auto");
-          pre.style.overflowX = "";
-          const body = document.createElement("div");
-          body.className = "code-block-body";
-          pre.parentNode.insertBefore(body, pre);
-          body.appendChild(pre);
-        }
-
-        block.insertBefore(header, block.firstChild);
-
-        const bodyEl = block.querySelector(".code-block-body");
-        if (bodyEl) {
-          const checkWrap = () => {
-            if (!bodyEl.classList.contains("is-wrapped")) {
-              const overflows = bodyEl.scrollWidth > bodyEl.clientWidth + 1;
-              block.classList.toggle("has-wrap", overflows);
-            }
-          };
-          requestAnimationFrame(checkWrap);
-          const ro = new ResizeObserver(checkWrap);
-          ro.observe(bodyEl);
-        }
-      });
-    }
+    // ── Code blocks: header, copy & wrap buttons ─────────────────
     initCodeBlocks();
+
+    // ── Docs search ───────────────────────────────────────────────
+    const searchInput = document.getElementById("docs-search") as HTMLInputElement | null;
+    const searchResults = document.getElementById("docs-search-results");
+
+    const searchIndex = sectionOrder.map((id) => {
+      const el = document.getElementById(id);
+      return {
+        id,
+        title: sectionLabels[id] ?? id,
+        text: el?.textContent ?? "",
+      };
+    });
+    const fuse = new Fuse(searchIndex, { keys: ["title", "text"], threshold: 0.3 });
+    let activeResult = -1;
+
+    function renderSearchResults(query: string) {
+      if (!searchResults) return;
+      if (!query) {
+        searchResults.classList.add("hidden");
+        searchResults.innerHTML = "";
+        activeResult = -1;
+        return;
+      }
+      const results = fuse.search(query).slice(0, 6);
+      if (results.length === 0) {
+        searchResults.innerHTML = `<div class="docs-search-empty">No results</div>`;
+      } else {
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const re = new RegExp(`(${escaped})`, "gi");
+        searchResults.innerHTML = results
+          .map((r, i) => {
+            const title = (sectionLabels[r.item.id] ?? r.item.id).replace(re, "<mark>$1</mark>");
+            return `<a href="#${r.item.id}" class="docs-search-result" data-idx="${i}" data-id="${r.item.id}" role="option">${title}</a>`;
+          })
+          .join("");
+      }
+      searchResults.classList.remove("hidden");
+      activeResult = -1;
+    }
+
+    function onSearchInput() {
+      renderSearchResults(searchInput?.value.trim() ?? "");
+    }
+
+    function onSearchKeydown(e: KeyboardEvent) {
+      const items = Array.from(searchResults?.querySelectorAll<HTMLElement>(".docs-search-result") ?? []);
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        activeResult = Math.min(activeResult + 1, items.length - 1);
+        items.forEach((item, i) => item.classList.toggle("is-active", i === activeResult));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        activeResult = Math.max(activeResult - 1, -1);
+        items.forEach((item, i) => item.classList.toggle("is-active", i === activeResult));
+      } else if (e.key === "Enter" && activeResult >= 0) {
+        e.preventDefault();
+        (items[activeResult] as HTMLAnchorElement).click();
+      } else if (e.key === "Escape") {
+        searchResults?.classList.add("hidden");
+        searchInput?.blur();
+      }
+    }
+
+    function onResultClick(this: HTMLAnchorElement, e: MouseEvent) {
+      e.preventDefault();
+      const id = this.dataset.id;
+      if (id) {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        history.replaceState(null, "", `#${id}`);
+      }
+      searchResults?.classList.add("hidden");
+      if (searchInput) searchInput.value = "";
+    }
+
+    function onDocClick(e: MouseEvent) {
+      if (!searchInput?.contains(e.target as Node) && !searchResults?.contains(e.target as Node)) {
+        searchResults?.classList.add("hidden");
+      }
+    }
+
+    searchInput?.addEventListener("input", onSearchInput);
+    searchInput?.addEventListener("keydown", onSearchKeydown);
+    searchResults?.addEventListener("click", (e) => {
+      const target = (e.target as HTMLElement).closest(".docs-search-result") as HTMLAnchorElement | null;
+      if (target) onResultClick.call(target, e);
+    });
+    document.addEventListener("click", onDocClick);
 
     cleanup = () => {
       window.removeEventListener("scroll", updateActive);
@@ -1243,6 +1301,9 @@ const flutterNotes = [
       sidebarLinks.forEach((a) => {
         a.removeEventListener("click", sidebarClickHandler);
       });
+      searchInput?.removeEventListener("input", onSearchInput);
+      searchInput?.removeEventListener("keydown", onSearchKeydown);
+      document.removeEventListener("click", onDocClick);
     };
   }
 

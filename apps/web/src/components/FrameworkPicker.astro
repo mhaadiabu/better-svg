@@ -207,13 +207,9 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
     "flutter",
   ]);
 
-  const labels: Record<string, { label: string; sub: string }> = {
-    react: { label: "React", sub: "@mhaadi/svg/react" },
-    "react-native": { label: "React Native", sub: "@mhaadi/svg/react-native" },
-    vue: { label: "Vue", sub: "@mhaadi/svg/vue" },
-    svelte: { label: "Svelte", sub: "@mhaadi/svg/svelte" },
-    flutter: { label: "Flutter", sub: "svg_flutter" },
-  };
+  import { frameworkLabels } from "../data/frameworks";
+
+  const labels = frameworkLabels;
 
   const applyFramework = (id: string) => {
     if (!validIds.has(id)) return;

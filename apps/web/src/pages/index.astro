@@ -1,5 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
+import svgPkg from "../../../../packages/svg/package.json";
+
+const version = svgPkg.version;
 
 const marqueeItems = [
   "React",
@@ -57,6 +60,7 @@ const featureCards = [
     desc: "Render a loading state while fetching and a fallback state on error. Slots in Vue, snippets in Svelte, Widgets in Flutter.",
   },
 ];
+import CodeBlock from "../components/CodeBlock.astro";
 ---
 
 <Base title="BetterSVG — Inline SVG for React, React Native, Vue, Svelte, Flutter">
@@ -100,7 +104,7 @@ const featureCards = [
   </nav>
 
   <!-- HERO -->
-  <section class="relative lg:min-h-screen overflow-x-hidden pt-4 lg:pt-8">
+  <section id="main-content" class="relative lg:min-h-screen overflow-x-hidden pt-4 lg:pt-8">
     <!-- Background grid -->
     <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-100 pointer-events-none"></div>
 
@@ -127,7 +131,7 @@ const featureCards = [
         <!-- Badge -->
         <div class="mb-8 inline-flex items-center gap-2 border border-coal-4 bg-coal-1 px-3 py-1.5 animate-fade-in delay-100">
           <span class="h-1.5 w-1.5 bg-acid animate-pulse"></span>
-          <span class="font-mono text-xs text-zinc-muted">v0.2.1 — now on npm</span>
+          <span class="font-mono text-xs text-zinc-muted">v{version} — now on npm</span>
         </div>
 
         <!-- Headline -->
@@ -172,8 +176,19 @@ const featureCards = [
         <div class="mt-12 lg:mt-0 animate-fade-in delay-700 min-w-0">
           <div class="relative">
             <!-- Floating file label -->
-            <div class="absolute -top-3 right-4 z-10 border border-coal-4 bg-coal px-2 py-0.5 font-mono text-[10px] text-zinc-muted">
+            <div class="absolute -top-3 right-4 z-10 border border-coal-4 bg-coal px-2 py-0.5 font-mono text-[10px] text-zinc-muted flex items-center gap-2">
               <span data-fw-tab-label>App.tsx</span>
+              <button
+                type="button"
+                data-fw-copy
+                class="hover:text-acid transition-colors"
+                aria-label="Copy full file"
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+              </button>
             </div>
 
             <!-- Glow behind card -->
@@ -191,50 +206,50 @@ const featureCards = [
 
               <!-- Code panels -->
               <div data-fw-panels>
-                <pre data-fw-panel="react" class="p-5 text-sm leading-7 overflow-x-auto"><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react"</span><span class="token-punct">;</span>
+                <div data-fw-panel="react"><CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
-  <span class="token-prop">className</span><span class="token-punct">=</span><span class="token-string">"h-6 w-6 text-current"</span>
-  <span class="token-prop">loading</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">"Loading…"</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">fallback</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">"Failed"</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"/>"}</span></pre>
-                <pre data-fw-panel="react-native" class="p-5 text-sm leading-7 overflow-x-auto" hidden><span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/react-native"</span><span class="token-punct">;</span>
+<SVG
+  src="https://cdn.example.com/icon.svg"
+  className="h-6 w-6 text-current"
+  loading={"Loading…"}
+  fallback={"Failed"}
+/>`} lang="tsx" /></div>
+                <div data-fw-panel="react-native" hidden><CodeBlock code={`import { SVG } from "@mhaadi/svg/react-native";
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">name</span><span class="token-punct">=</span><span class="token-string">"logo"</span>
-  <span class="token-prop">width</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">height</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-string">24</span><span class="token-punct">{"}"}</span>
-  <span class="token-prop">color</span><span class="token-punct">=</span><span class="token-string">"#111827"</span>
-<span class="token-punct">{"/>"}</span></pre>
-                <pre data-fw-panel="vue" class="p-5 text-sm leading-7 overflow-x-auto" hidden><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">setup</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/vue"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+<SVG
+  name="logo"
+  width={24}
+  height={24}
+  color="#111827"
+/>`} lang="tsx" /></div>
+                <div data-fw-panel="vue" hidden><CodeBlock code={`<script setup lang="ts">
+  import { SVG } from "@mhaadi/svg/vue";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
-  <span class="token-prop">:width</span><span class="token-punct">=</span><span class="token-string">24</span>
-  <span class="token-prop">:height</span><span class="token-punct">=</span><span class="token-string">24</span>
-<span class="token-punct">{"/>"}</span></pre>
-                <pre data-fw-panel="svelte" class="p-5 text-sm leading-7 overflow-x-auto" hidden><span class="token-punct">{"<"}</span><span class="token-keyword">script</span> <span class="token-prop">lang</span><span class="token-punct">=</span><span class="token-string">"ts"</span><span class="token-punct">{">"}</span>
-  <span class="token-keyword">import</span> <span class="token-punct">{"{ "}</span><span class="token-component">SVG</span><span class="token-punct">{" }"}</span> <span class="token-keyword">from</span> <span class="token-string">"@mhaadi/svg/svelte"</span><span class="token-punct">;</span>
-<span class="token-punct">{"</"}</span><span class="token-keyword">script</span><span class="token-punct">{">"}</span>
+<SVG
+  src="https://cdn.example.com/icon.svg"
+  :width=24
+  :height=24
+/>`} lang="vue" /></div>
+                <div data-fw-panel="svelte" hidden><CodeBlock code={`<script lang="ts">
+  import { SVG } from "@mhaadi/svg/svelte";
+</script>
 
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-string">"https://cdn.example.com/icon.svg"</span>
-  <span class="token-prop">width</span><span class="token-punct">=</span><span class="token-string">"24"</span>
-  <span class="token-prop">height</span><span class="token-punct">=</span><span class="token-string">"24"</span>
-<span class="token-punct">{"/>"}</span></pre>
-                <pre data-fw-panel="flutter" class="p-5 text-sm leading-7 overflow-x-auto" hidden><span class="token-keyword">import</span> <span class="token-string">'package:svg_flutter/svg_flutter.dart'</span><span class="token-punct">;</span>
+<SVG
+  src="https://cdn.example.com/icon.svg"
+  width="24"
+  height="24"
+/>`} lang="svelte" /></div>
+                <div data-fw-panel="flutter" hidden><CodeBlock code={`import 'package:svg_flutter/svg_flutter.dart';
 
-<span class="token-component">Svg</span><span class="token-punct">(</span>
-  <span class="token-prop">src</span><span class="token-punct">:</span> <span class="token-string">'https://cdn.example.com/icon.svg'</span><span class="token-punct">,</span>
-  <span class="token-prop">width</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
-  <span class="token-prop">height</span><span class="token-punct">:</span> <span class="token-string">24</span><span class="token-punct">,</span>
-  <span class="token-prop">color</span><span class="token-punct">:</span> <span class="token-keyword">const</span> <span class="token-component">Color</span><span class="token-punct">(</span><span class="token-string">0xFF111827</span><span class="token-punct">),</span>
-  <span class="token-prop">loading</span><span class="token-punct">:</span> <span class="token-keyword">const</span> <span class="token-component">CircularProgressIndicator</span><span class="token-punct">(),</span>
-  <span class="token-prop">fallback</span><span class="token-punct">:</span> <span class="token-keyword">const</span> <span class="token-component">Icon</span><span class="token-punct">(</span><span class="token-component">Icons</span><span class="token-punct">.</span>broken_image<span class="token-punct">),</span>
-<span class="token-punct">)</span></pre>
+Svg(
+  src: 'https://cdn.example.com/icon.svg',
+  width: 24,
+  height: 24,
+  color: const Color(0xFF111827),
+  loading: const CircularProgressIndicator(),
+  fallback: const Icon(Icons.broken_image),
+)`} lang="dart" /></div>
               </div>
             </div>
 
@@ -258,12 +273,8 @@ const featureCards = [
 
             <!-- Install snippet -->
             <div class="mt-4">
-              <div class="code-block max-w-sm" data-lang="sh">
-                <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">pnpm add @mhaadi/svg</span></pre>
-              </div>
-              <div class="code-block max-w-sm mt-2" data-lang="sh">
-                <pre class="px-4 py-3 text-sm"><span class="token-comment">$</span> <span class="text-[#e8e8e8]">flutter pub add svg_flutter</span></pre>
-              </div>
+                              <CodeBlock code={`$ pnpm add @mhaadi/svg`} lang="sh" />
+                              <CodeBlock code={`$ flutter pub add svg_flutter`} lang="sh" />
             </div>
           </div>
         </div>
@@ -380,19 +391,17 @@ const featureCards = [
               from every SVG. Only disable it when you fully trust the source.
             </p>
           </div>
-          <div class="code-block min-w-0" data-lang="tsx">
-            <pre class="p-5 text-sm leading-7"><span class="token-comment">{"// ✓ Safe — untrusted source"}</span>
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>untrustedMarkup<span class="token-punct">{"}"}</span>
-  <span class="token-comment">{"// sanitize={true} is default"}</span>
-<span class="token-punct">{"/>"}</span>
+                          <CodeBlock code={`// ✓ Safe — untrusted source
+<SVG
+  src={untrustedMarkup}
+  // sanitize={true} is default
+/>
 
-<span class="token-comment">{"// ⚠ Only for trusted content"}</span>
-<span class="token-punct">{"<"}</span><span class="token-component">SVG</span>
-  <span class="token-prop">src</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span>trustedMarkup<span class="token-punct">{"}"}</span>
-  <span class="token-prop">sanitize</span><span class="token-punct">=</span><span class="token-punct">{"{"}</span><span class="token-keyword">false</span><span class="token-punct">{"}"}</span>
-<span class="token-punct">{"/>"}</span></pre>
-          </div>
+// ⚠ Only for trusted content
+<SVG
+  src={trustedMarkup}
+  sanitize={false}
+/>`} lang="tsx" />
         </div>
       </div>
     </div>
@@ -462,6 +471,8 @@ const featureCards = [
 </style>
 
 <script>
+  import { initCodeBlocks } from "../scripts/code-block";
+
   let cleanup = () => {};
 
   function initLandingPage() {
@@ -495,92 +506,6 @@ const featureCards = [
     onScroll();
 
     // Code blocks: header, copy & wrap buttons
-    function initCodeBlocks() {
-      document.querySelectorAll(".code-block").forEach((block) => {
-        if (block.querySelector(".code-block-header")) return;
-
-        block.classList.add("has-header");
-
-        const lang = block.getAttribute("data-lang") || "";
-
-        const header = document.createElement("div");
-        header.className = "code-block-header";
-
-        const langEl = document.createElement("span");
-        langEl.className = "code-block-lang";
-        langEl.textContent = lang;
-        header.appendChild(langEl);
-
-        const actions = document.createElement("div");
-        actions.className = "code-block-actions";
-
-        // Wrap button
-        const wrapBtn = document.createElement("button");
-        wrapBtn.className = "wrap-btn";
-        wrapBtn.setAttribute("aria-label", "Toggle word wrap");
-        wrapBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
-        wrapBtn.addEventListener("click", () => {
-          const body = block.querySelector(".code-block-body");
-          if (body) {
-            body.classList.toggle("is-wrapped");
-            const on = body.classList.contains("is-wrapped");
-            wrapBtn.innerHTML = on
-              ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg> Unwrap`
-              : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
-          }
-        });
-        actions.appendChild(wrapBtn);
-
-        // Copy button
-        const copyBtn = document.createElement("button");
-        copyBtn.className = "copy-btn";
-        copyBtn.setAttribute("aria-label", "Copy code");
-        copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
-        copyBtn.addEventListener("click", () => {
-          const pre = block.querySelector("pre");
-          if (!pre) return;
-          const text = pre.textContent || "";
-          navigator.clipboard.writeText(text.replace(/^\$\s*/, "")).then(() => {
-            copyBtn.classList.add("copied");
-            copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
-            setTimeout(() => {
-              copyBtn.classList.remove("copied");
-              copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
-            }, 2000);
-          });
-        });
-        actions.appendChild(copyBtn);
-
-        header.appendChild(actions);
-
-        // Wrap pre in scrollable body
-        const pre = block.querySelector("pre");
-        if (pre?.parentNode) {
-          pre.classList.remove("overflow-x-auto");
-          pre.style.overflowX = "";
-          const body = document.createElement("div");
-          body.className = "code-block-body";
-          pre.parentNode.insertBefore(body, pre);
-          body.appendChild(pre);
-        }
-
-        block.insertBefore(header, block.firstChild);
-
-        // Only show wrap button if content overflows
-        const bodyEl = block.querySelector(".code-block-body");
-        if (bodyEl) {
-          const checkWrap = () => {
-            if (!bodyEl.classList.contains("is-wrapped")) {
-              const overflows = bodyEl.scrollWidth > bodyEl.clientWidth + 1;
-              block.classList.toggle("has-wrap", overflows);
-            }
-          };
-          requestAnimationFrame(checkWrap);
-          const ro = new ResizeObserver(checkWrap);
-          ro.observe(bodyEl);
-        }
-      });
-    }
     initCodeBlocks();
 
     // Framework example tabs (hero code card)
@@ -606,10 +531,30 @@ const featureCards = [
       tabHandlers.push({ el: tab, fn });
     });
 
+    const fwCopyBtn = document.querySelector<HTMLButtonElement>("[data-fw-copy]");
+    const copyHeroFile = () => {
+      const active = Array.from(fwPanels).find((p) => !p.hidden);
+      if (!active) return;
+      const fw = active.dataset.fwPanel || "";
+      const file = fwLabelMap[fw] ?? "App.tsx";
+      const text = `// ${file}\n${active.textContent || ""}`;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = fwCopyBtn?.innerHTML;
+        if (fwCopyBtn) {
+          fwCopyBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+          window.setTimeout(() => {
+            if (fwCopyBtn && original) fwCopyBtn.innerHTML = original;
+          }, 1500);
+        }
+      });
+    };
+    fwCopyBtn?.addEventListener("click", copyHeroFile);
+
     cleanup = () => {
       btn?.removeEventListener("click", toggleMenu);
       window.removeEventListener("scroll", onScroll);
       tabHandlers.forEach(({ el, fn }) => el.removeEventListener("click", fn));
+      fwCopyBtn?.removeEventListener("click", copyHeroFile);
     };
   }
 

@@ -7,14 +7,7 @@ config({ path: "./.env" });
 config({ path: "../../apps/web/.env" });
 
 const app = await alchemy("better-svg", {
-  stateStore: (scope) =>
-    process.env.ALCHEMY_STATE_TOKEN
-      ? new CloudflareStateStore(scope, {
-          accountId: process.env.CLOUDFLARE_ACCOUNT_ID || undefined,
-          apiToken: (process.env.CLOUDFLARE_API_TOKEN || undefined) as any,
-          forceUpdate: true,
-        })
-      : new FileSystemStateStore(scope),
+  stateStore: (scope) => new FileSystemStateStore(scope),
 });
 
 export const web = await Vite("web", {

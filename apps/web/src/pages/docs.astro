@@ -148,7 +148,7 @@ const flutterNotes = [
           </div>
 
           <!-- OVERVIEW -->
-          <section id="overview" class="mb-16 scroll-mt-24">
+          <section id="overview" class="mb-16">
             <h2 class="docs-heading">Overview</h2>
             <p class="docs-body">
               <code class="inline-code">@mhaadi/svg</code> exposes a single component —{" "}
@@ -178,7 +178,7 @@ const flutterNotes = [
           </section>
 
           <!-- INSTALLATION -->
-          <section id="installation" class="mb-16 scroll-mt-24">
+          <section id="installation" class="mb-16">
             <h2 class="docs-heading">Installation</h2>
             <p class="docs-body">Install the right package for your framework:</p>
 
@@ -230,7 +230,7 @@ const flutterNotes = [
           </section>
 
           <!-- USAGE -->
-          <section id="usage" class="mb-16 scroll-mt-24">
+          <section id="usage" class="mb-16">
             <h2 class="docs-heading">Usage</h2>
             <p class="docs-body">Import the component from the entry point that matches your framework:</p>
 
@@ -387,7 +387,7 @@ const flutterNotes = [
           </section>
 
           <!-- PROPS -->
-          <section id="props" class="mb-16 scroll-mt-24">
+          <section id="props" class="mb-16">
             <h2 class="docs-heading">Props</h2>
             <p class="docs-body">
               The base prop set is shared across all adapters. Framework-specific extras are
@@ -465,7 +465,7 @@ const flutterNotes = [
           </section>
 
           <!-- FRAMEWORK SPECIFICS -->
-          <section id="framework-specifics" class="mb-16 scroll-mt-24">
+          <section id="framework-specifics" class="mb-16">
             <h2 class="docs-heading">Framework Specifics</h2>
             <p class="docs-body">Extras and conventions unique to each adapter.</p>
 
@@ -600,7 +600,7 @@ const flutterNotes = [
           </section>
 
           <!-- SOURCE TYPES -->
-          <section id="source-types" class="mb-16 scroll-mt-24">
+          <section id="source-types" class="mb-16">
             <h2 class="docs-heading">Source Types</h2>
             <p class="docs-body">The component resolves SVG content from four source types, checked in this order:</p>
 
@@ -654,7 +654,7 @@ const flutterNotes = [
           </section>
 
           <!-- SECURITY -->
-          <section id="security" class="mb-16 scroll-mt-24">
+          <section id="security" class="mb-16">
             <h2 class="docs-heading">Security</h2>
             <p class="docs-body">
               Sanitization is <strong class="text-[#e8e8e8]">enabled by default</strong> (<code class="inline-code">sanitize=true</code>).
@@ -690,7 +690,7 @@ const flutterNotes = [
           </section>
 
           <!-- EDGE CASES -->
-          <section id="edge-cases" class="mb-16 scroll-mt-24">
+          <section id="edge-cases" class="mb-16">
             <h2 class="docs-heading">Edge Cases</h2>
 
             <div class="mt-4 space-y-6">
@@ -780,7 +780,7 @@ const flutterNotes = [
           </section>
 
           <!-- EXAMPLES -->
-          <section id="examples" class="mb-16 scroll-mt-24">
+          <section id="examples" class="mb-16">
             <h2 class="docs-heading">Examples</h2>
 
             <div class="space-y-8">
@@ -1087,11 +1087,16 @@ const flutterNotes = [
     const mobileSection = mobileSidebarBtn?.querySelector("[data-mobile-section]");
 
     function updateActive() {
-      let active = "";
-      sectionEls.forEach((el) => {
-        const top = (el as HTMLElement).offsetTop - 120;
-        if (window.scrollY >= top) active = el.id;
-      });
+      const els = Array.from(sectionEls) as HTMLElement[];
+      const trigger = window.scrollY + 80;
+      let active = els[0]?.id ?? "";
+      for (const el of els) {
+        if (el.offsetTop <= trigger) {
+          active = el.id;
+        } else {
+          break;
+        }
+      }
       sidebarLinks.forEach((a) => {
         const id = a.getAttribute("data-section") || a.getAttribute("data-toc");
         a.classList.toggle("active", id === active);
@@ -1103,6 +1108,22 @@ const flutterNotes = [
 
     window.addEventListener("scroll", updateActive, { passive: true });
     updateActive();
+
+    // ── Instant active feedback on click (before smooth scroll settles) ─
+    function sidebarClickHandler(this: HTMLAnchorElement) {
+      const id = this.getAttribute("data-section") || this.getAttribute("data-toc");
+      if (!id) return;
+      sidebarLinks.forEach((link) => {
+        const linkId = link.getAttribute("data-section") || link.getAttribute("data-toc");
+        link.classList.toggle("active", linkId === id);
+      });
+      if (mobileSection) {
+        mobileSection.textContent = sectionLabels[id] || "Overview";
+      }
+    }
+    sidebarLinks.forEach((a) => {
+      a.addEventListener("click", sidebarClickHandler);
+    });
 
     // ── Mobile sidebar ────────────────────────────────────────────
     function openMobileSidebar() {
@@ -1219,6 +1240,9 @@ const flutterNotes = [
       mobileOverlay?.removeEventListener("click", closeMobileSidebar);
       mobileLinks.forEach((link) => {
         link.removeEventListener("click", closeMobileSidebar);
+      });
+      sidebarLinks.forEach((a) => {
+        a.removeEventListener("click", sidebarClickHandler);
       });
     };
   }

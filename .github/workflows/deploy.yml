@@ -41,7 +41,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: pnpm deploy
+      - name: Deploy
+        run: |
+          # Unset empty secrets so Alchemy's nullish-coalescing falls back to API discovery
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] && unset CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] && unset CLOUDFLARE_API_TOKEN
+          pnpm deploy
         env:
           ALCHEMY_CI_STATE_STORE_CHECK: false
           ALCHEMY_STATE_TOKEN: ${{ secrets.ALCHEMY_STATE_TOKEN }}

@@ -14,7 +14,8 @@
     "dev:web": "turbo -F web dev",
     "deploy": "turbo -F @better-svg/infra deploy",
     "destroy": "turbo -F @better-svg/infra destroy",
-    "check": "oxlint && oxfmt --write"
+    "check": "oxlint && oxfmt --write",
+    "lint": "oxlint"
   },
   "dependencies": {
     "@better-svg/env": "workspace:*",

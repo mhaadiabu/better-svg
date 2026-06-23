@@ -1,6 +1,6 @@
 import alchemy from "alchemy";
 import { Vite } from "alchemy/cloudflare";
-import { CloudflareStateStore, FileSystemStateStore } from "alchemy/state";
+import { FileSystemStateStore } from "alchemy/state";
 import { config } from "dotenv";
 
 config({ path: "./.env" });

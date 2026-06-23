@@ -16,7 +16,7 @@ done — unless a reviewer dispatched you and told you they maintain the index.
 | 005  | Run lint+test in CI; remove unused import                          | P2       | S      | 001          | DONE   |
 | 006  | Stabilize React/Native effects against inline callbacks            | P2       | S      | 001, 003     | DONE   |
 | 007  | Remove dead @better-svg/ui scaffolding                             | P3       | S      | —            | DONE   |
-| 008  | Docs consistency pass + remove false promises                      | P2       | M      | 002,003,004,006 | TODO   |
+| 008  | Docs consistency pass + remove false promises                      | P2       | M      | 002,003,004,006 | DONE   |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 

@@ -44,19 +44,25 @@
     "build:js": "tsc -p tsconfig.json",
     "build:svelte": "node scripts/build-svelte.mjs",
     "build": "pnpm run build:js && pnpm run build:svelte",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@better-svg/config": "workspace:*",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/react-native": "^0.73.0",
+    "happy-dom": "^20.10.6",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "^0.85.3",
     "react-native-svg": "^15.15.5",
     "svelte": "^5.56.3",
     "typescript": "catalog:",
+    "vitest": "^2.1.9",
     "vue": "^3.5.35"
   },
   "peerDependencies": {

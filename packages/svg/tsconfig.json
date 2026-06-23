@@ -11,5 +11,14 @@
     "sourceMap": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist", "src/**/*.svelte", "scripts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.svelte",
+    "scripts",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ]
 }

@@ -10,6 +10,7 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "check-types": "turbo check-types",
+    "test": "turbo test",
     "dev:web": "turbo -F web dev",
     "deploy": "turbo -F @better-svg/infra deploy",
     "destroy": "turbo -F @better-svg/infra destroy",

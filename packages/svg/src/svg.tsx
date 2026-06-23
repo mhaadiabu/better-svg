@@ -1,11 +1,8 @@
 import * as React from "react";
 import {
-  domParserAvailable,
-  hasUnsafeUrl,
-  isSafeUrl,
+  parseInlineSvg,
   resolveMarkup,
   resolveSource,
-  toCamelCase,
   type SvgNameInput,
 } from "./core";
 
@@ -17,68 +14,6 @@ type ParsedSvg = {
 };
 
 const svgCache = new Map<string, string>();
-
-const parseInlineStyle = (styleText: string) => {
-  const styles: Record<string, string> = {};
-  for (const entry of styleText.split(";")) {
-    const [rawProp, ...rawValue] = entry.split(":");
-    if (!rawProp || rawValue.length === 0) continue;
-    const prop = rawProp.trim();
-    const value = rawValue.join(":").trim();
-    if (!prop || !value) continue;
-    styles[prop.startsWith("--") ? prop : toCamelCase(prop)] = value;
-  }
-  return Object.keys(styles).length > 0 ? (styles as React.CSSProperties) : undefined;
-};
-
-const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => {
-  if (!domParserAvailable()) return null;
-  const parser = new DOMParser();
-  const parsedDocument = parser.parseFromString(markup, "image/svg+xml");
-  if (parsedDocument.querySelector("parsererror")) return null;
-  const svg = parsedDocument.querySelector("svg");
-  if (!svg) return null;
-
-  if (sanitize) {
-    svg
-      .querySelectorAll("script, foreignObject, iframe, object, embed")
-      .forEach((node) => node.remove());
-    const walker = svg.ownerDocument.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
-    let current: Element | null = svg;
-    while (current) {
-      for (const attr of Array.from(current.attributes)) {
-        const name = attr.name;
-        if (name.startsWith("on")) {
-          current.removeAttribute(name);
-          continue;
-        }
-        if (name === "style" && hasUnsafeUrl(attr.value)) {
-          current.removeAttribute(name);
-          continue;
-        }
-        if (name === "href" || name === "xlink:href") {
-          if (!isSafeUrl(attr.value)) current.removeAttribute(name);
-        }
-      }
-      current = walker.nextNode() as Element | null;
-    }
-  }
-
-  const attrs: Record<string, string> = {};
-  for (const attr of Array.from(svg.attributes)) attrs[attr.name] = attr.value;
-
-  const className = attrs.class;
-  if (className) delete attrs.class;
-  const style = attrs.style ? parseInlineStyle(attrs.style) : undefined;
-  if (attrs.style) delete attrs.style;
-
-  return {
-    attrs,
-    className,
-    style,
-    innerHTML: svg.innerHTML,
-  };
-};
 
 type SvgSourceProps = { src: string; name?: never } | { name: SvgNameInput; src?: never };
 
@@ -117,6 +52,13 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
 
     const resolvedSource = React.useMemo(() => resolveSource(src, name), [name, src]);
 
+    const onLoadRef = React.useRef(onSvgLoad);
+    const onErrorRef = React.useRef(onSvgError);
+    React.useEffect(() => {
+      onLoadRef.current = onSvgLoad;
+      onErrorRef.current = onSvgError;
+    });
+
     React.useEffect(() => {
       let active = true;
       const controller = new AbortController();
@@ -128,7 +70,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
         const err = new Error("Either name or src is required.");
         setError(err);
         setIsLoading(false);
-        onSvgError?.(err);
+        onErrorRef.current?.(err);
         return () => {
           active = false;
           controller.abort();
@@ -136,11 +78,17 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
       }
 
       const runWithCached = (markup: string) => {
-        const parsed = parseSvgMarkup(markup, sanitize);
-        if (!parsed) throw new Error("SVG markup is invalid or unavailable in this environment.");
+        const inline = parseInlineSvg(markup, sanitize);
+        if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
+        const parsed: ParsedSvg = {
+          attrs: inline.attrs,
+          className: inline.className,
+          style: inline.style as React.CSSProperties | undefined,
+          innerHTML: inline.innerHTML,
+        };
         setContent(parsed);
         setIsLoading(false);
-        onSvgLoad?.(markup);
+        onLoadRef.current?.(markup);
       };
 
       if (cache && svgCache.has(resolvedSource)) {
@@ -151,7 +99,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
           const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
           setError(normalized);
           setIsLoading(false);
-          onSvgError?.(normalized);
+          onErrorRef.current?.(normalized);
         }
         return () => {
           active = false;
@@ -162,6 +110,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
       resolveMarkup(resolvedSource, { fetchOptions, signal: controller.signal, cache })
         .then((markup) => {
           if (!active) return;
+          if (cache) svgCache.set(resolvedSource, markup);
           runWithCached(markup);
         })
         .catch((err) => {
@@ -170,14 +119,14 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
           const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
           setError(normalized);
           setIsLoading(false);
-          onSvgError?.(normalized);
+          onErrorRef.current?.(normalized);
         });
 
       return () => {
         active = false;
         controller.abort();
       };
-    }, [resolvedSource, fetchOptions, cache, sanitize, onSvgLoad, onSvgError]);
+    }, [resolvedSource, fetchOptions, cache, sanitize]);
 
     if (isLoading) {
       return loading ? <>{loading}</> : null;

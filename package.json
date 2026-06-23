@@ -10,10 +10,12 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "check-types": "turbo check-types",
+    "test": "turbo test",
     "dev:web": "turbo -F web dev",
     "deploy": "turbo -F @better-svg/infra deploy",
     "destroy": "turbo -F @better-svg/infra destroy",
-    "check": "oxlint && oxfmt --write"
+    "check": "oxlint && oxfmt --write",
+    "lint": "oxlint"
   },
   "dependencies": {
     "@better-svg/env": "workspace:*",
@@ -22,11 +24,11 @@
   },
   "devDependencies": {
     "@better-svg/config": "workspace:*",
-    "@cloudflare/workers-types": "^4.20251213.0",
+    "@cloudflare/workers-types": "^4.20260621.1",
     "oxfmt": "^0.46.0",
-    "oxlint": "^1.61.0",
+    "oxlint": "^1.71.0",
     "turbo": "^2.9.18",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@11.1.3"
+  "packageManager": "pnpm@11.8.0"
 }

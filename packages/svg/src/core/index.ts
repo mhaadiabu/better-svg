@@ -1,6 +1,8 @@
 export { resolveSvgSource } from "./local";
 export type { SvgName, SvgNameInput } from "./local";
 export { decodeDataUrl, hasUnsafeUrl, isInlineSvg, isSafeUrl } from "./url";
+export { parseInlineSvg } from "./sanitize";
+export type { ParsedInlineSvg } from "./sanitize";
 export {
   parseSvgString,
   parseAndSanitize,

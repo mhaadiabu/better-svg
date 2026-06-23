@@ -9,8 +9,7 @@ import {
   type Slot,
 } from "vue";
 import {
-  domParserAvailable,
-  parseInlineStyle,
+  parseInlineSvg,
   resolveMarkup,
   resolveSource,
   toCamelCase,
@@ -28,6 +27,8 @@ type ParsedSvg = {
   style?: string;
   innerHTML: string;
 };
+
+const svgCache = new Map<string, string>();
 
 const toCamelCaseStyle = (style: Record<string, string>): Record<string, string> => {
   const out: Record<string, string> = {};
@@ -50,64 +51,6 @@ const styleToText = (
 };
 
 export { styleToText };
-
-const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => {
-  if (!domParserAvailable()) return null;
-  const parser = new DOMParser();
-  const parsedDocument = parser.parseFromString(markup, "image/svg+xml");
-  if (parsedDocument.querySelector("parsererror")) return null;
-  const svg = parsedDocument.querySelector("svg");
-  if (!svg) return null;
-
-  if (sanitize) {
-    svg
-      .querySelectorAll("script, foreignObject, iframe, object, embed")
-      .forEach((node) => node.remove());
-    const walker = svg.ownerDocument.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
-    let current: Element | null = svg;
-    while (current) {
-      for (const attr of Array.from(current.attributes)) {
-        const name = attr.name;
-        if (name.startsWith("on")) {
-          current.removeAttribute(name);
-          continue;
-        }
-        if (name === "style" && /url\(/i.test(attr.value)) {
-          current.removeAttribute(name);
-          continue;
-        }
-        if (name === "href" || name === "xlink:href") {
-          if (!/^(#|\/|[a-zA-Z][a-zA-Z0-9+.-]*:)/.test(attr.value) && attr.value.trim() !== "") {
-            current.removeAttribute(name);
-          }
-        }
-      }
-      current = walker.nextNode() as Element | null;
-    }
-  }
-
-  const attrs: Record<string, string> = {};
-  for (const attr of Array.from(svg.attributes)) attrs[attr.name] = attr.value;
-
-  const className = attrs.class;
-  if (className) delete attrs.class;
-  let style: string | undefined;
-  if (attrs.style) {
-    const parsed = toCamelCaseStyle(parseInlineStyle(attrs.style));
-    const text = Object.entries(parsed)
-      .map(([k, v]) => `${k}:${v}`)
-      .join(";");
-    if (text) style = text;
-    delete attrs.style;
-  }
-
-  return {
-    attrs,
-    className,
-    style,
-    innerHTML: svg.innerHTML,
-  };
-};
 
 export const SVG = defineComponent({
   name: "SVG",
@@ -146,7 +89,6 @@ export const SVG = defineComponent({
   setup(props, { slots, emit }) {
     const state = ref<State>({ status: "loading" });
     let controller: AbortController | null = null;
-    const cache = new Map<string, string>();
 
     const run = (source: string | undefined, name: SvgNameInput | undefined, doCache: boolean) => {
       const resolved = resolveSource(source, name);
@@ -158,10 +100,19 @@ export const SVG = defineComponent({
         return;
       }
 
-      if (doCache && cache.has(resolved)) {
-        const cached = cache.get(resolved) ?? "";
-        const parsed = parseSvgMarkup(cached, props.sanitize ?? true);
-        if (parsed) {
+      if (doCache && svgCache.has(resolved)) {
+        const cached = svgCache.get(resolved) ?? "";
+        const inline = parseInlineSvg(cached, props.sanitize ?? true);
+        if (inline) {
+          const styleText = inline.style
+            ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
+            : undefined;
+          const parsed: ParsedSvg = {
+            attrs: inline.attrs,
+            className: inline.className,
+            style: styleText,
+            innerHTML: inline.innerHTML,
+          };
           state.value = { status: "ready", content: parsed, markup: cached };
           emit("svg-load", cached);
           props.onSvgLoad?.(cached);
@@ -181,9 +132,18 @@ export const SVG = defineComponent({
       })
         .then((markup) => {
           if (c.signal.aborted) return;
-          const parsed = parseSvgMarkup(markup, props.sanitize ?? true);
-          if (!parsed) throw new Error("SVG markup is invalid or unavailable in this environment.");
-          if (doCache) cache.set(resolved, markup);
+          const inline = parseInlineSvg(markup, props.sanitize ?? true);
+          if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
+          const styleText = inline.style
+            ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
+            : undefined;
+          const parsed: ParsedSvg = {
+            attrs: inline.attrs,
+            className: inline.className,
+            style: styleText,
+            innerHTML: inline.innerHTML,
+          };
+          if (doCache) svgCache.set(resolved, markup);
           state.value = { status: "ready", content: parsed, markup };
           emit("svg-load", markup);
           props.onSvgLoad?.(markup);

@@ -25,14 +25,14 @@ const frameworkBadges = [
   { id: "react-native", name: "React Native", sub: "@mhaadi/svg/react-native" },
   { id: "vue", name: "Vue", sub: "@mhaadi/svg/vue" },
   { id: "svelte", name: "Svelte", sub: "@mhaadi/svg/svelte" },
-  { id: "flutter", name: "Flutter", sub: "svg_flutter" },
+  { id: "flutter", name: "Flutter", sub: "svg_flutter", published: false },
 ];
 
 const featureCards = [
   {
     icon: `<path d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.728 12.728.707.707M1 12h2m18 0h2M4.22 19.78l.707-.707M18.071 5.929l.707-.707" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
     title: "Inline rendering",
-    desc: "Renders actual <svg> elements — not <img> tags — so CSS currentColor, animations, and JavaScript all work natively across every adapter.",
+    desc: "On the web (React, Vue, Svelte) renders a real <svg> element — not an <img> tag — so CSS currentColor, animations, and JavaScript work natively. React Native renders a react-native-svg tree and Flutter renders via flutter_svg.",
   },
   {
     icon: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
@@ -52,7 +52,7 @@ const featureCards = [
   {
     icon: `<polyline points="16 18 22 12 16 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="8 6 2 12 8 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
     title: "Full prop forwarding",
-    desc: "Every standard SVG attribute is forwarded and overrides markup attributes. className, onClick, aria-*, width, height, color — everything.",
+    desc: "React forwards every SVGProps attribute (className, onClick, aria-*, width, height) and it overrides markup attrs. React Native, Vue, and Svelte forward a focused subset — width, height, color/fill/stroke, and core a11y attrs.",
   },
   {
     icon: `<path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
@@ -274,7 +274,6 @@ Svg(
             <!-- Install snippet -->
             <div class="mt-4">
                               <CodeBlock code={`$ pnpm add @mhaadi/svg`} lang="sh" />
-                              <CodeBlock code={`$ flutter pub add svg_flutter`} lang="sh" />
             </div>
           </div>
         </div>
@@ -325,6 +324,9 @@ Svg(
             </div>
             <h3 class="font-display text-2xl tracking-wider text-[#e8e8e8]">{fw.name}</h3>
             <code class="font-mono text-[11px] text-zinc-muted break-all">{fw.sub}</code>
+              {fw.published === false && (
+                <span class="mt-1 inline-block w-fit border border-amber-700/40 bg-amber-950/30 px-1.5 py-0.5 font-mono text-[10px] text-amber-400 uppercase tracking-widest">Coming soon</span>
+              )}
             <div class="mt-auto flex items-center gap-1.5 font-mono text-[11px] text-zinc-muted group-hover:text-acid transition-colors">
               Read docs
               <svg class="h-3 w-3 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none">

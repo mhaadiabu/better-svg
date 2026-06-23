@@ -278,6 +278,13 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
 
     const resolvedSource = React.useMemo(() => resolveSource(src, name), [name, src]);
 
+    const onLoadRef = React.useRef(onSvgLoad);
+    const onErrorRef = React.useRef(onSvgError);
+    React.useEffect(() => {
+      onLoadRef.current = onSvgLoad;
+      onErrorRef.current = onSvgError;
+    });
+
     React.useEffect(() => {
       let active = true;
       const controller = new AbortController();
@@ -289,7 +296,7 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
         const err = new Error("Either name or src is required.");
         setError(err);
         setIsLoading(false);
-        onSvgError?.(err);
+        onErrorRef.current?.(err);
         return () => {
           active = false;
           controller.abort();
@@ -303,7 +310,7 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
         }
         setContent(parsed);
         setIsLoading(false);
-        onSvgLoad?.(markup);
+        onLoadRef.current?.(markup);
       };
 
       if (cache && svgCache.has(resolvedSource)) {
@@ -314,7 +321,7 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
           const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
           setError(normalized);
           setIsLoading(false);
-          onSvgError?.(normalized);
+          onErrorRef.current?.(normalized);
         }
         return () => {
           active = false;
@@ -327,7 +334,7 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
         if (active) {
           setError(err);
           setIsLoading(false);
-          onSvgError?.(err);
+          onErrorRef.current?.(err);
         }
         return () => {
           active = false;
@@ -347,14 +354,14 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
           const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
           setError(normalized);
           setIsLoading(false);
-          onSvgError?.(normalized);
+          onErrorRef.current?.(normalized);
         });
 
       return () => {
         active = false;
         controller.abort();
       };
-    }, [resolvedSource, fetchOptions, cache, sanitize, onSvgLoad, onSvgError]);
+    }, [resolvedSource, fetchOptions, cache, sanitize]);
 
     if (isLoading) {
       return loading ? <>{loading}</> : null;

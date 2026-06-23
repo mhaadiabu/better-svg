@@ -2,6 +2,7 @@ export type Framework = {
   id: string;
   label: string;
   sub: string;
+  published?: boolean;
 };
 
 export const frameworks: Framework[] = [
@@ -9,10 +10,10 @@ export const frameworks: Framework[] = [
   { id: "react-native", label: "React Native", sub: "@mhaadi/svg/react-native" },
   { id: "vue", label: "Vue", sub: "@mhaadi/svg/vue" },
   { id: "svelte", label: "Svelte", sub: "@mhaadi/svg/svelte" },
-  { id: "flutter", label: "Flutter", sub: "svg_flutter" },
+  { id: "flutter", label: "Flutter", sub: "svg_flutter", published: false },
 ];
 
-export const frameworkLabels: Record<string, { label: string; sub: string }> = {
+export const frameworkLabels: Record<string, Framework> = {
   react: frameworks[0],
   "react-native": frameworks[1],
   vue: frameworks[2],

@@ -53,5 +53,27 @@ void main() {
       final output = sanitizeSvgMarkup(input);
       expect(output.contains('javascript:'), isFalse);
     });
+
+    test('removes closing tags of dangerous elements', () {
+      const input = '''
+<svg xmlns="http://www.w3.org/2000/svg">
+  <iframe src="https://example.com"></iframe>
+  <foreignObject width="10" height="10"><div></div></foreignObject>
+  <rect/>
+</svg>
+''';
+      final output = sanitizeSvgMarkup(input);
+      expect(output.contains('</iframe>'), isFalse);
+      expect(output.contains('</foreignObject>'), isFalse);
+      expect(output.contains('</script>'), isFalse);
+    });
+
+    test('does not strip safe closing tags', () {
+      const input =
+          '<svg xmlns="http://www.w3.org/2000/svg"><g><rect/></g></svg>';
+      final output = sanitizeSvgMarkup(input);
+      expect(output.contains('</g>'), isTrue);
+      expect(output.contains('</svg>'), isTrue);
+    });
   });
 }

@@ -11,14 +11,14 @@ const _dangerousTags = <String>{
 String sanitizeSvgMarkup(String markup) {
   if (markup.isEmpty) return markup;
 
-  final cleaned = markup
+  var cleaned = markup
       .replaceAll(RegExp(r'<\?xml[\s\S]*?\?>'), '')
       .replaceAll(RegExp(r'<!DOCTYPE[\s\S]*?>', caseSensitive: false), '');
 
   for (final tag in _dangerousTags) {
     final open = RegExp('<$tag\\b[^>]*>', caseSensitive: false);
     final close = RegExp('</$tag\\s*>', caseSensitive: false);
-    cleaned.replaceAll(open, '').replaceAll(close, '');
+    cleaned = cleaned.replaceAll(open, '').replaceAll(close, '');
   }
 
   final attributePattern = RegExp(

@@ -8,9 +8,9 @@ allowBuilds:
   sharp: true
   workerd: true
 catalog:
-  dotenv: ^17.2.2
-  zod: ^4.1.13
-  typescript: ^6
+  dotenv: ^17.4.2
+  zod: ^4.4.3
+  typescript: ^6.0.3
   next-themes: ^0.4.6
   react: ^19.2.6
   react-dom: ^19.2.6

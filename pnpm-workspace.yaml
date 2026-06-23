@@ -19,3 +19,5 @@ catalog:
   alchemy: ^0.91.2
 minimumReleaseAgeExclude:
   - "@mhaadi/svg@0.1.0"
+  - '@astrojs/markdown-satteri@0.3.2'
+  - astro@7.0.2

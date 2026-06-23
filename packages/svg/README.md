@@ -6,8 +6,6 @@ raw markup — with a shared core for URL safety and markup parsing.
 
 **Full docs & usage:** https://svg.mhaadi.dev/docs
 
-For Flutter, see [`svg_flutter`](https://svg.mhaadi.dev/docs) — the Dart/`flutter_svg` companion package.
-
 ## Install
 
 ```bash

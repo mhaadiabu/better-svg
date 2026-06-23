@@ -25,7 +25,7 @@ const frameworkBadges = [
   { id: "react-native", name: "React Native", sub: "@mhaadi/svg/react-native" },
   { id: "vue", name: "Vue", sub: "@mhaadi/svg/vue" },
   { id: "svelte", name: "Svelte", sub: "@mhaadi/svg/svelte" },
-  { id: "flutter", name: "Flutter", sub: "svg_flutter" },
+  { id: "flutter", name: "Flutter", sub: "svg_flutter", published: false },
 ];
 
 const featureCards = [
@@ -274,7 +274,6 @@ Svg(
             <!-- Install snippet -->
             <div class="mt-4">
                               <CodeBlock code={`$ pnpm add @mhaadi/svg`} lang="sh" />
-                              <CodeBlock code={`$ flutter pub add svg_flutter`} lang="sh" />
             </div>
           </div>
         </div>
@@ -325,6 +324,9 @@ Svg(
             </div>
             <h3 class="font-display text-2xl tracking-wider text-[#e8e8e8]">{fw.name}</h3>
             <code class="font-mono text-[11px] text-zinc-muted break-all">{fw.sub}</code>
+              {fw.published === false && (
+                <span class="mt-1 inline-block w-fit border border-amber-700/40 bg-amber-950/30 px-1.5 py-0.5 font-mono text-[10px] text-amber-400 uppercase tracking-widest">Coming soon</span>
+              )}
             <div class="mt-auto flex items-center gap-1.5 font-mono text-[11px] text-zinc-muted group-hover:text-acid transition-colors">
               Read docs
               <svg class="h-3 w-3 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none">

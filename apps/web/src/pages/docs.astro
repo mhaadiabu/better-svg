@@ -30,12 +30,6 @@ const strippedElements = [
 ];
 
 import CodeBlock from "../components/CodeBlock.astro";
-
-const flutterNotes = [
-  "svg_flutter is a separate pub package and is not a subpath of @mhaadi/svg.",
-  "It depends on flutter_svg (peer) and http for remote fetching.",
-  "Sanitization is performed against the raw markup before passing to SvgPicture.string.",
-];
 ---
 
 
@@ -170,12 +164,13 @@ const flutterNotes = [
             <p class="docs-body">
               <code class="inline-code">@mhaadi/svg</code> exposes a single component —{" "}
               <code class="inline-code">{"<SVG>"}</code> — that resolves SVG content from any source,
-              sanitizes unsafe markup, and renders a true{" "}
-              <code class="inline-code">{"<svg>"}</code> element with full prop forwarding. Available for
+              sanitizes unsafe markup, and renders it inline. On the web (React, Vue, Svelte) it renders a
+              real <code class="inline-code">{"<svg>"}</code> DOM element; React Native renders a
+              react-native-svg tree and Flutter renders via flutter_svg. Available for
               <strong class="text-[#e8e8e8]"> React, React Native, Vue, Svelte</strong> via subpath exports
               on a single npm package, and for <strong class="text-[#e8e8e8]">Flutter</strong> via the
               separate <code class="inline-code">svg_flutter</code> pub package. No{" "}
-              <code class="inline-code">{"<img>"}</code> wrappers. No restrictions.
+              <code class="inline-code">{"<img>"}</code> wrappers on the web adapters.
             </p>
 
             <div class="mt-6 grid sm:grid-cols-4 gap-4">
@@ -1007,11 +1002,6 @@ export function IconGallery() {
     </div>
   );
 }`} lang="tsx" />
-                <p class="mt-3 text-sm text-zinc-muted">
-                  <code class="inline-code">SvgName</code> is a string literal union derived from the SVGs
-                  present in <code class="inline-code">src/assets/svg/</code> at build time. It gives you
-                  autocompletion and catches typos.
-                </p>
               </div>
             </div>
           </section>

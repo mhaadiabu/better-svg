@@ -103,6 +103,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
       resolveMarkup(resolvedSource, { fetchOptions, signal: controller.signal, cache })
         .then((markup) => {
           if (!active) return;
+          if (cache) svgCache.set(resolvedSource, markup);
           runWithCached(markup);
         })
         .catch((err) => {

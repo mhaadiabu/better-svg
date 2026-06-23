@@ -51,3 +51,30 @@ describe("SVG cache", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
   });
 });
+
+describe("SVG effect stability", () => {
+  it("does not refetch when onSvgLoad is inline (new identity each render)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(SVG_MARKUP, {
+        status: 200,
+        headers: { "Content-Type": "image/svg+xml" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const url = "https://example.com/stable.svg";
+    const onLoad = vi.fn();
+    const { rerender } = render(<SVG src={url} onSvgLoad={onLoad} />);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(onLoad).toHaveBeenCalledTimes(1));
+
+    const onLoad2 = vi.fn();
+    rerender(<SVG src={url} onSvgLoad={onLoad2} />);
+
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(onLoad2).not.toHaveBeenCalled();
+  });
+});

@@ -14,7 +14,7 @@ done — unless a reviewer dispatched you and told you they maintain the index.
 | 003  | Fix React SVG cache write                                          | P1       | S      | 001          | DONE   |
 | 004  | Fix Flutter sanitizer (discarded result + close-tag leak)          | P1       | S      | 001          | BLOCKED (no flutter toolchain — verified by reading; edits committed) |
 | 005  | Run lint+test in CI; remove unused import                          | P2       | S      | 001          | DONE   |
-| 006  | Stabilize React/Native effects against inline callbacks            | P2       | S      | 001, 003     | TODO   |
+| 006  | Stabilize React/Native effects against inline callbacks            | P2       | S      | 001, 003     | DONE   |
 | 007  | Remove dead @better-svg/ui scaffolding                             | P3       | S      | —            | TODO   |
 | 008  | Docs consistency pass + remove false promises                      | P2       | M      | 002,003,004,006 | TODO   |
 

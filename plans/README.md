@@ -10,7 +10,7 @@ done — unless a reviewer dispatched you and told you they maintain the index.
 | Plan | Title                                                              | Priority | Effort | Depends on   | Status |
 |------|--------------------------------------------------------------------|----------|--------|--------------|--------|
 | 001  | Add vitest harness + core characterization tests                   | P1       | M      | —            | DONE   |
-| 002  | Unify DOM sanitization across React/Vue/Svelte                     | P1       | M      | 001          | TODO   |
+| 002  | Unify DOM sanitization across React/Vue/Svelte                     | P1       | M      | 001          | DONE   |
 | 003  | Fix React SVG cache write                                          | P1       | S      | 001          | TODO   |
 | 004  | Fix Flutter sanitizer (discarded result + close-tag leak)          | P1       | S      | 001          | TODO   |
 | 005  | Run lint+test in CI; remove unused import                          | P2       | S      | 001          | TODO   |

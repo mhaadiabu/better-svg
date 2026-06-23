@@ -1,9 +1,7 @@
 import {
-  domParserAvailable,
-  parseInlineStyle,
+  parseInlineSvg,
   resolveMarkup,
   resolveSource,
-  toCamelCase,
   type SvgNameInput,
 } from "../core";
 
@@ -38,69 +36,17 @@ export type ParsedSvg = {
   innerHTML: string;
 };
 
-const toCamelCaseStyle = (style: Record<string, string>): Record<string, string> => {
-  const out: Record<string, string> = {};
-  for (const [key, value] of Object.entries(style)) {
-    out[key.startsWith("--") ? key : toCamelCase(key)] = value;
-  }
-  return out;
-};
-
 export const parseSvgMarkup = (markup: string, sanitize: boolean): ParsedSvg | null => {
-  if (!domParserAvailable()) return null;
-  const parser = new DOMParser();
-  const parsedDocument = parser.parseFromString(markup, "image/svg+xml");
-  if (parsedDocument.querySelector("parsererror")) return null;
-  const svg = parsedDocument.querySelector("svg");
-  if (!svg) return null;
-
-  if (sanitize) {
-    svg
-      .querySelectorAll("script, foreignObject, iframe, object, embed")
-      .forEach((node) => node.remove());
-    const walker = svg.ownerDocument.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
-    let current: Element | null = svg;
-    while (current) {
-      for (const attr of Array.from(current.attributes)) {
-        const name = attr.name;
-        if (name.startsWith("on")) {
-          current.removeAttribute(name);
-          continue;
-        }
-        if (name === "style" && /url\(/i.test(attr.value)) {
-          current.removeAttribute(name);
-          continue;
-        }
-        if (name === "href" || name === "xlink:href") {
-          if (!/^(#|\/|[a-zA-Z][a-zA-Z0-9+.-]*:)/.test(attr.value) && attr.value.trim() !== "") {
-            current.removeAttribute(name);
-          }
-        }
-      }
-      current = walker.nextNode() as Element | null;
-    }
-  }
-
-  const attrs: Record<string, string> = {};
-  for (const attr of Array.from(svg.attributes)) attrs[attr.name] = attr.value;
-
-  const className = attrs.class;
-  if (className) delete attrs.class;
-  let style: string | undefined;
-  if (attrs.style) {
-    const parsed = toCamelCaseStyle(parseInlineStyle(attrs.style));
-    const styleText = Object.entries(parsed)
-      .map(([k, v]) => `${k}:${v}`)
-      .join(";");
-    if (styleText) style = styleText;
-    delete attrs.style;
-  }
-
+  const inline = parseInlineSvg(markup, sanitize);
+  if (!inline) return null;
+  const styleText = inline.style
+    ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
+    : undefined;
   return {
-    attrs,
-    className,
-    style,
-    innerHTML: svg.innerHTML,
+    attrs: inline.attrs,
+    className: inline.className,
+    style: styleText,
+    innerHTML: inline.innerHTML,
   };
 };
 

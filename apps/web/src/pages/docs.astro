@@ -961,7 +961,7 @@ export function RemoteIcon({ url }) {
   import { SVG } from "@mhaadi/svg/svelte";
 </script>
 
-<SVG src={"url}{"} class="h-8 w-8" sanitize cache>
+<SVG src={"url"} class="h-8 w-8" sanitize cache>
   {#snippet loading()}Skeleton{/snippet}
   {#snippet fallback()}Skeleton{/snippet}
 </SVG>`} lang="svelte" />
@@ -1051,7 +1051,6 @@ export function IconGallery() {
         ))}
       </nav>
     </div>
-  </div>
 </Base>
 
 <style>

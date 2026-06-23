@@ -25,7 +25,7 @@ export const web = await Vite("web", {
     command: "pnpm build",
   },
   dev: {
-    command: "pnpm dev:bare -- --host 0.0.0.0 --port 4321",
+    command: "pnpm dev:bare --host=0.0.0.0 --port=4321",
     domain: "localhost:4321",
   },
   script: `

@@ -8,7 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check-types": "astro check"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",

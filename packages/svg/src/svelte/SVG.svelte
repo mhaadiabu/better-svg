@@ -34,10 +34,10 @@
       fetchOptions,
       cache,
       sanitize,
-      onSvgLoad,
-      onSvgError,
+      onSvgLoad: untrack(() => onSvgLoad),
+      onSvgError: untrack(() => onSvgError),
     };
-    untrack(() => controller.load(props, (next) => (state = next)));
+    controller.load(props, (next) => (state = next));
   });
 
   onDestroy(() => controller.abort());

@@ -23,7 +23,7 @@ import {
   Image as SvgImage,
 } from "react-native-svg";
 import {
-  parseAndSanitize,
+  ensureParsedNode,
   resolveMarkup,
   resolveSource,
   type SvgAttribute,
@@ -304,7 +304,7 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
       }
 
       const finish = (markup: string) => {
-        const parsed = parseAndSanitize(markup, sanitize);
+        const parsed = ensureParsedNode(resolvedSource, markup, sanitize);
         if (!parsed) {
           throw new Error("SVG markup is invalid.");
         }

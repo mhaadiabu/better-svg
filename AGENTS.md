@@ -100,6 +100,28 @@ Rules per package:
   be bumped when consumers depend on the change, and downstream workspace
   `workspace:*` references must resolve.
 
+### GitHub releases
+
+When tagging a release, create a GitHub Release from the tag. Release
+notes are user-facing, not internal — they are what consumers read in
+the npm UI, the GitHub Releases page, and dependency update PRs (Renovate,
+Dependabot). Follow the Keep a Changelog format:
+
+- **Title**: the tag name (e.g. `@mhaadi/svg@0.2.3`).
+- **Body**: one section per change type, using the headings `### Added`,
+  `### Changed`, `### Fixed`, `### Removed`, `### Security`. Omit empty
+  sections. Each entry is one line, written for the consumer ("Cache
+  parsed SVGs so re-mounts skip DOMParser" — not "Add
+  `ensureParsedSvg` to `core/cache.ts`").
+- **Full Changelog link**: end with
+  `**Full Changelog**: https://github.com/mhaadiabu/better-svg/compare/<prev-tag>...<tag>`.
+- No commit lists, no verification steps, no plan references, no
+  "what's in the stack", no internal notes. Those belong in the PR
+  description, not the release notes.
+- The `CHANGELOG.md` entry and the GitHub release body should contain
+  the same information. The changelog is the source of truth; the
+  release body is its copy.
+
 - Before pushing to `main` or opening a PR that touches a package's
   source, verify: (1) the version is bumped, (2) the changelog is updated,
   (3) for npm packages the corresponding tag is planned. Do not merge

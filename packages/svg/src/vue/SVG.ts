@@ -9,7 +9,7 @@ import {
   type Slot,
 } from "vue";
 import {
-  parseInlineSvg,
+  ensureParsedSvg,
   resolveMarkup,
   resolveSource,
   toCamelCase,
@@ -102,7 +102,7 @@ export const SVG = defineComponent({
 
       if (doCache && svgCache.has(resolved)) {
         const cached = svgCache.get(resolved) ?? "";
-        const inline = parseInlineSvg(cached, props.sanitize ?? true);
+        const inline = ensureParsedSvg(resolved, cached, props.sanitize ?? true);
         if (inline) {
           const styleText = inline.style
             ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
@@ -132,7 +132,7 @@ export const SVG = defineComponent({
       })
         .then((markup) => {
           if (c.signal.aborted) return;
-          const inline = parseInlineSvg(markup, props.sanitize ?? true);
+          const inline = ensureParsedSvg(resolved, markup, props.sanitize ?? true);
           if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
           const styleText = inline.style
             ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")

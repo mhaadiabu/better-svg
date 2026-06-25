@@ -1,9 +1,15 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, waitFor } from "@testing-library/react";
 import { SVG } from "./svg";
+import * as sanitize from "./core/sanitize";
+import { clearSvgCache } from "./core/cache";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+beforeEach(() => {
+  clearSvgCache();
 });
 
 const SVG_MARKUP =
@@ -76,5 +82,32 @@ describe("SVG effect stability", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(onLoad2).not.toHaveBeenCalled();
+  });
+});
+
+describe("SVG parsed-cache", () => {
+  it("does not re-parse cached SVG on second mount of the same URL", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(SVG_MARKUP, {
+        status: 200,
+        headers: { "Content-Type": "image/svg+xml" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const parseSpy = vi.spyOn(sanitize, "parseInlineSvg");
+    const url = "https://example.com/parse-skip.svg";
+
+    const { unmount } = render(<SVG src={url} />);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(parseSpy).toHaveBeenCalledTimes(1));
+    unmount();
+
+    render(<SVG src={url} />);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await new Promise((r) => setTimeout(r, 10));
+    expect(parseSpy).toHaveBeenCalledTimes(1);
+
+    parseSpy.mockRestore();
   });
 });

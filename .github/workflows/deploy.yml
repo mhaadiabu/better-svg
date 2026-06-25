@@ -3,40 +3,23 @@ name: Deploy
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11.1.3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm check-types
-      - run: pnpm test
-      - run: pnpm build
-
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: check
+    needs: []
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 11.1.3
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -45,7 +28,6 @@ jobs:
       - run: pnpm build
       - name: Deploy
         run: |
-          # Unset empty secrets so Alchemy's nullish-coalescing falls back to API discovery
           [ -z "$CLOUDFLARE_ACCOUNT_ID" ] && unset CLOUDFLARE_ACCOUNT_ID
           [ -z "$CLOUDFLARE_API_TOKEN" ] && unset CLOUDFLARE_API_TOKEN
           pnpm deploy

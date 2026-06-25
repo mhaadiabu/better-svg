@@ -15,3 +15,4 @@ export {
 } from "./ast";
 export type { SvgNode, SvgAttribute } from "./ast";
 export { resolveMarkup, resolveSource } from "./resolve";
+export { ensureParsedSvg, ensureParsedNode } from "./cache";

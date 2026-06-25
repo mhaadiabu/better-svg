@@ -11,6 +11,7 @@ const app = await alchemy("better-svg", {
 });
 
 export const web = await Vite("web", {
+  adopt: process.env.CI === "true",
   cwd: "../../apps/web",
   assets: {
     directory: "dist",

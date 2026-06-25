@@ -106,3 +106,32 @@ describe("LRU eviction", () => {
     expect(ensureParsedNode("n-evict-0", "<svg><rect/></svg>", true)).not.toBeNull();
   });
 });
+
+describe("cache=false bypasses parsed cache", () => {
+  it("ensureParsedSvg with cache=false skips cache read and write", () => {
+    clearSvgCache();
+    ensureParsedSvg("s-bypass", MARKUP, true, true);
+    expect(__svgCacheSize()).toBe(1);
+
+    const result = ensureParsedSvg("s-bypass", MARKUP, true, false);
+    expect(result).not.toBeNull();
+    expect(__svgCacheSize()).toBe(1);
+
+    const result2 = ensureParsedSvg("s-fresh", MARKUP, true, false);
+    expect(result2).not.toBeNull();
+    expect(__svgCacheSize()).toBe(1);
+  });
+
+  it("ensureParsedNode with cache=false skips cache read and write", () => {
+    clearSvgCache();
+    const MARKUP2 = "<svg><rect/></svg>";
+    ensureParsedNode("n-bypass", MARKUP2, true, true);
+    expect(__svgNodeCacheSize()).toBe(1);
+
+    ensureParsedNode("n-bypass", MARKUP2, true, false);
+    expect(__svgNodeCacheSize()).toBe(1);
+
+    ensureParsedNode("n-fresh", MARKUP2, true, false);
+    expect(__svgNodeCacheSize()).toBe(1);
+  });
+});

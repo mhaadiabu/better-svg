@@ -78,7 +78,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
       }
 
       const runWithCached = (markup: string) => {
-        const inline = ensureParsedSvg(resolvedSource, markup, sanitize);
+        const inline = ensureParsedSvg(resolvedSource, markup, sanitize, cache);
         if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
         const parsed: ParsedSvg = {
           attrs: inline.attrs,

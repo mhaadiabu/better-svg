@@ -304,7 +304,7 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
       }
 
       const finish = (markup: string) => {
-        const parsed = ensureParsedNode(resolvedSource, markup, sanitize);
+        const parsed = ensureParsedNode(resolvedSource, markup, sanitize, cache);
         if (!parsed) {
           throw new Error("SVG markup is invalid.");
         }

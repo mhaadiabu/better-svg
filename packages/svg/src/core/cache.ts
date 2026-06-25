@@ -62,11 +62,14 @@ export const ensureParsedSvg = (
   source: string,
   markup: string,
   sanitize: boolean,
+  cache = true,
 ): ParsedInlineSvg | null => {
-  const cached = getCachedParsedSvg(source, sanitize);
-  if (cached) return cached;
+  if (cache) {
+    const cached = getCachedParsedSvg(source, sanitize);
+    if (cached) return cached;
+  }
   const parsed = parseInlineSvg(markup, sanitize);
-  if (parsed) cacheParsedSvg(source, sanitize, parsed);
+  if (parsed && cache) cacheParsedSvg(source, sanitize, parsed);
   return parsed;
 };
 
@@ -74,13 +77,17 @@ export const ensureParsedNode = (
   source: string,
   markup: string,
   sanitize: boolean,
+  cache = true,
 ): SvgNode | null => {
-  const key = keyFor(source, sanitize);
-  const entry = touch(nodeCache, key);
-  if (entry) return entry;
-  const node = parseAndSanitize(markup, sanitize);
-  if (node) setBounded(nodeCache, key, node, NODE_CACHE_LIMIT);
-  return node;
+  if (cache) {
+    const key = keyFor(source, sanitize);
+    const entry = touch(nodeCache, key);
+    if (entry) return entry;
+    const node = parseAndSanitize(markup, sanitize);
+    if (node) setBounded(nodeCache, key, node, NODE_CACHE_LIMIT);
+    return node;
+  }
+  return parseAndSanitize(markup, sanitize);
 };
 
 export const __svgNodeCacheSize = (): number => nodeCache.size;

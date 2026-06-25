@@ -40,8 +40,9 @@ export const parseSvgMarkup = (
   source: string,
   markup: string,
   sanitize: boolean,
+  cache = true,
 ): ParsedSvg | null => {
-  const inline = ensureParsedSvg(source, markup, sanitize);
+  const inline = ensureParsedSvg(source, markup, sanitize, cache);
   if (!inline) return null;
   const styleText = inline.style
     ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
@@ -79,7 +80,7 @@ export const createSvgController = () => {
 
     if (lastSource === resolved && cache.has(resolved)) {
       const cached = cache.get(resolved) ?? "";
-      const parsed = parseSvgMarkup(resolved, cached, props.sanitize ?? true);
+      const parsed = parseSvgMarkup(resolved, cached, props.sanitize ?? true, true);
       if (parsed) {
         update({ status: "ready", content: parsed, markup: cached });
         props.onSvgLoad?.(cached);
@@ -100,7 +101,7 @@ export const createSvgController = () => {
         cache.set(resolved, markup);
         lastSource = resolved;
       }
-      const parsed = parseSvgMarkup(resolved, markup, props.sanitize ?? true);
+      const parsed = parseSvgMarkup(resolved, markup, props.sanitize ?? true, props.cache ?? true);
       if (!parsed) throw new Error("SVG markup is invalid or unavailable in this environment.");
       update({ status: "ready", content: parsed, markup });
       props.onSvgLoad?.(markup);

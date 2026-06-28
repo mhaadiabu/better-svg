@@ -24,10 +24,10 @@
   },
   "devDependencies": {
     "@better-svg/config": "workspace:*",
-    "@cloudflare/workers-types": "^4.20260621.1",
+    "@cloudflare/workers-types": "^4.20260624.1",
     "oxfmt": "^0.46.0",
     "oxlint": "^1.71.0",
-    "turbo": "^2.9.18",
+    "turbo": "^2.10.0",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@11.8.0"

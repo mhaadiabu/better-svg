@@ -1,0 +1,199 @@
+---
+interface PmCmd {
+  pm: string;
+  cmd: string;
+}
+
+interface Props {
+  commands: PmCmd[];
+  initial?: string;
+}
+
+const { commands, initial = "pnpm" } = Astro.props;
+const current = commands.find((c) => c.pm === initial) ?? commands[0];
+---
+
+<div class="pm-tabs" data-pm-tabs data-initial={initial}>
+  <div class="pm-tabs-bar" role="tablist" aria-label="Package manager">
+    {commands.map((c) => (
+      <button
+        type="button"
+        role="tab"
+        class:list={["pm-tab", { "is-active": c.pm === current.pm }]}
+        data-pm={c.pm}
+        data-cmd={c.cmd}
+        aria-selected={c.pm === current.pm ? "true" : "false"}
+      >
+        {c.pm}
+      </button>
+    ))}
+    <button type="button" class="pm-copy" data-pm-copy aria-label="Copy install command">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      <span data-pm-copy-label>Copy</span>
+    </button>
+  </div>
+  <div class="pm-tabs-body" data-pm-body>
+    <pre class="text-sm text-[#e8e8e8]"><code data-pm-code>{current.cmd}</code></pre>
+  </div>
+</div>
+
+<style>
+  .pm-tabs {
+    background: #111111;
+    border: 1px solid #2e2e2e;
+    max-width: 100%;
+  }
+  .pm-tabs-bar {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border-bottom: 1px solid #2e2e2e;
+    background: #0d0d0d;
+  }
+  .pm-tab {
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 8px 12px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    color: #6b6b6b;
+    cursor: pointer;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+    line-height: 1.25rem;
+  }
+  .pm-tab:hover {
+    color: #e8e8e8;
+  }
+  .pm-tab.is-active {
+    color: #b9ff4b;
+    border-bottom-color: #b9ff4b;
+  }
+  .pm-copy {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    align-self: center;
+    margin-right: 8px;
+    border: 1px solid #2e2e2e;
+    background: transparent;
+    color: #6b6b6b;
+    cursor: pointer;
+    font-size: 10px;
+    font-family: "JetBrains Mono", monospace;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+    border-radius: 0;
+    line-height: 1;
+  }
+  .pm-copy:hover {
+    color: #b9ff4b;
+    border-color: #b9ff4b;
+  }
+  .pm-copy.is-copied {
+    color: #b9ff4b;
+    border-color: #b9ff4b;
+  }
+  .pm-copy svg {
+    flex-shrink: 0;
+  }
+  .pm-tabs-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 20px;
+  }
+  .pm-tabs-body pre {
+    margin: 0;
+    white-space: pre;
+  }
+</style>
+
+<script>
+  type PmTabsEl = HTMLElement & { _initialized?: boolean };
+
+  const STORAGE_KEY = "bettersvg:pm";
+
+  const validPms = (root: HTMLElement) =>
+    Array.from(root.querySelectorAll<HTMLElement>("[data-pm]")).map((b) => b.dataset.pm || "");
+
+  const readSaved = (): string | null => {
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      if (v) return v;
+    } catch {}
+    return null;
+  };
+
+  const writeSaved = (pm: string) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, pm);
+    } catch {}
+  };
+
+  const initTabs = (root: PmTabsEl) => {
+    if (root._initialized) return;
+    root._initialized = true;
+
+    const tabs = Array.from(root.querySelectorAll<HTMLElement>("[data-pm]"));
+    const codeEl = root.querySelector<HTMLElement>("[data-pm-code]");
+    const copyBtn = root.querySelector<HTMLButtonElement>("[data-pm-copy]");
+    const copyLabel = root.querySelector<HTMLElement>("[data-pm-copy-label]");
+    if (!tabs.length || !codeEl || !copyBtn || !copyLabel) return;
+
+    const setActive = (pm: string) => {
+      let cmd = "";
+      tabs.forEach((t) => {
+        const on = t.dataset.pm === pm;
+        t.classList.toggle("is-active", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        if (on) cmd = t.dataset.cmd || "";
+      });
+      codeEl.textContent = cmd;
+    };
+
+    const saved = readSaved();
+    const initial = root.dataset.initial || "pnpm";
+    const startWith = saved && validPms(root).includes(saved) ? saved : initial;
+    if (startWith !== initial) setActive(startWith);
+
+    tabs.forEach((t) => {
+      t.addEventListener("click", () => {
+        const pm = t.dataset.pm || "";
+        if (!pm) return;
+        writeSaved(pm);
+        setActive(pm);
+      });
+    });
+
+    const resetCopy = () => {
+      copyBtn.classList.remove("is-copied");
+      copyLabel.textContent = "Copy";
+    };
+
+    copyBtn.addEventListener("click", () => {
+      const text = codeEl.textContent || "";
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.classList.add("is-copied");
+        copyLabel.textContent = "Copied";
+        window.setTimeout(resetCopy, 2000);
+      });
+    });
+  };
+
+  const initAll = () => {
+    document.querySelectorAll<PmTabsEl>("[data-pm-tabs]").forEach(initTabs);
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAll);
+  } else {
+    initAll();
+  }
+  document.addEventListener("astro:page-load", initAll);
+</script>

@@ -30,6 +30,7 @@ const strippedElements = [
 ];
 
 import CodeBlock from "../components/CodeBlock.astro";
+import PmTabs from "../components/PmTabs.astro";
 ---
 
 
@@ -197,18 +198,14 @@ import CodeBlock from "../components/CodeBlock.astro";
               <!-- React / RN / Vue / Svelte (one package) -->
               <div data-fw-show="react react-native vue svelte">
                 <p class="mb-3 text-sm text-[#e8e8e8] font-semibold">JS/TS — React, React Native, Vue, Svelte</p>
-                <div class="space-y-3">
-                  {[
+                <PmTabs
+                  commands={[
                     { pm: "pnpm", cmd: "pnpm add @mhaadi/svg" },
                     { pm: "npm", cmd: "npm install @mhaadi/svg" },
                     { pm: "yarn", cmd: "yarn add @mhaadi/svg" },
                     { pm: "bun", cmd: "bun add @mhaadi/svg" },
-                  ].map((pkg) => (
-                    <div class="code-block" data-lang={pkg.pm}>
-                      <pre class="text-sm text-[#e8e8e8]">{pkg.cmd}</pre>
-                    </div>
-                  ))}
-                </div>
+                  ]}
+                />
                 <div class="mt-3 rounded-none border border-coal-4 bg-coal-1 p-4">
                   <p class="font-mono text-xs text-zinc-muted">
                     <span class="text-acid">Peer (React):</span> React 18+ · TypeScript 5+ (optional)
@@ -1019,21 +1016,12 @@ export function IconGallery() {
           </section>
 
           <!-- Bottom nav -->
-          <nav id="docs-bottom-nav" class="border-t border-coal-2 pt-8 flex items-center justify-between" aria-label="Section navigation">
-            <a id="docs-prev-link" href="#overview" class="flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
+          <nav id="docs-bottom-nav" class="border-t border-coal-2 pt-8 flex items-center justify-center" aria-label="Back to landing">
+            <a href="/" class="flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
               <svg class="h-4 w-4 transition-transform group-hover:-translate-x-1" viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span id="docs-prev-label">Previous</span>
-            </a>
-            <a href="/" class="hidden sm:flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors">
               Back to landing page
-            </a>
-            <a id="docs-next-link" href="#installation" class="flex items-center gap-2 text-sm text-zinc-muted hover:text-acid transition-colors group">
-              <span id="docs-next-label">Next</span>
-              <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
             </a>
           </nav>
         </main>
@@ -1109,10 +1097,6 @@ export function IconGallery() {
     const mobileSection = mobileSidebarBtn?.querySelector("[data-mobile-section]");
 
     const sectionOrder = Array.from(sectionEls).map((el) => el.id);
-    const prevLink = document.getElementById("docs-prev-link") as HTMLAnchorElement | null;
-    const nextLink = document.getElementById("docs-next-link") as HTMLAnchorElement | null;
-    const prevLabel = document.getElementById("docs-prev-label");
-    const nextLabel = document.getElementById("docs-next-label");
 
     function updateActive() {
       const els = Array.from(sectionEls) as HTMLElement[];
@@ -1131,28 +1115,6 @@ export function IconGallery() {
       });
       if (mobileSection) {
         mobileSection.textContent = sectionLabels[active] || "Overview";
-      }
-
-      const idx = sectionOrder.indexOf(active);
-      if (prevLink && prevLabel) {
-        if (idx > 0) {
-          const prevId = sectionOrder[idx - 1];
-          prevLink.href = `#${prevId}`;
-          prevLabel.textContent = `← ${sectionLabels[prevId]}`;
-          prevLink.classList.remove("invisible");
-        } else {
-          prevLink.classList.add("invisible");
-        }
-      }
-      if (nextLink && nextLabel) {
-        if (idx >= 0 && idx < sectionOrder.length - 1) {
-          const nextId = sectionOrder[idx + 1];
-          nextLink.href = `#${nextId}`;
-          nextLabel.textContent = `${sectionLabels[nextId]} →`;
-          nextLink.classList.remove("invisible");
-        } else {
-          nextLink.classList.add("invisible");
-        }
       }
     }
 

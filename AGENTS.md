@@ -63,7 +63,7 @@ without re-deriving conventions from chat history.
   - `<scope>` is the affected package or area (`svg`, `flutter`, `web`,
     `infra`, `plans`, `root`, etc.).
   - Summary is lowercase, no trailing period, ≤72 chars.
-  - Body (when needed) explains the *why*; the diff explains the *what*.
+  - Body (when needed) explains the _why_; the diff explains the _what_.
 - Never commit secrets, build artifacts (`dist/`, `node_modules/`,
   `.turbo/`), or generated lockfile churn unrelated to the change.
 

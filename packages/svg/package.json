@@ -2,28 +2,25 @@
   "name": "@mhaadi/svg",
   "version": "0.2.3",
   "description": "Inline SVG rendering for React, React Native, Vue, and Svelte.",
-  "license": "MIT",
   "keywords": [
-    "svg",
+    "dompurify-alternative",
+    "inline-svg",
     "react",
     "react-native",
-    "vue",
-    "svelte",
-    "inline-svg",
     "sanitize",
-    "dompurify-alternative"
+    "svelte",
+    "svg",
+    "vue"
   ],
   "homepage": "https://svg.mhaadi.dev",
+  "bugs": {
+    "url": "https://github.com/mhaadiabu/better-svg/issues"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/mhaadiabu/better-svg.git",
     "directory": "packages/svg"
-  },
-  "bugs": {
-    "url": "https://github.com/mhaadiabu/better-svg/issues"
-  },
-  "engines": {
-    "node": ">=18"
   },
   "files": [
     "dist",
@@ -110,5 +107,8 @@
     "vue": {
       "optional": true
     }
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

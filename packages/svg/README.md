@@ -101,9 +101,9 @@ Loading and fallback are exposed as named slots:
 | `cache`        | `boolean` (default `true`) | Cache remote SVG markup in memory             |
 | `fetchOptions` | `RequestInit`              | Options passed to `fetch`                     |
 | `loading`      | slot / `ReactNode`         | Render while SVG is loading or parsing        |
-| `fallback`     | slot / `ReactNode`         | Render when loading fails                      |
+| `fallback`     | slot / `ReactNode`         | Render when loading fails                     |
 | `onSvgLoad`    | function                   | Called when SVG markup is resolved            |
-| `onSvgError`   | function                   | Called when loading or parsing fails           |
+| `onSvgError`   | function                   | Called when loading or parsing fails          |
 
 React Native also accepts `width`, `height`, `color`, `fill`, `stroke`, and
 `strokeWidth` overrides. Vue and Svelte accept the same set of root-level SVG

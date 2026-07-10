@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  ensureParsedSvg,
-  resolveMarkup,
-  resolveSource,
-  type SvgNameInput,
-} from "./core";
+import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "./core";
 
 type ParsedSvg = {
   attrs: Record<string, string>;

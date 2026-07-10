@@ -20,12 +20,7 @@ const touch = <V>(map: Map<string, V>, key: string): V | undefined => {
   return value;
 };
 
-const setBounded = <V>(
-  map: Map<string, V>,
-  key: string,
-  value: V,
-  limit: number,
-): void => {
+const setBounded = <V>(map: Map<string, V>, key: string, value: V, limit: number): void => {
   if (map.has(key)) {
     map.delete(key);
   } else if (map.size >= limit) {
@@ -35,10 +30,7 @@ const setBounded = <V>(
   map.set(key, value);
 };
 
-export const getCachedParsedSvg = (
-  source: string,
-  sanitize: boolean,
-): ParsedInlineSvg | null => {
+export const getCachedParsedSvg = (source: string, sanitize: boolean): ParsedInlineSvg | null => {
   const key = keyFor(source, sanitize);
   return touch(cache, key) ?? null;
 };

@@ -34,12 +34,7 @@
       }
     },
     {
-      "scope": [
-        "entity.name.tag",
-        "entity.name.function",
-        "support.class",
-        "support.function"
-      ],
+      "scope": ["entity.name.tag", "entity.name.function", "support.class", "support.function"],
       "settings": {
         "foreground": "#79b8ff"
       }

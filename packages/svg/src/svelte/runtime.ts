@@ -1,9 +1,4 @@
-import {
-  ensureParsedSvg,
-  resolveMarkup,
-  resolveSource,
-  type SvgNameInput,
-} from "../core";
+import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "../core";
 
 export type SvelteSvgProps = {
   src?: string;
@@ -45,7 +40,9 @@ export const parseSvgMarkup = (
   const inline = ensureParsedSvg(source, markup, sanitize, cache);
   if (!inline) return null;
   const styleText = inline.style
-    ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
+    ? Object.entries(inline.style)
+        .map(([k, v]) => `${k}:${v}`)
+        .join(";")
     : undefined;
   return {
     attrs: inline.attrs,

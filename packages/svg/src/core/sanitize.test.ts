@@ -15,19 +15,13 @@ describe("parseInlineSvg", () => {
   });
 
   it("drops javascript: hrefs", () => {
-    const result = parseInlineSvg(
-      "<svg><a href='javascript:alert(1)'><rect/></a></svg>",
-      true,
-    );
+    const result = parseInlineSvg("<svg><a href='javascript:alert(1)'><rect/></a></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).not.toContain("javascript:");
   });
 
   it("keeps safe https: hrefs", () => {
-    const result = parseInlineSvg(
-      "<svg><a href='https://example.com'><rect/></a></svg>",
-      true,
-    );
+    const result = parseInlineSvg("<svg><a href='https://example.com'><rect/></a></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).toContain("https://example.com");
   });
@@ -39,10 +33,7 @@ describe("parseInlineSvg", () => {
   });
 
   it("keeps safe url(#...) style references on the root svg", () => {
-    const result = parseInlineSvg(
-      "<svg style='fill:url(#grad)'><rect/></svg>",
-      true,
-    );
+    const result = parseInlineSvg("<svg style='fill:url(#grad)'><rect/></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.style).toBeDefined();
     expect(result!.style).toEqual({ fill: "url(#grad)" });
@@ -50,19 +41,13 @@ describe("parseInlineSvg", () => {
   });
 
   it("does not over-strip safe url(#...) style on nested elements", () => {
-    const result = parseInlineSvg(
-      "<svg><rect style='fill:url(#grad)'/></svg>",
-      true,
-    );
+    const result = parseInlineSvg("<svg><rect style='fill:url(#grad)'/></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).toContain("url(#grad)");
   });
 
   it("drops unsafe url(javascript:...) style and removes the style attr", () => {
-    const result = parseInlineSvg(
-      "<svg style='fill:url(javascript:alert(1))'><rect/></svg>",
-      true,
-    );
+    const result = parseInlineSvg("<svg style='fill:url(javascript:alert(1))'><rect/></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.style).toBeUndefined();
     expect(result!.innerHTML).not.toContain("style=");
@@ -91,10 +76,7 @@ describe("parseInlineSvg", () => {
   });
 
   it("strips xlink:href javascript: URLs", () => {
-    const result = parseInlineSvg(
-      "<svg><use xlink:href='javascript:alert(1)'/></svg>",
-      true,
-    );
+    const result = parseInlineSvg("<svg><use xlink:href='javascript:alert(1)'/></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).not.toContain("javascript:");
   });

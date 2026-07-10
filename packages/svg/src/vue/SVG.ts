@@ -105,7 +105,9 @@ export const SVG = defineComponent({
         const inline = ensureParsedSvg(resolved, cached, props.sanitize ?? true, doCache);
         if (inline) {
           const styleText = inline.style
-            ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
+            ? Object.entries(inline.style)
+                .map(([k, v]) => `${k}:${v}`)
+                .join(";")
             : undefined;
           const parsed: ParsedSvg = {
             attrs: inline.attrs,
@@ -135,7 +137,9 @@ export const SVG = defineComponent({
           const inline = ensureParsedSvg(resolved, markup, props.sanitize ?? true, doCache);
           if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
           const styleText = inline.style
-            ? Object.entries(inline.style).map(([k, v]) => `${k}:${v}`).join(";")
+            ? Object.entries(inline.style)
+                .map(([k, v]) => `${k}:${v}`)
+                .join(";")
             : undefined;
           const parsed: ParsedSvg = {
             attrs: inline.attrs,

@@ -43,6 +43,7 @@ that defeat its purpose on any SVG with a dangerous element:
 ## Current state
 
 `packages/flutter/lib/src/sanitize.dart` (full, 69 lines):
+
 ```dart
 import 'url.dart';
 
@@ -120,6 +121,7 @@ first test (lines 6-20) asserts both `<script` and `</script` are absent. The
 `</script` assertion fails today because of the close-tag leak.
 
 Repo conventions:
+
 - Dart/Flutter package, separate from the TS workspace (`pnpm-workspace.yaml`
   excludes `**/flutter`). No pnpm scripts for it.
 - Flutter lints via `flutter_lints` (`pubspec.yaml` devDep). Tests run with
@@ -136,10 +138,10 @@ reading; do not skip the edits.
 
 ## Commands you will need
 
-| Purpose       | Command                          | Expected on success |
-|---------------|----------------------------------|---------------------|
-| Flutter test  | `flutter test` (in `packages/flutter`) | all pass      |
-| Flutter analyze | `flutter analyze` (in `packages/flutter`) | no issues   |
+| Purpose         | Command                                   | Expected on success |
+| --------------- | ----------------------------------------- | ------------------- |
+| Flutter test    | `flutter test` (in `packages/flutter`)    | all pass            |
+| Flutter analyze | `flutter analyze` (in `packages/flutter`) | no issues           |
 
 If `flutter` is not on PATH, both commands will fail with "command not found"
 — that's a STOP condition, not a plan failure.
@@ -147,10 +149,12 @@ If `flutter` is not on PATH, both commands will fail with "command not found"
 ## Scope
 
 **In scope** (the only files you should modify):
+
 - `packages/flutter/lib/src/sanitize.dart` — fix the discarded replacement and the close-tag leak.
 - `packages/flutter/test/sanitize_test.dart` — add regression cases for close tags and the discarded-replacement path.
 
 **Out of scope** (do NOT touch):
+
 - `packages/flutter/lib/src/url.dart` — `isSafeUrl`/`hasUnsafeUrl` are correct (mirror the TS core). Leave them.
 - `packages/flutter/lib/src/resolver.dart`, `svg_widget.dart` — behavior unchanged.
 - `packages/svg/**` — TS package; different plans.
@@ -171,6 +175,7 @@ to a mutable variable and actually capture the replacement results. Replace
 lines 14-22:
 
 Current:
+
 ```dart
   final cleaned = markup
       .replaceAll(RegExp(r'<\?xml[\s\S]*?\?>'), '')
@@ -184,6 +189,7 @@ Current:
 ```
 
 New:
+
 ```dart
   var cleaned = markup
       .replaceAll(RegExp(r'<\?xml[\s\S]*?\?>'), '')
@@ -246,6 +252,7 @@ new tests use explicit open+close pairs.
 ### Step 3: Full verification
 
 **Verify**:
+
 - If `flutter` is installed: `flutter test` (in `packages/flutter`) → all pass. `flutter analyze` → no new issues.
 - If `flutter` is **not** installed: report "STOPPED: no flutter toolchain" in the final report (see STOP conditions). Still confirm the edits are syntactically plausible by reading: `grep -n "var cleaned" packages/flutter/lib/src/sanitize.dart` → one match; `grep -n "cleaned = cleaned.replaceAll" packages/flutter/lib/src/sanitize.dart` → one match.
 - Confirm no other files changed: `git status` → only `sanitize.dart` and `sanitize_test.dart`.

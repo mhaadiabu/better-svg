@@ -20,7 +20,10 @@ export const decodeDataUrl = (source: string) => {
 };
 
 export const isSafeUrl = (value: string) => {
-  const trimmed = value.trim().replace(/^['"]|['"]$/g, "");
+  const trimmed = value
+    .trim()
+    .replace(/^['"]|['"]$/g, "")
+    .replace(/[\p{Cc}\s]/gu, "");
   if (!trimmed || trimmed.startsWith("#")) return true;
   if (trimmed.startsWith("//")) return true;
   const schemeMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);

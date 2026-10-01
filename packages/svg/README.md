@@ -125,10 +125,11 @@ React Native requires `react-native` and `react-native-svg` as peer dependencies
 
 ## Security
 
-`sanitize` is enabled by default. Sanitization removes `<script>`,
-`<foreignObject>`, `<iframe>`, `<object>`, and `<embed>`, plus inline event
-handlers and unsafe `href`/`xlink:href` and CSS `url(...)` references. Keep it
-on for any untrusted SVG input.
+`sanitize` is enabled by default. Sanitization allows static SVG elements,
+removes inline event handlers regardless of casing, and rejects unsafe
+`href`/`xlink:href` and CSS `url(...)` references. It removes scripts,
+embedded HTML, stylesheets, and animation elements. Keep it on for any
+untrusted SVG input.
 
 Set `sanitize={false}` only for fully-trusted SVG you control; the rendered
 markup then bypasses the strip pass and can carry inline scripts and event

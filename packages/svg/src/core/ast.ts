@@ -9,7 +9,64 @@ export type SvgNode = {
   text?: string;
 };
 
-const DANGEROUS_TAGS = new Set(["script", "foreignobject", "iframe", "object", "embed"]);
+const SVG_TAGS = new Set([
+  "svg",
+  "a",
+  "circle",
+  "clippath",
+  "defs",
+  "desc",
+  "ellipse",
+  "feblend",
+  "fecolormatrix",
+  "fecomponenttransfer",
+  "fecomposite",
+  "feconvolvematrix",
+  "fediffuselighting",
+  "fedisplacementmap",
+  "fedistantlight",
+  "fedropshadow",
+  "feflood",
+  "fefunca",
+  "fefuncb",
+  "fefuncg",
+  "fefuncr",
+  "fegaussianblur",
+  "feimage",
+  "femerge",
+  "femergenode",
+  "femorphology",
+  "feoffset",
+  "fepointlight",
+  "fespecularlighting",
+  "fespotlight",
+  "fetile",
+  "feturbulence",
+  "filter",
+  "g",
+  "image",
+  "line",
+  "lineargradient",
+  "marker",
+  "mask",
+  "metadata",
+  "mpath",
+  "path",
+  "pattern",
+  "polygon",
+  "polyline",
+  "radialgradient",
+  "rect",
+  "stop",
+  "switch",
+  "symbol",
+  "text",
+  "textpath",
+  "title",
+  "tspan",
+  "use",
+  "view",
+]);
 
 const VOID_ELEMENTS = new Set([
   "area",
@@ -48,7 +105,7 @@ export const domParserAvailable = () =>
   typeof document !== "undefined" &&
   typeof DOMParser !== "undefined";
 
-const toNodeFromElement = (element: Element): SvgNode => {
+export const toNodeFromElement = (element: Element): SvgNode => {
   const attrs: SvgAttribute[] = [];
   for (const attr of Array.from(element.attributes)) {
     attrs.push({ name: attr.name, value: attr.value });
@@ -166,7 +223,7 @@ export const parseSvgString = (markup: string): SvgNode | null => {
 export const sanitizeNode = (node: SvgNode): SvgNode | null => {
   const tagLower = node.tag.toLowerCase();
   if (tagLower === "#text") return node;
-  if (DANGEROUS_TAGS.has(tagLower)) return null;
+  if (!SVG_TAGS.has(tagLower)) return null;
 
   const sanitizedAttrs: SvgAttribute[] = [];
   for (const attr of node.attrs) {

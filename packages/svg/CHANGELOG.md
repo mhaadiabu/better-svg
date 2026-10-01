@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.4
+
+### Security
+
+- Reject unsafe URL schemes hidden by tabs, newlines, or leading control characters.
+- Remove event handlers regardless of attribute casing and restrict sanitized markup to static SVG elements. Stylesheets, animation elements, and embedded HTML require `sanitize={false}` for trusted input.
+- Escape parsed text before HTML insertion so XML CDATA cannot introduce executable markup.
+
 ## 0.2.3
 
 - Fix: cache the parsed SVG (not just the markup) so a cache hit skips `DOMParser` and a re-mount with a new `fetchOptions` identity does not re-parse. Applies to React, React Native, Vue, and Svelte adapters.

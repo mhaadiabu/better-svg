@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.4
+## Unreleased
 
 ### Security
 

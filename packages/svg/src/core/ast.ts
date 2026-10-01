@@ -152,7 +152,7 @@ const parseAttributes = (raw: string): SvgAttribute[] => {
 
 const parseWithRegex = (markup: string): SvgNode | null => {
   const cleaned = markup.replace(/<\?xml[\s\S]*?\?>/g, "").replace(/<!DOCTYPE[\s\S]*?>/gi, "");
-  const openTag = cleaned.match(/<svg\b([^>]*)>/i);
+  const openTag = cleaned.match(/<svg\b((?:"[^"]*"|'[^']*'|[^'">])*)>/i);
   if (!openTag) return null;
   const openTagIndex = openTag.index ?? 0;
   const openTagEnd = openTagIndex + openTag[0].length;
@@ -167,7 +167,7 @@ const parseWithRegex = (markup: string): SvgNode | null => {
   const inner = cleaned.slice(openTagEnd, lastClose);
 
   const stack: SvgNode[] = [root];
-  const tagPattern = /<\/?([a-zA-Z][a-zA-Z0-9:-]*)\b([^>]*)>/g;
+  const tagPattern = /<\/?([a-zA-Z][a-zA-Z0-9:-]*)\b((?:"[^"]*"|'[^']*'|[^'">])*)>/g;
   let cursor = 0;
   let match: RegExpExecArray | null;
 

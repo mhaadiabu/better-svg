@@ -20,7 +20,7 @@ describe("SVG cache", () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(SVG_MARKUP, {
         status: 200,
-        headers: { "Content-Type": "image/svg+xml" },
+        headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=3600" },
       }),
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -43,7 +43,7 @@ describe("SVG cache", () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(SVG_MARKUP, {
         status: 200,
-        headers: { "Content-Type": "image/svg+xml" },
+        headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=3600" },
       }),
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -63,7 +63,7 @@ describe("SVG effect stability", () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(SVG_MARKUP, {
         status: 200,
-        headers: { "Content-Type": "image/svg+xml" },
+        headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=3600" },
       }),
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -90,7 +90,7 @@ describe("SVG parsed-cache", () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(SVG_MARKUP, {
         status: 200,
-        headers: { "Content-Type": "image/svg+xml" },
+        headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=3600" },
       }),
     );
     vi.stubGlobal("fetch", fetchMock);

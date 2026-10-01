@@ -6,6 +6,8 @@
 
 - Honor `cache={false}` on every Svelte load and reuse cached markup across Svelte mounts.
 - Reparse changed markup for the same source instead of returning stale SVG content.
+- Share only responses explicitly marked public and bypass private, no-store, and no-cache responses so session content cannot cross adapters.
+- Prevent older concurrent responses from replacing newer cached markup.
 - Bypass shared markup caching when custom `fetchOptions` are provided so headers, credentials, and request methods take effect.
 
 ### Changed

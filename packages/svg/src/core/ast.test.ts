@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import {
   domParserAvailable,
   parseAndSanitize,
@@ -68,6 +68,54 @@ describe("parseSvgString", () => {
   it("returns null for non-svg content", () => {
     expect(parseSvgString("not svg")).toBeNull();
   });
+});
+
+describe("parseSvgString without browser globals", () => {
+  beforeEach(() => {
+    vi.stubGlobal("window", undefined);
+    vi.stubGlobal("document", undefined);
+    vi.stubGlobal("DOMParser", undefined);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("parses a self-closing root with its attributes", () => {
+    expect(domParserAvailable()).toBe(false);
+    expect(parseSvgString("<svg viewBox='0 0 24 24'/>")).toEqual({
+      tag: "svg",
+      attrs: [{ name: "viewBox", value: "0 0 24 24" }],
+      children: [],
+    });
+  });
+
+  it.each(["a > b", "a /> b"])("preserves quoted tag boundaries in %j", (value) => {
+    const root = parseSvgString(
+      `<svg aria-label="${value}"><g aria-label='${value}'><text>child</text></g><rect/></svg>`,
+    );
+    expect(root?.attrs).toEqual([{ name: "aria-label", value }]);
+    expect(root?.children.map((child) => child.tag)).toEqual(["g", "rect"]);
+    expect(root?.children[0]?.attrs).toEqual([{ name: "aria-label", value }]);
+    expect(root?.children[0]?.children[0]?.children[0]?.text).toBe("child");
+  });
+
+  it("decodes named and numeric XML entities once in text and attributes", () => {
+    const encoded = "&lt;&gt;&quot;&apos;&amp;&#65;&#x1F600;&amp;lt;&amp;#65;";
+    const decoded = "<>\"'&A😀&lt;&#65;";
+    const root = parseSvgString(`<svg aria-label='${encoded}'><text>${encoded}</text></svg>`);
+    expect(root?.attrs).toEqual([{ name: "aria-label", value: decoded }]);
+    expect(root?.children[0]?.children[0]?.text).toBe(decoded);
+  });
+
+  it.each(["&#0;", "&#xD800;", "&#x110000;"])(
+    "replaces invalid numeric entity %s without throwing",
+    (entity) => {
+      const root = parseSvgString(`<svg aria-label='${entity}'><text>${entity}</text></svg>`);
+      expect(root?.attrs[0]?.value).toBe("\uFFFD");
+      expect(root?.children[0]?.children[0]?.text).toBe("\uFFFD");
+    },
+  );
 });
 
 describe("sanitizeNode", () => {

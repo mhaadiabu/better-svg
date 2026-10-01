@@ -16,10 +16,7 @@ import {
   type SvgNameInput,
 } from "../core";
 
-type State =
-  | { status: "loading" }
-  | { status: "error" }
-  | { status: "ready"; content: ParsedSvg; markup: string };
+type State = { status: "loading" } | { status: "error" } | { status: "ready"; content: ParsedSvg };
 
 type ParsedSvg = {
   attrs: Record<string, string>;
@@ -89,16 +86,15 @@ export const SVG = defineComponent({
     let controller: AbortController | null = null;
 
     const run = (source: string | undefined, name: SvgNameInput | undefined, doCache: boolean) => {
+      if (controller) controller.abort();
       const resolved = resolveSource(source, name);
       if (!resolved) {
         const err = new Error("Either name or src is required.");
         state.value = { status: "error" };
         emit("svg-error", err);
-        props.onSvgError?.(err);
         return;
       }
 
-      if (controller) controller.abort();
       const c = new AbortController();
       controller = c;
       state.value = { status: "loading" };
@@ -123,9 +119,8 @@ export const SVG = defineComponent({
             style: styleText,
             innerHTML: inline.innerHTML,
           };
-          state.value = { status: "ready", content: parsed, markup };
+          state.value = { status: "ready", content: parsed };
           emit("svg-load", markup);
-          props.onSvgLoad?.(markup);
         })
         .catch((err) => {
           if (c.signal.aborted) return;
@@ -133,7 +128,6 @@ export const SVG = defineComponent({
           const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
           state.value = { status: "error" };
           emit("svg-error", normalized);
-          props.onSvgError?.(normalized);
         });
     };
 

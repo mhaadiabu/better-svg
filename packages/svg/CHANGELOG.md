@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.6
+
+### Fixed
+
+- Abort pending Vue loads when the source is cleared so stale responses cannot replace the fallback.
+- Call Vue load and error callbacks once through their corresponding component events.
+
 ## 0.2.5
 
 ### Fixed

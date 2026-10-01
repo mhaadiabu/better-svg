@@ -23,8 +23,7 @@ export const parseInlineSvg = (markup: string, sanitize: boolean): ParsedInlineS
   const node = toNodeFromElement(svg);
   const root = sanitize ? sanitizeNode(node) : node;
   if (!root) return null;
-  const { attributes, className, style } = splitAttributes(root.attrs);
-  const styleText = root.attrs.find((attr) => attr.name.toLowerCase() === "style")?.value;
+  const { attributes, className, style, styleText } = splitAttributes(root.attrs);
   const attrs = Object.fromEntries(attributes.map(({ name, value }) => [name, value]));
   const innerHTML = sanitize ? root.children.map(renderNode).join("") : svg.innerHTML;
   return { attrs, className, style, styleText, innerHTML };

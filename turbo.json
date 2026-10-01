@@ -33,6 +33,11 @@
     },
     "destroy": {
       "cache": false
+    },
+    "web#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "$TURBO_ROOT$/packages/svg/package.json"],
+      "outputs": ["dist/**"]
     }
   }
 }

@@ -37,15 +37,10 @@ export const parseSvgMarkup = (
 ): ParsedSvg | null => {
   const inline = ensureParsedSvg(source, markup, sanitize, cache);
   if (!inline) return null;
-  const styleText = inline.style
-    ? Object.entries(inline.style)
-        .map(([k, v]) => `${k}:${v}`)
-        .join(";")
-    : undefined;
   return {
     attrs: inline.attrs,
     className: inline.className,
-    style: styleText,
+    style: inline.styleText,
     innerHTML: inline.innerHTML,
   };
 };

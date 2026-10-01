@@ -293,16 +293,16 @@ export const splitAttributes = (attrs: SvgAttribute[]) => {
     style?: Record<string, string>;
   } = { attributes: [...attrs] };
 
-  const className = result.attributes.find((a) => a.name === "class");
+  const className = result.attributes.find((a) => a.name.toLowerCase() === "class");
   if (className) {
     result.className = className.value;
-    result.attributes = result.attributes.filter((a) => a.name !== "class");
+    result.attributes = result.attributes.filter((a) => a.name.toLowerCase() !== "class");
   }
 
-  const styleAttr = result.attributes.find((a) => a.name === "style");
+  const styleAttr = result.attributes.find((a) => a.name.toLowerCase() === "style");
   if (styleAttr) {
     result.style = parseInlineStyle(styleAttr.value);
-    result.attributes = result.attributes.filter((a) => a.name !== "style");
+    result.attributes = result.attributes.filter((a) => a.name.toLowerCase() !== "style");
   }
 
   return result;

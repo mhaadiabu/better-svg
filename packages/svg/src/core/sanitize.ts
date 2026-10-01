@@ -10,6 +10,7 @@ export type ParsedInlineSvg = {
   attrs: Record<string, string>;
   className?: string;
   style?: Record<string, string>;
+  styleText?: string;
   innerHTML: string;
 };
 
@@ -23,7 +24,8 @@ export const parseInlineSvg = (markup: string, sanitize: boolean): ParsedInlineS
   const root = sanitize ? sanitizeNode(node) : node;
   if (!root) return null;
   const { attributes, className, style } = splitAttributes(root.attrs);
+  const styleText = root.attrs.find((attr) => attr.name.toLowerCase() === "style")?.value;
   const attrs = Object.fromEntries(attributes.map(({ name, value }) => [name, value]));
   const innerHTML = sanitize ? root.children.map(renderNode).join("") : svg.innerHTML;
-  return { attrs, className, style, innerHTML };
+  return { attrs, className, style, styleText, innerHTML };
 };

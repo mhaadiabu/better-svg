@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.7
+
+### Fixed
+
+- Preserve authored root CSS in Vue and Svelte, including dashed property names, custom properties, and quoted values.
+- Convert camel-cased Vue style-object keys to valid CSS property names without changing custom-property casing.
+- Extract root class and style attributes regardless of casing so overrides merge correctly.
+
 ## 0.2.6
 
 ### Fixed

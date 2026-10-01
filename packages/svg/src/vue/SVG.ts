@@ -41,7 +41,12 @@ const styleToText = (
   if (!style) return undefined;
   if (typeof style === "string") return style;
   return Object.entries(style)
-    .map(([k, v]) => `${k}:${v}`)
+    .map(([key, value]) => {
+      const property = key.startsWith("--")
+        ? key
+        : key.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`).replace(/^ms-/, "-ms-");
+      return `${property}:${value}`;
+    })
     .join(";");
 };
 
@@ -108,15 +113,10 @@ export const SVG = defineComponent({
           if (c.signal.aborted) return;
           const inline = ensureParsedSvg(resolved, markup, props.sanitize ?? true, doCache);
           if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
-          const styleText = inline.style
-            ? Object.entries(inline.style)
-                .map(([k, v]) => `${k}:${v}`)
-                .join(";")
-            : undefined;
           const parsed: ParsedSvg = {
             attrs: inline.attrs,
             className: inline.className,
-            style: styleText,
+            style: inline.styleText,
             innerHTML: inline.innerHTML,
           };
           state.value = { status: "ready", content: parsed };
@@ -152,10 +152,10 @@ export const SVG = defineComponent({
     });
 
     const mergedStyle = computed(() => {
-      if (state.value.status !== "ready") return styleToText(props.style as never);
+      if (state.value.status !== "ready") return styleToText(props.style);
       const parts: string[] = [];
       if (state.value.content.style) parts.push(state.value.content.style);
-      const propStyle = styleToText(props.style as never);
+      const propStyle = styleToText(props.style);
       if (propStyle) parts.push(propStyle);
       return parts.filter(Boolean).join(";") || undefined;
     });

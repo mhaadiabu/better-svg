@@ -29,6 +29,8 @@ import {
   type SvgAttribute,
   type SvgNameInput,
   type SvgNode,
+  parseInlineStyle,
+  toCamelCase,
 } from "./core";
 
 const TAG_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
@@ -69,7 +71,6 @@ const NUMERIC_ATTRS = new Set([
   "width",
   "height",
   "stroke-width",
-  "stroke-width",
   "stroke-miterlimit",
   "stroke-dashoffset",
   "opacity",
@@ -92,9 +93,6 @@ const NUMERIC_ATTRS = new Set([
   "dx",
   "dy",
 ]);
-
-const toCamelCase = (value: string) =>
-  value.replace(/^-/, "").replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 
 const isNumericAttr = (name: string) => {
   const lower = name.toLowerCase();
@@ -145,18 +143,7 @@ const buildStyle = (
   override: StyleOverride,
 ): Record<string, string | number> | undefined => {
   const styleAttr = attrs.find((a) => a.name === "style");
-  const style: Record<string, string | number> = {};
-  if (styleAttr) {
-    for (const entry of styleAttr.value.split(";")) {
-      const [rawProp, ...rawValue] = entry.split(":");
-      if (!rawProp || rawValue.length === 0) continue;
-      const prop = rawProp.trim();
-      const value = rawValue.join(":").trim();
-      if (!prop || !value) continue;
-      const key = prop.startsWith("--") ? prop : toCamelCase(prop);
-      style[key] = value;
-    }
-  }
+  const style: Record<string, string | number> = styleAttr ? parseInlineStyle(styleAttr.value) : {};
   let applied = false;
   if (override.color) {
     style.color = override.color;
@@ -246,8 +233,6 @@ export type NativeSvgProps = SvgSourceProps & {
   onSvgError?: (error: Error) => void;
 };
 
-const fetchAvailable = () => typeof fetch === "function";
-
 export const SVG = React.forwardRef<unknown, NativeSvgProps>(
   (
     {
@@ -311,19 +296,6 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
         onLoadRef.current?.(markup);
       };
 
-      if (!fetchAvailable()) {
-        const err = new Error("Fetch is not available in this environment.");
-        if (active) {
-          setError(err);
-          setIsLoading(false);
-          onErrorRef.current?.(err);
-        }
-        return () => {
-          active = false;
-          controller.abort();
-        };
-      }
-
       resolveMarkup(resolvedSource, { fetchOptions, signal: controller.signal, cache })
         .then((markup) => {
           if (!active) return;
@@ -331,7 +303,7 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
         })
         .catch((err) => {
           if (!active) return;
-          if (err instanceof DOMException && err.name === "AbortError") return;
+          if (err instanceof Error && err.name === "AbortError") return;
           const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
           setError(normalized);
           setIsLoading(false);

@@ -1,6 +1,6 @@
 {
   "name": "@mhaadi/svg",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Inline SVG rendering for React, React Native, Vue, and Svelte.",
   "keywords": [
     "dompurify-alternative",

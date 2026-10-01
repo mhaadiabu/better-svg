@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.8
+
+### Fixed
+
+- Render inline and data-URL SVGs in React Native without requiring `fetch`.
+- Report React Native load errors when `DOMException` is unavailable.
+- Parse self-closing SVG roots and decode XML entities in text without a DOM parser.
+
 ## 0.2.7
 
 ### Fixed

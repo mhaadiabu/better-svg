@@ -85,14 +85,27 @@ const VOID_ELEMENTS = new Set([
   "wbr",
 ]);
 
+const XML_ENTITIES: Record<string, string> = {
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  amp: "&",
+};
+
 const decodeEntities = (value: string) =>
-  value
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&");
+  value.replace(
+    /&(#(?:[xX][0-9a-fA-F]+|[0-9]+)|lt|gt|quot|apos|amp);/g,
+    (match, entity: string) => {
+      if (!entity.startsWith("#")) return XML_ENTITIES[entity] ?? match;
+      const hexadecimal = entity[1]?.toLowerCase() === "x";
+      const codePoint = Number.parseInt(entity.slice(hexadecimal ? 2 : 1), hexadecimal ? 16 : 10);
+      if (codePoint === 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+        return "\uFFFD";
+      }
+      return String.fromCodePoint(codePoint);
+    },
+  );
 
 const encodeAttr = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -143,15 +156,15 @@ const parseWithRegex = (markup: string): SvgNode | null => {
   if (!openTag) return null;
   const openTagIndex = openTag.index ?? 0;
   const openTagEnd = openTagIndex + openTag[0].length;
-  const lastClose = cleaned.lastIndexOf("</svg");
-  if (lastClose < openTagEnd) return null;
-  const inner = cleaned.slice(openTagEnd, lastClose);
-
   const root: SvgNode = {
     tag: "svg",
     attrs: parseAttributes(openTag[1] ?? ""),
     children: [],
   };
+  if (/\/\s*>$/.test(openTag[0])) return root;
+  const lastClose = cleaned.lastIndexOf("</svg");
+  if (lastClose < openTagEnd) return null;
+  const inner = cleaned.slice(openTagEnd, lastClose);
 
   const stack: SvgNode[] = [root];
   const tagPattern = /<\/?([a-zA-Z][a-zA-Z0-9:-]*)\b([^>]*)>/g;
@@ -164,7 +177,12 @@ const parseWithRegex = (markup: string): SvgNode | null => {
       const parent = stack[stack.length - 1];
       if (parent) {
         if (before.trim().length > 0) {
-          parent.children.push({ tag: "#text", attrs: [], children: [], text: before });
+          parent.children.push({
+            tag: "#text",
+            attrs: [],
+            children: [],
+            text: decodeEntities(before),
+          });
         }
       }
     }
@@ -197,7 +215,12 @@ const parseWithRegex = (markup: string): SvgNode | null => {
   if (trailing && stack.length > 0) {
     const parent = stack[stack.length - 1];
     if (parent && trailing.trim().length > 0) {
-      parent.children.push({ tag: "#text", attrs: [], children: [], text: trailing });
+      parent.children.push({
+        tag: "#text",
+        attrs: [],
+        children: [],
+        text: decodeEntities(trailing),
+      });
     }
   }
 

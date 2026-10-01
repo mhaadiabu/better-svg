@@ -22,8 +22,6 @@ export type SvelteSvgProps = {
   "aria-hidden"?: boolean;
 };
 
-const svgCache = new Map<string, string>();
-
 export type ParsedSvg = {
   attrs: Record<string, string>;
   className?: string;
@@ -59,8 +57,6 @@ export type SvgState =
 
 export const createSvgController = () => {
   let current: AbortController | null = null;
-  let cache = svgCache;
-  let lastSource: string | null = null;
 
   const load = async (props: SvelteSvgProps, update: (state: SvgState) => void) => {
     if (current) current.abort();
@@ -75,16 +71,6 @@ export const createSvgController = () => {
       return;
     }
 
-    if (lastSource === resolved && cache.has(resolved)) {
-      const cached = cache.get(resolved) ?? "";
-      const parsed = parseSvgMarkup(resolved, cached, props.sanitize ?? true, true);
-      if (parsed) {
-        update({ status: "ready", content: parsed, markup: cached });
-        props.onSvgLoad?.(cached);
-        return;
-      }
-    }
-
     update({ status: "loading" });
 
     try {
@@ -94,10 +80,6 @@ export const createSvgController = () => {
         cache: props.cache ?? true,
       });
       if (controller.signal.aborted) return;
-      if (props.cache ?? true) {
-        cache.set(resolved, markup);
-        lastSource = resolved;
-      }
       const parsed = parseSvgMarkup(resolved, markup, props.sanitize ?? true, props.cache ?? true);
       if (!parsed) throw new Error("SVG markup is invalid or unavailable in this environment.");
       update({ status: "ready", content: parsed, markup });

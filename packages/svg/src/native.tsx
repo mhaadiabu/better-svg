@@ -246,8 +246,6 @@ export type NativeSvgProps = SvgSourceProps & {
   onSvgError?: (error: Error) => void;
 };
 
-const svgCache = new Map<string, string>();
-
 const fetchAvailable = () => typeof fetch === "function";
 
 export const SVG = React.forwardRef<unknown, NativeSvgProps>(
@@ -313,22 +311,6 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
         onLoadRef.current?.(markup);
       };
 
-      if (cache && svgCache.has(resolvedSource)) {
-        try {
-          finish(svgCache.get(resolvedSource) ?? "");
-        } catch (err) {
-          if (!active) return;
-          const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
-          setError(normalized);
-          setIsLoading(false);
-          onErrorRef.current?.(normalized);
-        }
-        return () => {
-          active = false;
-          controller.abort();
-        };
-      }
-
       if (!fetchAvailable()) {
         const err = new Error("Fetch is not available in this environment.");
         if (active) {
@@ -345,7 +327,6 @@ export const SVG = React.forwardRef<unknown, NativeSvgProps>(
       resolveMarkup(resolvedSource, { fetchOptions, signal: controller.signal, cache })
         .then((markup) => {
           if (!active) return;
-          if (cache) svgCache.set(resolvedSource, markup);
           finish(markup);
         })
         .catch((err) => {

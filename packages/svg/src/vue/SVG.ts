@@ -28,8 +28,6 @@ type ParsedSvg = {
   innerHTML: string;
 };
 
-const svgCache = new Map<string, string>();
-
 const toCamelCaseStyle = (style: Record<string, string>): Record<string, string> => {
   const out: Record<string, string> = {};
   for (const [key, value] of Object.entries(style)) {
@@ -100,28 +98,6 @@ export const SVG = defineComponent({
         return;
       }
 
-      if (doCache && svgCache.has(resolved)) {
-        const cached = svgCache.get(resolved) ?? "";
-        const inline = ensureParsedSvg(resolved, cached, props.sanitize ?? true, doCache);
-        if (inline) {
-          const styleText = inline.style
-            ? Object.entries(inline.style)
-                .map(([k, v]) => `${k}:${v}`)
-                .join(";")
-            : undefined;
-          const parsed: ParsedSvg = {
-            attrs: inline.attrs,
-            className: inline.className,
-            style: styleText,
-            innerHTML: inline.innerHTML,
-          };
-          state.value = { status: "ready", content: parsed, markup: cached };
-          emit("svg-load", cached);
-          props.onSvgLoad?.(cached);
-          return;
-        }
-      }
-
       if (controller) controller.abort();
       const c = new AbortController();
       controller = c;
@@ -147,7 +123,6 @@ export const SVG = defineComponent({
             style: styleText,
             innerHTML: inline.innerHTML,
           };
-          if (doCache) svgCache.set(resolved, markup);
           state.value = { status: "ready", content: parsed, markup };
           emit("svg-load", markup);
           props.onSvgLoad?.(markup);

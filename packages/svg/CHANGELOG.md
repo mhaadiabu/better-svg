@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.5
+
+### Fixed
+
+- Honor `cache={false}` on every Svelte load and reuse cached markup across Svelte mounts.
+- Reparse changed markup for the same source instead of returning stale SVG content.
+- Bypass shared markup caching when custom `fetchOptions` are provided so headers, credentials, and request methods take effect.
+
+### Changed
+
+- Share one markup cache across all JavaScript adapters and limit it to 500 entries with least-recently-used eviction.
+
 ## 0.2.4
 
 ### Security

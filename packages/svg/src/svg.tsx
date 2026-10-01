@@ -8,8 +8,6 @@ type ParsedSvg = {
   innerHTML: string;
 };
 
-const svgCache = new Map<string, string>();
-
 type SvgSourceProps = { src: string; name?: never } | { name: SvgNameInput; src?: never };
 
 export type SvgProps = Omit<React.SVGProps<SVGSVGElement>, "children" | "dangerouslySetInnerHTML"> &
@@ -86,26 +84,9 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
         onLoadRef.current?.(markup);
       };
 
-      if (cache && svgCache.has(resolvedSource)) {
-        try {
-          runWithCached(svgCache.get(resolvedSource) ?? "");
-        } catch (err) {
-          if (!active) return;
-          const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
-          setError(normalized);
-          setIsLoading(false);
-          onErrorRef.current?.(normalized);
-        }
-        return () => {
-          active = false;
-          controller.abort();
-        };
-      }
-
       resolveMarkup(resolvedSource, { fetchOptions, signal: controller.signal, cache })
         .then((markup) => {
           if (!active) return;
-          if (cache) svgCache.set(resolvedSource, markup);
           runWithCached(markup);
         })
         .catch((err) => {

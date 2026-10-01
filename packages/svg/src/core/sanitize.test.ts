@@ -1,7 +1,56 @@
 import { describe, it, expect } from "vitest";
 import { parseInlineSvg } from "./sanitize";
+import { parseAndSanitize, renderNode } from "./ast";
 
 describe("parseInlineSvg", () => {
+  it("strips mixed-case event handlers and dangerous tags", () => {
+    const result = parseInlineSvg(
+      "<svg OnLoad='x'><ScRiPt>x</ScRiPt><rect oNcLiCk='y' fill='red'/></svg>",
+      true,
+    );
+    expect(result?.attrs).toEqual({});
+    expect(result?.innerHTML).toBe('<rect fill="red"/>');
+  });
+
+  it.each(["set", "animate", "animateMotion", "animateTransform", "style", "foreignObject"])(
+    "removes %s elements while retaining static SVG siblings",
+    (tag) => {
+      const result = parseInlineSvg(
+        `<svg><${tag} attributeName='href' to='javascript:alert(1)'>payload</${tag}><rect/></svg>`,
+        true,
+      );
+      expect(result?.innerHTML).toBe("<rect/>");
+    },
+  );
+
+  it.each(["href", "xlink:href"])("strips obfuscated protocols in %s", (attribute) => {
+    const result = parseInlineSvg(
+      `<svg><use ${attribute}='java&#x09;script:alert(1)'/><use ${attribute}='#safe'/></svg>`,
+      true,
+    );
+    expect(result?.innerHTML).toBe(`<use/><use ${attribute}="#safe"/>`);
+  });
+
+  it("escapes parsed text before inserting it into an HTML document", () => {
+    const root = parseAndSanitize(
+      "<svg><text>&lt;img src=x onerror=alert(1)&gt; &amp; text</text></svg>",
+      true,
+    );
+    expect(root).not.toBeNull();
+    const container = document.createElement("div");
+    container.innerHTML = renderNode(root!);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.textContent).toBe("<img src=x onerror=alert(1)> & text");
+  });
+
+  it("preserves trusted stylesheets and animations when sanitization is disabled", () => {
+    const markup =
+      "<svg><style>rect { fill: red }</style><set attributeName='fill' to='blue'/></svg>";
+    const result = parseInlineSvg(markup, false);
+    expect(result?.innerHTML).toContain("<style>");
+    expect(result?.innerHTML).toContain("<set ");
+  });
+
   it("strips dangerous tags and on* attributes when sanitize=true", () => {
     const result = parseInlineSvg(
       "<svg onload='x'><script>a</script><rect onclick='y' fill='red'/></svg>",

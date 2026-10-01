@@ -38,6 +38,17 @@ describe("decodeDataUrl", () => {
 });
 
 describe("isSafeUrl", () => {
+  it.each([
+    "java\tscript:alert(1)",
+    "java\nscript:alert(1)",
+    "\u0000javascript:x",
+    "vB\rscript:x",
+    "java\u00a0script:x",
+  ])("rejects control and whitespace obfuscation in %j", (url) => {
+    expect(isSafeUrl(url)).toBe(false);
+    expect(hasUnsafeUrl(`fill:url('${url}')`)).toBe(true);
+  });
+
   it("treats empty string as safe", () => {
     expect(isSafeUrl("")).toBe(true);
   });

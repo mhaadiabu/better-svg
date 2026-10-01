@@ -1,8 +1,14 @@
-export interface CodeBlockOptions {
-  /** Reserved for future options. */
-}
-
 let tooltip: HTMLElement | null = null;
+let tooltipTimeout: number | undefined;
+let resizeObserver: ResizeObserver | null = null;
+
+document.addEventListener("astro:before-swap", () => {
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+  window.clearTimeout(tooltipTimeout);
+  tooltip?.remove();
+  tooltip = null;
+});
 
 function getTooltip(): HTMLElement {
   if (tooltip) return tooltip;
@@ -23,7 +29,18 @@ function showTooltip(target: HTMLElement, text = "Copied") {
   const tRect = t.getBoundingClientRect();
   t.style.left = `${rect.left + rect.width / 2 - tRect.width / 2}px`;
   t.style.top = `${rect.top - tRect.height - 8}px`;
-  window.setTimeout(() => t.classList.remove("is-visible"), 1500);
+  window.clearTimeout(tooltipTimeout);
+  tooltipTimeout = window.setTimeout(() => t.classList.remove("is-visible"), 1500);
+}
+
+async function copyText(target: HTMLElement, text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    showTooltip(target, "Copy failed");
+    return false;
+  }
 }
 
 function formatCopyText(block: HTMLElement, fullFile = false) {
@@ -40,7 +57,17 @@ function formatCopyText(block: HTMLElement, fullFile = false) {
   return text;
 }
 
-export function initCodeBlocks(_options: CodeBlockOptions = {}) {
+function updateWrap(body: Element) {
+  if (body.classList.contains("is-wrapped")) return;
+  body
+    .closest(".code-block")
+    ?.classList.toggle("has-wrap", body.scrollWidth > body.clientWidth + 1);
+}
+
+export function initCodeBlocks() {
+  resizeObserver ??= new ResizeObserver((entries) => {
+    entries.forEach(({ target }) => updateWrap(target));
+  });
   document.querySelectorAll(".code-block").forEach((block) => {
     if (block.querySelector(".code-block-header")) return;
 
@@ -85,9 +112,9 @@ export function initCodeBlocks(_options: CodeBlockOptions = {}) {
     copyBtn.className = "copy-btn";
     copyBtn.setAttribute("aria-label", "Copy code");
     copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
-    copyBtn.addEventListener("click", () => {
+    copyBtn.addEventListener("click", async () => {
       const text = formatCopyText(block as HTMLElement, false);
-      navigator.clipboard.writeText(text).then(() => {
+      if (await copyText(copyBtn, text)) {
         copyBtn.classList.add("copied");
         copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
         showTooltip(copyBtn, "Copied");
@@ -95,7 +122,7 @@ export function initCodeBlocks(_options: CodeBlockOptions = {}) {
           copyBtn.classList.remove("copied");
           copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
         }, 2000);
-      });
+      }
     });
     actions.appendChild(copyBtn);
 
@@ -105,11 +132,11 @@ export function initCodeBlocks(_options: CodeBlockOptions = {}) {
       fullBtn.className = "copy-btn copy-full-btn";
       fullBtn.setAttribute("aria-label", `Copy full file (${file})`);
       fullBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2M8 17h2M14 13h2M14 17h2"/></svg> File`;
-      fullBtn.addEventListener("click", () => {
+      fullBtn.addEventListener("click", async () => {
         const text = formatCopyText(block as HTMLElement, true);
-        navigator.clipboard.writeText(text).then(() => {
+        if (await copyText(fullBtn, text)) {
           showTooltip(fullBtn, `Copied ${file}`);
-        });
+        }
       });
       actions.appendChild(fullBtn);
     }
@@ -133,15 +160,8 @@ export function initCodeBlocks(_options: CodeBlockOptions = {}) {
 
     const bodyEl = block.querySelector(".code-block-body");
     if (bodyEl) {
-      const checkWrap = () => {
-        if (!bodyEl.classList.contains("is-wrapped")) {
-          const overflows = bodyEl.scrollWidth > bodyEl.clientWidth + 1;
-          block.classList.toggle("has-wrap", overflows);
-        }
-      };
-      requestAnimationFrame(checkWrap);
-      const ro = new ResizeObserver(checkWrap);
-      ro.observe(bodyEl);
+      requestAnimationFrame(() => updateWrap(bodyEl));
+      resizeObserver?.observe(bodyEl);
     }
   });
 }

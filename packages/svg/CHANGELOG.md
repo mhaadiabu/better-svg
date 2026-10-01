@@ -1,27 +1,20 @@
 # Changelog
 
-## 0.2.6
-
-### Fixed
-
-- Abort pending Vue loads when the source is cleared so stale responses cannot replace the fallback.
-- Call Vue load and error callbacks once through their corresponding component events.
-
-## 0.2.5
-
-### Fixed
-
-- Honor `cache={false}` on every Svelte load and reuse cached markup across Svelte mounts.
-- Reparse changed markup for the same source instead of returning stale SVG content.
-- Share only responses explicitly marked public and bypass private, no-store, and no-cache responses so session content cannot cross adapters.
-- Prevent older concurrent responses from replacing newer cached markup.
-- Bypass shared markup caching when custom `fetchOptions` are provided so headers, credentials, and request methods take effect.
+## Unreleased
 
 ### Changed
 
 - Share one markup cache across all JavaScript adapters and limit it to 500 entries with least-recently-used eviction.
 
-## 0.2.4
+### Fixed
+
+- Abort pending Vue loads when the source is cleared so stale responses cannot replace the fallback.
+- Call Vue load and error callbacks once through their corresponding component events.
+- Honor `cache={false}` on every Svelte load and reuse cached markup across Svelte mounts.
+- Reparse changed markup for the same source instead of returning stale SVG content.
+- Share only responses explicitly marked public and bypass private, no-store, and no-cache responses so session content cannot cross adapters.
+- Prevent older concurrent responses from replacing newer cached markup.
+- Bypass shared markup caching when custom `fetchOptions` are provided so headers, credentials, and request methods take effect.
 
 ### Security
 

@@ -11,7 +11,6 @@ const packedJson = JSON.parse(
     encoding: "utf8",
   }),
 );
-// npm 10 and earlier emit an array, npm 11+ emits an object keyed by package name.
 const [packed] = Array.isArray(packedJson) ? packedJson : Object.values(packedJson);
 const files = new Set(packed.files.map(({ path }) => path));
 const maps = [...files].filter((path) => path.endsWith(".map"));

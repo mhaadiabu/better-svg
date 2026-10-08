@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+
+- Include the TypeScript sources referenced by JavaScript and declaration sourcemaps in the published package so Astro and Vite can resolve them without missing-source warnings.
+
 ## 0.3.0
 
 ### Added

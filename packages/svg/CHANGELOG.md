@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+
+- Make caller-provided `fill` and `stroke` override matching hardcoded values on SVG descendants, so icons follow colors like `currentColor` instead of ignoring them. `none` values and gradient references are preserved.
+- Include the TypeScript sources referenced by JavaScript and declaration sourcemaps in the published package so Astro and Vite can resolve them without missing-source warnings.
+
 ## 0.3.0
 
 ### Added

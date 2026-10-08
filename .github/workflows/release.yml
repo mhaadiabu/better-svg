@@ -65,6 +65,7 @@ jobs:
       - run: pnpm check-types
       - run: pnpm test
       - run: pnpm --filter @mhaadi/svg build
+      - run: pnpm --filter @mhaadi/svg check:package
       - name: Publish to npm
         working-directory: packages/svg
         run: npm publish --access public --provenance --tag "${{ contains(github.ref_name, '-') && 'next' || 'latest' }}"

@@ -28,6 +28,10 @@
   },
   "files": [
     "dist",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
@@ -103,7 +107,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build:angular": "ngc -p tsconfig.angular.json",
-    "build:astro": "node scripts/build-astro.mjs"
+    "build:astro": "node scripts/build-astro.mjs",
+    "check:package": "node scripts/check-package.mjs"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.12"

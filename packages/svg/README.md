@@ -208,7 +208,9 @@ React Native also accepts `width`, `height`, `color`, `fill`, `stroke`, and
 `strokeWidth` overrides. Vue, Svelte, and Angular accept a focused set of root-level SVG
 attributes (including `width`, `height`, `viewBox`, `fill`, `stroke`,
 `role`, `aria-label`, `aria-hidden`). Solid and Astro accept native SVG
-attributes. Angular uses `svgLoad` and `svgError` outputs instead of callback
+attributes. `fill` and `stroke` also rewrite matching hardcoded values on
+descendants, so a caller-provided color wins over embedded presentation
+attributes. `none` values and gradient references are preserved. Angular uses `svgLoad` and `svgError` outputs instead of callback
 props, and `TemplateRef` inputs for loading and fallback.
 
 Remote markup caching is shared across adapters and limited to 500 entries.

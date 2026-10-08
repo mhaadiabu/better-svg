@@ -5,12 +5,14 @@ import { posix } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = new URL("../", import.meta.url);
-const [packed] = JSON.parse(
+const packedJson = JSON.parse(
   execFileSync("npm", ["pack", "--dry-run", "--ignore-scripts", "--json"], {
     cwd: fileURLToPath(root),
     encoding: "utf8",
   }),
 );
+// npm 10 and earlier emit an array, npm 11+ emits an object keyed by package name.
+const [packed] = Array.isArray(packedJson) ? packedJson : Object.values(packedJson);
 const files = new Set(packed.files.map(({ path }) => path));
 const maps = [...files].filter((path) => path.endsWith(".map"));
 assert.ok(maps.length > 0, "Build the package before checking sourcemaps.");

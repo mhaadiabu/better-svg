@@ -12,6 +12,7 @@ import {
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { withSvgRootId } from "../core/ids";
+import { withSvgColorOverrides } from "../core/colors";
 import {
   createWebSvgController,
   mergeSvgAttributes,
@@ -81,7 +82,13 @@ export const SVG = (props: SvgProps): JSX.Element => {
     },
     children: (content: NonNullable<ReturnType<typeof ready>>) => {
       const presentation = createMemo(() =>
-        present(withSvgRootId(content, attributes.id), options),
+        present(
+          withSvgRootId(
+            withSvgColorOverrides(content, { fill: attributes.fill, stroke: attributes.stroke }),
+            attributes.id,
+          ),
+          options,
+        ),
       );
       return createComponent(
         Dynamic,

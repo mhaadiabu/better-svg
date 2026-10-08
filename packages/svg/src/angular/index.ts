@@ -17,6 +17,7 @@ import {
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { createSvgPresentation } from "../core/presentation";
+import { withSvgColorOverrides } from "../core/colors";
 import { createWebSvgController, mergeSvgAttributes, type WebSvgState } from "../core/web";
 
 @Component({
@@ -67,9 +68,12 @@ export class SVG {
   private readonly present = createSvgPresentation();
   protected readonly content = computed(() => {
     const state = this.state();
-    return state.status === "ready"
-      ? this.present(state.content, { title: this.title(), desc: this.desc() })
-      : undefined;
+    if (state.status !== "ready") return undefined;
+    const colored = withSvgColorOverrides(state.content, {
+      fill: this.fill(),
+      stroke: this.stroke(),
+    });
+    return this.present(colored, { title: this.title(), desc: this.desc() });
   });
   protected readonly html = computed(() => {
     const content = this.content();

@@ -2,6 +2,7 @@
   import { onDestroy, untrack } from "svelte";
   import { createSvgController, type SvelteSvgProps, type SvgState } from "./runtime";
   import { rewriteSvgAttributes, rewriteSvgValue } from "../core/ids";
+  import { withSvgColorOverrides } from "../core/colors";
 
   import { createSvgPresentation, svgDimensions, svgViewBox } from "../core/presentation";
 
@@ -66,7 +67,7 @@
     return merged && state.status === "ready" && state.content.ids ? rewriteSvgValue("style", merged, state.content.ids) : merged;
   });
 
-  const presentation = $derived(state.status === "ready" ? present(state.content, { title, desc }) : undefined);
+  const presentation = $derived(state.status === "ready" ? present(withSvgColorOverrides(state.content, { fill, stroke }), { title, desc }) : undefined);
 
   const rootAttrs = $derived.by(() => {
     if (state.status !== "ready") return {};

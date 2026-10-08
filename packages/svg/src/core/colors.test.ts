@@ -83,6 +83,12 @@ describe("withSvgColorOverrides", () => {
     expect(result.innerHTML).toContain("fill:red !important");
   });
 
+  it("keeps the important winner with duplicate fill declarations", () => {
+    const content = parse('<svg><path style="fill:black !important;fill:none" d="M0 0h1"/></svg>');
+    const result = withSvgColorOverrides(content, { fill: "red" });
+    expect(result.innerHTML).toContain("fill:red !important;fill:none");
+  });
+
   it("preserves unrelated declarations with quoted semicolons", () => {
     const content = parse(`<svg><path style="fill:black;font-family:'A;B'" d="M0 0h1"/></svg>`);
     const result = withSvgColorOverrides(content, { fill: "red" });

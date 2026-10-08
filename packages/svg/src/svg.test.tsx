@@ -85,6 +85,32 @@ describe("SVG effect stability", () => {
   });
 });
 
+describe("SVG color overrides", () => {
+  it("rewrites hardcoded descendant fill when fill is provided", async () => {
+    const markup =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="black" d="M0 0h10v10H0z"/><path fill="none" d="M0 0h1"/></svg>';
+    const { container } = render(<SVG src={markup} fill="currentColor" />);
+    await waitFor(() => {
+      expect(container.querySelector("svg")).not.toBeNull();
+    });
+    const svg = container.querySelector("svg");
+    expect(svg?.getAttribute("fill")).toBe("currentColor");
+    expect(svg?.innerHTML).toContain('fill="currentColor"');
+    expect(svg?.innerHTML).not.toContain('fill="black"');
+    expect(svg?.innerHTML).toContain('fill="none"');
+  });
+
+  it("leaves descendants untouched when fill and stroke are omitted", async () => {
+    const markup =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="black" d="M0 0h10v10H0z"/></svg>';
+    const { container } = render(<SVG src={markup} />);
+    await waitFor(() => {
+      expect(container.querySelector("svg")).not.toBeNull();
+    });
+    expect(container.querySelector("svg")?.innerHTML).toContain('fill="black"');
+  });
+});
+
 describe("SVG parsed-cache", () => {
   it("does not re-parse cached SVG on second mount of the same URL", async () => {
     const fetchMock = vi.fn().mockResolvedValue(

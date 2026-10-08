@@ -22,6 +22,7 @@ import {
   scopeParsedSvgIds,
   withSvgRootId,
 } from "../core/ids";
+import { withSvgColorOverrides } from "../core/colors";
 
 import type { ParsedInlineSvg } from "../core/sanitize";
 import { createSvgPresentation, svgDimensions, svgViewBox } from "../core/presentation";
@@ -158,11 +159,14 @@ export const SVG = defineComponent({
       if (controller) controller.abort();
     });
 
-    const presentation = computed(() =>
-      state.value.status === "ready"
-        ? present(withSvgRootId(state.value.content, props.id), props)
-        : undefined,
-    );
+    const presentation = computed(() => {
+      if (state.value.status !== "ready") return undefined;
+      const colored = withSvgColorOverrides(
+        state.value.content,
+        { fill: props.fill, stroke: props.stroke },
+      );
+      return present(withSvgRootId(colored, props.id), props);
+    });
 
     const mergedClass = computed(() => {
       if (state.value.status !== "ready") return undefined;

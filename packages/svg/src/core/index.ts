@@ -16,3 +16,5 @@ export {
 export type { SvgNode, SvgAttribute } from "./ast";
 export { resolveMarkup, resolveSource } from "./resolve";
 export { ensureParsedSvg, ensureParsedNode } from "./cache";
+export { withSvgColorOverrides } from "./colors";
+export type { SvgColorOverrides } from "./colors";

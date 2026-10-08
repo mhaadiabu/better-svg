@@ -1,6 +1,7 @@
 ---
 import type { HTMLAttributes } from "astro/types";
 import { mergeSvgAttributes } from "../core/web";
+import { withSvgColorOverrides } from "../core/colors";
 import { loadAstroSvg, type AstroSvgOptions } from "./runtime";
 import { withSvgRootId } from "../core/ids";
 export { registerLocalSvgs } from "../core/local";
@@ -19,7 +20,7 @@ try {
   const error = cause instanceof Error ? cause : new Error("Failed to load SVG.");
   onSvgError?.(error);
 }
-if (content) content = createSvgPresentation()(withSvgRootId(content, attributes.id), { title, desc });
+if (content) content = createSvgPresentation()(withSvgRootId(withSvgColorOverrides(content, { fill: attributes.fill, stroke: attributes.stroke }), attributes.id), { title, desc });
 const attrs = content ? { ...attributes, ...mergeSvgAttributes(content, { ...attributes, size }) } : {};
 ---
 

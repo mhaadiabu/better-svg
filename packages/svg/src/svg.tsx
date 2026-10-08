@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "./core";
+import { withSvgColorOverrides } from "./core/colors";
 import { createSvgId, rewriteSvgAttributes, scopeParsedSvgIds, withSvgRootId } from "./core/ids";
 
 import type { ParsedInlineSvg } from "./core/sanitize";
@@ -45,6 +46,8 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
       desc,
       className,
       style,
+      fill,
+      stroke,
       ...rest
     },
     ref,
@@ -119,9 +122,18 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
       return fallback ? <>{fallback}</> : null;
     }
 
-    const presented = present(withSvgRootId(content, rest.id), { title, desc });
+    const colored = withSvgColorOverrides(content, { fill, stroke });
+    const presented = present(withSvgRootId(colored, rest.id), { title, desc });
     const mergedClassName = [presented.className, className].filter(Boolean).join(" ");
     const mergedStyle = presented.style ? { ...presented.style, ...style } : style;
+    const rootProps =
+      fill === undefined && stroke === undefined
+        ? rest
+        : {
+            ...rest,
+            ...(fill !== undefined ? { fill } : {}),
+            ...(stroke !== undefined ? { stroke } : {}),
+          };
 
     return (
       <svg
@@ -132,7 +144,7 @@ export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
         }
         {...svgDimensions({ size, width, height })}
         viewBox={svgViewBox(presented.attrs, { size, width, height, viewBox: rest.viewBox })}
-        {...rewriteSvgAttributes(rest, presented.ids)}
+        {...rewriteSvgAttributes(rootProps, presented.ids)}
         className={mergedClassName || undefined}
         style={rewriteSvgAttributes(mergedStyle ?? {}, presented.ids) as React.CSSProperties}
         dangerouslySetInnerHTML={{ __html: presented.innerHTML }}

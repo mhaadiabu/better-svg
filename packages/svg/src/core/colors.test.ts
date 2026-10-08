@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseSvgString, renderNode } from "./ast";
 import { withSvgColorOverrides } from "./colors";
+import { scopeParsedSvgIds } from "./ids";
 import { inlineSvgFromNode } from "./sanitize";
 
 const parse = (markup: string) => {
@@ -58,5 +59,53 @@ describe("withSvgColorOverrides", () => {
     const content = parse('<svg><path fill="black"/></svg>');
     const first = withSvgColorOverrides(content, { fill: "red" });
     expect(withSvgColorOverrides(content, { fill: "red" })).toBe(first);
+  });
+
+  it("rewrites caller gradient references through scoped ids", () => {
+    const content = scopeParsedSvgIds(
+      parse('<svg><defs><linearGradient id="g"></linearGradient></defs><path fill="black"/></svg>'),
+      "p",
+    );
+    const result = withSvgColorOverrides(content, { fill: "url(#g)" });
+    expect(result.innerHTML).toContain("url(#p-0)");
+    expect(result.innerHTML).not.toContain("url(#g)");
+  });
+
+  it("preserves fill none with important in inline styles", () => {
+    const content = parse('<svg><path style="fill:none !important" d="M0 0h1"/></svg>');
+    const result = withSvgColorOverrides(content, { fill: "red" });
+    expect(result.innerHTML).toContain("fill:none !important");
+  });
+
+  it("preserves unrelated declarations with quoted semicolons", () => {
+    const content = parse(`<svg><path style="fill:black;font-family:'A;B'" d="M0 0h1"/></svg>`);
+    const result = withSvgColorOverrides(content, { fill: "red" });
+    expect(result.innerHTML).toContain("fill:red");
+    expect(result.innerHTML).toContain("font-family:'A;B'");
+  });
+
+  it("overrides uppercase fill declarations", () => {
+    const content = parse('<svg><path style="FILL:black" d="M0 0h1"/></svg>');
+    const result = withSvgColorOverrides(content, { fill: "red" });
+    expect(result.innerHTML).toContain("FILL:red");
+  });
+
+  it("distinguishes empty-string overrides from omitted overrides", () => {
+    const content = parse('<svg><path fill="black"/></svg>');
+    const empty = withSvgColorOverrides(content, { fill: "", stroke: "blue" });
+    const omitted = withSvgColorOverrides(content, { stroke: "blue" });
+    expect(empty).not.toBe(omitted);
+    expect(empty.innerHTML).toContain('fill=""');
+    expect(omitted.innerHTML).toContain('fill="black"');
+  });
+
+  it("stays correct past the memo eviction limit", () => {
+    const content = parse('<svg><path fill="black"/></svg>');
+    for (let index = 0; index < 12; index++) {
+      const result = withSvgColorOverrides(content, { fill: `color-${index}` });
+      expect(result.innerHTML).toContain(`fill="color-${index}"`);
+    }
+    const evicted = withSvgColorOverrides(content, { fill: "color-0" });
+    expect(evicted.innerHTML).toContain('fill="color-0"');
   });
 });

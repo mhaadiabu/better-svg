@@ -1,4 +1,5 @@
-import { parseInlineStyle, type SvgNode } from "./ast";
+import type { SvgNode } from "./ast";
+import { rewriteSvgValue } from "./ids";
 import { inlineSvgFromNode, type ParsedInlineSvg } from "./sanitize";
 
 export type SvgColorOverrides = {
@@ -6,43 +7,73 @@ export type SvgColorOverrides = {
   stroke?: string;
 };
 
+const MAX_CACHED_OVERRIDES = 10;
+
 const isUrlRef = (value: string) => /^\s*url\(/i.test(value);
 
-const isNone = (value: string) => value.trim().toLowerCase() === "none";
+const IMPORTANT_SUFFIX = /\s*!important\s*$/i;
+
+const paintValue = (value: string) => value.replace(IMPORTANT_SUFFIX, "").trim();
+
+const isNone = (value: string) => paintValue(value).toLowerCase() === "none";
 
 const shouldReplace = (value: string) => !isNone(value) && !isUrlRef(value);
 
-const toKebabCase = (key: string) =>
-  key.startsWith("--") ? key : key.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`);
-
-const serializeInlineStyle = (style: Record<string, string>) =>
-  Object.entries(style)
-    .map(([key, value]) => `${toKebabCase(key)}:${value}`)
-    .join(";");
+const splitDeclarations = (text: string): string[] => {
+  const parts: string[] = [];
+  let current = "";
+  let quote: string | undefined;
+  let depth = 0;
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index] ?? "";
+    if (quote) {
+      current += char;
+      if (char === "\\" && index + 1 < text.length) {
+        current += text[index + 1];
+        index++;
+      } else if (char === quote) {
+        quote = undefined;
+      }
+    } else if (char === '"' || char === "'") {
+      quote = char;
+      current += char;
+    } else if (char === "(") {
+      depth++;
+      current += char;
+    } else if (char === ")") {
+      depth = Math.max(0, depth - 1);
+      current += char;
+    } else if (char === ";" && depth === 0) {
+      parts.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  parts.push(current);
+  return parts;
+};
 
 const overrideStyleText = (text: string, overrides: SvgColorOverrides): string | undefined => {
-  const parsed = parseInlineStyle(text);
   let changed = false;
-  if (overrides.fill !== undefined && typeof parsed.fill === "string" && shouldReplace(parsed.fill)) {
-    parsed.fill = overrides.fill;
+  const result = splitDeclarations(text).map((declaration) => {
+    const colon = declaration.indexOf(":");
+    if (colon < 0) return declaration;
+    const name = declaration.slice(0, colon).trim().toLowerCase();
+    if (name !== "fill" && name !== "stroke") return declaration;
+    const override = overrides[name];
+    if (override === undefined || !shouldReplace(declaration.slice(colon + 1))) return declaration;
     changed = true;
-  }
-  if (
-    overrides.stroke !== undefined &&
-    typeof parsed.stroke === "string" &&
-    shouldReplace(parsed.stroke)
-  ) {
-    parsed.stroke = overrides.stroke;
-    changed = true;
-  }
-  return changed ? serializeInlineStyle(parsed) : undefined;
+    return `${declaration.slice(0, colon)}:${override}`;
+  });
+  return changed ? result.join(";") : undefined;
 };
 
 const overrideNode = (node: SvgNode, overrides: SvgColorOverrides): SvgNode => {
   let attrs = node.attrs;
   const nextAttrs = attrs.map((attr) => {
     const lower = attr.name.toLowerCase();
-    if (lower === "style" && overrides) {
+    if (lower === "style") {
       const replaced = overrideStyleText(attr.value, overrides);
       return replaced === undefined ? attr : { ...attr, value: replaced };
     }
@@ -76,22 +107,43 @@ const overrideNode = (node: SvgNode, overrides: SvgColorOverrides): SvgNode => {
 
 const overrideCache = new WeakMap<ParsedInlineSvg, Map<string, ParsedInlineSvg>>();
 
+const rewriteOverride = (
+  name: string,
+  value: string | undefined,
+  ids: ReadonlyMap<string, string> | undefined,
+): string | undefined => {
+  if (value === undefined || ids === undefined) return value;
+  return rewriteSvgValue(name, value, ids);
+};
+
 export const withSvgColorOverrides = (
   content: ParsedInlineSvg,
   overrides: SvgColorOverrides,
 ): ParsedInlineSvg => {
   if (overrides.fill === undefined && overrides.stroke === undefined) return content;
-  const key = `${overrides.fill ?? ""}\n${overrides.stroke ?? ""}`;
-  const cached = overrideCache.get(content)?.get(key);
-  if (cached) return cached;
-  const node = overrideNode(content.node, overrides);
-  const result = node === content.node ? content : withIds(content, node);
+  const key = JSON.stringify([overrides.fill ?? null, overrides.stroke ?? null]);
   let scoped = overrideCache.get(content);
+  const cached = scoped?.get(key);
+  if (scoped && cached) {
+    scoped.delete(key);
+    scoped.set(key, cached);
+    return cached;
+  }
+  const scopedOverrides: SvgColorOverrides = {
+    fill: rewriteOverride("fill", overrides.fill, content.ids),
+    stroke: rewriteOverride("stroke", overrides.stroke, content.ids),
+  };
+  const node = overrideNode(content.node, scopedOverrides);
+  const result = node === content.node ? content : withIds(content, node);
   if (!scoped) {
     scoped = new Map();
     overrideCache.set(content, scoped);
   }
   scoped.set(key, result);
+  if (scoped.size > MAX_CACHED_OVERRIDES) {
+    const oldest = scoped.keys().next();
+    if (!oldest.done) scoped.delete(oldest.value);
+  }
   return result;
 };
 

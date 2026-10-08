@@ -62,9 +62,10 @@ const overrideStyleText = (text: string, overrides: SvgColorOverrides): string |
     const name = declaration.slice(0, colon).trim().toLowerCase();
     if (name !== "fill" && name !== "stroke") return declaration;
     const override = overrides[name];
-    if (override === undefined || !shouldReplace(declaration.slice(colon + 1))) return declaration;
+    const value = declaration.slice(colon + 1);
+    if (override === undefined || !shouldReplace(value)) return declaration;
     changed = true;
-    return `${declaration.slice(0, colon)}:${override}`;
+    return `${declaration.slice(0, colon)}:${override}${IMPORTANT_SUFFIX.test(value) ? " !important" : ""}`;
   });
   return changed ? result.join(";") : undefined;
 };

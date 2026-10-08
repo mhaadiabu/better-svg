@@ -77,6 +77,12 @@ describe("withSvgColorOverrides", () => {
     expect(result.innerHTML).toContain("fill:none !important");
   });
 
+  it("keeps important priority when replacing an inline color", () => {
+    const content = parse('<svg><path style="fill:black!important" d="M0 0h1"/></svg>');
+    const result = withSvgColorOverrides(content, { fill: "red" });
+    expect(result.innerHTML).toContain("fill:red !important");
+  });
+
   it("preserves unrelated declarations with quoted semicolons", () => {
     const content = parse(`<svg><path style="fill:black;font-family:'A;B'" d="M0 0h1"/></svg>`);
     const result = withSvgColorOverrides(content, { fill: "red" });

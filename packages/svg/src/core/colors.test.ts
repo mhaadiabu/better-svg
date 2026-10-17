@@ -178,12 +178,13 @@ describe("withSvgColorOverrides", () => {
     expect(result.innerHTML).toContain('fill="white"');
   });
 
-  it("overrides fills inside mask grandchild subtrees", () => {
+  it("preserves fills inside nested mask subtrees", () => {
     const content = parse(
       '<svg><defs><mask id="m"><g><rect fill="white" width="10" height="10"/></g></mask></defs><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>',
     );
     const result = withSvgColorOverrides(content, { fill: "currentColor" });
-    expect(result.innerHTML).not.toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="white"');
     expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('fill="black"');
   });
 });

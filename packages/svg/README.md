@@ -411,7 +411,9 @@ At runtime, `registerLocalSvgs` validates a `precompiled` tree and throws on
 malformed input (`Precompiled SVG "<name>" is malformed: expected a parsed svg
 tree.` or, if the tree fails sanitization, `Precompiled SVG "<name>" is not a
 valid sanitized svg tree.`), and rejects a precompiled key with no matching
-markup entry (`Precompiled SVG "<name>" has no registered markup entry.`).
+markup entry (`Precompiled SVG "<name>" has no registered markup entry.`),
+and refuses non-inline markup (`Precompiled SVG "<name>" expects inline svg
+markup.`).
 
 ### What breaks and who fixes it
 
@@ -508,8 +510,9 @@ export const bundledIcons: Record<string, string> = {
 ```
 
 `out` accepts `.ts`, `.mts`, `.js`, or `.mjs`; the extension picks the
-generated format, and TypeScript is the default when you pass no `out` (or
-set `format` explicitly). Two things fail loudly instead of silently:
+generated format, TypeScript is the default without an `out` path, and pass
+`format` explicitly when `out` ends in anything else. Two things fail loudly
+instead of silently:
 
 ```text
 No source found for these catalog icons: lucide:mistyped-name

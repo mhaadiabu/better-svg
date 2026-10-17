@@ -5,6 +5,21 @@
 ### Added
 
 - Enable an opt-in SVGO pass over SVGs discovered at build time with the `svgo` option on `@mhaadi/svg/vite/plugin` and `@mhaadi/svg/astro/integration`. `svgo: true` runs a preset-safe list of default plugins that keeps fragment IDs, descriptions, and style cleaning intact; a `plugins` list or `filter`/function config covers full SVGO pass-through and per-file control. The pass fails the build with install instructions when svgo is missing and is off unless explicitly enabled.
+- Bundle resolved icon sources with `bundleCatalogIcons` from `@mhaadi/svg/catalog`, writing a generated data module that renders `collection:icon` names inline in offline runtimes such as React Native — no network requests and no filesystem access at render time.
+- Load icons directly from installed icon packages (e.g. lucide, tabler, phosphor) with `collection:icon` names, without per-icon imports.
+
+### Fixed
+
+- Stop rewriting `fill` and `stroke` on and inside `mask` and `clipPath` elements so color overrides no longer hide mask-keyed artwork.
+
+### Changed
+
+- Resolve href-like attributes by namespace-resolved local name, so `xlink:href`, `XLINK:HREF`, and re-prefixed bindings such as `evil:href` (declared to any namespace) are all checked like `href` instead of bypassing URL filtering.
+- Drop any event-handler attribute whose local name starts with `on` in any namespace, so prefixed variants such as `xlink:onclick` are removed rather than kept.
+- Restrict `<use>` href-like attributes to same-document fragment references (`#id`); external document references (`https:`, protocol-relative) are now stripped.
+- Strip all `data:` href values from `<a>` (navigation targets), including `data:image/svg+xml`.
+- On `<image>` and `<feImage>`, allow `data:` href values only for raster image subtypes; `data:image/svg+xml` is now stripped in all its spellings, including compressed (`svg+xml-compressed`) and case-obfuscated variants.
+- Limit `url()` targets inside `style` attributes to same-document fragment references such as `fill:url(#g)`; remote `http`/`data` targets are now stripped, and whitespace between `url` and `(` no longer bypasses the check.
 
 ## 0.3.1
 

@@ -70,7 +70,13 @@ const overrideStyleText = (text: string, overrides: SvgColorOverrides): string |
   return changed ? result.join(";") : undefined;
 };
 
+const isClippingStructure = (tag: string) => {
+  const lower = tag.toLowerCase();
+  return lower === "mask" || lower === "clippath";
+};
+
 const overrideNode = (node: SvgNode, overrides: SvgColorOverrides): SvgNode => {
+  if (isClippingStructure(node.tag)) return node;
   let attrs = node.attrs;
   const nextAttrs = attrs.map((attr) => {
     const lower = attr.name.toLowerCase();

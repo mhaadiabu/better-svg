@@ -23,31 +23,58 @@ export const decodeDataUrl = (source: string) => {
   }
 };
 
-export const isSafeUrl = (value: string) => {
-  const trimmed = value
+const normalizeUrlTarget = (value: string) =>
+  value
     .trim()
     .replace(/^['"]|['"]$/g, "")
     .replace(/[\p{Cc}\s]/gu, "");
-  if (!trimmed || trimmed.startsWith("#")) return true;
-  if (trimmed.startsWith("//")) return true;
-  const schemeMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
-  if (!schemeMatch) return true;
-  const scheme = schemeMatch[1];
-  if (!scheme) return false;
-  const normalized = scheme.toLowerCase();
-  if (normalized === "http" || normalized === "https" || normalized === "blob") {
-    return true;
+
+const urlScheme = (normalized: string) =>
+  normalized.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/)?.[1]?.toLowerCase();
+
+const isSameDocumentTarget = (normalized: string) => !normalized || normalized.startsWith("#");
+
+export const isSafeUrl = (value: string) => {
+  const normalized = normalizeUrlTarget(value);
+  if (isSameDocumentTarget(normalized)) return true;
+  if (normalized.startsWith("//")) return true;
+  const scheme = urlScheme(normalized);
+  if (!scheme) return true;
+  if (scheme === "http" || scheme === "https" || scheme === "blob") return true;
+  if (scheme === "data") return /^data:image\//i.test(normalized);
+  return false;
+};
+
+export const isSameDocumentUrl = (value: string) => isSameDocumentTarget(normalizeUrlTarget(value));
+
+export const isSafeHrefUrl = (value: string) => {
+  const normalized = normalizeUrlTarget(value);
+  if (urlScheme(normalized) === "data") return false;
+  return isSafeUrl(value);
+};
+
+const dataImageUrlSubtype = (normalized: string) =>
+  normalized.match(/^data:image\/([a-z0-9.+-]+)(?:[;,]|$)/i)?.[1]?.toLowerCase() ?? null;
+
+export const isSafeResourceUrl = (value: string) => {
+  const normalized = normalizeUrlTarget(value);
+  if (isSameDocumentTarget(normalized)) return true;
+  if (normalized.startsWith("//")) return true;
+  const scheme = urlScheme(normalized);
+  if (!scheme) return true;
+  if (scheme === "http" || scheme === "https" || scheme === "blob") return true;
+  if (scheme === "data") {
+    const subtype = dataImageUrlSubtype(normalized);
+    return subtype !== null && !subtype.startsWith("svg+xml");
   }
-  if (normalized === "data") return /^data:image\//i.test(trimmed);
   return false;
 };
 
 export const hasUnsafeUrl = (value: string) => {
-  const pattern = /url\(([^)]+)\)/gi;
+  const pattern = /url\s*\(([^)]+)\)/gi;
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(value))) {
-    const raw = match[1]?.trim() ?? "";
-    if (!isSafeUrl(raw)) return true;
+    if (!isSameDocumentUrl(match[1] ?? "")) return true;
   }
   return false;
 };

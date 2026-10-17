@@ -94,6 +94,10 @@
     "./local": {
       "types": "./dist/local.d.ts",
       "import": "./dist/local.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog.d.ts",
+      "import": "./dist/catalog.js"
     }
   },
   "publishConfig": {

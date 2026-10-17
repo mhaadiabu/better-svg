@@ -234,6 +234,11 @@ code {
   padding: 0;
 }
 
+.code-block,
+.code-group {
+  margin-block: 1rem;
+}
+
 .code-group {
   background: #111111;
   border: 1px solid #2e2e2e;
@@ -242,6 +247,7 @@ code {
 .code-group > .code-block {
   border: 0;
   background: transparent;
+  margin-block: 0;
 }
 
 .code-group > .code-block + .code-block {

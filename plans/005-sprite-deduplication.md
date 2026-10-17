@@ -66,7 +66,7 @@ for arbitrary SVG handling:
 3. **External `<use>` references are dead.** Cross-document
    `<use href="sprite.svg#icon">` was removed in Chromium in 2017. Any
    sprite must be hoisted into the *same document* as a hidden
-   `<svg><defs>` host. This is a hard wall, not a design choice: it rules
+   `<svg>` host. This is a hard wall, not a design choice: it rules
    out file-based sprites and constrains the architecture below.
 
 ### When dedup does not matter (or actively hurts)
@@ -258,7 +258,7 @@ raw). Documented as a contract test in M1.
 
 ### `<use>` rendering path (per framework)
 
-| Surface | Hovering the sprite host | Instance render |
+| Surface | Sprite host delivery | Instance render |
 | ------- | ------------------------ | --------------- |
 | React   | `createPortal(host, document.body)`, lazy mount | `<use href={…}>` as a real React element (not `dangerouslySetInnerHTML`), SVG2 `href`, no `xlink:href` |
 | Vue     | `<Teleport to="body">` inside a `SpriteHost` component used by the deduped branch | attribute rewrite path unchanged (`src/vue/SVG.ts:209-226`) |
@@ -478,8 +478,10 @@ All from repo root (no version bump needed for the plan itself):
 - `pnpm run lint`
 - `pnpm run test`
 - `pnpm run build`
-- For each milestone that modifies `packages/svg/src`: `feat(svg)` →
-  minor bump + `CHANGELOG.md` section per AGENTS.md release discipline.
+- For each milestone that modifies `packages/svg/src`: changelog
+  bullets under the single `## 0.4.0` heading in
+  `packages/svg/CHANGELOG.md` — version labelling is unified into one
+  0.4.0 release, so milestones do NOT bump the package version.
 
 ## Done criteria for THIS plan (the deliverable is the plan)
 

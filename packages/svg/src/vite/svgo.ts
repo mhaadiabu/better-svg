@@ -1,6 +1,6 @@
 type SvgoPluginConfig = string | { name: string; params?: Record<string, unknown> };
 
-export type SvgoOptions = {
+type SvgoOptions = {
   preset?: "safe";
   plugins?: SvgoPluginConfig[];
   multipass?: boolean;
@@ -12,6 +12,8 @@ export type SvgoOptions = {
   };
   filter?: (name: string) => boolean;
 };
+
+export type SvgoOption = boolean | SvgoOptions | ((name: string) => boolean | SvgoOptions);
 
 type SvgoModule = {
   optimize: (input: string, config?: Record<string, unknown>) => { data: string };
@@ -64,11 +66,18 @@ const assertKnownPlugins = (svgo: SvgoModule, plugins: SvgoPluginConfig[]) => {
 export const runSvgoPass = (
   markup: string,
   name: string,
-  options: SvgoOptions,
+  options: SvgoOption,
   load: SvgoLoader = loadSvgo,
 ) =>
   (async () => {
-    const { preset: _preset, plugins, filter, ...settings } = options;
+    const request = typeof options === "function" ? options(name) : options;
+    if (!request) return markup;
+    const {
+      preset: _preset,
+      plugins,
+      filter,
+      ...settings
+    } = request === true ? ({} as SvgoOptions) : request;
     if (filter && !filter(name)) return markup;
     const svgo = await load().catch((cause: unknown) => {
       if (isModuleNotFound(cause)) {
@@ -83,3 +92,5 @@ export const runSvgoPass = (
     assertKnownPlugins(svgo, config.plugins ?? []);
     return svgo.optimize(markup, config).data;
   })();
+
+export type { SvgoOptions };

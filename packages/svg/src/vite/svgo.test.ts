@@ -48,6 +48,19 @@ describe("svgo pass", () => {
     expect(output).toContain("<metadata>");
   });
 
+  it("resolves per-file settings from the function form of the option", async () => {
+    const options = (name: string) =>
+      name === "brand/naive" ? ({ plugins: ["removeComments"] } as const) : false;
+    const output = await runSvgoPass(naiveSvg, "brand/naive", options);
+    expect(output).not.toContain("<!--");
+    expect(output).toContain('<path id="not-referenced-by-anything"');
+    await expect(
+      runSvgoPass(naiveSvg, "brand/other", options, () => {
+        throw new Error("svgo must not load for non-matching files");
+      }),
+    ).resolves.toBe(naiveSvg);
+  });
+
   it("skips files rejected by the filter without loading svgo", async () => {
     const options: SvgoOptions = { filter: (name) => name.startsWith("social/") };
     expect(

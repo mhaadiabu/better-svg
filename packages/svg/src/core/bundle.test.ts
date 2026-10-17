@@ -115,4 +115,25 @@ describe("offline icon bundles", () => {
     expect(resolveSource(undefined, "dim:star2")).toSatisfy(isInlineSvg);
     fixture.cleanup();
   });
+
+  it("normalizes .svg suffixes and whitespace in emitted keys", () => {
+    const fixture = fixtureIcons();
+    const result = bundleCatalogIcons({
+      names: [" dim:star.svg ", "dim:star2"],
+      searchPaths: [fixture.root],
+    });
+    expect(Object.keys(result.icons)).toEqual(["dim:star", "dim:star2"]);
+    expect(() =>
+      bundleCatalogIcons({ names: [], searchPaths: [fixture.root], out: "icons.txt" }),
+    ).toThrow("icons.txt");
+    expect(() =>
+      bundleCatalogIcons({ names: [], searchPaths: [fixture.root], out: "icons.cjs" }),
+    ).toThrow("icons.cjs");
+    expect(
+      bundleCatalogIcons({ names: [], searchPaths: [fixture.root] }).code.startsWith(
+        "export const bundledIcons: Record<string, string> = {",
+      ),
+    ).toBe(true);
+    fixture.cleanup();
+  });
 });

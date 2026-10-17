@@ -25,6 +25,14 @@ const serializeIcons = (icons: IconBundle, format: "ts" | "js") => {
   return `export const bundledIcons${annotation} = {\n${entries.join("\n")}\n};\n`;
 };
 
+const bundleName = (name: string) => name.trim().replace(/\.svg$/i, "");
+
+const bundleFormat = (out: string) => {
+  if (/\.(js|mjs)$/.test(out)) return "js" as const;
+  if (/\.(ts|mts)$/.test(out)) return "ts" as const;
+  return undefined;
+};
+
 export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
   const icons: IconBundle = {};
   const missing: string[] = [];
@@ -34,12 +42,17 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
       missing.push(name);
       continue;
     }
-    icons[name] = markup;
+    icons[bundleName(name)] = markup;
   }
   if (missing.length > 0) {
     throw new Error(`No source found for these catalog icons: ${missing.join(", ")}`);
   }
-  const format = options.format ?? (/\.(mjs|cjs|jsx|js)$/.test(options.out ?? "") ? "js" : "ts");
+  const format = options.format ?? (options.out ? bundleFormat(options.out) : "ts");
+  if (!format) {
+    throw new Error(
+      `Unsupported bundle output extension: ${options.out}. Use .ts, .mts, .js, or .mjs, or set format.`,
+    );
+  }
   const code = serializeIcons(icons, format);
   if (options.out) {
     mkdirSync(dirname(options.out), { recursive: true });

@@ -332,7 +332,7 @@ registerCatalogIcons(["lucide:house", "tabler:settings"]);
 For each name, resolution checks installed packages in this order: the
 `@iconify-json/<collection>` data package (works for every Iconify collection,
 including hugeicons), the full `@iconify/json` package, then plain SVG files
-shipped by the icon packages themselves — `lucide-static` for lucide,
+shipped by the icon packages themselves: `lucide-static` for lucide,
 `@tabler/icons` (outline first, then filled) for tabler, and the regular weight
 of `@phosphor-icons/core` for phosphor.
 

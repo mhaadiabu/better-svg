@@ -84,7 +84,14 @@ const readIconifyCollection = (file: string) => {
   let parsed: IconifyCollection | null;
   try {
     const raw = JSON.parse(markup) as IconifyCollection;
-    parsed = raw && typeof raw === "object" && typeof raw.icons === "object" ? raw : null;
+    parsed =
+      raw &&
+      typeof raw === "object" &&
+      !Array.isArray(raw.icons) &&
+      typeof raw.icons === "object" &&
+      !Array.isArray(raw.aliases)
+        ? raw
+        : null;
   } catch {
     parsed = null;
   }
@@ -107,27 +114,39 @@ const readSvgFile = (file: string) => {
 
 const iconifyIcon = (collection: IconifyCollection, icon: string) => {
   const visited = new Set<string>([icon]);
+  const chain: IconifyIcon[] = [];
   let data = collection.icons[icon] ?? collection.aliases?.[icon];
   while (data) {
     if (data.hidden) return undefined;
-    if (typeof data.body === "string") return data;
-    const parent = data.parent;
-    if (!parent || visited.has(parent)) return undefined;
-    visited.add(parent);
-    data = collection.icons[parent] ?? collection.aliases?.[parent];
+    chain.push(data);
+    if (typeof data.body !== "string") {
+      const parent = data.parent;
+      if (!parent || visited.has(parent)) return undefined;
+      visited.add(parent);
+      data = collection.icons[parent] ?? collection.aliases?.[parent];
+      continue;
+    }
+    const nearest = (key: "left" | "top" | "width" | "height") =>
+      chain.map((entry) => entry[key]).find((value) => value !== undefined);
+    return {
+      body: data.body,
+      left: nearest("left"),
+      top: nearest("top"),
+      width: nearest("width"),
+      height: nearest("height"),
+    };
   }
   return undefined;
 };
 
 const iconifyMarkup = (collection: IconifyCollection, icon: string) => {
   const data = iconifyIcon(collection, icon);
-  const body = data?.body;
-  if (typeof body !== "string" || !body) return undefined;
+  if (!data) return undefined;
   const left = data.left ?? 0;
   const top = data.top ?? 0;
   const width = data.width ?? collection.width ?? 16;
   const height = data.height ?? collection.height ?? 16;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left} ${top} ${width} ${height}">${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left} ${top} ${width} ${height}">${data.body}</svg>`;
 };
 
 const findIconMarkup = (collection: string, icon: string, roots: readonly string[]) => {

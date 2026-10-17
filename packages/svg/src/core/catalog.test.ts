@@ -42,7 +42,10 @@ describe("icon catalog", () => {
           star: { body: "<path d='m1'/>" },
           wide: { body: "<path d='m2'/>", left: 4, top: 2, width: 48, height: 12 },
         },
-        aliases: { star2: { parent: "star" } },
+        aliases: {
+          star2: { parent: "star" },
+          tall: { parent: "star", left: 1, top: 3, width: 32, height: 64 },
+        },
       }),
     );
     expect(resolveIconSource("dim:star", { searchPaths: [fixture.root] })).toBe(
@@ -54,10 +57,30 @@ describe("icon catalog", () => {
     expect(resolveIconSource("dim:star2", { searchPaths: [fixture.root] })).toBe(
       `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d='m1'/></svg>`,
     );
+    expect(resolveIconSource("dim:tall", { searchPaths: [fixture.root] })).toBe(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="1 3 32 64"><path d='m1'/></svg>`,
+    );
     expect(resolveIconSource("dim:wide.svg", { searchPaths: [fixture.root] })).toBe(
       `<svg xmlns="http://www.w3.org/2000/svg" viewBox="4 2 48 12"><path d='m2'/></svg>`,
     );
     expect(resolveIconSource("dim:missing", { searchPaths: [fixture.root] })).toBeUndefined();
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
+  it("rejects collections whose shapes are malformed", () => {
+    const fixture = makeFixture();
+    fixture.write(join("@iconify-json", "bad1", "icons.json"), "{not json");
+    fixture.write(
+      join("@iconify-json", "bad2", "icons.json"),
+      JSON.stringify({ prefix: "bad2", icons: ["not-an-object"] }),
+    );
+    fixture.write(
+      join("@iconify-json", "bad3", "icons.json"),
+      JSON.stringify({ prefix: "bad3", icons: { x: { body: "<path/>" } }, aliases: [] }),
+    );
+    expect(resolveIconSource("bad1:x", { searchPaths: [fixture.root] })).toBeUndefined();
+    expect(resolveIconSource("bad2:x", { searchPaths: [fixture.root] })).toBeUndefined();
+    expect(resolveIconSource("bad3:x", { searchPaths: [fixture.root] })).toBeUndefined();
     rmSync(fixture.root, { recursive: true, force: true });
   });
 
@@ -108,7 +131,7 @@ describe("icon catalog", () => {
       join("@iconify-json", "lucide", "icons.json"),
       JSON.stringify({
         prefix: "lucide",
-        icons: { house: { body: "<path d='json'/></svg>" } },
+        icons: { house: { body: "<path d='json'/>" } },
       }),
     );
     fixture.write(

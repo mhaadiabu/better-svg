@@ -343,6 +343,53 @@ instead. Local files discovered by the plugin keep precedence over catalog
 icons, and an unregistered catalog name falls back to the
 `/assets/svg/{name}.svg` URL like any missing local name.
 
+## Offline icon bundles
+
+`bundleCatalogIcons` (also from `@mhaadi/svg/catalog`) writes the resolved icon
+sources into a plain data module your app imports, instead of registering them
+on a machine that can read `node_modules`. Use it when the renderer runs where
+neither the filesystem nor `fetch` is a fit — React Native, or a browser bundle
+without the Vite plugin:
+
+```ts
+// scripts/generate-icons.ts — run once, or on a dev loop
+import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
+
+bundleCatalogIcons({
+  names: ["lucide:house", "tabler:settings"],
+  out: "./src/icons/generated.ts",
+});
+```
+
+The output is a single map of name to inline SVG source:
+
+```ts
+// src/icons/generated.ts (generated)
+export const bundledIcons: Record<string, string> = {
+  "lucide:house": "<svg ...>",
+  "tabler:settings": "<svg ...>",
+};
+```
+
+Register the map with the local registry your adapter already resolves `name`
+through, then use the icons like any local SVG:
+
+```tsx
+// React Native
+import SVG from "@mhaadi/svg/react-native";
+import { registerLocalSvgs } from "@mhaadi/svg/local";
+import { bundledIcons } from "./icons/generated";
+
+registerLocalSvgs(bundledIcons, { override: false });
+
+const Home = () => <SVG name="lucide:house" size={24} />;
+```
+
+Generated sources render inline without fetching, so no name ever falls back to
+the `/assets/svg/...` URL and no request is made at runtime. Emitting fails if
+any requested name has no installed source, so a stale icon name is a build
+error, not a runtime gap.
+
 ## Size and accessible text
 
 ```tsx

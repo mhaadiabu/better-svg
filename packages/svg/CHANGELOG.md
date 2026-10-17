@@ -2,6 +2,10 @@
 
 ## 0.4.0
 
+### Fixed
+
+- Stop rewriting `fill` and `stroke` on and inside `mask` and `clipPath` elements so color overrides no longer hide mask-keyed artwork.
+
 ### Changed
 
 - Resolve href-like attributes by namespace-resolved local name, so `xlink:href`, `XLINK:HREF`, and re-prefixed bindings such as `evil:href` (declared to any namespace) are all checked like `href` instead of bypassing URL filtering.

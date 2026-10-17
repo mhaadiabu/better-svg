@@ -4,6 +4,8 @@
 
 ### Added
 
+- Bundle resolved icon sources with `bundleCatalogIcons` from `@mhaadi/svg/catalog`, writing a generated data module that renders `collection:icon` names inline in offline runtimes such as React Native — no network requests and no filesystem access at render time.
+
 - Load icons directly from installed icon packages (e.g. lucide, tabler, phosphor) with `collection:icon` names, without per-icon imports.
 
 ### Fixed

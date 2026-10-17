@@ -206,6 +206,17 @@ code {
   letter-spacing: 0.1em;
 }
 
+.code-block-file {
+  font-size: 10px;
+  font-family: "JetBrains Mono", monospace;
+  color: #8a8a8a;
+  letter-spacing: 0.02em;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .code-block-actions {
   display: flex;
   gap: 6px;

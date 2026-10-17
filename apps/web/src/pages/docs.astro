@@ -243,8 +243,8 @@ import PmTabs from "../components/PmTabs.astro";
             <p class="docs-body">Import the component from the entry point that matches your framework:</p>
 
             <!-- React -->
-            <div data-fw-show="react">
-                              <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
+            <div data-fw-show="react" class="code-group">
+              <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
 // From a registered local name, or /assets/svg/logo.svg
 export function MyComponent() {
@@ -257,7 +257,7 @@ export function MyComponent() {
   );
 }`} lang="tsx" />
 
-                              <CodeBlock code={`// From a remote URL with loading and fallback states
+              <CodeBlock code={`// From a remote URL with loading and fallback states
 <SVG
   src="https://cdn.example.com/icon.svg"
   sanitize
@@ -266,7 +266,7 @@ export function MyComponent() {
   onSvgLoad={(markup) => console.log(markup)}
 />`} lang="tsx" />
 
-                              <CodeBlock code={`// From an inline SVG string
+              <CodeBlock code={`// From an inline SVG string
 const LOGO = \`<svg viewBox='0 0 24 24'>...</svg>\`;
 
 <SVG
@@ -412,6 +412,18 @@ export function MyIcon() {
                     <td class="text-zinc-muted text-sm">Accessible description text. <span data-fw-show="react vue svelte solid astro angular">Renders a desc element.</span><span data-fw-show="react-native" class="hidden">Sets the accessibility hint.</span></td>
                   </tr>
                   <tr>
+                    <td><code class="font-mono text-xs text-acid">fill</code></td>
+                    <td><code class="font-mono text-xs text-[#e8c97e]">string</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">unset</code></td>
+                    <td class="text-zinc-muted text-sm">Overrides <code class="inline-code">fill</code> everywhere it applies; see <a href="#color-overrides" class="text-acid hover:underline">Color overrides</a>.</td>
+                  </tr>
+                  <tr>
+                    <td><code class="font-mono text-xs text-acid">stroke</code></td>
+                    <td><code class="font-mono text-xs text-[#e8c97e]">string</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">unset</code></td>
+                    <td class="text-zinc-muted text-sm">Overrides <code class="inline-code">stroke</code> everywhere it applies; see <a href="#color-overrides" class="text-acid hover:underline">Color overrides</a>.</td>
+                  </tr>
+                  <tr>
                     <td><code class="font-mono text-xs text-acid">sanitize</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">boolean</code></td>
                     <td><code class="font-mono text-xs text-zinc-muted">true</code></td>
@@ -498,11 +510,11 @@ export function MyIcon() {
             </div>
 
             <div class="mt-6 space-y-4">
-              <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
+              <div id="color-overrides" class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-mono text-xs tracking-widest text-acid mb-2">COLOR OVERRIDES</h3>
                 <p class="text-sm text-zinc-muted">
-                  <code class="inline-code">fill</code> and <code class="inline-code">stroke</code> (and React
-                  Native <code class="inline-code">color</code>, which sets both) rewrite matching
+                  The <code class="inline-code">fill</code> and
+                  <code class="inline-code">stroke</code> props rewrite matching
                   presentation attributes on the root and every descendant, including values inside
                   the <code class="inline-code">style</code> attribute. Embedded
                   <code class="inline-code">none</code> values and gradient references
@@ -519,12 +531,12 @@ export function MyIcon() {
                 </p>
               </div>
 
-              <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
+              <div id="unique-ids" class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-mono text-xs tracking-widest text-acid mb-2">WHAT uniqueIds REWRITES</h3>
                 <p class="text-sm text-zinc-muted">
-                  With <code class="inline-code">uniqueIds</code> on (the default), every instance
-                  gets its own id scope so repeated SVGs can use gradients, masks, clip paths, and
-                  local references without collisions. The rewrite covers fragment links
+                  <code class="inline-code">uniqueIds</code> is on by default (props table) and gives
+                  every instance its own id scope, so repeated SVGs can share gradients, masks, clip
+                  paths, and local references without collisions. The rewrite covers fragment links
                   (<code class="inline-code">href="#id"</code>, <code class="inline-code">xlink:href</code>),
                   CSS <code class="inline-code">url(#...)</code> values with CSS escaping,
                   accessibility id lists (<code class="inline-code">aria-labelledby</code> and
@@ -544,34 +556,30 @@ export function MyIcon() {
           <!-- FRAMEWORK SPECIFICS -->
           <section id="framework-specifics" class="mb-16">
             <h2 class="docs-heading">Framework Specifics</h2>
-            <p class="docs-body">Extras and conventions unique to each adapter.</p>
 
             <div class="mt-6 space-y-6">
               <!-- React -->
               <div data-fw-show="react">
-                <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
-                  <h3 class="mb-2 font-semibold text-[#e8e8e8]">React</h3>
-                  <p class="text-sm text-zinc-muted mb-3">
-                    All <code class="inline-code">React.SVGProps{"<SVGSVGElement>"}</code> are supported
-                    and override any attributes parsed from SVG markup. Forwarded via{" "}
-                    <code class="inline-code">React.forwardRef</code>.
-                  </p>
-                                  <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
+                <p class="text-sm text-zinc-muted mb-3">
+                  All <code class="inline-code">React.SVGProps{"<SVGSVGElement>"}</code> are supported
+                  and override any attributes parsed from SVG markup. Forwarded via{" "}
+                  <code class="inline-code">React.forwardRef</code>.
+                </p>
+                                <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 import { SvgName } from "@mhaadi/svg";
 
 const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
-                </div>
               </div>
 
               <!-- React Native -->
               <div data-fw-show="react-native" class="hidden">
-                <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
-                  <h3 class="mb-2 font-semibold text-[#e8e8e8]">React Native</h3>
-                  <p class="text-sm text-zinc-muted mb-3">
-                    Accepts the standard source props plus size, color, and paint overrides
-                    that are translated to <code class="inline-code">react-native-svg</code> props.
-                  </p>
-                                  <CodeBlock code={`<SVG
+                <p class="text-sm text-zinc-muted mb-3">
+                  Accepts the standard source props plus size, color, and paint overrides
+                  that are translated to <code class="inline-code">react-native-svg</code> props.
+                  <code class="inline-code">color</code> sets <code class="inline-code">fill</code> and
+                  <code class="inline-code">stroke</code> together.
+                </p>
+                                <CodeBlock code={`<SVG
   name="logo"
   width={24}
   height={24}
@@ -581,21 +589,18 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
   strokeWidth={1.5}
   style={{ margin: 8 }}
 />`} lang="tsx" />
-                </div>
               </div>
 
               <!-- Vue -->
               <div data-fw-show="vue" class="hidden">
-                <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
-                  <h3 class="mb-2 font-semibold text-[#e8e8e8]">Vue 3</h3>
-                  <p class="text-sm text-zinc-muted mb-3">
-                    Root-level SVG attributes (width, height, viewBox, fill, stroke, role,
-                    aria-label, aria-hidden) are forwarded. fill and stroke also
-                    override matching hardcoded values on descendants. Events are kebab-cased
-                    (<code class="inline-code">svg-load</code>, <code class="inline-code">svg-error</code>).
-                    Server rendering shows the loading slot until the component mounts in the browser.
-                  </p>
-                                  <CodeBlock code={`<SVG
+                <p class="text-sm text-zinc-muted mb-3">
+                  Root-level SVG attributes (width, height, viewBox, fill, stroke, role,
+                  aria-label, aria-hidden) are forwarded. fill and stroke also
+                  override matching hardcoded values on descendants. Events are kebab-cased
+                  (<code class="inline-code">svg-load</code>, <code class="inline-code">svg-error</code>).
+                  Server rendering shows the loading slot until the component mounts in the browser.
+                </p>
+                                <CodeBlock code={`<SVG
   @svg-load="onLoad"
   @svg-error="onError"
   src="/icon.svg"
@@ -607,34 +612,29 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
   <template #loading>Spinner</template>
   <template #fallback>Fallback</template>
 </SVG>`} lang="vue" />
-                </div>
               </div>
 
               <!-- Svelte -->
               <div data-fw-show="svelte" class="hidden">
-                <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
-                  <h3 class="mb-2 font-semibold text-[#e8e8e8]">Svelte 5</h3>
-                  <p class="text-sm text-zinc-muted mb-3">
-                    Root-level SVG attributes (width, height, viewBox, fill, stroke, role,
-                    aria-label, aria-hidden) are forwarded. fill and stroke also
-                    override matching hardcoded values on descendants. Snippet names match the
-                    <code class="inline-code">loading</code> and <code class="inline-code">fallback</code>{" "}
-                    props.
-                    Server rendering shows the loading snippet until the component mounts in the browser.
-                  </p>
-                                  <CodeBlock code={`<SVG
+                <p class="text-sm text-zinc-muted mb-3">
+                  Root-level SVG attributes (width, height, viewBox, fill, stroke, role,
+                  aria-label, aria-hidden) are forwarded. fill and stroke also
+                  override matching hardcoded values on descendants. Snippet names match the
+                  <code class="inline-code">loading</code> and <code class="inline-code">fallback</code>{" "}
+                  props.
+                  Server rendering shows the loading snippet until the component mounts in the browser.
+                </p>
+                                <CodeBlock code={`<SVG
   src="/icon.svg"
   class="h-6 w-6 text-current"
 >
   {#snippet loading()}Spinner{/snippet}
   {#snippet fallback()}Fallback{/snippet}
 </SVG>`} lang="svelte" />
-                </div>
               </div>
 
               {adapterExamples.map((adapter) => (
                 <div data-fw-show={adapter.id} class="hidden">
-                  <h3 class="font-semibold text-[#e8e8e8] mb-3">{adapter.label}</h3>
                   <p class="docs-body mb-4">{adapter.details}</p>
                   <CodeBlock code={adapter.states} lang={adapter.id === "angular" ? "html" : adapter.lang} />
                 </div>
@@ -705,19 +705,22 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
           <!-- LOCAL DISCOVERY -->
           <section id="local-discovery" class="mb-16">
             <h2 class="docs-heading">Local discovery</h2>
-            <p class="docs-body">
+            <p class="docs-body" data-fw-show="react vue svelte solid astro angular">
               The Vite plugin scans your icon directories at build time and registers them, so
               <code class="inline-code">&lt;SVG name="social/github"&gt;</code> renders inline with no
-              fetch and no per-icon import. Add the plugin once, then use local files by name in any
-              supported framework (React Native registers sources directly or via
-              <a href="#icon-catalog" class="text-acid hover:underline">bundled icons</a>).
+              fetch and no per-icon import. Add the plugin once, then use local files by name.
+            </p>
+            <p class="docs-body hidden" data-fw-show="react-native">
+              React Native registers local sources ahead of build with
+              <code class="inline-code">registerLocalSvgs</code> or pre-resolved
+              <a href="#icon-catalog" class="text-acid hover:underline">bundled icons</a> — the
+              Vite plugin below does not apply to it.
             </p>
 
             <div class="mt-6 space-y-6">
-              <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
-                <p class="docs-body mb-3"><strong class="text-[#e8e8e8]">Vite / Solid</strong> — one entry in vite.config.ts:</p>
-                <CodeBlock code={`// vite.config.ts
-import { defineConfig } from "vite";
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="react vue svelte solid angular">
+                <p class="docs-body mb-3"><strong class="text-[#e8e8e8]">One entry in vite.config.ts:</strong></p>
+                <CodeBlock code={`import { defineConfig } from "vite";
 import localSvgs from "@mhaadi/svg/vite/plugin";
 
 export default defineConfig({
@@ -727,24 +730,23 @@ export default defineConfig({
       dirs: ["src/icons", "src/illustrations"],
     }),
   ],
-});`} lang="ts" />
+});`} lang="ts" file="vite.config.ts" />
                 <p class="text-sm text-zinc-muted mt-3">
                   That is the whole setup. The plugin appends a <code class="inline-code">registerLocalSvgs</code>
                   call to every evaluation of <code class="inline-code">@mhaadi/svg</code>'s local-registry module,
-                  so any <code class="inline-code">&lt;SVG name="..."&gt;</code> resolves without fetching. It also
-                  sets <code class="inline-code">ssr.noExternal</code> and
-                  <code class="inline-code">optimizeDeps.exclude</code> for <code class="inline-code">@mhaadi/svg</code>
-                  so server-rendered (Astro SSR, Vite SSR) and dev-optimized builds pick up the registration.
+                  so any <code class="inline-code">&lt;SVG name="..."&gt;</code> resolves without fetching. It also sets
+                  <code class="inline-code">ssr.noExternal</code> and
+                  <code class="inline-code">optimizeDeps.exclude</code> for <code class="inline-code">@mhaadi/svg</code>,
+                  so server-rendered and dev-optimized builds pick up the registration.
                 </p>
               </div>
 
-              <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
-                <p class="docs-body mb-3"><strong class="text-[#e8e8e8]">Astro</strong> — use the integration, not the plugin:</p>
-                <CodeBlock code={`// astro.config.mjs
-import { defineConfig } from "astro/config";
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="astro">
+                <p class="docs-body mb-3"><strong class="text-[#e8e8e8]">Astro — use the integration, not the plugin:</strong></p>
+                <CodeBlock code={`import { defineConfig } from "astro/config";
 import svgs from "@mhaadi/svg/astro/integration";
 
-export default defineConfig({ integrations: [svgs()] });`} lang="ts" />
+export default defineConfig({ integrations: [svgs()] });`} lang="ts" file="astro.config.mjs" />
                 <p class="text-sm text-zinc-muted mt-3">
                   The integration wires up Vite under the hood and additionally makes
                   <code class="inline-code">name</code> resolve during server rendering without client JavaScript.
@@ -831,20 +833,20 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                   <code class="inline-code">The "preset" option and the "plugins" list are incompatible; pass one or the other.</code>
                   — SVGO would need one strategy for choosing the plugin list, and we refuse to guess which.
                 </p>
-                <CodeBlock code={`localSvgs({
+                <div class="code-group">
+                  <CodeBlock code={`localSvgs({
   dirs: ["src/icons", "src/illustrations"],
   svgo: {
     filter: (name) => name.startsWith("social/"),
     multipass: true,
     floatPrecision: 3,
   },
-});
-
-// full passthrough config
-localSvgs({
+});`} lang="ts" file="vite.config.ts" />
+                  <CodeBlock code={`localSvgs({
   dirs: ["src/icons"],
   svgo: { plugins: ["preset-default", { name: "cleanupIds" }, "removeViewBox"] },
-});`} lang="ts" />
+});`} lang="ts" file="vite.config.ts" />
+                </div>
               </div>
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
@@ -954,8 +956,7 @@ localSvgs({
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-semibold text-[#e8e8e8] mb-3">registerCatalogIcons</h3>
-                <CodeBlock code={`import SVG from "@mhaadi/svg/astro";
-import { registerCatalogIcons } from "@mhaadi/svg/catalog";
+                <CodeBlock code={`import { registerCatalogIcons } from "@mhaadi/svg/catalog";
 
 registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
@@ -972,30 +973,41 @@ registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} la
                 <h3 class="font-semibold text-[#e8e8e8] mb-3">bundleCatalogIcons, offline runtime</h3>
                 <p class="text-sm text-zinc-muted mb-3">
                   Writes resolved icon sources into a plain data module your app imports, for runtimes
-                  that cannot read <code class="inline-code">node_modules</code> or fetch at all — React Native,
-                  or a browser bundle without the plugin. No per-icon import, no runtime lookup:
+                  that cannot read <code class="inline-code">node_modules</code> or fetch at all, such
+                  as a <a href="#framework-specifics" class="text-acid hover:underline">React Native</a> app
+                  or a browser bundle without the <a href="#local-discovery" class="text-acid hover:underline">Vite plugin</a>. No per-icon import, no runtime lookup:
                 </p>
-                <CodeBlock code={`// scripts/generate-icons.ts — run once, or in a dev loop
-import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
+                <div class="code-group">
+                  <CodeBlock code={`import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
 
 bundleCatalogIcons({
   names: ["lucide:house", "tabler:settings"],
   out: "./src/icons/generated.ts",
-});
-
-// src/icons/generated.ts (generated ahead of time)
-export const bundledIcons: Record<string, string> = {
+});`} lang="ts" file="scripts/generate-icons.ts" />
+                  <CodeBlock code={`export const bundledIcons: Record<string, string> = {
   "lucide:house": "<svg ...>",
   "tabler:settings": "<svg ...>",
-};`} lang="ts" />
-                <CodeBlock code={`// React Native — register the module, then use icons by name
-import SVG from "@mhaadi/svg/react-native";
+};`} lang="ts" file="src/icons/generated.ts" />
+                </div>
+                <p class="text-sm text-zinc-muted mt-3">Register the map with the local registry your adapter already resolves <code class="inline-code">name</code> through, then render the icons by name:</p>
+                <div data-fw-show="react-native" class="hidden">
+                  <CodeBlock code={`import SVG from "@mhaadi/svg/react-native";
 import { registerLocalSvgs } from "@mhaadi/svg/local";
 import { bundledIcons } from "./icons/generated";
 
 registerLocalSvgs(bundledIcons, { override: false });
 
-const Home = () => <SVG name="lucide:house" size={24} />;`} lang="tsx" />
+const Home = () => <SVG name="lucide:house" size={24} />;
+// renders inline, no fetch at runtime`} lang="tsx" />
+                </div>
+                <div data-fw-show="react vue svelte solid astro angular" class="hidden">
+                  <CodeBlock code={`import { registerLocalSvgs } from "@mhaadi/svg/local";
+import { bundledIcons } from "./icons/generated";
+
+registerLocalSvgs(bundledIcons, { override: false });
+
+// <SVG name="lucide:house" size={24} /> renders inline, no fetch at runtime`} lang="ts" file="src/icons/register.ts" />
+                </div>
                 <p class="text-sm text-zinc-muted mt-3">
                   <code class="inline-code">out</code> accepts <code class="inline-code">.ts</code>,
                   <code class="inline-code">.mts</code>, <code class="inline-code">.js</code>, or
@@ -1340,6 +1352,16 @@ export function IconGallery() {
 </Base>
 
 <style>
+  .code-group {
+    border: 1px solid #2e2e2e;
+    padding: 12px;
+  }
+  .code-group .code-block {
+    border: 0;
+  }
+  .code-group .code-block + .code-block {
+    margin-top: 12px;
+  }
   .docs-heading {
     margin-bottom: 1rem;
     font-family: var(--font-display);

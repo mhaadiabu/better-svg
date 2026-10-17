@@ -71,6 +71,13 @@ export function initCodeBlocks() {
     langEl.textContent = lang;
     header.appendChild(langEl);
 
+    if (file) {
+      const fileEl = document.createElement("span");
+      fileEl.className = "code-block-file";
+      fileEl.textContent = file;
+      header.appendChild(fileEl);
+    }
+
     const actions = document.createElement("div");
     actions.className = "code-block-actions";
 

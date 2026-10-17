@@ -138,6 +138,7 @@
     "typescript": "~5.9.3",
     "vite": "^8.3.1",
     "vitest": "^2.1.9",
+    "svgo": "^4.1.0",
     "vue": "^3.5.35"
   },
   "peerDependencies": {
@@ -148,6 +149,7 @@
     "react": ">=18",
     "react-dom": ">=18",
     "solid-js": ">=1.9 <2",
+    "svgo": ">=4",
     "svelte": ">=5",
     "vite": ">=5",
     "vue": ">=3"
@@ -187,6 +189,9 @@
       "optional": true
     },
     "vite": {
+      "optional": true
+    },
+    "svgo": {
       "optional": true
     }
   },

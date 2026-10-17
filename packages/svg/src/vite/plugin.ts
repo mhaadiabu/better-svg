@@ -1,13 +1,23 @@
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
 import { resolve, relative, sep } from "node:path";
 import type { Plugin } from "vite";
+import { runSvgoPass, type SvgoOptions } from "./svgo";
 
 export type LocalSvgOptions = {
   dirs?: string[];
+  svgo?: SvgoOptions | boolean;
 };
+
+export type { SvgoOptions };
 
 export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
+  const svgoOptions =
+    options.svgo === true
+      ? {}
+      : options.svgo === false || options.svgo === undefined
+        ? null
+        : options.svgo;
   if (
     dirs.some(
       (dir) =>
@@ -94,7 +104,22 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
             const target = await realpath(path);
             watchedFiles.add(target);
             this.addWatchFile(target);
-            if (!entries.has(name)) entries.set(name, await readFile(path, "utf8"));
+            if (!entries.has(name)) {
+              let markup = await readFile(path, "utf8");
+              if (svgoOptions) {
+                try {
+                  markup = await runSvgoPass(markup, name, svgoOptions);
+                } catch (cause) {
+                  if (cause instanceof Error) {
+                    throw new Error(`SVGO pass failed for "${name}": ${cause.message}`, {
+                      cause,
+                    });
+                  }
+                  throw cause;
+                }
+              }
+              entries.set(name, markup);
+            }
           }
         }
       };

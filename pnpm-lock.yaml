@@ -198,6 +198,9 @@ importers:
       svelte:
         specifier: ^5.56.3
         version: 5.56.3
+      svgo:
+        specifier: ^4.1.0
+        version: 4.1.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1

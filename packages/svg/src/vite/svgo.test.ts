@@ -84,6 +84,19 @@ describe("svgo pass", () => {
     expect(output).toContain('viewBox="0 0 24 24"');
   });
 
+  it("rejects combining the preset with an explicit plugins list", async () => {
+    await expect(
+      runSvgoPass(naiveSvg, "brand/naive", { preset: "safe", plugins: ["removeComments"] }),
+    ).rejects.toThrow(/incompatible/);
+    await expect(
+      runSvgoPass(naiveSvg, "brand/naive", {
+        filter: () => true,
+        preset: "safe",
+        plugins: [{ name: "removeComments" }],
+      }),
+    ).rejects.toThrow(/incompatible/);
+  });
+
   it("skips files rejected by the filter without loading svgo", async () => {
     const options: SvgoOptions = { filter: (name) => name.startsWith("social/") };
     expect(

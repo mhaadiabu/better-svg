@@ -94,6 +94,11 @@ export const runSvgoPass = (
   (async () => {
     const request = typeof options === "function" ? options(name) : options;
     if (!request) return markup;
+    if (request !== true && request.preset !== undefined && request.plugins !== undefined) {
+      throw new Error(
+        'The "preset" option and the "plugins" list are incompatible; pass one or the other.',
+      );
+    }
     const {
       preset: _preset,
       plugins,

@@ -322,7 +322,8 @@ control: `preset-default` with `cleanupIds`, `removeDesc`, `minifyStyles`,
 and `removeDeprecatedAttrs` disabled. Those off plugins are the ones most
 likely to break a rendering pipeline that rewrites IDs and
 accessibility references; icons referencing gradients, masks, or clip paths
-keep working.
+keep working. The `preset` and `plugins` options are incompatible;
+combining them in the same settings object fails the build.
 
 ```ts
 localSvgs({ dirs: ["src/icons"], svgo: true });

@@ -4,6 +4,7 @@
 
 ### Added
 
+- Precompile icons known at build time so mounting skips XML parsing and sanitization: `localSvgs({ precompiled: true })` parses and sanitizes every discovered local SVG during the build and registers the resolved tree, and `registerLocalSvgs` accepts a `precompiled` option as a manual escape hatch for the same. Per-instance id scoping and color overrides stay unchanged, and runtime registration remains the default.
 - Enable an opt-in SVGO pass over SVGs discovered at build time with the `svgo` option on `@mhaadi/svg/vite/plugin` and `@mhaadi/svg/astro/integration`. `svgo: true` runs a preset-safe list of default plugins that keeps fragment IDs, descriptions, and style cleaning intact; a `plugins` list or `filter`/function config covers full SVGO pass-through and per-file control. The pass fails the build with install instructions when svgo is missing and is off unless explicitly enabled.
 
 ## 0.3.1

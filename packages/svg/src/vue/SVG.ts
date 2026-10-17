@@ -161,10 +161,10 @@ export const SVG = defineComponent({
 
     const presentation = computed(() => {
       if (state.value.status !== "ready") return undefined;
-      const colored = withSvgColorOverrides(
-        state.value.content,
-        { fill: props.fill, stroke: props.stroke },
-      );
+      const colored = withSvgColorOverrides(state.value.content, {
+        fill: props.fill,
+        stroke: props.stroke,
+      });
       return present(withSvgRootId(colored, props.id), props);
     });
 

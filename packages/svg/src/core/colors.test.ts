@@ -29,7 +29,7 @@ describe("withSvgColorOverrides", () => {
     );
     const result = withSvgColorOverrides(content, { fill: "currentColor" });
     expect(result.innerHTML).toContain('fill="none"');
-    expect(result.innerHTML).toContain("fill=\"url(#g)\"");
+    expect(result.innerHTML).toContain('fill="url(#g)"');
   });
 
   it("kills stroke variants when stroke none is passed", () => {

@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- Stop rewriting `fill` and `stroke` inside `mask` and `clipPath` subtrees so color overrides no longer hide mask-keyed artwork.
+- Stop rewriting `fill` and `stroke` on and inside `mask` and `clipPath` elements so color overrides no longer hide mask-keyed artwork.
 
 ## 0.3.1
 

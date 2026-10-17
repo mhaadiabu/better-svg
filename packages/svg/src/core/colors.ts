@@ -76,6 +76,7 @@ const isClippingStructure = (tag: string) => {
 };
 
 const overrideNode = (node: SvgNode, overrides: SvgColorOverrides): SvgNode => {
+  if (isClippingStructure(node.tag)) return node;
   let attrs = node.attrs;
   const nextAttrs = attrs.map((attr) => {
     const lower = attr.name.toLowerCase();
@@ -95,10 +96,6 @@ const overrideNode = (node: SvgNode, overrides: SvgColorOverrides): SvgNode => {
     attrs = node.attrs;
   } else {
     attrs = nextAttrs;
-  }
-
-  if (isClippingStructure(node.tag)) {
-    return attrs === node.attrs ? node : { ...node, attrs };
   }
 
   let children = node.children;

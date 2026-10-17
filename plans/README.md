@@ -10,7 +10,7 @@ index.
 | Plan | Title                                                     | Priority | Effort | Status                                                                |
 | ---- | --------------------------------------------------------- | -------- | ------ | --------------------------------------------------------------------- |
 | 004  | Fix Flutter sanitizer (discarded result + close-tag leak) | P1       | S      | BLOCKED (no flutter toolchain — verified by reading; edits committed) |
-| 005  | Sprite deduplication design (`<symbol>` + `<use>`, #18)   | P2       | M      | IN PROGRESS                                                           |
+| 005  | Sprite deduplication design (`<symbol>` + `<use>`, #18)   | P2       | M      | DONE (plan delivered; implementation tracked under M1+)               |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 

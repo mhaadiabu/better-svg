@@ -187,4 +187,14 @@ describe("withSvgColorOverrides", () => {
     expect(result.innerHTML).toContain('fill="currentColor"');
     expect(result.innerHTML).not.toContain('fill="black"');
   });
+
+  it("excludes mask content regardless of tag case", () => {
+    const content = parse(
+      '<svg><defs><MASK id="m"><rect fill="white" width="10" height="10"/></MASK></defs><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('fill="black"');
+  });
 });

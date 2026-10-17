@@ -639,6 +639,7 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
                       <li data-fw-show="astro" class="hidden">Add <code class="inline-code">@mhaadi/svg/astro/integration</code> to your integrations to discover local SVGs at build time.</li>
                       <li data-fw-show="react vue svelte solid angular">Vite projects can add <code class="inline-code">@mhaadi/svg/vite/plugin</code> to discover local SVGs at build time.</li>
                       <li data-fw-show="react-native" class="hidden">Register local SVG strings with <code class="inline-code">registerLocalSvgs</code> from <code class="inline-code">@mhaadi/svg/local</code>.</li>
+                      <li>Icon packages: <code class="inline-code">@mhaadi/svg/catalog</code> resolves <code class="inline-code">collection:icon</code> names (lucide, tabler, phosphor, hugeicons, any Iconify collection) from installed npm packages, without per-icon imports.</li>
                       <li data-fw-show="react vue svelte solid astro angular">Discovery checks <code class="inline-code">src/assets/svg/</code> then <code class="inline-code">app/assets/svg/</code>. Configure <code class="inline-code">dirs</code> for other folders. Nested files use names such as <code class="inline-code">social/github</code>.</li>
                       <li>Missing names are fetched from <code class="inline-code">/assets/svg/{"{name}"}.svg</code>.</li>
                     </ul>

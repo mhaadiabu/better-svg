@@ -10,6 +10,7 @@ index.
 | Plan | Title                                                     | Priority | Effort | Status                                                                |
 | ---- | --------------------------------------------------------- | -------- | ------ | --------------------------------------------------------------------- |
 | 004  | Fix Flutter sanitizer (discarded result + close-tag leak) | P1       | S      | BLOCKED (no flutter toolchain — verified by reading; edits committed) |
+| 005  | Sprite deduplication design (`<symbol>` + `<use>`, #18)   | P2       | M      | DONE (plan delivered; implementation tracked under M1+)               |
 | 006  | SVGO default-on policy and preset research                | P2       | M      | DONE (plan delivered; implementation parked by maintainer decision until after 0.4.0) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
@@ -21,3 +22,13 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   test edits and run `flutter test` if available; if not, report
   "STOPPED: no flutter toolchain" so the reviewer can verify by reading.
   Do not skip the edits.
+- **005 (sprite dedup) is a plan-only deliverable:** implementation is
+  out of scope for this task, so no `packages/svg` version bump or
+  changelog entry. Its first milestone (M1) likewise avoids touching
+  `ids.ts` logic — the ID-rewrite pass in
+  `packages/svg/src/core/ids.ts` is already prefix-parameterized, so
+  sprite scoping reuses it. One coupling to respect when executing:
+  `withSvgColorOverrides` is being reworked for masks by another PR;
+  the sprite milestone must bail out of sprite mode when
+  `fill`/`stroke` props are set instead of building on that changing
+  code.

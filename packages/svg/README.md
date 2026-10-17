@@ -233,6 +233,8 @@ for SVGs that depend on the current session or need fresh responses.
 | `@mhaadi/svg/vite`              | Vite registration     |
 | `@mhaadi/svg/vite/plugin`       | Vite 5+ config plugin |
 | `@mhaadi/svg/astro/integration` | Astro local discovery |
+| `@mhaadi/svg/local`             | Local SVG registration |
+| `@mhaadi/svg/catalog`           | Icon package catalog   |
 
 React Native requires `react-native` and `react-native-svg` as peer dependencies.
 
@@ -298,9 +300,212 @@ back to `/assets/svg/{name}.svg`.
 
 Discovery includes every SVG in the configured directories in the bundle.
 Keep those directories limited to assets the app uses. Development reloads
-the page when an SVG is added, edited, or removed. No optimization runs.
-The existing `import "@mhaadi/svg/vite"` registration remains available for
-default directories, but the config plugin handles custom paths and Astro SSR.
+the page when an SVG is added, edited, or removed. No optimization runs
+unless you enable the optional SVGO pass below. The existing
+`import "@mhaadi/svg/vite"` registration remains available for default
+directories, but the config plugin handles custom paths and Astro SSR.
+
+## Optional SVGO pass
+
+The local-discovery plugins (`@mhaadi/svg/vite/plugin` and
+`@mhaadi/svg/astro/integration`) accept an `svgo` option that runs SVGO over
+every discovered file before registration. The pass is off by default and
+nothing is plumbed through unless you opt in. Remote, `?raw`, or manually
+registered SVGs are never touched.
+
+Install svgo first; it is an optional peer dependency:
+
+```bash
+pnpm add -D svgo
+```
+
+`svgo: true` runs a preset-safe list of `#default` plugins whose settings we
+control: `preset-default` with `cleanupIds`, `removeDesc`, `minifyStyles`,
+and `removeDeprecatedAttrs` disabled. Those off plugins are the ones most
+likely to break a rendering pipeline that rewrites IDs and
+accessibility references; icons referencing gradients, masks, or clip paths
+keep working. The `preset` and `plugins` options are incompatible;
+combining them in the same settings object fails the build.
+
+```ts
+localSvgs({ dirs: ["src/icons"], svgo: true });
+```
+
+You can switch the pass per file (per-collection: match name prefixes) with
+a `filter` predicate that receives the discovered name, opt out per name,
+and pass any SVGO option (`multipass`, `floatPrecision`, `js2svg`) next to
+it. Names are relative to each configured directory, so a file
+`src/icons/social/github.svg` in `dirs: ["src/icons"]` passes the name
+`social/github`:
+
+```ts
+localSvgs({
+  dirs: ["src/icons", "src/illustrations"],
+  svgo: {
+    filter: (name) => name.startsWith("social/"),
+    multipass: true,
+    floatPrecision: 3,
+  },
+});
+```
+
+For direct control, pass a `plugins` list. It is a full SVGO plugin
+configuration: names are validated against the installed svgo's built-in
+plugins, unknown names fail the build, and the SVGO settings you choose are
+sent to svgo as given.
+
+```ts
+localSvgs({
+  dirs: ["src/icons"],
+  svgo: { plugins: ["preset-default", { name: "cleanupIds" }, "removeViewBox"] },
+});
+```
+
+`svgo` also accepts a function `(name) => options | false` when different
+files need different settings.
+
+### What breaks and who fixes it
+
+SVGO rewrites markup that the renderer and your app might depend on:
+
+- `preset-default` and `cleanupIds` can remove or rename `id` attributes.
+  External CSS, `url(#...)` references from other documents, and the
+  `uniqueIds={false}` workflow then render without their references.
+- Style-, shape-, and group-related plugins change elements and attributes
+  that descendant CSS selectors and `fill`/`stroke` overrides match against.
+- Path and number rounding changes sub-pixel rendering.
+
+These are accepted risks in an opt-in pass, not bugs: audit optimized
+markup instead of relying on visual regression. Keep the discovered SVGs in
+version control, run the same `svgo` version locally and in CI, and diff
+the registered output (or key attributes such as `id`, `url(#...)`,
+`viewBox`) between configs in a snapshot test. When output changes, update
+snapshots deliberately after reviewing the diff. Run an icon-by-icon visual
+check when you choose the config, once; the CI markup audit is what keeps
+later upgrades honest.
+
+## Icon catalog
+
+`@mhaadi/svg/catalog` resolves `collection:icon` names from icon packages
+already installed in your `node_modules`. No network access, no per-icon
+imports. Register the names you use up front, then pass them to `name` like any
+local SVG:
+
+```astro
+---
+import SVG from "@mhaadi/svg/astro";
+import { registerCatalogIcons } from "@mhaadi/svg/catalog";
+
+registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);
+---
+
+<SVG name="lucide:house" width={24} height={24} />
+```
+
+```tsx
+// React server components: register in a module loaded on the server.
+import { registerCatalogIcons } from "@mhaadi/svg/catalog";
+
+registerCatalogIcons(["lucide:house", "tabler:settings"]);
+```
+
+For each name, resolution checks installed packages in this order: the
+`@iconify-json/<collection>` data package (works for every Iconify collection,
+including hugeicons), the full `@iconify/json` package, then plain SVG files
+shipped by the icon packages themselves: `lucide-static` for lucide,
+`@tabler/icons` (outline first, then filled) for tabler, and the regular weight
+of `@phosphor-icons/core` for phosphor.
+
+Registration runs in Node only, where reading `node_modules` is possible: Astro
+SSR, server components, or your own build-time glue. Browser-only bundles need
+the Vite plugin from [Automatic local discovery](#automatic-local-discovery)
+instead. Local files discovered by the plugin keep precedence over catalog
+icons, and an unregistered catalog name falls back to the
+`/assets/svg/{name}.svg` URL like any missing local name.
+
+## Offline icon bundles
+
+`bundleCatalogIcons` (also from `@mhaadi/svg/catalog`) writes the resolved icon
+sources into a plain data module your app imports, instead of registering them
+on a machine that can read `node_modules`. Use it when the renderer runs where
+neither the filesystem nor `fetch` is a fit — React Native, or a browser bundle
+without the Vite plugin:
+
+```ts
+// scripts/generate-icons.ts — run once, or on a dev loop
+import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
+
+bundleCatalogIcons({
+  names: ["lucide:house", "tabler:settings"],
+  out: "./src/icons/generated.ts",
+});
+```
+
+The output is a single map of name to inline SVG source:
+
+```ts
+// src/icons/generated.ts (generated)
+export const bundledIcons: Record<string, string> = {
+  "lucide:house": "<svg ...>",
+  "tabler:settings": "<svg ...>",
+};
+```
+
+Register the map with the local registry your adapter already resolves `name`
+through, then use the icons like any local SVG:
+
+```tsx
+// React Native
+import SVG from "@mhaadi/svg/react-native";
+import { registerLocalSvgs } from "@mhaadi/svg/local";
+import { bundledIcons } from "./icons/generated";
+
+registerLocalSvgs(bundledIcons, { override: false });
+
+const Home = () => <SVG name="lucide:house" size={24} />;
+```
+
+Generated sources render inline without fetching, so no name ever falls back to
+the `/assets/svg/...` URL and no request is made at runtime. Emitting fails if
+any requested name has no installed source, so a stale icon name is a build
+error, not a runtime gap.
+
+## Build-time precompilation
+
+The local-discovery plugins also accept a `precompiled` option that turns the
+pass into a build-time mode: the plugin parses and sanitizes every discovered
+file during the build (consuming the SVGO-optimized markup when the pass is
+on) and registers the resulting tree, so mounting `<SVG name="...">` skips XML
+parsing and the sanitize pass and only does per-instance work such as id
+scoping and color overrides. The runtime registration mode stays the default,
+and dynamic sources keep the full runtime path.
+
+```ts
+localSvgs({ dirs: ["src/icons"], svgo: true, precompiled: true });
+```
+
+The trade, in one sentence: build-time mode ships the parsed tree next to the
+registered markup so icons pay their parse once at build instead of once at
+run, at the cost of a larger bundle for every discovered icon. Precompiled
+trees are generated by the plugin's own build pass, never by hand; do not
+feed it markup you did not produce with this pipeline. Registration validates
+and re-sanitizes the tree and rejects malformed input with a build error.
+
+Without the plugin, `registerLocalSvgs` accepts the same shape as an escape
+hatch for assets known at build time:
+
+```ts
+import { registerLocalSvgs } from "@mhaadi/svg/local";
+
+registerLocalSvgs({ "brand/logo": "<svg ...</svg>" }, {
+  override: false,
+  precompiled: { "brand/logo": { node: tree } },
+});
+```
+
+Precompiled registration primes the parser your runtime uses: browser
+adapters parse with the browser's XML parser and the Astro adapter with
+`@xmldom/xmldom`.
 
 ## Size and accessible text
 

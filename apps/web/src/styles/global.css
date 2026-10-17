@@ -251,7 +251,7 @@ code {
 }
 
 .code-group > .code-block + .code-block {
-  margin-top: 10px;
+  margin-top: 1rem;
 }
 
 /* Fallback before JS applies code-block-body */

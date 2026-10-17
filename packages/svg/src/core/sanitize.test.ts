@@ -92,7 +92,7 @@ describe("parseInlineSvg", () => {
     );
   });
 
-  it("keeps https hrefs on use out, only same-document fragments survive", () => {
+  it("strips https hrefs from use, keeping same-document fragments", () => {
     const result = parseInlineSvg(
       "<svg><use href='https://example.com/icon.svg'/><use href='#id'/></svg>",
       true,

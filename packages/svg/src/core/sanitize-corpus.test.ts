@@ -160,7 +160,7 @@ describe("hostile corpus: href protocol filtering", () => {
 
   it("strips data:image/svg+xml references from use href and xlink:href, including case-obfuscated schemes", () => {
     const result = parseInlineSvg(
-      "<svg><use href='data:image/svg+xml;base64,PHN2Zy8+'/><use href='DATA:IMAGE/SVG+XML,_'/><rect/></svg>",
+      "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><use href='data:image/svg+xml;base64,PHN2Zy8+'/><use xlink:href='DATA:IMAGE/SVG+XML,_'/><rect/></svg>",
       true,
     );
     expect(result).not.toBeNull();

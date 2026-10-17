@@ -177,10 +177,6 @@ describe("hostile corpus: css injection and exfiltration", () => {
       markup: "<svg><rect style='fill:url(&#106;avascript:alert(1))' fill='red'/></svg>",
       expected: '<rect fill="red"/>',
     },
-    {
-      markup: "<svg><text>'><script>alert(1)</script></text><rect/></svg>",
-      expected: "<text>'&gt;</text><rect/>",
-    },
   ];
   it.each(cases)("neutralizes $markup", ({ markup, expected }) => {
     const result = parseInlineSvg(markup, true);
@@ -196,7 +192,7 @@ describe("hostile corpus: css injection and exfiltration", () => {
 });
 
 describe("hostile corpus: namespace trickery", () => {
-  const safeCases: { markup: string; expected: string }[] = [
+  const cases: { markup: string; expected: string }[] = [
     {
       markup:
         "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><use xlink:href='javascript:alert(1)'/><rect/></svg>",
@@ -207,7 +203,7 @@ describe("hostile corpus: namespace trickery", () => {
       expected: '<rect xlink:title="ok"/>',
     },
   ];
-  it.each(safeCases)("filters hostile attributes in $markup", ({ markup, expected }) => {
+  it.each(cases)("filters hostile attributes in $markup", ({ markup, expected }) => {
     const result = parseInlineSvg(markup, true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).toBe(expected);
@@ -294,5 +290,14 @@ describe("hostile corpus: animations and mutation vectors", () => {
     const result = parseInlineSvg("<svg><!--<script>alert(1)</script>--><rect/></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).toBe("<rect/>");
+  });
+
+  it("re-escapes smuggled script tag markup inside text", () => {
+    const result = parseInlineSvg(
+      "<svg><text>'><script>alert(1)</script></text><rect/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<text>'&gt;</text><rect/>");
   });
 });

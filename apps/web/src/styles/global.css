@@ -215,6 +215,7 @@ code {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .code-block-actions {
@@ -273,7 +274,8 @@ code {
 
 .code-block-body.is-wrapped pre {
   white-space: pre-wrap;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: anywhere;
   overflow-x: visible;
 }
 
@@ -330,6 +332,21 @@ code {
 }
 .code-block.has-wrap .wrap-btn {
   display: inline-flex;
+}
+
+@media (max-width: 480px) {
+  .code-block .copy-btn,
+  .code-block .wrap-btn {
+    font-size: 0;
+    gap: 2px;
+    padding: 4px 6px;
+  }
+  .code-block-actions {
+    gap: 4px;
+  }
+  .code-block-file {
+    max-width: 30vw;
+  }
 }
 
 /* Tooltip shown on copy */

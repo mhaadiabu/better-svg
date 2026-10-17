@@ -242,7 +242,7 @@ import CodeBlock from "../components/CodeBlock.astro";
             </div>
 
             <!-- Rendered output strip -->
-            <div class="mt-4 flex items-center justify-center gap-6 border border-coal-2 bg-coal-1 px-4 py-4">
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border border-coal-2 bg-coal-1 px-4 py-4">
               <span class="font-mono text-xs text-zinc-muted">rendered output →</span>
               <svg class="h-10 w-10 text-acid animate-float" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                 <rect x="6" y="6" width="52" height="52" rx="0" fill="currentColor" opacity="0.15"/>
@@ -459,6 +459,16 @@ import CodeBlock from "../components/CodeBlock.astro";
   .fw-tab.is-active {
     color: #b9ff4b;
     border-bottom-color: #b9ff4b;
+  }
+
+  /* Mobile: distributed 4+3 control; rows are full-width by design. */
+  @media (max-width: 639px) {
+    .fw-tab {
+      flex: 1 1 0;
+      min-width: 25%;
+      padding: 8px 4px;
+      text-align: center;
+    }
   }
 </style>
 

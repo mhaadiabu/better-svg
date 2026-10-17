@@ -32,8 +32,7 @@ const normalizeUrlTarget = (value: string) =>
 const urlScheme = (normalized: string) =>
   normalized.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/)?.[1]?.toLowerCase();
 
-const isSameDocumentTarget = (normalized: string) =>
-  !normalized || normalized.startsWith("#");
+const isSameDocumentTarget = (normalized: string) => !normalized || normalized.startsWith("#");
 
 export const isSafeUrl = (value: string) => {
   const normalized = normalizeUrlTarget(value);
@@ -46,8 +45,7 @@ export const isSafeUrl = (value: string) => {
   return false;
 };
 
-export const isSameDocumentUrl = (value: string) =>
-  isSameDocumentTarget(normalizeUrlTarget(value));
+export const isSameDocumentUrl = (value: string) => isSameDocumentTarget(normalizeUrlTarget(value));
 
 export const isSafeHrefUrl = (value: string) => {
   const normalized = normalizeUrlTarget(value);

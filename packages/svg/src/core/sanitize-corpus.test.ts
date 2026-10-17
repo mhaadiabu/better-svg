@@ -158,17 +158,14 @@ describe("hostile corpus: href protocol filtering", () => {
     expect(result!.innerHTML).toBe(expected);
   });
 
-  it(
-    "strips data:image/svg+xml references from use href and xlink:href, including case-obfuscated schemes",
-    () => {
-      const result = parseInlineSvg(
-        "<svg><use href='data:image/svg+xml;base64,PHN2Zy8+'/><use href='DATA:IMAGE/SVG+XML,_'/><rect/></svg>",
-        true,
-      );
-      expect(result).not.toBeNull();
-      expect(result!.innerHTML).toBe("<use/><use/><rect/>");
-    },
-  );
+  it("strips data:image/svg+xml references from use href and xlink:href, including case-obfuscated schemes", () => {
+    const result = parseInlineSvg(
+      "<svg><use href='data:image/svg+xml;base64,PHN2Zy8+'/><use href='DATA:IMAGE/SVG+XML,_'/><rect/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<use/><use/><rect/>");
+  });
   it("strips data:image/svg+xml references from a href", () => {
     const result = parseInlineSvg(
       "<svg><a href='data:image/svg+xml;base64,PHN2Zy8+'><rect/></a></svg>",
@@ -284,17 +281,14 @@ describe("hostile corpus: namespace trickery", () => {
     expect(result).toBeNull();
   });
 
-  it(
-    "resolves re-prefixed attributes before protocol checks, such as evil:href bound to the xlink namespace",
-    () => {
-      const result = parseInlineSvg(
-        "<svg xmlns='http://www.w3.org/2000/svg' xmlns:evil='http://www.w3.org/1999/xlink'><use evil:href='javascript:alert(1)'/><rect/></svg>",
-        true,
-      );
-      expect(result).not.toBeNull();
-      expect(result!.innerHTML).toBe("<use/><rect/>");
-    },
-  );
+  it("resolves re-prefixed attributes before protocol checks, such as evil:href bound to the xlink namespace", () => {
+    const result = parseInlineSvg(
+      "<svg xmlns='http://www.w3.org/2000/svg' xmlns:evil='http://www.w3.org/1999/xlink'><use evil:href='javascript:alert(1)'/><rect/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<use/><rect/>");
+  });
 });
 
 describe("hostile corpus: entity and doctype tricks", () => {

@@ -245,7 +245,7 @@ code {
   margin-block: 0;
 }
 
-/* Hero panels have no header bar, so no fallback lang label either. */
+/* Hero panels have no full header, so no fallback lang label either. */
 [data-fw-panel] .code-block::before {
   display: none;
 }

@@ -15,7 +15,7 @@ const marqueeItems = [
   "Astro",
   "Angular",
   "inline rendering",
-  "zero wrappers",
+  "real <svg> elements",
   "sanitized by default",
   "remote URLs",
   "local names",
@@ -406,8 +406,9 @@ import CodeBlock from "../components/CodeBlock.astro";
         SHIP<br/><span class="text-acid acid-glow">BETTER SVG</span><span class="opacity-30"> TODAY.</span>
       </h2>
       <p class="mt-6 mx-auto max-w-md text-zinc-muted">
-        One mental model. Seven frameworks. Every SVG format. Zero compromises on
-        security or performance.
+        One mental model. Seven frameworks. Every SVG format, sanitized by
+        default. Dependency facts are plain and auditable: optional framework
+        peers, one server parser, and an opt-in build-time SVGO pass.
       </p>
       <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
         <a href="/docs" class="bg-acid px-8 py-3 font-semibold text-coal hover:bg-acid-dim transition-colors">

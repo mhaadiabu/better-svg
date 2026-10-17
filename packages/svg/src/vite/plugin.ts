@@ -1,11 +1,14 @@
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
 import { resolve, relative, sep } from "node:path";
 import type { Plugin } from "vite";
+import { buildPrecompiledSvg } from "./precompile";
 import { runSvgoPass, type SvgoOption } from "./svgo";
+import type { PrecompiledLocalSvg } from "../core/local";
 
 export type LocalSvgOptions = {
   dirs?: string[];
   svgo?: SvgoOption;
+  precompiled?: boolean;
 };
 
 export type { SvgoOptions, SvgoOption } from "./svgo";
@@ -66,6 +69,9 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
       )
         return;
       const entries = new Map<string, string>();
+      const precompiled = options.precompiled
+        ? new Map<string, PrecompiledLocalSvg>()
+        : undefined;
       watchedDirectories.clear();
       watchedFiles.clear();
       const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {
@@ -113,6 +119,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
                 }
               }
               entries.set(name, markup);
+              if (precompiled) precompiled.set(name, buildPrecompiledSvg(markup, name));
             }
           }
         }
@@ -121,8 +128,11 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
         const base = resolve(root, dir);
         await visit(base, base);
       }
+      const registration = precompiled
+        ? JSON.stringify({ override: false, precompiled: Object.fromEntries(precompiled) })
+        : "{ override: false }";
       return {
-        code: `${code}\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(entries))}, { override: false });\n`,
+        code: `${code}\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(entries))}, ${registration});\n`,
         map: null,
       };
     },

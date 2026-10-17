@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { registerLocalSvgs } from "./local";
 
@@ -43,6 +44,67 @@ const packageProbes: Record<string, readonly FileProbe[]> = {
     { package: "@tabler/icons", file: (icon) => `icons/filled/${icon}.svg` },
   ],
   phosphor: [{ package: "@phosphor-icons/core", file: (icon) => `assets/regular/${icon}.svg` }],
+};
+
+const hugeiconsPackage = "@hugeicons/core-free-icons";
+const hugeiconsViewBox = "0 0 24 24";
+
+type HugeElement = [
+  tag: string,
+  props?: Record<string, string | number | boolean | undefined>,
+  children?: readonly HugeElement[],
+];
+
+const pascalCase = (value: string) =>
+  value
+    .split("-")
+    .map((part) => {
+      const first = part.at(0)?.toUpperCase();
+      return first ? `${first}${part.slice(1)}` : part;
+    })
+    .join("");
+
+const hugeiconsAttribute = (key: string) =>
+  key === "key" ? undefined : key.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`);
+
+const hugeiconsAttributeMarkup = (key: string, value: string | number | boolean | undefined) => {
+  const name = hugeiconsAttribute(key);
+  if (!name || value === undefined || value === false) return "";
+  const text =
+    typeof value === "string"
+      ? value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;")
+      : String(value);
+  return ` ${name}="${text}"`;
+};
+
+const hugeiconsElementMarkup = (element: HugeElement): string => {
+  const [tag, props, children] = element;
+  if (typeof tag !== "string") return "";
+  const attributes = Object.entries(props ?? {})
+    .map(([key, value]) => hugeiconsAttributeMarkup(key, value))
+    .join("");
+  const inner = children ? children.map(hugeiconsElementMarkup).join("") : "";
+  return inner ? `<${tag}${attributes}>${inner}</${tag}>` : `<${tag}${attributes} />`;
+};
+
+const hugeiconsMarkup = (elements: readonly unknown[]) => {
+  if (!Array.isArray(elements) || elements.length === 0) return undefined;
+  const body = elements
+    .map((element) =>
+      Array.isArray(element) ? hugeiconsElementMarkup(element as HugeElement) : "",
+    )
+    .join("");
+  if (!body) return undefined;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${hugeiconsViewBox}">${body}</svg>`;
+};
+
+const hugeiconsProbe = (icon: string, root: string) => {
+  const file = join(root, hugeiconsPackage, "dist", "cjs", `${pascalCase(icon)}Icon.js`);
+  try {
+    return hugeiconsMarkup(createRequire(file)(file) as readonly unknown[]);
+  } catch {
+    return undefined;
+  }
 };
 
 const normalizeIcon = (value: string) => value.trim().replace(/\.svg$/i, "");
@@ -151,6 +213,10 @@ const iconifyMarkup = (collection: IconifyCollection, icon: string) => {
 
 const findIconMarkup = (collection: string, icon: string, roots: readonly string[]) => {
   for (const root of roots) {
+    if (collection === "hugeicons") {
+      const native = hugeiconsProbe(icon, root);
+      if (native) return native;
+    }
     for (const probe of iconifyProbes(collection)) {
       const data = readIconifyCollection(join(root, probe));
       if (data) {

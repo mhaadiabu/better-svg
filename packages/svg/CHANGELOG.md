@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+### Added
+
+- Load icons directly from installed icon packages (e.g. lucide, tabler, phosphor) with `collection:icon` names, without per-icon imports.
+
 ## 0.3.1
 
 ### Fixed

@@ -207,8 +207,26 @@ import CodeBlock from "../components/CodeBlock.astro";
             <div class="absolute -inset-px bg-linear-to-br from-acid/10 via-transparent to-transparent blur-xl"></div>
 
             <div class="relative border border-coal-4 bg-coal">
-              <!-- Tab bar -->
-              <div class="flex flex-wrap border-b border-coal-2" data-fw-tabs>
+              <!-- Mobile: native select, styled to the theme -->
+              <div class="relative border-b border-coal-2 sm:hidden" data-fw-select-wrap>
+                <select
+                  data-fw-select
+                  class="fw-select"
+                  aria-label="Framework"
+                >
+                  <option value="react">React</option>
+                  <option value="react-native">React Native</option>
+                  <option value="vue">Vue</option>
+                  <option value="svelte">Svelte</option>
+                  {adapterExamples.map((adapter) => <option value={adapter.id}>{adapter.label}</option>)}
+                </select>
+                <svg class="fw-select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+
+              <!-- Tab bar (desktop) -->
+              <div class="flex flex-wrap border-b border-coal-2 max-sm:hidden" data-fw-tabs>
                 <button type="button" class="fw-tab is-active" data-fw-tab="react">React</button>
                 <button type="button" class="fw-tab" data-fw-tab="react-native">React Native</button>
                 <button type="button" class="fw-tab" data-fw-tab="vue">Vue</button>
@@ -477,14 +495,36 @@ import CodeBlock from "../components/CodeBlock.astro";
     border-bottom-color: #b9ff4b;
   }
 
-  /* Mobile: distributed 4+3 control; rows are full-width by design. */
-  @media (max-width: 639px) {
-    .fw-tab {
-      flex: 1 1 0;
-      min-width: 25%;
-      padding: 8px 4px;
-      text-align: center;
-    }
+  .fw-select-wrap {
+    position: relative;
+  }
+  .fw-select {
+    appearance: none;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #e8e8e8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 10px 34px 10px 14px;
+    cursor: pointer;
+  }
+  .fw-select:focus-visible {
+    outline: none;
+    color: #b9ff4b;
+  }
+  .fw-select option {
+    background-color: #141414;
+    color: #e8e8e8;
+  }
+  .fw-select-chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b6b6b;
+    pointer-events: none;
   }
 </style>
 
@@ -530,6 +570,13 @@ import CodeBlock from "../components/CodeBlock.astro";
     // Framework example tabs (hero code card)
     const fwTabs = document.querySelectorAll<HTMLButtonElement>("[data-fw-tab]");
     const fwPanels = document.querySelectorAll<HTMLElement>("[data-fw-panel]");
+    const fwSelect = document.querySelector<HTMLSelectElement>("[data-fw-select]");
+
+    const switchTo = (target: string) => {
+      fwTabs.forEach((t) => t.classList.toggle("is-active", t.dataset.fwTab === target));
+      fwPanels.forEach((p) => (p.hidden = p.dataset.fwPanel !== target));
+      if (fwLabel) fwLabel.textContent = fwLabelMap[target] ?? "App.tsx";
+    };
     const fwLabel = document.querySelector<HTMLElement>("[data-fw-tab-label]");
     const fwLabelMap: Record<string, string> = {
       react: "App.tsx",
@@ -542,15 +589,13 @@ import CodeBlock from "../components/CodeBlock.astro";
     };
     const tabHandlers: Array<{ el: HTMLButtonElement; fn: () => void }> = [];
     fwTabs.forEach((tab) => {
-      const fn = () => {
-        const target = tab.dataset.fwTab || "";
-        fwTabs.forEach((t) => t.classList.toggle("is-active", t === tab));
-        fwPanels.forEach((p) => (p.hidden = p.dataset.fwPanel !== target));
-        if (fwLabel) fwLabel.textContent = fwLabelMap[target] ?? "App.tsx";
-      };
+      const fn = () => switchTo(tab.dataset.fwTab || "");
       tab.addEventListener("click", fn);
       tabHandlers.push({ el: tab, fn });
     });
+
+    const onSelectChange = () => switchTo(fwSelect?.value ?? "");
+    fwSelect?.addEventListener("change", onSelectChange);
 
     const fwCopyBtn = document.querySelector<HTMLButtonElement>("[data-fw-copy]");
     const copyIcon = fwCopyBtn?.innerHTML ?? "";
@@ -575,6 +620,7 @@ import CodeBlock from "../components/CodeBlock.astro";
       btn?.removeEventListener("click", toggleMenu);
       window.removeEventListener("scroll", onScroll);
       tabHandlers.forEach(({ el, fn }) => el.removeEventListener("click", fn));
+      fwSelect?.removeEventListener("change", onSelectChange);
       fwCopyBtn?.removeEventListener("click", copyHeroFile);
     };
   }

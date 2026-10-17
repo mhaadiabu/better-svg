@@ -709,8 +709,8 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
               The Vite plugin scans your icon directories at build time and registers them, so
               <code class="inline-code">&lt;SVG name="social/github"&gt;</code> renders inline with no
               fetch and no per-icon import. Add the plugin once, then use local files by name in any
-              supported framework (all except React Native, which uses
-              <a href="#icon-catalog" class="text-acid hover:underline">bundled icons</a> instead).
+              supported framework (React Native registers sources directly or via
+              <a href="#icon-catalog" class="text-acid hover:underline">bundled icons</a>).
             </p>
 
             <div class="mt-6 space-y-6">
@@ -864,7 +864,7 @@ localSvgs({
                   <li>Only markup the plugin itself produced — never a hand-built tree.</li>
                   <li>At runtime the registration validates and re-sanitizes each tree and rejects malformed input with a build error.</li>
                   <li>On the server the priming parse is best-effort: a failed seed just costs a re-parse, never an error.</li>
-                  <li>Inline SVG only: each entry must be a plain inline <code class="inline-code">{"<svg>"}</code> document (<code class="inline-code">Precompiled SVG "&lt;name&gt;" expects inline svg markup.</code> otherwise); foreignObject-style HTML wrappers will not register.</li>
+                  <li>Inline SVG only: each entry must be a plain inline <code class="inline-code">{"<svg>"}</code> document (<code class="inline-code">Precompiled SVG "&lt;name&gt;" expects inline svg markup.</code> otherwise).</li>
                 </ul>
               </div>
 
@@ -999,8 +999,9 @@ const Home = () => <SVG name="lucide:house" size={24} />;`} lang="tsx" />
                 <p class="text-sm text-zinc-muted mt-3">
                   <code class="inline-code">out</code> accepts <code class="inline-code">.ts</code>,
                   <code class="inline-code">.mts</code>, <code class="inline-code">.js</code>, or
-                  <code class="inline-code">.mjs</code> (checked by extension; pass
-                  <code class="inline-code">format: "js"</code> explicitly if you need both); the default output is TypeScript. Errors are thrown, not logged:</p>
+                  <code class="inline-code">.mjs</code> (the extension picks the format; pass
+                  <code class="inline-code">format</code> explicitly when <code class="inline-code">out</code> ends in
+                  anything else); the default output is TypeScript. Errors are thrown, not logged:</p>
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
                   <li>Any name without an installed source fails the whole script:<br /><code class="inline-code">No source found for these catalog icons: lucide:mistyped-name</code> — fixing typos is a build error, not a runtime gap.</li>
                   <li>Unknown output extension:<br /><code class="inline-code">Unsupported bundle output extension: ./icons/data.txt. Use .ts, .mts, .js, or .mjs, or set format.</code></li>

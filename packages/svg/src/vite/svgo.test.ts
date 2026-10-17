@@ -68,6 +68,22 @@ describe("svgo pass", () => {
     await expect(runSvgoPass("", "brand/empty", { preset: "safe" })).resolves.toBe("");
   });
 
+  it("accepts an inline custom plugin without a cast", async () => {
+    const output = await runSvgoPass(naiveSvg, "brand/naive", {
+      plugins: [
+        {
+          name: "custom-mark",
+          fn: (root) => {
+            const svg = root.children?.find((node) => node.type === "element");
+            if (svg) svg.attributes["data-custom"] = "local";
+          },
+        },
+      ],
+    });
+    expect(output).toContain('data-custom="local"');
+    expect(output).toContain('viewBox="0 0 24 24"');
+  });
+
   it("skips files rejected by the filter without loading svgo", async () => {
     const options: SvgoOptions = { filter: (name) => name.startsWith("social/") };
     expect(

@@ -1,4 +1,26 @@
-type SvgoPluginConfig = string | { name: string; params?: Record<string, unknown> };
+type SvgoNode = {
+  type: "root" | "element" | "text" | "comment" | "doctype" | "instruction" | "cdata";
+  name?: string;
+  value?: string;
+  attributes?: Record<string, string>;
+  children?: SvgoNode[];
+};
+
+type SvgoVisitor = {
+  enter?: (node: SvgoNode, parent: SvgoNode) => void | symbol;
+  exit?: (node: SvgoNode, parent: SvgoNode) => void;
+};
+
+type SvgoPluginFn = (
+  root: SvgoNode,
+  params: unknown,
+  info: { path?: string; multipassCount: number },
+) => SvgoVisitor | null | void;
+
+type SvgoPluginConfig =
+  | string
+  | { name: string; params?: Record<string, unknown> }
+  | { name: string; fn: SvgoPluginFn; params?: unknown };
 
 type SvgoOptions = {
   preset?: "safe";

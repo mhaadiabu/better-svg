@@ -63,7 +63,10 @@ export const isSafeResourceUrl = (value: string) => {
   const scheme = urlScheme(normalized);
   if (!scheme) return true;
   if (scheme === "http" || scheme === "https" || scheme === "blob") return true;
-  if (scheme === "data") return dataImageUrlSubtype(normalized) !== "svg+xml";
+  if (scheme === "data") {
+    const subtype = dataImageUrlSubtype(normalized);
+    return subtype !== null && !subtype.startsWith("svg+xml");
+  }
   return false;
 };
 

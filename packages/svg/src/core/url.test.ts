@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { decodeDataUrl, hasUnsafeUrl, isInlineSvg, isSafeUrl } from "./url";
+import { decodeDataUrl, hasUnsafeUrl, isInlineSvg, isSafeResourceUrl, isSafeUrl } from "./url";
 
 describe("isInlineSvg", () => {
   it("returns true for <svg/> markup", () => {
@@ -81,6 +81,31 @@ describe("isSafeUrl", () => {
 
   it("allows scheme-less relative paths", () => {
     expect(isSafeUrl("relative/path.svg")).toBe(true);
+  });
+});
+
+describe("isSafeResourceUrl", () => {
+  it("allows raster image data URLs on resource elements", () => {
+    expect(isSafeResourceUrl("data:image/png;base64,iElV")).toBe(true);
+    expect(isSafeResourceUrl("data:image/jpeg,zz")).toBe(true);
+  });
+
+  it("rejects every svg+xml subtype spelling", () => {
+    expect(isSafeResourceUrl("data:image/svg+xml,")).toBe(false);
+    expect(isSafeResourceUrl("data:image/svg+xml;base64,PHN2Zy8+")).toBe(false);
+    expect(isSafeResourceUrl("data:image/svg+xml-compressed,PHN2Zy8v")).toBe(false);
+    expect(isSafeResourceUrl("data:image/SVG+XML-compressed,x")).toBe(false);
+    expect(isSafeResourceUrl("DATA:IMAGE/SVG+XML;charset=utf8,_")).toBe(false);
+  });
+
+  it("rejects non-image data URLs", () => {
+    expect(isSafeResourceUrl("data:text/html,i")).toBe(false);
+  });
+
+  it("keeps fragment and blob resource references", () => {
+    expect(isSafeResourceUrl("#frag")).toBe(true);
+    expect(isSafeResourceUrl("blob:abc")).toBe(true);
+    expect(isSafeResourceUrl("https://example.com/icon.png")).toBe(true);
   });
 });
 

@@ -92,6 +92,15 @@ describe("parseInlineSvg", () => {
     );
   });
 
+  it("strips compressed and case-obfuscated svg+xml data images on image and feImage", () => {
+    const result = parseInlineSvg(
+      "<svg><image href='data:image/svg+xml-compressed,PHN2Zy8v'/><feImage href='data:image/SVG+XML,_'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<image/><feImage/>");
+  });
+
   it("strips https hrefs from use, keeping same-document fragments", () => {
     const result = parseInlineSvg(
       "<svg><use href='https://example.com/icon.svg'/><use href='#id'/></svg>",

@@ -174,21 +174,21 @@ describe("hostile corpus: href protocol filtering", () => {
     expect(result).not.toBeNull();
     expect(result!.innerHTML).toBe("<a><rect/></a>");
   });
-  it("strips data:image/svg+xml references from image href", () => {
+  it("strips data:image/svg+xml references from image href, including compressed and case-obfuscated variants", () => {
     const result = parseInlineSvg(
-      "<svg><image href='data:image/svg+xml;base64,PHN2Zy8+'/></svg>",
+      "<svg><image href='data:image/svg+xml;base64,PHN2Zy8+'/><image href='data:image/svg+xml-compressed,PHN2Zy8v'/><image href='DATA:IMAGE/SVG+XML;charset=utf8,_'/></svg>",
       true,
     );
     expect(result).not.toBeNull();
-    expect(result!.innerHTML).toBe("<image/>");
+    expect(result!.innerHTML).toBe("<image/><image/><image/>");
   });
-  it("strips data:image/svg+xml references from feImage href", () => {
+  it("strips data:image/svg+xml references from feImage href, including compressed variants", () => {
     const result = parseInlineSvg(
-      "<svg><feImage href='data:image/svg+xml;base64,PHN2Zy8+'/></svg>",
+      "<svg><feImage href='data:image/svg+xml;base64,PHN2Zy8+'/><feImage href='data:image/svg+xml-compressed,PHN2Zy8v'/></svg>",
       true,
     );
     expect(result).not.toBeNull();
-    expect(result!.innerHTML).toBe("<feImage/>");
+    expect(result!.innerHTML).toBe("<feImage/><feImage/>");
   });
   it("strips external document references from use href, including https and protocol-relative forms", () => {
     const result = parseInlineSvg(

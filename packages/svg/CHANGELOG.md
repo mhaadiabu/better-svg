@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+### Added
+
+- Enable an opt-in SVGO pass over SVGs discovered at build time with the `svgo` option on `@mhaadi/svg/vite/plugin` and `@mhaadi/svg/astro/integration`. `svgo: true` runs a preset-safe list of default plugins that keeps fragment IDs, descriptions, and style cleaning intact; a `plugins` list or `filter`/function config covers full SVGO pass-through and per-file control. The pass fails the build with install instructions when svgo is missing and is off unless explicitly enabled.
+
 ## 0.3.1
 
 ### Fixed

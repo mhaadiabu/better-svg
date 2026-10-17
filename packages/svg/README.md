@@ -233,6 +233,8 @@ for SVGs that depend on the current session or need fresh responses.
 | `@mhaadi/svg/vite`              | Vite registration     |
 | `@mhaadi/svg/vite/plugin`       | Vite 5+ config plugin |
 | `@mhaadi/svg/astro/integration` | Astro local discovery |
+| `@mhaadi/svg/local`             | Local SVG registration |
+| `@mhaadi/svg/catalog`           | Icon package catalog   |
 
 React Native requires `react-native` and `react-native-svg` as peer dependencies.
 
@@ -301,6 +303,45 @@ Keep those directories limited to assets the app uses. Development reloads
 the page when an SVG is added, edited, or removed. No optimization runs.
 The existing `import "@mhaadi/svg/vite"` registration remains available for
 default directories, but the config plugin handles custom paths and Astro SSR.
+
+## Icon catalog
+
+`@mhaadi/svg/catalog` resolves `collection:icon` names from icon packages
+already installed in your `node_modules`. No network access, no per-icon
+imports. Register the names you use up front, then pass them to `name` like any
+local SVG:
+
+```astro
+---
+import SVG from "@mhaadi/svg/astro";
+import { registerCatalogIcons } from "@mhaadi/svg/catalog";
+
+registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);
+---
+
+<SVG name="lucide:house" width={24} height={24} />
+```
+
+```tsx
+// React server components: register in a module loaded on the server.
+import { registerCatalogIcons } from "@mhaadi/svg/catalog";
+
+registerCatalogIcons(["lucide:house", "tabler:settings"]);
+```
+
+For each name, resolution checks installed packages in this order: the
+`@iconify-json/<collection>` data package (works for every Iconify collection,
+including hugeicons), the full `@iconify/json` package, then plain SVG files
+shipped by the icon packages themselves: `lucide-static` for lucide,
+`@tabler/icons` (outline first, then filled) for tabler, and the regular weight
+of `@phosphor-icons/core` for phosphor.
+
+Registration runs in Node only, where reading `node_modules` is possible: Astro
+SSR, server components, or your own build-time glue. Browser-only bundles need
+the Vite plugin from [Automatic local discovery](#automatic-local-discovery)
+instead. Local files discovered by the plugin keep precedence over catalog
+icons, and an unregistered catalog name falls back to the
+`/assets/svg/{name}.svg` URL like any missing local name.
 
 ## Size and accessible text
 

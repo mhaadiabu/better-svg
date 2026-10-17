@@ -2,6 +2,10 @@
 
 ## 0.4.0
 
+### Added
+
+- Load icons directly from installed icon packages (e.g. lucide, tabler, phosphor) with `collection:icon` names, without per-icon imports.
+
 ### Fixed
 
 - Stop rewriting `fill` and `stroke` on and inside `mask` and `clipPath` elements so color overrides no longer hide mask-keyed artwork.

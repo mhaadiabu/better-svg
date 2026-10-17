@@ -77,6 +77,8 @@ export function initCodeBlocks() {
     entries.forEach(({ target }) => updateWrap(target));
   });
   document.querySelectorAll<HTMLElement>(".code-block").forEach((block) => {
+    if (block.dataset.codeBlockInit) return;
+    block.dataset.codeBlockInit = "true";
     if (block.querySelector(".code-block-header")) return;
 
     // Hero framework panels: no header bar; the floating file label handles copying.

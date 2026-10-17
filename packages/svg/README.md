@@ -270,13 +270,13 @@ included). Href-like attributes are also matched by namespace-resolved local
 name, so `xlink:href` and re-prefixed variants such as `evil:href` are checked
 exactly like `href`, and the rules differ per element:
 
-| Element                | Allowed href targets                        | Anything else                                                                                |
-| ---------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `<use>`                | same-document fragments (`#id`, empty)      | stripped, including remote `https:` and protocol-relative references                         |
-| `<image>`, `<feImage>` | remote URLs, `blob:`, `data:` raster images | `data:image/svg+xml` stripped in all spellings, including `svg+xml-compressed`               |
-| `<a>`                  | remote, relative, `blob:`                   | every `data:` target stripped                                                                |
-| other elements         | remote, relative, `blob:`, `data:image/*`   | unknown schemes stripped                                                                     |
-| `style` attribute      | `url(#...)` same-document fragments         | remote and `data:` `url()` targets stripped, including whitespace-padded `url (…) ` spelling |
+| Element                | Allowed href targets                                                                                                           | Anything else                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `<use>`                | same-document fragments (`#id`, empty)                                                                                         | stripped, including remote `https:` and protocol-relative references                         |
+| `<image>`, `<feImage>` | same-document fragments (`#id`, empty), relative and remote URLs (protocol-relative included), `blob:`, non-SVG `data:image/*` | `data:image/svg+xml` stripped in all spellings, including `svg+xml-compressed`               |
+| `<a>`                  | same-document fragments (`#id`, empty), remote, relative, `blob:`                                                              | every `data:` target stripped                                                                |
+| other elements         | same-document fragments (`#id`, empty), remote, relative, `blob:`, `data:image/*`                                              | unknown schemes stripped                                                                     |
+| `style` attribute      | `url(#...)` same-document fragments                                                                                            | remote and `data:` `url()` targets stripped, including whitespace-padded `url (…) ` spelling |
 
 Keep it on for any untrusted SVG input.
 

@@ -613,7 +613,16 @@ import CodeBlock from "../components/CodeBlock.astro";
 
     const tabHandlers: Array<{ el: HTMLButtonElement; fn: () => void }> = [];
     fwTabs.forEach((tab) => {
-      const fn = () => switchTo(tab.dataset.fwTab || "");
+      // Desktop tabs feed the same framework-change event that the mobile
+      // picker dispatches, so both controls and persistence share one path.
+      const fn = () => {
+        const target = tab.dataset.fwTab || "";
+        if (target) {
+          document.dispatchEvent(
+            new CustomEvent("bettersvg:framework-change", { detail: { id: target } }),
+          );
+        }
+      };
       tab.addEventListener("click", fn);
       tabHandlers.push({ el: tab, fn });
     });

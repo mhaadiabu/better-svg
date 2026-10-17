@@ -561,8 +561,10 @@ export function MyIcon() {
               <!-- React -->
               <div data-fw-show="react">
                 <p class="text-sm text-zinc-muted mb-3">
-                  All <code class="inline-code">React.SVGProps{"<SVGSVGElement>"}</code> are supported
-                  and override any attributes parsed from SVG markup. Forwarded via{" "}
+                  Every <code class="inline-code">React.SVGProps{"<SVGSVGElement>"}</code> prop except{" "}
+                  <code class="inline-code">children</code> and{" "}
+                  <code class="inline-code">dangerouslySetInnerHTML</code> is supported and overrides
+                  any attributes parsed from SVG markup. Forwarded via{" "}
                   <code class="inline-code">React.forwardRef</code>.
                 </p>
                                 <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
@@ -576,8 +578,10 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
                 <p class="text-sm text-zinc-muted mb-3">
                   Accepts the standard source props plus size, color, and paint overrides
                   that are translated to <code class="inline-code">react-native-svg</code> props.
-                  <code class="inline-code">color</code> sets <code class="inline-code">fill</code> and
-                  <code class="inline-code">stroke</code> together.
+                  <code class="inline-code">color</code> sets the inherited color for icons drawn
+                  with <code class="inline-code">currentColor</code>; use{" "}
+                  <code class="inline-code">fill</code> or{" "}
+                  <code class="inline-code">stroke</code> to override explicit paint.
                 </p>
                                 <CodeBlock code={`<SVG
   name="logo"
@@ -1074,9 +1078,9 @@ registerLocalSvgs(bundledIcons, { override: false });
                 </thead>
                 <tbody>
                   <tr><td><code class="font-mono text-xs text-acid">use</code></td><td class="text-zinc-muted text-sm">Same-document fragments only (<code class="inline-code">{"#id"}</code>). Remote references such as <code class="inline-code">https:</code> and protocol-relative targets are stripped.</td></tr>
-                  <tr><td><code class="font-mono text-xs text-acid">image / feImage</code></td><td class="text-zinc-muted text-sm">Remote and <code class="inline-code">blob:</code> URLs, plus <code class="inline-code">data:</code> raster images only. <code class="inline-code">data:image/svg+xml</code> is stripped in all spellings, including compressed variants.</td></tr>
-                  <tr><td><code class="font-mono text-xs text-acid">a</code></td><td class="text-zinc-muted text-sm">Remote, relative, and <code class="inline-code">blob:</code> URLs. Every <code class="inline-code">data:</code> value is stripped, even raster ones.</td></tr>
-                  <tr><td class="text-zinc-muted text-sm">any other element</td><td class="text-zinc-muted text-sm">Remote, relative, <code class="inline-code">blob:</code>, and raster <code class="inline-code">data:image</code> targets. Unknown schemes are stripped.</td></tr>
+                  <tr><td><code class="font-mono text-xs text-acid">image / feImage</code></td><td class="text-zinc-muted text-sm">Same-document fragments, relative and remote URLs (protocol-relative included), <code class="inline-code">blob:</code>, and <code class="inline-code">{"data:image/*"}</code> targets other than inline SVG. <code class="inline-code">{"data:image/svg+xml"}</code> is stripped in all spellings, including compressed variants.</td></tr>
+                  <tr><td><code class="font-mono text-xs text-acid">a</code></td><td class="text-zinc-muted text-sm">Same-document fragments, relative and remote URLs, and <code class="inline-code">blob:</code>. Every <code class="inline-code">data:</code> value is stripped, even raster ones.</td></tr>
+                  <tr><td class="text-zinc-muted text-sm">any other element</td><td class="text-zinc-muted text-sm">Same-document fragments, relative and remote URLs, <code class="inline-code">blob:</code>, and any <code class="inline-code">{"data:image/*"}</code> target, including inline SVG data. Unknown schemes are stripped.</td></tr>
                   <tr><td><code class="font-mono text-xs text-acid">style</code> attribute</td><td class="text-zinc-muted text-sm"><code class="inline-code">url(...)</code> targets restricted to same-document fragments such as <code class="inline-code">fill:url(#g)</code>; remote and <code class="inline-code">data:</code> targets (including whitespace-padded <code class="inline-code">url (</code>) are stripped.</td></tr>
                 </tbody>
               </table>

@@ -213,7 +213,9 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
       });
     const trigger = document.getElementById("docs-mobile-current-fw");
     if (trigger) trigger.textContent = labels[id]?.label ?? id;
-    document.dispatchEvent(new CustomEvent("bettersvg:framework-change", { detail: { id } }));
+    document.dispatchEvent(
+      new CustomEvent("bettersvg:framework-change", { detail: { id, fromPicker: true } }),
+    );
   };
 
   const readSaved = (): string | null => {
@@ -363,6 +365,18 @@ const current = frameworks.find((f) => f.id === initial) ?? frameworks[0];
         options.forEach((o) => o.setAttribute("data-highlighted", "false"));
         opt.setAttribute("data-highlighted", "true");
       });
+    });
+
+    // External selection sources (desktop tabs on the landing page) change the
+    // framework through the same event; keep this picker, its saved value, and
+    // the ?fw= URL in sync without reacting to its own applyFramework dispatch.
+    document.addEventListener("bettersvg:framework-change", (e) => {
+      const detail = (e as CustomEvent<{ id?: string; fromPicker?: boolean }>).detail;
+      const id = detail?.id ?? "";
+      if (!id || detail?.fromPicker || !validIds.has(id)) return;
+      setPickerValue(picker, id);
+      writeSaved(id);
+      writeUrlParam(id);
     });
 
     trigger?.addEventListener("keydown", (e) => {

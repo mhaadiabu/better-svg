@@ -125,20 +125,6 @@ export function initCodeBlocks() {
     });
     actions.appendChild(copyBtn);
 
-    // Copy full file button
-    if (file) {
-      const fullBtn = document.createElement("button");
-      fullBtn.className = "copy-btn copy-full-btn";
-      fullBtn.setAttribute("aria-label", `Copy full file (${file})`);
-      fullBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2M8 17h2M14 13h2M14 17h2"/></svg> File`;
-      fullBtn.addEventListener("click", () => {
-        void copyToClipboard(fullBtn, formatCopyText(block), (copied) => {
-          showTooltip(fullBtn, copied ? `Copied ${file}` : "Copy failed");
-        });
-      });
-      actions.appendChild(fullBtn);
-    }
-
     header.appendChild(actions);
 
     // Wrap pre in scrollable body

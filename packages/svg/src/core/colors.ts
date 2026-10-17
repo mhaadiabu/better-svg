@@ -70,6 +70,9 @@ const overrideStyleText = (text: string, overrides: SvgColorOverrides): string |
   return changed ? result.join(";") : undefined;
 };
 
+const isClippingStructure = (tag: string) =>
+  tag === "mask" || tag === "clipPath" || tag === "clippath";
+
 const overrideNode = (node: SvgNode, overrides: SvgColorOverrides): SvgNode => {
   let attrs = node.attrs;
   const nextAttrs = attrs.map((attr) => {
@@ -91,6 +94,8 @@ const overrideNode = (node: SvgNode, overrides: SvgColorOverrides): SvgNode => {
   } else {
     attrs = nextAttrs;
   }
+
+  if (isClippingStructure(node.tag)) return { ...node, attrs };
 
   let children = node.children;
   const nextChildren = node.children.map((child) =>

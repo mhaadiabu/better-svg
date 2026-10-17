@@ -61,6 +61,13 @@ describe("svgo pass", () => {
     ).resolves.toBe(naiveSvg);
   });
 
+  it("rejects malformed markup that yields empty output", async () => {
+    await expect(runSvgoPass("<svg", "brand/broken", { preset: "safe" })).rejects.toThrow(
+      /svgo produced no markup/,
+    );
+    await expect(runSvgoPass("", "brand/empty", { preset: "safe" })).resolves.toBe("");
+  });
+
   it("skips files rejected by the filter without loading svgo", async () => {
     const options: SvgoOptions = { filter: (name) => name.startsWith("social/") };
     expect(

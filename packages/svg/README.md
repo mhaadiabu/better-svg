@@ -319,10 +319,10 @@ pnpm add -D svgo
 
 `svgo: true` runs a preset-safe list of `#default` plugins whose settings we
 control: `preset-default` with `cleanupIds`, `removeDesc`, `minifyStyles`,
-and `removeDeprecatedAttrs` disabled. Those off-list plugins are the ones
-most likely to break a rendering pipeline that rewrites IDs and
-accessibility references; icons that reference gradients, masks, or clip
-paths keep working.
+and `removeDeprecatedAttrs` disabled. Those off plugins are the ones most
+likely to break a rendering pipeline that rewrites IDs and
+accessibility references; icons referencing gradients, masks, or clip paths
+keep working.
 
 ```ts
 localSvgs({ dirs: ["src/icons"], svgo: true });
@@ -331,13 +331,15 @@ localSvgs({ dirs: ["src/icons"], svgo: true });
 You can switch the pass per file (per-collection: match name prefixes) with
 a `filter` predicate that receives the discovered name, opt out per name,
 and pass any SVGO option (`multipass`, `floatPrecision`, `js2svg`) next to
-it:
+it. Names are relative to each configured directory, so a file
+`src/icons/social/github.svg` in `dirs: ["src/icons"]` passes the name
+`social/github`:
 
 ```ts
 localSvgs({
   dirs: ["src/icons", "src/illustrations"],
   svgo: {
-    filter: (name) => name.startsWith("icons/"),
+    filter: (name) => name.startsWith("social/"),
     multipass: true,
     floatPrecision: 3,
   },
@@ -375,8 +377,9 @@ markup instead of relying on visual regression. Keep the discovered SVGs in
 version control, run the same `svgo` version locally and in CI, and diff
 the registered output (or key attributes such as `id`, `url(#...)`,
 `viewBox`) between configs in a snapshot test. When output changes, update
-snapshots deliberately after reviewing them. Rendered-icon diffs belong
-before enabling, not as an afterthought.
+snapshots deliberately after reviewing the diff. Run an icon-by-icon visual
+check when you choose the config, once; the CI markup audit is what keeps
+later upgrades honest.
 
 ## Size and accessible text
 

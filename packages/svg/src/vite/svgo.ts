@@ -89,8 +89,12 @@ export const runSvgoPass = (
       throw cause;
     });
     const config = { ...settings, path: name, plugins: plugins ?? safePlugins() };
-    assertKnownPlugins(svgo, config.plugins ?? []);
-    return svgo.optimize(markup, config).data;
+    assertKnownPlugins(svgo, config.plugins);
+    const result = svgo.optimize(markup, config);
+    if (!result.data && markup.trim()) {
+      throw new Error("svgo produced no markup, the SVG is likely malformed.");
+    }
+    return result.data;
   })();
 
 export type { SvgoOptions };

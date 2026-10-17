@@ -15,6 +15,17 @@ For Flutter, see [`svg_flutter`](https://pub.dev/packages/svg_flutter).
 pnpm add @mhaadi/svg
 ```
 
+## Dependencies
+
+The dependency picture, stated plainly: `@xmldom/xmldom` is a real runtime
+dependency, imported only by the Astro and React Native adapters. Browser
+adapters parse with the browser's own XML parser and never load it. Every
+framework peer (React, React Native, Vue, Svelte, Solid, Astro, Angular, Vite)
+is optional, so install only what you import. `svgo` is an optional peer used
+by the local-discovery plugins at build time only: if you do not enable the
+SVGO pass, svgo is never loaded, and when it is enabled it never ends up in
+your browser bundle either.
+
 ## Quick start
 
 ```tsx
@@ -220,19 +231,19 @@ for SVGs that depend on the current session or need fresh responses.
 
 ## Entry points
 
-| Import                          | Framework             |
-| ------------------------------- | --------------------- |
-| `@mhaadi/svg`                   | React (default)       |
-| `@mhaadi/svg/react`             | React 18+             |
-| `@mhaadi/svg/react-native`      | React Native          |
-| `@mhaadi/svg/vue`               | Vue 3                 |
-| `@mhaadi/svg/svelte`            | Svelte 5 (runes)      |
-| `@mhaadi/svg/solid`             | Solid 1.9+            |
-| `@mhaadi/svg/astro`             | Astro 5+              |
-| `@mhaadi/svg/angular`           | Angular 20+           |
-| `@mhaadi/svg/vite`              | Vite registration     |
-| `@mhaadi/svg/vite/plugin`       | Vite 5+ config plugin |
-| `@mhaadi/svg/astro/integration` | Astro local discovery |
+| Import                          | Framework              |
+| ------------------------------- | ---------------------- |
+| `@mhaadi/svg`                   | React (default)        |
+| `@mhaadi/svg/react`             | React 18+              |
+| `@mhaadi/svg/react-native`      | React Native           |
+| `@mhaadi/svg/vue`               | Vue 3                  |
+| `@mhaadi/svg/svelte`            | Svelte 5 (runes)       |
+| `@mhaadi/svg/solid`             | Solid 1.9+             |
+| `@mhaadi/svg/astro`             | Astro 5+               |
+| `@mhaadi/svg/angular`           | Angular 20+            |
+| `@mhaadi/svg/vite`              | Vite registration      |
+| `@mhaadi/svg/vite/plugin`       | Vite 5+ config plugin  |
+| `@mhaadi/svg/astro/integration` | Astro local discovery  |
 | `@mhaadi/svg/local`             | Local SVG registration |
 | `@mhaadi/svg/catalog`           | Icon package catalog   |
 
@@ -251,11 +262,23 @@ the original IDs. In Vue use `:unique-ids="false"`, and in Angular use
 
 ## Security
 
-`sanitize` is enabled by default. Sanitization allows static SVG elements,
-removes inline event handlers regardless of casing, and rejects unsafe
-`href`/`xlink:href` and CSS `url(...)` references. It removes scripts,
-embedded HTML, stylesheets, and animation elements. Keep it on for any
-untrusted SVG input.
+`sanitize` is enabled by default. Sanitization is an element allowlist: only
+static SVG elements survive, so scripts, embedded HTML, stylesheets, and
+animation elements are removed wholesale, along with every event-handler
+attribute whose local name starts with `on`, in any namespace (`xlink:onclick`
+included). Href-like attributes are also matched by namespace-resolved local
+name, so `xlink:href` and re-prefixed variants such as `evil:href` are checked
+exactly like `href`, and the rules differ per element:
+
+| Element                | Allowed href targets                                                                                                           | Anything else                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `<use>`                | same-document fragments (`#id`, empty)                                                                                         | stripped, including remote `https:` and protocol-relative references                         |
+| `<image>`, `<feImage>` | same-document fragments (`#id`, empty), relative and remote URLs (protocol-relative included), `blob:`, non-SVG `data:image/*` | `data:image/svg+xml` stripped in all spellings, including `svg+xml-compressed`               |
+| `<a>`                  | same-document fragments (`#id`, empty), remote, relative, `blob:`                                                              | every `data:` target stripped                                                                |
+| other elements         | same-document fragments (`#id`, empty), remote, relative, `blob:`, `data:image/*`                                              | unknown schemes stripped                                                                     |
+| `style` attribute      | `url(#...)` same-document fragments                                                                                            | remote and `data:` `url()` targets stripped, including whitespace-padded `url (…) ` spelling |
+
+Keep it on for any untrusted SVG input.
 
 Set `sanitize={false}` only for fully-trusted SVG you control; the rendered
 markup then bypasses the strip pass and can carry inline scripts and event
@@ -294,9 +317,15 @@ export default defineConfig({ integrations: [svg()] });
 ```
 
 `dirs` replaces the default directories. Paths are relative to the project
-root. The first directory wins when names overlap. Explicit calls to
-`registerLocalSvgs` from `@mhaadi/svg/local` override discovered entries. A missing name still falls
-back to `/assets/svg/{name}.svg`.
+root, slash-separated for nested names, and must contain no globs or `..`
+components; anything else fails plugin setup with `SVG directories must be
+paths relative to the project root without globs or '..'.` The first
+directory wins when names overlap. Names are normalized at registration:
+leading slashes and a trailing `.svg` suffix are trimmed, so
+`/icons/logo.svg` and `icons/logo` resolve to the same entry. Symlinked files
+are followed, symlink loops are skipped, and explicit calls to
+`registerLocalSvgs` from `@mhaadi/svg/local` override discovered entries. A
+missing name still falls back to `/assets/svg/{name}.svg`.
 
 Discovery includes every SVG in the configured directories in the bundle.
 Keep those directories limited to assets the app uses. Development reloads
@@ -364,6 +393,28 @@ localSvgs({
 `svgo` also accepts a function `(name) => options | false` when different
 files need different settings.
 
+### Build errors
+
+The plugin fails the build with the offending file name in the message:
+
+| Trigger                                             | Message                                                                                                                                                        |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `svgo` option enabled without svgo installed        | `` `The SVGO pass is enabled, but "svgo" is not installed. Add svgo to your development dependencies (for example `pnpm add -D svgo`) and rerun the build.` `` |
+| A custom/pass-through SVGO config errored on a file | `SVGO pass failed for "<name>": <message>`                                                                                                                     |
+| `preset` set together with `plugins`                | `The "preset" option and the "plugins" list are incompatible; pass one or the other.`                                                                          |
+| Unknown plugin name in a `plugins` list             | `Unknown SVGO plugin "<name>". Known built-in plugins: <sorted list>.`                                                                                         |
+| SVGO produced empty output for a non-empty file     | `svgo produced no markup, the SVG is likely malformed.`                                                                                                        |
+| Absolute path, glob, or `..` in `dirs`              | `SVG directories must be paths relative to the project root without globs or '..'.`                                                                            |
+| Markup that is not an SVG reached `precompiled`     | `Precompile pass failed for "<name>": markup is not a valid SVG document.`                                                                                     |
+
+At runtime, `registerLocalSvgs` validates a `precompiled` tree and throws on
+malformed input (`Precompiled SVG "<name>" is malformed: expected a parsed svg
+tree.` or, if the tree fails sanitization, `Precompiled SVG "<name>" is not a
+valid sanitized svg tree.`), and rejects a precompiled key with no matching
+markup entry (`Precompiled SVG "<name>" has no registered markup entry.`),
+and refuses non-inline markup (`Precompiled SVG "<name>" expects inline svg
+markup.`).
+
 ### What breaks and who fixes it
 
 SVGO rewrites markup that the renderer and your app might depend on:
@@ -396,7 +447,7 @@ local SVG:
 import SVG from "@mhaadi/svg/astro";
 import { registerCatalogIcons } from "@mhaadi/svg/catalog";
 
-registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);
+registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell", "hugeicons:home-01"]);
 ---
 
 <SVG name="lucide:house" width={24} height={24} />
@@ -409,12 +460,13 @@ import { registerCatalogIcons } from "@mhaadi/svg/catalog";
 registerCatalogIcons(["lucide:house", "tabler:settings"]);
 ```
 
-For each name, resolution checks installed packages in this order: the
-`@iconify-json/<collection>` data package (works for every Iconify collection,
-including hugeicons), the full `@iconify/json` package, then plain SVG files
-shipped by the icon packages themselves: `lucide-static` for lucide,
-`@tabler/icons` (outline first, then filled) for tabler, and the regular weight
-of `@phosphor-icons/core` for phosphor.
+For each name, resolution checks installed packages in this order: the official
+`@hugeicons/core-free-icons` package for hugeicons (kebab-case names are accepted,
+`arrow-left-01` for its `ArrowLeft01Icon` module), the `@iconify-json/<collection>`
+data package (works for every Iconify collection), the full `@iconify/json`
+package, then plain SVG files shipped by the icon packages themselves:
+`lucide-static` for lucide, `@tabler/icons` (outline first, then filled) for
+tabler, and the regular weight of `@phosphor-icons/core` for phosphor.
 
 Registration runs in Node only, where reading `node_modules` is possible: Astro
 SSR, server components, or your own build-time glue. Browser-only bundles need
@@ -423,16 +475,23 @@ instead. Local files discovered by the plugin keep precedence over catalog
 icons, and an unregistered catalog name falls back to the
 `/assets/svg/{name}.svg` URL like any missing local name.
 
+A name that resolves to no installed source is skipped, not rejected: a
+misspelled icon or collection does not throw at registration. The name then
+falls back to the `/assets/svg/{collection:icon}.svg` URL, the request 404s,
+and the adapter's `fallback` state renders. To catch typos, compare the
+return value, the list of names that actually registered, against the list
+you passed in.
+
 ## Offline icon bundles
 
 `bundleCatalogIcons` (also from `@mhaadi/svg/catalog`) writes the resolved icon
 sources into a plain data module your app imports, instead of registering them
 on a machine that can read `node_modules`. Use it when the renderer runs where
-neither the filesystem nor `fetch` is a fit — React Native, or a browser bundle
+neither the filesystem nor `fetch` is a fit: React Native, or a browser bundle
 without the Vite plugin:
 
 ```ts
-// scripts/generate-icons.ts — run once, or on a dev loop
+// scripts/generate-icons.ts, run once or in a dev loop
 import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
 
 bundleCatalogIcons({
@@ -451,12 +510,22 @@ export const bundledIcons: Record<string, string> = {
 };
 ```
 
+`out` accepts `.ts`, `.mts`, `.js`, or `.mjs`; the extension picks the
+generated format, TypeScript is the default without an `out` path, and pass
+`format` explicitly when `out` ends in anything else. Two things fail loudly
+instead of silently:
+
+```text
+No source found for these catalog icons: lucide:mistyped-name
+Unsupported bundle output extension: ./icons/data.txt. Use .ts, .mts, .js, or .mjs, or set format.
+```
+
 Register the map with the local registry your adapter already resolves `name`
 through, then use the icons like any local SVG:
 
 ```tsx
 // React Native
-import SVG from "@mhaadi/svg/react-native";
+import { SVG } from "@mhaadi/svg/react-native";
 import { registerLocalSvgs } from "@mhaadi/svg/local";
 import { bundledIcons } from "./icons/generated";
 
@@ -497,15 +566,19 @@ hatch for assets known at build time:
 ```ts
 import { registerLocalSvgs } from "@mhaadi/svg/local";
 
-registerLocalSvgs({ "brand/logo": "<svg ...</svg>" }, {
-  override: false,
-  precompiled: { "brand/logo": { node: tree } },
-});
+registerLocalSvgs(
+  { "brand/logo": "<svg ...</svg>" },
+  {
+    override: false,
+    precompiled: { "brand/logo": { node: tree } },
+  },
+);
 ```
 
 Precompiled registration primes the parser your runtime uses: browser
 adapters parse with the browser's XML parser and the Astro adapter with
-`@xmldom/xmldom`.
+`@xmldom/xmldom`. Seeding is best-effort, so a failed prime costs a re-parse
+at runtime and never a thrown error.
 
 ## Size and accessible text
 

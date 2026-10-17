@@ -210,7 +210,8 @@ describe("withSvgColorOverrides", () => {
   });
 
   it("leaves a mask with its own fill attribute untouched", () => {
-    const markup = '<svg><mask id="m" fill="black"><rect fill="white" width="10" height="10"/></mask><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>';
+    const markup =
+      '<svg><mask id="m" fill="black"><rect fill="white" width="10" height="10"/></mask><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>';
     const result = withSvgColorOverrides(parse(markup), { fill: "currentColor" });
     expect(result.innerHTML).toContain('<mask id="m" fill="black">');
     expect(result.innerHTML).toContain('fill="white"');
@@ -219,7 +220,8 @@ describe("withSvgColorOverrides", () => {
   });
 
   it("leaves a mask with its own inline style untouched", () => {
-    const markup = '<svg><mask id="m" style="fill:lightgray"><rect fill="white" width="10" height="10"/></mask><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>';
+    const markup =
+      '<svg><mask id="m" style="fill:lightgray"><rect fill="white" width="10" height="10"/></mask><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>';
     const result = withSvgColorOverrides(parse(markup), { fill: "currentColor" });
     expect(result.innerHTML).toContain('style="fill:lightgray"');
     expect(result.innerHTML).toContain('fill="white"');
@@ -228,7 +230,8 @@ describe("withSvgColorOverrides", () => {
   });
 
   it("leaves a clipPath with its own fill attribute untouched", () => {
-    const markup = '<svg><clipPath id="c" fill="black"><rect fill="white" width="10" height="10"/></clipPath><path clip-path="url(#c)" fill="black" d="M0 0h10v10H0z"/></svg>';
+    const markup =
+      '<svg><clipPath id="c" fill="black"><rect fill="white" width="10" height="10"/></clipPath><path clip-path="url(#c)" fill="black" d="M0 0h10v10H0z"/></svg>';
     const result = withSvgColorOverrides(parse(markup), { fill: "currentColor" });
     expect(result.innerHTML).toContain('<clipPath id="c" fill="black">');
     expect(result.innerHTML).toContain('fill="white"');

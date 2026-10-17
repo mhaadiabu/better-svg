@@ -11,12 +11,12 @@ and fallback states, and a shared core for URL safety and markup parsing.
 | [`@mhaadi/svg`](./packages/svg/README.md)     | React, React Native, Vue, Svelte, Solid, Astro, Angular | `pnpm add @mhaadi/svg`        |
 | [`svg_flutter`](./packages/flutter/README.md) | Flutter (Dart, `flutter_svg`)                           | `flutter pub add svg_flutter` |
 
-The JS/TS subpath exports live in [`@mhaadi/svg`'s README](./packages/svg/README.md#subpath-exports).
+The JS/TS subpath exports live in [`@mhaadi/svg`'s README](./packages/svg/README.md#entry-points).
 The Flutter widget API is documented in [`svg_flutter`'s README](./packages/flutter/README.md).
 
 ## Apps
 
-- [`apps/web`](./apps/web) — Documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev)
+- [`apps/web`](./apps/web), the documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev)
 
 ## Repo Structure
 

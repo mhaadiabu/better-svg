@@ -48,6 +48,30 @@ function updateWrap(body: Element) {
     ?.classList.toggle("has-wrap", body.scrollWidth > body.clientWidth + 1);
 }
 
+// Creates the wrap/unwrap toggle for a code block. The label flips with wrap state.
+export const wrapIcons = {
+  off: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`,
+  on: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg> Unwrap`,
+  chipOff: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg>`,
+  chipOn: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg>`,
+};
+
+function createWrapButton(block: HTMLElement) {
+  const wrapBtn = document.createElement("button");
+  wrapBtn.className = "wrap-btn";
+  wrapBtn.setAttribute("aria-label", "Toggle word wrap");
+  wrapBtn.innerHTML = wrapIcons.off;
+  wrapBtn.addEventListener("click", () => {
+    const body = block.querySelector(".code-block-body");
+    if (body) {
+      body.classList.toggle("is-wrapped");
+      const on = body.classList.contains("is-wrapped");
+      wrapBtn.innerHTML = on ? wrapIcons.on : wrapIcons.off;
+    }
+  });
+  return wrapBtn;
+}
+
 export function initCodeBlocks() {
   resizeObserver ??= new ResizeObserver((entries) => {
     entries.forEach(({ target }) => updateWrap(target));
@@ -55,10 +79,13 @@ export function initCodeBlocks() {
   document.querySelectorAll<HTMLElement>(".code-block").forEach((block) => {
     if (block.querySelector(".code-block-header")) return;
 
-    block.classList.add("has-header");
-
+    // Hero framework panels: no header bar; the floating file label handles copying.
+    const inHeroPanel = Boolean(block.closest("[data-fw-panel]"));
     const lang = block.getAttribute("data-lang") || "";
     const file = block.getAttribute("data-file") || "";
+
+    if (!inHeroPanel) block.classList.add("has-header");
+
     const blockId = `cb-${Math.random().toString(36).slice(2, 9)}`;
     const langId = `${blockId}-lang`;
 
@@ -71,24 +98,18 @@ export function initCodeBlocks() {
     langEl.textContent = lang;
     header.appendChild(langEl);
 
+    if (file) {
+      const fileEl = document.createElement("span");
+      fileEl.className = "code-block-file";
+      fileEl.textContent = file;
+      header.appendChild(fileEl);
+    }
+
     const actions = document.createElement("div");
     actions.className = "code-block-actions";
 
     // Wrap button
-    const wrapBtn = document.createElement("button");
-    wrapBtn.className = "wrap-btn";
-    wrapBtn.setAttribute("aria-label", "Toggle word wrap");
-    wrapBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
-    wrapBtn.addEventListener("click", () => {
-      const body = block.querySelector(".code-block-body");
-      if (body) {
-        body.classList.toggle("is-wrapped");
-        const on = body.classList.contains("is-wrapped");
-        wrapBtn.innerHTML = on
-          ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg> Unwrap`
-          : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`;
-      }
-    });
+    const wrapBtn = createWrapButton(block);
     actions.appendChild(wrapBtn);
 
     // Copy button
@@ -118,28 +139,13 @@ export function initCodeBlocks() {
     });
     actions.appendChild(copyBtn);
 
-    // Copy full file button
-    if (file) {
-      const fullBtn = document.createElement("button");
-      fullBtn.className = "copy-btn copy-full-btn";
-      fullBtn.setAttribute("aria-label", `Copy full file (${file})`);
-      fullBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2M8 17h2M14 13h2M14 17h2"/></svg> File`;
-      fullBtn.addEventListener("click", () => {
-        void copyToClipboard(fullBtn, formatCopyText(block), (copied) => {
-          showTooltip(fullBtn, copied ? `Copied ${file}` : "Copy failed");
-        });
-      });
-      actions.appendChild(fullBtn);
-    }
-
     header.appendChild(actions);
 
-    // Wrap pre in scrollable body
     const pre = block.querySelector("pre");
     if (pre?.parentNode) {
       pre.classList.remove("overflow-x-auto");
       (pre as HTMLElement).style.overflowX = "";
-      pre.setAttribute("aria-labelledby", langId);
+      if (!inHeroPanel) pre.setAttribute("aria-labelledby", langId);
       pre.setAttribute("tabindex", "0");
       const body = document.createElement("div");
       body.className = "code-block-body";
@@ -147,7 +153,11 @@ export function initCodeBlocks() {
       body.appendChild(pre);
     }
 
-    block.insertBefore(header, block.firstChild);
+    if (!inHeroPanel) {
+      block.insertBefore(header, block.firstChild);
+    }
+    // Hero panels: no header row at all - the strip (tab bar / mobile picker row)
+    // carries the shared wrap toggle.
 
     const bodyEl = block.querySelector(".code-block-body");
     if (bodyEl) {

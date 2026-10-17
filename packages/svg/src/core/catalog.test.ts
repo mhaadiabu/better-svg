@@ -96,6 +96,39 @@ describe("icon catalog", () => {
     rmSync(fixture.root, { recursive: true, force: true });
   });
 
+  it("resolves hugeicons from @iconify-json/hugeicons", () => {
+    const fixture = makeFixture();
+    fixture.write(
+      join("@iconify-json", "hugeicons", "icons.json"),
+      JSON.stringify({
+        prefix: "hugeicons",
+        width: 24,
+        height: 24,
+        icons: {
+          "1st-bracket": {
+            body: `<path fill="none" stroke="currentColor" d="M9 4H6a2 2 0 00-2 2v12"/>`,
+          },
+          "all-application": { body: `stroke-icons` },
+        },
+        aliases: {
+          "house-01": { parent: "all-application" },
+          "home-12": { parent: "all-application", width: 12, height: 12 },
+        },
+      }),
+    );
+    expect(resolveIconSource("hugeicons:1st-bracket", { searchPaths: [fixture.root] })).toBe(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" d="M9 4H6a2 2 0 00-2 2v12"/></svg>`,
+    );
+    expect(resolveIconSource("hugeicons:house-01", { searchPaths: [fixture.root] })).toBe(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">stroke-icons</svg>`,
+    );
+    expect(resolveIconSource("hugeicons:home-12", { searchPaths: [fixture.root] })).toBe(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">stroke-icons</svg>`,
+    );
+    expect(resolveIconSource("hugeicons:missing", { searchPaths: [fixture.root] })).toBeUndefined();
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
   it("probes lucide-static, tabler outline then filled, and phosphor regular", () => {
     const fixture = makeFixture();
     fixture.write(

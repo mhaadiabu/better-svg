@@ -206,6 +206,18 @@ code {
   letter-spacing: 0.1em;
 }
 
+.code-block-file {
+  font-size: 10px;
+  font-family: "JetBrains Mono", monospace;
+  color: #8a8a8a;
+  letter-spacing: 0.02em;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
 .code-block-actions {
   display: flex;
   gap: 6px;
@@ -223,6 +235,36 @@ code {
   padding: 0;
 }
 
+.code-block,
+.code-group {
+  margin-block: 1rem;
+}
+
+[data-fw-panel] .code-block {
+  border: 0;
+  margin-block: 0;
+}
+
+/* Hero panels have no full header, so no fallback lang label either. */
+[data-fw-panel] .code-block::before {
+  display: none;
+}
+
+.code-group {
+  background: #111111;
+  border: 1px solid #2e2e2e;
+}
+
+.code-group > .code-block {
+  border: 0;
+  background: transparent;
+  margin-block: 0;
+}
+
+.code-group > .code-block + .code-block {
+  margin-top: 1rem;
+}
+
 /* Fallback before JS applies code-block-body */
 .code-block > pre {
   overflow-x: auto;
@@ -237,7 +279,8 @@ code {
 
 .code-block-body.is-wrapped pre {
   white-space: pre-wrap;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: anywhere;
   overflow-x: visible;
 }
 
@@ -294,6 +337,21 @@ code {
 }
 .code-block.has-wrap .wrap-btn {
   display: inline-flex;
+}
+
+@media (max-width: 480px) {
+  .code-block .copy-btn,
+  .code-block .wrap-btn {
+    font-size: 0;
+    gap: 2px;
+    padding: 4px 6px;
+  }
+  .code-block-actions {
+    gap: 4px;
+  }
+  .code-block-file {
+    max-width: 30vw;
+  }
 }
 
 /* Tooltip shown on copy */

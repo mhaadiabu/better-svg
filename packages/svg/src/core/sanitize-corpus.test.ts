@@ -69,9 +69,7 @@ describe("hostile corpus: event handler attributes", () => {
     expect(result!.innerHTML).toBe(expected);
   });
 
-  it.todo(
-    "strips namespaced event-handler attributes like xlink:onclick (currently kept)",
-  );
+  it.todo("strips namespaced event-handler attributes like xlink:onclick (currently kept)");
 });
 
 describe("hostile corpus: foreignObject smuggling", () => {
@@ -130,7 +128,8 @@ describe("hostile corpus: href protocol filtering", () => {
       expected: "<feImage/>",
     },
     {
-      markup: "<svg><a href='data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=='><rect/></a></svg>",
+      markup:
+        "<svg><a href='data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=='><rect/></a></svg>",
       expected: "<a><rect/></a>",
     },
     {
@@ -231,8 +230,7 @@ describe("hostile corpus: namespace trickery", () => {
 
 describe("hostile corpus: entity and doctype tricks", () => {
   it("rejects markup referencing an undeclared single entity", () => {
-    const markup =
-      "<!DOCTYPE svg [<!ENTITY x 'javascript:alert(1)'>]><svg><a href='&x;'/></svg>";
+    const markup = "<!DOCTYPE svg [<!ENTITY x 'javascript:alert(1)'>]><svg><a href='&x;'/></svg>";
     expect(parseInlineSvg(markup, true)).toBeNull();
   });
 
@@ -263,9 +261,7 @@ describe("hostile corpus: entity and doctype tricks", () => {
       true,
     );
     expect(result).not.toBeNull();
-    expect(result!.innerHTML).toBe(
-      "<text>&lt;script&gt;alert(1)&lt;/script&gt;</text>",
-    );
+    expect(result!.innerHTML).toBe("<text>&lt;script&gt;alert(1)&lt;/script&gt;</text>");
   });
 
   it("neutralizes double-encoded script payloads in text", () => {

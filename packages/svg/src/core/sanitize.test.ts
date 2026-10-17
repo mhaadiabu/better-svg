@@ -81,6 +81,32 @@ describe("parseInlineSvg", () => {
     expect(result!.innerHTML).toContain('href="#id"');
   });
 
+  it("keeps raster data:image hrefs on image and feImage", () => {
+    const result = parseInlineSvg(
+      "<svg><image href='data:image/png;base64,iElV'/><feImage href='data:image/jpeg,zz'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe(
+      '<image href="data:image/png;base64,iElV"/><feImage href="data:image/jpeg,zz"/>',
+    );
+  });
+
+  it("keeps https hrefs on use out, only same-document fragments survive", () => {
+    const result = parseInlineSvg(
+      "<svg><use href='https://example.com/icon.svg'/><use href='#id'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe('<use/><use href="#id"/>');
+  });
+
+  it("drops data: hrefs from anchors", () => {
+    const result = parseInlineSvg("<svg><a href='data:text/html,i'><rect/></a></svg>", true);
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<a><rect/></a>");
+  });
+
   it("keeps safe url(#...) style references on the root svg", () => {
     const result = parseInlineSvg("<svg style='fill:url(#grad)'><rect/></svg>", true);
     expect(result).not.toBeNull();

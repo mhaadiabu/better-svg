@@ -93,8 +93,15 @@ describe("hasUnsafeUrl", () => {
     expect(hasUnsafeUrl("fill:url(javascript:alert(1))")).toBe(true);
   });
 
-  it("returns false for an http url()", () => {
-    expect(hasUnsafeUrl("fill:url(http://x)")).toBe(false);
+  it("returns true for a remote url() target", () => {
+    expect(hasUnsafeUrl("fill:url(http://x)")).toBe(true);
+    expect(hasUnsafeUrl("fill:url(https://x)")).toBe(true);
+    expect(hasUnsafeUrl("fill:url(data:image/png,x)")).toBe(true);
+  });
+
+  it("returns false for a whitespace-obfuscated unsafe url()", () => {
+    expect(hasUnsafeUrl("fill:url (javascript:alert(1))")).toBe(true);
+    expect(hasUnsafeUrl("fill:url( javascript:alert(1) )")).toBe(true);
   });
 
   it("returns false for style with no url()", () => {

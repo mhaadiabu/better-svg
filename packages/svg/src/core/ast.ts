@@ -1,4 +1,10 @@
-import { hasUnsafeUrl, isSafeUrl } from "./url";
+import {
+  hasUnsafeUrl,
+  isSafeHrefUrl,
+  isSafeResourceUrl,
+  isSafeUrl,
+  isSameDocumentUrl,
+} from "./url";
 import type { Element as XmlElement } from "@xmldom/xmldom";
 
 export type SvgAttribute = { name: string; value: string };
@@ -247,6 +253,22 @@ export const parseSvgString = (markup: string): SvgNode | null => {
   return parseWithRegex(markup);
 };
 
+const hrefLikeAttributeIsUnsafe = (tagLower: string, value: string) => {
+  if (tagLower === "use") return !isSameDocumentUrl(value);
+  if (tagLower === "image" || tagLower === "feimage") return !isSafeResourceUrl(value);
+  if (tagLower === "a") return !isSafeHrefUrl(value);
+  return !isSafeUrl(value);
+};
+
+const attributeIsDropped = (tagLower: string, attr: SvgAttribute) => {
+  const colon = attr.name.lastIndexOf(":");
+  const localName = attr.name.slice(colon + 1).toLowerCase();
+  if (localName.startsWith("on")) return true;
+  if (localName === "style") return hasUnsafeUrl(attr.value);
+  if (localName === "href") return hrefLikeAttributeIsUnsafe(tagLower, attr.value);
+  return false;
+};
+
 export const sanitizeNode = (node: SvgNode): SvgNode | null => {
   const tagLower = node.tag.toLowerCase();
   if (tagLower === "#text") return node;
@@ -254,14 +276,7 @@ export const sanitizeNode = (node: SvgNode): SvgNode | null => {
 
   const sanitizedAttrs: SvgAttribute[] = [];
   for (const attr of node.attrs) {
-    const name = attr.name;
-    const lower = name.toLowerCase();
-    if (lower.startsWith("on")) continue;
-    if (lower === "style" && hasUnsafeUrl(attr.value)) continue;
-    if (lower === "href" || lower === "xlink:href") {
-      if (!isSafeUrl(attr.value)) continue;
-    }
-    sanitizedAttrs.push(attr);
+    if (!attributeIsDropped(tagLower, attr)) sanitizedAttrs.push(attr);
   }
 
   const sanitizedChildren: SvgNode[] = [];

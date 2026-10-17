@@ -170,8 +170,9 @@ describe("sanitizeNode", () => {
     const keptTags = cleaned?.children.map((c) => c.tag);
     expect(keptTags).toEqual(["use", "use", "use"]);
     const hrefs = cleaned?.children.map((c) => c.attrs.find((a) => a.name === "href")?.value);
-    // unsafe javascript: href attribute is stripped; the benign node is kept
-    expect(hrefs).toEqual([undefined, "#frag", "https://x"]);
+    // external document references are stripped along with javascript:, only
+    // same-document fragments survive on use
+    expect(hrefs).toEqual([undefined, "#frag", undefined]);
   });
 
   it("removes style with unsafe url() and keeps safe url()", () => {

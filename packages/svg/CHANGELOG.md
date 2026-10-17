@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0
+
+### Changed
+
+- Resolve href-like attributes by namespace-resolved local name, so `xlink:href`, `XLINK:HREF`, and re-prefixed bindings such as `evil:href` (declared to any namespace) are all checked like `href` instead of bypassing URL filtering.
+- Drop any event-handler attribute whose local name starts with `on` in any namespace, so prefixed variants such as `xlink:onclick` are removed rather than kept.
+- Restrict `<use>` href-like attributes to same-document fragment references (`#id`); external document references (`https:`, protocol-relative) are now stripped.
+- Strip all `data:` href values from `<a>` (navigation targets), including `data:image/svg+xml`.
+- On `<image>` and `<feImage>`, allow `data:` href values only for raster image subtypes; `data:image/svg+xml` is now stripped.
+- Limit `url()` targets inside `style` attributes to same-document fragment references such as `fill:url(#g)`; remote `http`/`data` targets are now stripped, and whitespace between `url` and `(` no longer bypasses the check.
+
 ## 0.3.1
 
 ### Fixed

@@ -245,6 +245,11 @@ code {
   margin-block: 0;
 }
 
+/* Hero panels have no header bar, so no fallback lang label either. */
+[data-fw-panel] .code-block::before {
+  display: none;
+}
+
 .code-group {
   background: #111111;
   border: 1px solid #2e2e2e;

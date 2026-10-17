@@ -55,10 +55,13 @@ export function initCodeBlocks() {
   document.querySelectorAll<HTMLElement>(".code-block").forEach((block) => {
     if (block.querySelector(".code-block-header")) return;
 
-    block.classList.add("has-header");
-
+    // Hero framework panels: no header bar; the floating file label handles copying.
+    const inHeroPanel = Boolean(block.closest("[data-fw-panel]"));
     const lang = block.getAttribute("data-lang") || "";
     const file = block.getAttribute("data-file") || "";
+
+    if (!inHeroPanel) block.classList.add("has-header");
+
     const blockId = `cb-${Math.random().toString(36).slice(2, 9)}`;
     const langId = `${blockId}-lang`;
 
@@ -127,12 +130,11 @@ export function initCodeBlocks() {
 
     header.appendChild(actions);
 
-    // Wrap pre in scrollable body
     const pre = block.querySelector("pre");
     if (pre?.parentNode) {
       pre.classList.remove("overflow-x-auto");
       (pre as HTMLElement).style.overflowX = "";
-      pre.setAttribute("aria-labelledby", langId);
+      if (!inHeroPanel) pre.setAttribute("aria-labelledby", langId);
       pre.setAttribute("tabindex", "0");
       const body = document.createElement("div");
       body.className = "code-block-body";
@@ -140,7 +142,9 @@ export function initCodeBlocks() {
       body.appendChild(pre);
     }
 
-    block.insertBefore(header, block.firstChild);
+    if (!inHeroPanel) {
+      block.insertBefore(header, block.firstChild);
+    }
 
     const bodyEl = block.querySelector(".code-block-body");
     if (bodyEl) {

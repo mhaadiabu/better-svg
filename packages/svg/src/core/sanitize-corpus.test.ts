@@ -69,7 +69,14 @@ describe("hostile corpus: event handler attributes", () => {
     expect(result!.innerHTML).toBe(expected);
   });
 
-  it.todo("strips namespaced event-handler attributes like xlink:onclick (currently kept)");
+  it("strips namespaced event-handler attributes like xlink:onclick", () => {
+    const result = parseInlineSvg(
+      "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:evil='http://evil.example/'><rect xlink:onclick='alert(1)' evil:onclick='alert(2)' fill='red'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe('<rect fill="red"/>');
+  });
 });
 
 describe("hostile corpus: foreignObject smuggling", () => {
@@ -151,15 +158,46 @@ describe("hostile corpus: href protocol filtering", () => {
     expect(result!.innerHTML).toBe(expected);
   });
 
-  it.todo(
-    "strips data:image/svg+xml references from use href and xlink:href, including case-obfuscated schemes (currently kept)",
-  );
-  it.todo("strips data:image/svg+xml references from a href (currently kept)");
-  it.todo("strips data:image/svg+xml references from image href (currently kept)");
-  it.todo("strips data:image/svg+xml references from feImage href (currently kept)");
-  it.todo(
-    "strips external document references from use href, including https and protocol-relative forms (currently kept)",
-  );
+  it("strips data:image/svg+xml references from use href and xlink:href, including case-obfuscated schemes", () => {
+    const result = parseInlineSvg(
+      "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><use href='data:image/svg+xml;base64,PHN2Zy8+'/><use xlink:href='DATA:IMAGE/SVG+XML,_'/><rect/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<use/><use/><rect/>");
+  });
+  it("strips data:image/svg+xml references from a href", () => {
+    const result = parseInlineSvg(
+      "<svg><a href='data:image/svg+xml;base64,PHN2Zy8+'><rect/></a></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<a><rect/></a>");
+  });
+  it("strips data:image/svg+xml references from image href, including compressed and case-obfuscated variants", () => {
+    const result = parseInlineSvg(
+      "<svg><image href='data:image/svg+xml;base64,PHN2Zy8+'/><image href='data:image/svg+xml-compressed,PHN2Zy8v'/><image href='DATA:IMAGE/SVG+XML;charset=utf8,_'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<image/><image/><image/>");
+  });
+  it("strips data:image/svg+xml references from feImage href, including compressed variants", () => {
+    const result = parseInlineSvg(
+      "<svg><feImage href='data:image/svg+xml;base64,PHN2Zy8+'/><feImage href='data:image/svg+xml-compressed,PHN2Zy8v'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<feImage/><feImage/>");
+  });
+  it("strips external document references from use href, including https and protocol-relative forms", () => {
+    const result = parseInlineSvg(
+      "<svg><use href='https://evil.com/icon.svg'/><use href='//evil.com/icon.svg'/><rect/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<use/><use/><rect/>");
+  });
 });
 
 describe("hostile corpus: css injection and exfiltration", () => {
@@ -177,6 +215,10 @@ describe("hostile corpus: css injection and exfiltration", () => {
       markup: "<svg><rect style='fill:url(&#106;avascript:alert(1))' fill='red'/></svg>",
       expected: '<rect fill="red"/>',
     },
+    {
+      markup: "<svg><text>'><script>alert(1)</script></text><rect/></svg>",
+      expected: "<text>'&gt;</text><rect/>",
+    },
   ];
   it.each(cases)("neutralizes $markup", ({ markup, expected }) => {
     const result = parseInlineSvg(markup, true);
@@ -184,15 +226,35 @@ describe("hostile corpus: css injection and exfiltration", () => {
     expect(result!.innerHTML).toBe(expected);
   });
 
-  it.todo("strips remote url() targets from the root style attribute (currently kept)");
-  it.todo("strips remote url() targets from element style attributes (currently kept)");
-  it.todo(
-    "normalizes whitespace between function name and parenthesis when checking style url() (currently kept)",
-  );
+  it("strips remote url() targets from the root style attribute", () => {
+    const result = parseInlineSvg(
+      "<svg style='fill:url(https://evil.com/x.css)'><rect/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.style).toBeUndefined();
+    expect(result!.innerHTML).toBe("<rect/>");
+  });
+  it("strips remote url() targets from element style attributes", () => {
+    const result = parseInlineSvg(
+      "<svg><rect style='fill:url(https://evil.com/x.css)' fill='red'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe('<rect fill="red"/>');
+  });
+  it("normalizes whitespace between function name and parenthesis when checking style url()", () => {
+    const result = parseInlineSvg(
+      "<svg><rect style='fill:url (javascript:alert(1))' fill='red'/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe('<rect fill="red"/>');
+  });
 });
 
 describe("hostile corpus: namespace trickery", () => {
-  const cases: { markup: string; expected: string }[] = [
+  const safeCases: { markup: string; expected: string }[] = [
     {
       markup:
         "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><use xlink:href='javascript:alert(1)'/><rect/></svg>",
@@ -203,7 +265,7 @@ describe("hostile corpus: namespace trickery", () => {
       expected: '<rect xlink:title="ok"/>',
     },
   ];
-  it.each(cases)("filters hostile attributes in $markup", ({ markup, expected }) => {
+  it.each(safeCases)("filters hostile attributes in $markup", ({ markup, expected }) => {
     const result = parseInlineSvg(markup, true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).toBe(expected);
@@ -219,9 +281,14 @@ describe("hostile corpus: namespace trickery", () => {
     expect(result).toBeNull();
   });
 
-  it.todo(
-    "resolves re-prefixed attributes before protocol checks, such as evil:href bound to the xlink namespace (currently kept)",
-  );
+  it("resolves re-prefixed attributes before protocol checks, such as evil:href bound to the xlink namespace", () => {
+    const result = parseInlineSvg(
+      "<svg xmlns='http://www.w3.org/2000/svg' xmlns:evil='http://www.w3.org/1999/xlink'><use evil:href='javascript:alert(1)'/><rect/></svg>",
+      true,
+    );
+    expect(result).not.toBeNull();
+    expect(result!.innerHTML).toBe("<use/><rect/>");
+  });
 });
 
 describe("hostile corpus: entity and doctype tricks", () => {
@@ -290,14 +357,5 @@ describe("hostile corpus: animations and mutation vectors", () => {
     const result = parseInlineSvg("<svg><!--<script>alert(1)</script>--><rect/></svg>", true);
     expect(result).not.toBeNull();
     expect(result!.innerHTML).toBe("<rect/>");
-  });
-
-  it("re-escapes smuggled script tag markup inside text", () => {
-    const result = parseInlineSvg(
-      "<svg><text>'><script>alert(1)</script></text><rect/></svg>",
-      true,
-    );
-    expect(result).not.toBeNull();
-    expect(result!.innerHTML).toBe("<text>'&gt;</text><rect/>");
   });
 });

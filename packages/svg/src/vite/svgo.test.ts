@@ -50,14 +50,17 @@ describe("svgo pass", () => {
 
   it("skips files rejected by the filter without loading svgo", async () => {
     const options: SvgoOptions = { filter: (name) => name.startsWith("social/") };
-    expect(await runSvgoPass(naiveSvg, "brand/naive", options, () => {
-      throw new Error("svgo must not load for filtered files");
-    })).toBe(naiveSvg);
+    expect(
+      await runSvgoPass(naiveSvg, "brand/naive", options, () => {
+        throw new Error("svgo must not load for filtered files");
+      }),
+    ).toBe(naiveSvg);
   });
 
   it("throws a clean install hint when svgo is missing and the pass is on", async () => {
-    await expect(runSvgoPass(naiveSvg, "brand/naive", { preset: "safe" }, missingSvgoLoader))
-      .rejects.toThrow(/svgo" is not installed/);
+    await expect(
+      runSvgoPass(naiveSvg, "brand/naive", { preset: "safe" }, missingSvgoLoader),
+    ).rejects.toThrow(/svgo" is not installed/);
   });
 
   it("rejects custom plugin entries without a function", async () => {

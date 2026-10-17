@@ -120,4 +120,119 @@ describe("withSvgColorOverrides", () => {
     const evicted = withSvgColorOverrides(content, { fill: "color-0" });
     expect(evicted.innerHTML).toContain('fill="color-0"');
   });
+
+  it("excludes mask content from fill overrides", () => {
+    const content = parse(
+      '<svg><defs><mask id="m"><rect fill="white" width="10" height="10"/></mask></defs><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('fill="black"');
+  });
+
+  it("excludes mask content from stroke overrides", () => {
+    const content = parse(
+      '<svg><defs><mask id="m"><path stroke="white" d="M1 1h4"/></mask></defs><path mask="url(#m)" stroke="black" d="M2 2h3"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { stroke: "red" });
+    expect(result.innerHTML).toContain('stroke="white"');
+    expect(result.innerHTML).toContain('stroke="red"');
+  });
+
+  it("excludes clipPath content from fill overrides", () => {
+    const content = parse(
+      '<svg><defs><clipPath id="c"><path fill="white" d="M0 0h5v5H0z"/></clipPath></defs><path clip-path="url(#c)" fill="black" d="M0 0h10v10H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('fill="black"');
+  });
+
+  it("excludes mask content from inline style overrides", () => {
+    const content = parse(
+      '<svg><defs><mask id="m"><rect style="fill:white" width="10" height="10"/></mask></defs><path mask="url(#m)" style="fill:black" d="M0 0h10v10H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).toContain("fill:white");
+    expect(result.innerHTML).toContain("fill:currentColor");
+    expect(result.innerHTML).not.toContain("fill:black");
+  });
+
+  it("excludes clipPath content from inline style overrides", () => {
+    const content = parse(
+      '<svg><defs><clipPath id="c"><path style="fill:white" d="M0 0h5v5H0z"/></clipPath></defs><path clip-path="url(#c)" style="fill:black" d="M0 0h10v10H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).toContain("fill:white");
+    expect(result.innerHTML).toContain("fill:currentColor");
+  });
+
+  it("excludes clipPath content from stroke overrides", () => {
+    const content = parse(
+      '<svg><defs><clipPath id="c"><path fill="white" stroke="white" d="M1 1h4"/></clipPath></defs><path clip-path="url(#c)" stroke="black" d="M2 2h3"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { stroke: "currentColor" });
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('stroke="white"');
+    expect(result.innerHTML).toContain('stroke="currentColor"');
+    expect(result.innerHTML).not.toContain('stroke="black"');
+  });
+
+  it("still overrides artwork outside clipping and masking structures", () => {
+    const content = parse(
+      '<svg><defs><mask id="m"><rect fill="white" width="10" height="10"/></mask></defs><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/><path fill="black" d="M0 0h4v4H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).not.toContain('fill="black"');
+    expect(result.innerHTML).toContain('fill="white"');
+  });
+
+  it("preserves fills inside nested mask subtrees", () => {
+    const content = parse(
+      '<svg><defs><mask id="m"><g><rect fill="white" width="10" height="10"/></g></mask></defs><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('fill="black"');
+  });
+
+  it("excludes mask content regardless of tag case", () => {
+    const content = parse(
+      '<svg><defs><MASK id="m"><rect fill="white" width="10" height="10"/></MASK></defs><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>',
+    );
+    const result = withSvgColorOverrides(content, { fill: "currentColor" });
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('fill="black"');
+  });
+
+  it("leaves a mask with its own fill attribute untouched", () => {
+    const markup = '<svg><mask id="m" fill="black"><rect fill="white" width="10" height="10"/></mask><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>';
+    const result = withSvgColorOverrides(parse(markup), { fill: "currentColor" });
+    expect(result.innerHTML).toContain('<mask id="m" fill="black">');
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('<path fill="black"');
+  });
+
+  it("leaves a mask with its own inline style untouched", () => {
+    const markup = '<svg><mask id="m" style="fill:lightgray"><rect fill="white" width="10" height="10"/></mask><path mask="url(#m)" fill="black" d="M0 0h10v10H0z"/></svg>';
+    const result = withSvgColorOverrides(parse(markup), { fill: "currentColor" });
+    expect(result.innerHTML).toContain('style="fill:lightgray"');
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('<path fill="black"');
+  });
+
+  it("leaves a clipPath with its own fill attribute untouched", () => {
+    const markup = '<svg><clipPath id="c" fill="black"><rect fill="white" width="10" height="10"/></clipPath><path clip-path="url(#c)" fill="black" d="M0 0h10v10H0z"/></svg>';
+    const result = withSvgColorOverrides(parse(markup), { fill: "currentColor" });
+    expect(result.innerHTML).toContain('<clipPath id="c" fill="black">');
+    expect(result.innerHTML).toContain('fill="white"');
+    expect(result.innerHTML).toContain('fill="currentColor"');
+    expect(result.innerHTML).not.toContain('<path fill="black"');
+  });
 });

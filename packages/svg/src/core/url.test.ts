@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { decodeDataUrl, hasUnsafeUrl, isInlineSvg, isSafeUrl } from "./url";
+import { decodeDataUrl, hasUnsafeUrl, isInlineSvg, isSafeResourceUrl, isSafeUrl } from "./url";
 
 describe("isInlineSvg", () => {
   it("returns true for <svg/> markup", () => {
@@ -84,6 +84,31 @@ describe("isSafeUrl", () => {
   });
 });
 
+describe("isSafeResourceUrl", () => {
+  it("allows raster image data URLs on resource elements", () => {
+    expect(isSafeResourceUrl("data:image/png;base64,iElV")).toBe(true);
+    expect(isSafeResourceUrl("data:image/jpeg,zz")).toBe(true);
+  });
+
+  it("rejects every svg+xml subtype spelling", () => {
+    expect(isSafeResourceUrl("data:image/svg+xml,")).toBe(false);
+    expect(isSafeResourceUrl("data:image/svg+xml;base64,PHN2Zy8+")).toBe(false);
+    expect(isSafeResourceUrl("data:image/svg+xml-compressed,PHN2Zy8v")).toBe(false);
+    expect(isSafeResourceUrl("data:image/SVG+XML-compressed,x")).toBe(false);
+    expect(isSafeResourceUrl("DATA:IMAGE/SVG+XML;charset=utf8,_")).toBe(false);
+  });
+
+  it("rejects non-image data URLs", () => {
+    expect(isSafeResourceUrl("data:text/html,i")).toBe(false);
+  });
+
+  it("keeps fragment and blob resource references", () => {
+    expect(isSafeResourceUrl("#frag")).toBe(true);
+    expect(isSafeResourceUrl("blob:abc")).toBe(true);
+    expect(isSafeResourceUrl("https://example.com/icon.png")).toBe(true);
+  });
+});
+
 describe("hasUnsafeUrl", () => {
   it("returns false for a safe fragment url()", () => {
     expect(hasUnsafeUrl("fill:url(#grad)")).toBe(false);
@@ -93,8 +118,15 @@ describe("hasUnsafeUrl", () => {
     expect(hasUnsafeUrl("fill:url(javascript:alert(1))")).toBe(true);
   });
 
-  it("returns false for an http url()", () => {
-    expect(hasUnsafeUrl("fill:url(http://x)")).toBe(false);
+  it("returns true for a remote url() target", () => {
+    expect(hasUnsafeUrl("fill:url(http://x)")).toBe(true);
+    expect(hasUnsafeUrl("fill:url(https://x)")).toBe(true);
+    expect(hasUnsafeUrl("fill:url(data:image/png,x)")).toBe(true);
+  });
+
+  it("returns false for a whitespace-obfuscated unsafe url()", () => {
+    expect(hasUnsafeUrl("fill:url (javascript:alert(1))")).toBe(true);
+    expect(hasUnsafeUrl("fill:url( javascript:alert(1) )")).toBe(true);
   });
 
   it("returns false for style with no url()", () => {

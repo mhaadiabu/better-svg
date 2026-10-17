@@ -187,6 +187,22 @@ import CodeBlock from "../components/CodeBlock.astro";
         <!-- Right: Tabbed code example -->
         <div class="mt-12 lg:mt-0 animate-fade-in delay-700 min-w-0">
           <div class="relative">
+            <!-- Floating file label -->
+            <div class="absolute -top-3 right-4 z-10 border border-coal-4 bg-coal px-2 py-0.5 font-mono text-[10px] text-zinc-muted flex items-center gap-2">
+              <span data-fw-tab-label>App.tsx</span>
+              <button
+                type="button"
+                data-fw-copy
+                class="hover:text-acid transition-colors"
+                aria-label="Copy full file"
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+              </button>
+            </div>
+
             <!-- Glow behind card -->
             <div class="absolute -inset-px bg-linear-to-br from-acid/10 via-transparent to-transparent blur-xl"></div>
 
@@ -474,6 +490,7 @@ import CodeBlock from "../components/CodeBlock.astro";
 
 <script>
   import { initCodeBlocks } from "../scripts/code-block";
+  import { copyToClipboard } from "../scripts/clipboard";
 
   let cleanup = () => {};
 
@@ -513,21 +530,52 @@ import CodeBlock from "../components/CodeBlock.astro";
     // Framework example tabs (hero code card)
     const fwTabs = document.querySelectorAll<HTMLButtonElement>("[data-fw-tab]");
     const fwPanels = document.querySelectorAll<HTMLElement>("[data-fw-panel]");
+    const fwLabel = document.querySelector<HTMLElement>("[data-fw-tab-label]");
+    const fwLabelMap: Record<string, string> = {
+      react: "App.tsx",
+      "react-native": "App.tsx",
+      vue: "App.vue",
+      svelte: "App.svelte",
+      solid: "App.tsx",
+      astro: "Icon.astro",
+      angular: "app.component.ts",
+    };
     const tabHandlers: Array<{ el: HTMLButtonElement; fn: () => void }> = [];
     fwTabs.forEach((tab) => {
       const fn = () => {
         const target = tab.dataset.fwTab || "";
         fwTabs.forEach((t) => t.classList.toggle("is-active", t === tab));
         fwPanels.forEach((p) => (p.hidden = p.dataset.fwPanel !== target));
+        if (fwLabel) fwLabel.textContent = fwLabelMap[target] ?? "App.tsx";
       };
       tab.addEventListener("click", fn);
       tabHandlers.push({ el: tab, fn });
     });
 
+    const fwCopyBtn = document.querySelector<HTMLButtonElement>("[data-fw-copy]");
+    const copyIcon = fwCopyBtn?.innerHTML ?? "";
+    const copyLabel = fwCopyBtn?.getAttribute("aria-label") ?? "Copy full example";
+    const copyHeroFile = () => {
+      const active = Array.from(fwPanels).find((p) => !p.hidden);
+      if (!active || !fwCopyBtn) return;
+      const text = active.querySelector("pre")?.textContent ?? "";
+      void copyToClipboard(fwCopyBtn, text, (copied) => {
+        fwCopyBtn.setAttribute("aria-label", copied ? "Copied full example" : "Copy failed");
+        fwCopyBtn.innerHTML = copied
+          ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+          : copyIcon;
+      }, () => {
+        fwCopyBtn.innerHTML = copyIcon;
+        fwCopyBtn.setAttribute("aria-label", copyLabel);
+      });
+    };
+    fwCopyBtn?.addEventListener("click", copyHeroFile);
+
     cleanup = () => {
       btn?.removeEventListener("click", toggleMenu);
       window.removeEventListener("scroll", onScroll);
       tabHandlers.forEach(({ el, fn }) => el.removeEventListener("click", fn));
+      fwCopyBtn?.removeEventListener("click", copyHeroFile);
     };
   }
 

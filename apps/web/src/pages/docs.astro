@@ -49,7 +49,7 @@ import PmTabs from "../components/PmTabs.astro";
 
 
 <Base
-  title="Docs — BetterSVG"
+  title="BetterSVG Docs"
   description="Full API reference for @mhaadi/svg, the inline SVG components for React, React Native, Vue, Svelte, Solid, Astro, and Angular."
 >
   <!-- NAV -->
@@ -226,7 +226,7 @@ import PmTabs from "../components/PmTabs.astro";
                   <p data-fw-show="astro" class="hidden font-mono text-xs text-zinc-muted">Requires Astro 5+.</p>
                   <p data-fw-show="angular" class="hidden font-mono text-xs text-zinc-muted">Requires Angular 20+.</p>
                   <p class="font-mono text-xs text-zinc-muted">
-                    <span class="text-acid">Dependency facts:</span> all framework peers are optional — install
+                    <span class="text-acid">Dependency facts:</span> all framework peers are optional, so install
                     only what you import. <code class="inline-code">@xmldom/xmldom</code> (bundled) is imported
                     only by the Astro and React Native adapters. <code class="inline-code">svgo</code> is an optional,
                     build-time-only peer used by the local-discovery plugins; it never reaches the browser bundle.
@@ -384,13 +384,13 @@ export function MyIcon() {
                   <tr>
                     <td><code class="font-mono text-xs text-acid">src</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">string</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Inline SVG string, data: URL, or remote URL.</td>
                   </tr>
                   <tr>
                     <td><code class="font-mono text-xs text-acid">name</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">string</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Resolves a registered local SVG by name. Missing names fetch <code class="inline-code">/assets/svg/{"{name}"}.svg</code>.</td>
                   </tr>
                   <tr>
@@ -444,7 +444,7 @@ export function MyIcon() {
                   <tr>
                     <td><code class="font-mono text-xs text-acid">fetchOptions</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">RequestInit</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Options passed to fetch().</td>
                   </tr>
                   <tr data-fw-show="astro" class="hidden">
@@ -458,13 +458,13 @@ export function MyIcon() {
                       {framework.id !== "astro" && <tr data-fw-show={framework.id} class:list={{ hidden: framework.id !== "react" }}>
                         <td><code class="font-mono text-xs text-acid">loading</code></td>
                         <td><code class="font-mono text-xs text-[#e8c97e]">{stateTypes[framework.id]}</code></td>
-                        <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                        <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                         <td class="text-zinc-muted text-sm">Rendered while fetching or parsing SVG.</td>
                       </tr>}
                       <tr data-fw-show={framework.id} class:list={{ hidden: framework.id !== "react" }}>
                         <td><code class="font-mono text-xs text-acid">fallback</code></td>
                         <td><code class="font-mono text-xs text-[#e8c97e]">{stateTypes[framework.id]}</code></td>
-                        <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                        <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                         <td class="text-zinc-muted text-sm">Rendered when loading or parsing fails.</td>
                       </tr>
                     </>
@@ -472,37 +472,37 @@ export function MyIcon() {
                   <tr data-fw-show="react react-native svelte solid astro">
                     <td><code class="font-mono text-xs text-acid">onSvgLoad</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">(markup: string) =&gt; void</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Called after markup is successfully resolved.<span data-fw-show="astro" class="hidden"> Runs on the server.</span></td>
                   </tr>
                   <tr data-fw-show="react react-native svelte solid astro">
                     <td><code class="font-mono text-xs text-acid">onSvgError</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">(error) =&gt; void</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Called when loading or parsing fails. Receives an <code class="inline-code">Error</code>.<span data-fw-show="astro" class="hidden"> Runs on the server.</span></td>
                   </tr>
                   <tr data-fw-show="vue" class="hidden">
                     <td><code class="font-mono text-xs text-acid">svg-load</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">event: string</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Emits the resolved SVG markup. Listen with <code class="inline-code">@svg-load</code>.</td>
                   </tr>
                   <tr data-fw-show="vue" class="hidden">
                     <td><code class="font-mono text-xs text-acid">svg-error</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">event: Error</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Emits an Error when loading or parsing fails. Listen with <code class="inline-code">@svg-error</code>.</td>
                   </tr>
                   <tr data-fw-show="angular" class="hidden">
                     <td><code class="font-mono text-xs text-acid">svgLoad</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">output&lt;string&gt;</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Emits the resolved SVG markup.</td>
                   </tr>
                   <tr data-fw-show="angular" class="hidden">
                     <td><code class="font-mono text-xs text-acid">svgError</code></td>
                     <td><code class="font-mono text-xs text-[#e8c97e]">output&lt;Error&gt;</code></td>
-                    <td><code class="font-mono text-xs text-zinc-muted">—</code></td>
+                    <td><code class="font-mono text-xs text-zinc-muted">none</code></td>
                     <td class="text-zinc-muted text-sm">Emits an Error when loading or parsing fails.</td>
                   </tr>
                 </tbody>
@@ -690,7 +690,7 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
                     </p>
                     <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5">
                       <li data-fw-show="astro" class="hidden">Add <code class="inline-code">@mhaadi/svg/astro/integration</code> to your integrations to discover local SVGs at build time.</li>
-                      <li data-fw-show="react vue svelte solid angular">Vite projects can add <code class="inline-code">@mhaadi/svg/vite/plugin</code> to discover local SVGs at build time — see <a href="#local-discovery" class="text-acid hover:underline">Local discovery</a>.</li>
+                      <li data-fw-show="react vue svelte solid angular">Vite projects can add <code class="inline-code">@mhaadi/svg/vite/plugin</code> to discover local SVGs at build time, documented under <a href="#local-discovery" class="text-acid hover:underline">Local discovery</a>.</li>
                       <li data-fw-show="react-native" class="hidden">Register local SVG strings with <code class="inline-code">registerLocalSvgs</code> from <code class="inline-code">@mhaadi/svg/local</code>.</li>
                       <li>Icon packages: <code class="inline-code">@mhaadi/svg/catalog</code> resolves <code class="inline-code">collection:icon</code> names (lucide, tabler, phosphor, hugeicons, any Iconify collection) from installed npm packages, without per-icon imports.</li>
                       <li data-fw-show="react vue svelte solid astro angular">Discovery checks <code class="inline-code">src/assets/svg/</code> then <code class="inline-code">app/assets/svg/</code>. Configure <code class="inline-code">dirs</code> for other folders. Nested files use names such as <code class="inline-code">social/github</code>.</li>
@@ -713,7 +713,7 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
             <p class="docs-body hidden" data-fw-show="react-native">
               React Native registers local sources ahead of build with
               <code class="inline-code">registerLocalSvgs</code> or pre-resolved
-              <a href="#icon-catalog" class="text-acid hover:underline">bundled icons</a> — the
+              <a href="#icon-catalog" class="text-acid hover:underline">bundled icons</a>. The
               Vite plugin below does not apply to it.
             </p>
 
@@ -742,7 +742,7 @@ export default defineConfig({
               </div>
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="astro">
-                <p class="docs-body mb-3"><strong class="text-[#e8e8e8]">Astro — use the integration, not the plugin:</strong></p>
+                <p class="docs-body mb-3"><strong class="text-[#e8e8e8]">Astro</strong> users add the integration, not the plugin:</p>
                 <CodeBlock code={`import { defineConfig } from "astro/config";
 import svgs from "@mhaadi/svg/astro/integration";
 
@@ -767,7 +767,7 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                   <li>Two directories listing the same name: the first configured directory wins.</li>
                   <li>Symlinked files are followed; symlink loops between directories are skipped.</li>
                   <li>Traversal is recursive: every <code class="inline-code">.svg</code> under each directory lands in the bundle. Keep icon-only folders.</li>
-                  <li>Names registered by your own <code class="inline-code">registerLocalSvgs</code> calls always win — the plugin registers with <code class="inline-code">override: false</code>.</li>
+                  <li>Names registered by your own <code class="inline-code">registerLocalSvgs</code> calls always win, because the plugin registers with <code class="inline-code">override: false</code>.</li>
                   <li>A name the plugin did not find still falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>.</li>
                 </ul>
                 <p class="text-sm text-zinc-muted mt-3">
@@ -791,8 +791,8 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-semibold text-[#e8e8e8] mb-3"><code class="inline-code">svgo</code> option</h3>
                 <p class="text-sm text-zinc-muted mb-3">
-                  Opt-in SVGO minification of discovered files at build time. Install svgo yourself —
-                  it is an optional peer of <code class="inline-code">@mhaadi/svg</code>, build-time only,
+                  Opt-in SVGO minification of discovered files at build time. Install svgo yourself.
+                  It is an optional peer of <code class="inline-code">@mhaadi/svg</code>, build-time only,
                   and never ships to the browser bundle. Discovered files are the only ones it touches:
                   remote sources, <code class="inline-code">?raw</code> imports, and hand-registered markup are never optimized.
                 </p>
@@ -804,7 +804,7 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                     <tbody>
                       <tr>
                         <td><code class="font-mono text-xs text-acid">svgo: true</code></td>
-                        <td class="text-zinc-muted text-sm">Curated safe preset: <code class="inline-code">preset-default</code> with <code class="inline-code">cleanupIds</code>, <code class="inline-code">removeDesc</code>, <code class="inline-code">minifyStyles</code>, and <code class="inline-code">removeDeprecatedAttrs</code> disabled — the four plugins most likely to break id rewriting and accessibility references, so gradients/masks/clip paths keep working.</td>
+                        <td class="text-zinc-muted text-sm">Curated safe preset: <code class="inline-code">preset-default</code> with <code class="inline-code">cleanupIds</code>, <code class="inline-code">removeDesc</code>, <code class="inline-code">minifyStyles</code>, and <code class="inline-code">removeDeprecatedAttrs</code> disabled. Those four plugins are the ones most likely to break id rewriting and accessibility references, so gradients/masks/clip paths keep working.</td>
                       </tr>
                       <tr>
                         <td><code class="font-mono text-xs text-acid">svgo: {"{ preset: 'safe', ... }"}</code></td>
@@ -824,14 +824,15 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <p class="text-sm text-zinc-muted mt-4">
                   <code class="inline-code">filter: (name) =&gt; boolean</code> inside a settings object skips
                   optimization per file. It runs after the function form is evaluated and before svgo
-                  is imported, so a filter that excludes everything never loads svgo at all — useful
-                  when svgo may not even be installed.
+                  is imported, so a filter that excludes everything never loads svgo at all. Works
+                  without svgo installed.
                 </p>
                 <p class="text-sm text-zinc-muted mt-2">
                   <code class="inline-code">preset</code> and <code class="inline-code">plugins</code> are mutually
                   exclusive and the build fails with
-                  <code class="inline-code">The "preset" option and the "plugins" list are incompatible; pass one or the other.</code>
-                  — SVGO would need one strategy for choosing the plugin list, and we refuse to guess which.
+                  <code class="inline-code">The "preset" option and the "plugins" list are incompatible; pass one or the other.</code>. SVGO
+                  can only follow one strategy for choosing its plugin list, and the plugin refuses to
+                  guess.
                 </p>
                 <div class="code-group">
                   <CodeBlock code={`localSvgs({
@@ -852,18 +853,17 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-semibold text-[#e8e8e8] mb-3"><code class="inline-code">precompiled</code> option</h3>
                 <p class="text-sm text-zinc-muted mb-3">
-                  Turns discovery into build-time mode: the plugin parses (with
+                  Turns discovery into build-time mode. The plugin parses (with
                   <code class="inline-code">@xmldom/xmldom</code>) and sanitizes every discovered file
-                  during the build — consuming the SVGO-optimized markup when <code class="inline-code">svgo</code>
-                  is on — and registers the resulting tree instead of raw markup. Mounting
+                  during the build and registers the resulting tree instead of raw markup. When
+                  <code class="inline-code">svgo</code> is on, the parse consumes the optimized markup. Mounting
                   <code class="inline-code">&lt;SVG name="..."&gt;</code> then skips XML parsing and the
                   sanitize pass entirely and only does per-instance work such as id scoping and color
-                  overrides. The trade: a larger shipped bundle (the parsed tree travels next to the
-                  registered markup).
+                  overrides. The trade is bundle size. The parsed tree travels next to the registered markup.
                 </p>
                 <CodeBlock code={`localSvgs({ dirs: ["src/icons"], svgo: true, precompiled: true });`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Only markup the plugin itself produced — never a hand-built tree.</li>
+                  <li>Feed it only markup the plugin itself produced, never a hand-built tree.</li>
                   <li>At runtime the registration validates and re-sanitizes each tree and rejects malformed input with a build error.</li>
                   <li>On the server the priming parse is best-effort: a failed seed just costs a re-parse, never an error.</li>
                   <li>Inline SVG only: each entry must be a plain inline <code class="inline-code">{"<svg>"}</code> document (<code class="inline-code">Precompiled SVG "&lt;name&gt;" expects inline svg markup.</code> otherwise).</li>
@@ -948,9 +948,9 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <p class="text-sm text-zinc-muted mt-3">
                   Iconify lookups also follow <code class="inline-code">aliases</code> and parent icon
                   inheritance, and hidden icons resolve to nothing. Icons are always addressed by
-                  their full <code class="inline-code">collection:icon</code> string —
-                  <code class="inline-code">lucide:house</code>, never bare <code class="inline-code">house</code> —
-                  and a trailing <code class="inline-code">.svg</code> suffix is trimmed.
+                  their full <code class="inline-code">collection:icon</code> string, such
+                  as <code class="inline-code">lucide:house</code>, never a bare icon name, and a
+                  trailing <code class="inline-code">.svg</code> suffix is trimmed.
                 </p>
               </div>
 
@@ -960,12 +960,12 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
 
 registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Runs in Node only: Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot (browser-only projects use the <a href="#local-discovery" class="text-acid hover:underline">Vite plugin</a>).</li>
-                  <li>Registration is <code class="inline-code">override: false</code>: local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
+                  <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot (browser-only projects use the <a href="#local-discovery" class="text-acid hover:underline">Vite plugin</a>).</li>
+                  <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
                   <li>Returns the array of names that actually registered.</li>
                 </ul>
                 <p class="text-sm text-zinc-muted mt-3">
-                  Error behavior <strong class="text-[#e8e8e8]">at registration, none</strong>: a misspelled icon or collection name is <em>silently skipped</em>, not rejected, so the name resolves by falling back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>, fetches a 404, and the adapter's <code class="inline-code">fallback</code> state renders. Tell typos apart by diffing the return value against the input — anything missing did not resolve from disk.
+                  Registration <strong class="text-[#e8e8e8]">never errors</strong>. A misspelled icon or collection name is silently skipped. The name falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>, the fetch 404s, and the adapter's <code class="inline-code">fallback</code> state renders. Tell typos apart by diffing the return value against the input. Anything missing did not resolve from disk.
                 </p>
               </div>
 
@@ -1015,7 +1015,7 @@ registerLocalSvgs(bundledIcons, { override: false });
                   <code class="inline-code">format</code> explicitly when <code class="inline-code">out</code> ends in
                   anything else); the default output is TypeScript. Errors are thrown, not logged:</p>
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Any name without an installed source fails the whole script:<br /><code class="inline-code">No source found for these catalog icons: lucide:mistyped-name</code> — fixing typos is a build error, not a runtime gap.</li>
+                  <li>Any name without an installed source fails the whole script:<br /><code class="inline-code">No source found for these catalog icons: lucide:mistyped-name</code>. Fixing typos is a build error, not a runtime gap.</li>
                   <li>Unknown output extension:<br /><code class="inline-code">Unsupported bundle output extension: ./icons/data.txt. Use .ts, .mts, .js, or .mjs, or set format.</code></li>
                 </ul>
               </div>
@@ -1046,8 +1046,8 @@ registerLocalSvgs(bundledIcons, { override: false });
 
             <p class="docs-body mt-6">
               The model is an element <strong class="text-[#e8e8e8]">allowlist</strong>: only static SVG
-              elements survive sanitization. Anything outside it — scripts, embedded HTML,
-              stylesheets, SMIL animation elements — is removed wholesale. Attributes are checked per
+              elements survive sanitization. Scripts, embedded HTML, stylesheets, and
+              SMIL animation elements sit outside it and are removed wholesale. Attributes are checked per
               element, and href-like attributes are matched by namespace-resolved local name, so
               <code class="inline-code">xlink:href</code>, re-prefixed spellings such as
               <code class="inline-code">evil:href</code>, and event handlers regardless of casing or
@@ -1060,7 +1060,7 @@ registerLocalSvgs(bundledIcons, { override: false });
                   <tr><th>Element</th><th>Allowed href-like targets</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td><code class="font-mono text-xs text-acid">use</code></td><td class="text-zinc-muted text-sm">Same-document fragments only (<code class="inline-code">{"#id"}</code>). Remote references — <code class="inline-code">https:</code>, protocol-relative — are stripped.</td></tr>
+                  <tr><td><code class="font-mono text-xs text-acid">use</code></td><td class="text-zinc-muted text-sm">Same-document fragments only (<code class="inline-code">{"#id"}</code>). Remote references such as <code class="inline-code">https:</code> and protocol-relative targets are stripped.</td></tr>
                   <tr><td><code class="font-mono text-xs text-acid">image / feImage</code></td><td class="text-zinc-muted text-sm">Remote and <code class="inline-code">blob:</code> URLs, plus <code class="inline-code">data:</code> raster images only. <code class="inline-code">data:image/svg+xml</code> is stripped in all spellings, including compressed variants.</td></tr>
                   <tr><td><code class="font-mono text-xs text-acid">a</code></td><td class="text-zinc-muted text-sm">Remote, relative, and <code class="inline-code">blob:</code> URLs. Every <code class="inline-code">data:</code> value is stripped, even raster ones.</td></tr>
                   <tr><td class="text-zinc-muted text-sm">any other element</td><td class="text-zinc-muted text-sm">Remote, relative, <code class="inline-code">blob:</code>, and raster <code class="inline-code">data:image</code> targets. Unknown schemes are stripped.</td></tr>
@@ -1091,7 +1091,7 @@ registerLocalSvgs(bundledIcons, { override: false });
               <div data-fw-show="react">
                 <h3 class="mb-2 font-semibold text-[#e8e8e8]">Server-side rendering (React)</h3>
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
-                  DOM parsing is unavailable on the server. Use the <code class="inline-code">loading</code> prop to render a placeholder during SSR — otherwise the component renders nothing on the first pass.
+                  DOM parsing is unavailable on the server. Use the <code class="inline-code">loading</code> prop to render a placeholder during SSR. Without it the component renders nothing on the first pass.
                 </p>
                                 <CodeBlock code={`<SVG
   src={remoteUrl}
@@ -1102,7 +1102,7 @@ registerLocalSvgs(bundledIcons, { override: false });
               <div data-fw-show="react react-native">
                 <h3 class="mb-2 font-semibold text-[#e8e8e8]">Memoize fetchOptions</h3>
                 <p class="mb-3 text-sm text-zinc-muted leading-relaxed">
-                  <code class="inline-code">fetchOptions</code> should be stable across renders — memoize it to prevent unnecessary re-fetches.
+                  <code class="inline-code">fetchOptions</code> should be stable across renders. Memoize it to prevent unnecessary re-fetches.
                 </p>
                                 <CodeBlock code={`const opts = useMemo(
   () => ({ headers: { Accept: "image/svg+xml" } }),
@@ -1123,7 +1123,7 @@ registerLocalSvgs(bundledIcons, { override: false });
               <div data-fw-show="react">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor — React</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor</h3>
                 </div>
                                 <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
@@ -1146,7 +1146,7 @@ export function IconButton({ label }) {
               <div data-fw-show="react-native" class="hidden">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor — React Native</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Icon button with currentColor</h3>
                 </div>
                                 <CodeBlock code={`import { TouchableOpacity, Text } from "react-native";
 import { SVG } from "@mhaadi/svg/react-native";
@@ -1211,7 +1211,7 @@ export function IconButton({ label }) {
               <div data-fw-show="react">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — React</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading</h3>
                 </div>
                                 <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
@@ -1235,7 +1235,7 @@ export function RemoteIcon({ url }) {
               <div data-fw-show="react-native" class="hidden">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — React Native</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading</h3>
                 </div>
                                 <CodeBlock code={`import { View } from "react-native";
 import { SVG } from "@mhaadi/svg/react-native";
@@ -1261,7 +1261,7 @@ export function RemoteIcon({ url }) {
               <div data-fw-show="vue" class="hidden">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — Vue</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading</h3>
                 </div>
                                 <CodeBlock code={`<script setup lang="ts">
   import { SVG } from "@mhaadi/svg/vue";
@@ -1283,7 +1283,7 @@ export function RemoteIcon({ url }) {
               <div data-fw-show="svelte" class="hidden">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading — Svelte</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Remote SVG with skeleton loading</h3>
                 </div>
                                 <CodeBlock code={`<script lang="ts">
   import { SVG } from "@mhaadi/svg/svelte";
@@ -1301,7 +1301,7 @@ export function RemoteIcon({ url }) {
               <div data-fw-show="react">
                 <div class="mb-3 flex items-center gap-2">
                   <span class="h-1 w-4 bg-acid rounded-none"></span>
-                  <h3 class="font-semibold text-[#e8e8e8]">Dynamic icon gallery from a name list — React</h3>
+                  <h3 class="font-semibold text-[#e8e8e8]">Dynamic icon gallery from a name list</h3>
                 </div>
                                 <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 import { SvgName } from "@mhaadi/svg";

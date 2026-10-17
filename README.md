@@ -16,7 +16,7 @@ The Flutter widget API is documented in [`svg_flutter`'s README](./packages/flut
 
 ## Apps
 
-- [`apps/web`](./apps/web) — Documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev)
+- [`apps/web`](./apps/web), the documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev)
 
 ## Repo Structure
 

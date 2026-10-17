@@ -18,7 +18,7 @@ pnpm add @mhaadi/svg
 ## Dependencies
 
 The dependency picture, stated plainly: `@xmldom/xmldom` is a real runtime
-dependency, imported only by the Astro and React Native adapters — browser
+dependency, imported only by the Astro and React Native adapters. Browser
 adapters parse with the browser's own XML parser and never load it. Every
 framework peer (React, React Native, Vue, Svelte, Solid, Astro, Angular, Vite)
 is optional, so install only what you import. `svgo` is an optional peer used
@@ -272,7 +272,7 @@ exactly like `href`, and the rules differ per element:
 
 | Element                | Allowed href targets                        | Anything else                                                                                |
 | ---------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `<use>`                | same-document fragments (`#id`, empty)      | stripped — remote `https:`/protocol-relative references included                             |
+| `<use>`                | same-document fragments (`#id`, empty)      | stripped, including remote `https:` and protocol-relative references                         |
 | `<image>`, `<feImage>` | remote URLs, `blob:`, `data:` raster images | `data:image/svg+xml` stripped in all spellings, including `svg+xml-compressed`               |
 | `<a>`                  | remote, relative, `blob:`                   | every `data:` target stripped                                                                |
 | other elements         | remote, relative, `blob:`, `data:image/*`   | unknown schemes stripped                                                                     |
@@ -478,7 +478,7 @@ A name that resolves to no installed source is skipped, not rejected: a
 misspelled icon or collection does not throw at registration. The name then
 falls back to the `/assets/svg/{collection:icon}.svg` URL, the request 404s,
 and the adapter's `fallback` state renders. To catch typos, compare the
-return value — the list of names that actually registered — against the list
+return value, the list of names that actually registered, against the list
 you passed in.
 
 ## Offline icon bundles
@@ -486,11 +486,11 @@ you passed in.
 `bundleCatalogIcons` (also from `@mhaadi/svg/catalog`) writes the resolved icon
 sources into a plain data module your app imports, instead of registering them
 on a machine that can read `node_modules`. Use it when the renderer runs where
-neither the filesystem nor `fetch` is a fit — React Native, or a browser bundle
+neither the filesystem nor `fetch` is a fit: React Native, or a browser bundle
 without the Vite plugin:
 
 ```ts
-// scripts/generate-icons.ts — run once, or on a dev loop
+// scripts/generate-icons.ts, run once or in a dev loop
 import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
 
 bundleCatalogIcons({
@@ -524,7 +524,7 @@ through, then use the icons like any local SVG:
 
 ```tsx
 // React Native
-import SVG from "@mhaadi/svg/react-native";
+import { SVG } from "@mhaadi/svg/react-native";
 import { registerLocalSvgs } from "@mhaadi/svg/local";
 import { bundledIcons } from "./icons/generated";
 

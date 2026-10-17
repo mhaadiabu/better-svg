@@ -28,27 +28,27 @@ const featureCards = [
   {
     icon: `<path d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.728 12.728.707.707M1 12h2m18 0h2M4.22 19.78l.707-.707M18.071 5.929l.707-.707" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
     title: "Inline rendering",
-    desc: "On the web (React, Vue, Svelte, Solid, Astro, Angular) renders a real <svg> element — not an <img> tag — so CSS currentColor, animations, and JavaScript work natively. React Native renders a react-native-svg tree.",
+    desc: "On the web it renders a real <svg> element, not an <img> tag. CSS currentColor, animations, and JavaScript work natively. React Native renders a react-native-svg tree.",
   },
   {
     icon: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
     title: "Built-in sanitization",
-    desc: "Strips <script>, event handlers, unsafe hrefs, and embedded HTML by default. Safely render untrusted SVG content in any framework.",
+    desc: "Strips <script>, event handlers, unsafe hrefs, and embedded HTML by default. Untrusted markup never reaches the DOM in any framework.",
   },
   {
     icon: `<path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" stroke="currentColor" stroke-width="1.5"/><polyline points="13 2 13 9 20 9" stroke="currentColor" stroke-width="1.5"/>`,
     title: "Four source types",
-    desc: "Pass an inline SVG string, a data: URL, a remote HTTPS URL, or just a local name. One mental model, every source.",
+    desc: "Pass an inline SVG string, a data: URL, a remote HTTPS URL, or just a local name.",
   },
   {
     icon: `<ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" stroke-width="1.5"/><path d="M2 12c0 2.21 4.477 4 10 4s10-1.79 10-4" stroke="currentColor" stroke-width="1.5"/><path d="M2 16c0 2.21 4.477 4 10 4s10-1.79 10-4" stroke="currentColor" stroke-width="1.5"/>`,
     title: "Memory caching",
-    desc: "Remote SVGs are cached in-memory by URL. Eliminates duplicate network requests on re-render in every adapter.",
+    desc: "Remote SVGs are cached in-memory by URL. No duplicate network requests on re-render.",
   },
   {
     icon: `<polyline points="16 18 22 12 16 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="8 6 2 12 8 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
     title: "Full prop forwarding",
-    desc: "React forwards every SVGProps attribute (className, onClick, aria-*, width, height) and it overrides markup attrs. React Native, Vue, and Svelte forward a focused subset — width, height, color/fill/stroke, and core a11y attrs.",
+    desc: "React forwards every SVGProps attribute and it overrides markup attrs. React Native, Vue, and Svelte forward a focused subset: width, height, color/fill/stroke, and core a11y attrs.",
   },
   {
     icon: `<path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
@@ -58,23 +58,23 @@ const featureCards = [
   {
     icon: `<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><polyline points="3.29 7 12 12 20.71 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="22" x2="12" y2="12" stroke="currentColor" stroke-width="1.5"/>`,
     title: "Icon catalog",
-    desc: "Install one icon package — lucide, tabler, phosphor, any Iconify collection — and render collection:icon names through @mhaadi/svg/catalog. No per-icon imports, no network access.",
+    desc: "Install one icon package, like lucide, tabler, or phosphor, and render collection:icon names through @mhaadi/svg/catalog. No per-icon imports, no network access.",
   },
   {
     icon: `<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
     title: "Offline bundling",
-    desc: "bundleCatalogIcons resolves your icons into a generated data module. React Native registers it once and renders collection:icon names inline with zero network requests.",
+    desc: "bundleCatalogIcons writes your icons into a generated data module. React Native registers it once and renders inline with zero network requests.",
   },
   {
     icon: `<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>`,
     title: "Build-time pipeline",
-    desc: "Opt-in svgo and precompiled mode turn icon directories into a build step: markup is parsed, sanitized, and optimized once at build. Mounting does zero parse work.",
+    desc: "Opt-in svgo and precompiled mode parse, sanitize, and optimize icon directories once at build. Mounting does zero parse work.",
   },
 ];
 import CodeBlock from "../components/CodeBlock.astro";
 ---
 
-<Base title="BetterSVG — Inline SVG for React, React Native, Vue, Svelte, Solid, Astro, and Angular">
+<Base title="BetterSVG: Inline SVG for React, React Native, Vue, Svelte, Solid, Astro, and Angular">
   <!-- NAV -->
   <nav class="sticky top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 lg:px-4 py-3 lg:py-4">
@@ -157,8 +157,7 @@ import CodeBlock from "../components/CodeBlock.astro";
         <!-- Sub -->
         <p class="mt-8 max-w-md text-base text-zinc-muted leading-relaxed animate-fade-up delay-400">
           Resolve, sanitize, and render SVGs inline in React, React Native, Vue,
-          Svelte, Solid, Astro, and Angular. From local names to remote URLs — with full control
-          over props, caching, and security.
+          Svelte, Solid, Astro, and Angular. Full control over props, caching, and security.
         </p>
 
         <!-- CTA buttons -->
@@ -398,7 +397,7 @@ import CodeBlock from "../components/CodeBlock.astro";
               from every SVG. Only disable it when you fully trust the source.
             </p>
           </div>
-                          <CodeBlock code={`// ✓ Safe — untrusted source
+                          <CodeBlock code={`// ✓ Safe, untrusted source
 <SVG
   src={untrustedMarkup}
   // sanitize={true} is default
@@ -422,8 +421,7 @@ import CodeBlock from "../components/CodeBlock.astro";
       </h2>
       <p class="mt-6 mx-auto max-w-md text-zinc-muted">
         One mental model. Seven frameworks. Every SVG format, sanitized by
-        default. Dependency facts are plain and auditable: optional framework
-        peers, one server parser, and an opt-in build-time SVGO pass.
+        default.
       </p>
       <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
         <a href="/docs" class="bg-acid px-8 py-3 font-semibold text-coal hover:bg-acid-dim transition-colors">

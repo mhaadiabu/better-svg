@@ -1,6 +1,7 @@
 import { sanitizeNode, domParserAvailable, type SvgNode } from "./ast";
 import { cacheParsedSvg } from "./cache";
-import { inlineSvgFromNode, parseInlineSvg } from "./sanitize";import { isInlineSvg } from "./url";
+import { inlineSvgFromNode, parseInlineSvg } from "./sanitize";
+import { isInlineSvg } from "./url";
 
 type SvgModuleMap = Record<string, string>;
 

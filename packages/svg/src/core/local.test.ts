@@ -61,9 +61,12 @@ describe("local svg registry", () => {
 
 describe("precompiled registry entries", () => {
   it("seeds the parsed tree so request-time resolution skips parsing", () => {
-    registerLocalSvgs({ "brand/precompiled.svg": '<svg viewBox="0 0 24 24"></svg>' }, {
-      precompiled: { "brand/precompiled.svg": { node: precompiledNode } },
-    });
+    registerLocalSvgs(
+      { "brand/precompiled.svg": '<svg viewBox="0 0 24 24"></svg>' },
+      {
+        precompiled: { "brand/precompiled.svg": { node: precompiledNode } },
+      },
+    );
     const markup = resolveSvgSource("brand/precompiled") as string;
     expect(markup).toBe('<svg viewBox="0 0 24 24"></svg>');
     const content = ensureParsedSvg(markup, markup, true, true);
@@ -73,18 +76,24 @@ describe("precompiled registry entries", () => {
   });
 
   it("returns the seeded tree without parsing the registered markup", () => {
-    registerLocalSvgs({ junk: "<svg></garbage></svg>" }, {
-      precompiled: { junk: { node: precompiledNode } },
-    });
+    registerLocalSvgs(
+      { junk: "<svg></garbage></svg>" },
+      {
+        precompiled: { junk: { node: precompiledNode } },
+      },
+    );
     const markup = resolveSvgSource("junk") as string;
     expect(markup).toBe("<svg></garbage></svg>");
     expect(ensureParsedSvg(markup, markup, true, true)).not.toBeNull();
   });
 
   it("keeps per-instance id scoping on top of the seeded tree", () => {
-    registerLocalSvgs({ scoped: "<svg></svg>" }, {
-      precompiled: { scoped: { node: precompiledNode } },
-    });
+    registerLocalSvgs(
+      { scoped: "<svg></svg>" },
+      {
+        precompiled: { scoped: { node: precompiledNode } },
+      },
+    );
     const markup = resolveSvgSource("scoped") as string;
     const content = ensureParsedSvg(markup, markup, true, true)!;
     const first = scopeParsedSvgIds(content, "first");
@@ -100,9 +109,12 @@ describe("precompiled registry entries", () => {
       attrs: [],
       children: [{ tag: "script", attrs: [{ name: "src", value: "x" }], children: [] }],
     };
-    registerLocalSvgs({ hostile: "<svg></svg>" }, {
-      precompiled: { hostile: { node: hostile } },
-    });
+    registerLocalSvgs(
+      { hostile: "<svg></svg>" },
+      {
+        precompiled: { hostile: { node: hostile } },
+      },
+    );
     const markup = resolveSvgSource("hostile") as string;
     const content = ensureParsedSvg(markup, markup, true, true)!;
     expect(content.node.children).toHaveLength(0);
@@ -145,17 +157,23 @@ describe("precompiled registry entries", () => {
 
   it("fails loudly when precompiled keys map to an empty name", () => {
     expect(() =>
-      registerLocalSvgs({ "": "<svg></svg>" }, {
-        precompiled: { "": { node: precompiledNode } },
-      }),
+      registerLocalSvgs(
+        { "": "<svg></svg>" },
+        {
+          precompiled: { "": { node: precompiledNode } },
+        },
+      ),
     ).toThrow(/resolves to an empty name\./);
   });
 
   it("fails loudly when precompiled markup is not inline svg", () => {
     expect(() =>
-      registerLocalSvgs({ remote: "/assets/remote.svg" }, {
-        precompiled: { remote: { node: precompiledNode } },
-      }),
+      registerLocalSvgs(
+        { remote: "/assets/remote.svg" },
+        {
+          precompiled: { remote: { node: precompiledNode } },
+        },
+      ),
     ).toThrow(/expects inline svg markup/);
   });
 });
@@ -169,9 +187,12 @@ describe("precompiled registration without a window parser", () => {
     vi.stubGlobal("window", undefined);
     vi.stubGlobal("document", undefined);
     vi.stubGlobal("DOMParser", undefined);
-    registerLocalSvgs({ ssr: '<svg viewBox="0 0 2 2"></svg>' }, {
-      precompiled: { ssr: { node: precompiledNode } },
-    });
+    registerLocalSvgs(
+      { ssr: '<svg viewBox="0 0 2 2"></svg>' },
+      {
+        precompiled: { ssr: { node: precompiledNode } },
+      },
+    );
     const markup = resolveSvgSource("ssr") as string;
     await vi.waitFor(() => {
       expect(getCachedParsedSvg(markup, true)).not.toBeNull();

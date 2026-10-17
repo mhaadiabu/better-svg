@@ -69,9 +69,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
       )
         return;
       const entries = new Map<string, string>();
-      const precompiled = options.precompiled
-        ? new Map<string, PrecompiledLocalSvg>()
-        : undefined;
+      const precompiled = options.precompiled ? new Map<string, PrecompiledLocalSvg>() : undefined;
       watchedDirectories.clear();
       watchedFiles.clear();
       const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {

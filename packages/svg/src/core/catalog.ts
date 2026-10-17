@@ -49,10 +49,6 @@ const packageProbes: Record<string, readonly FileProbe[]> = {
 const hugeiconsPackage = "@hugeicons/core-free-icons";
 const hugeiconsViewBox = "0 0 24 24";
 
-// `@hugeicons/core-free-icons` ships each icon as a CommonJS module exporting a
-// React-style element list: `[["path", { d, stroke, strokeWidth, key }]]`. The
-// package names modules in PascalCase (`ArrowLeft01Icon`), so catalog names are
-// kebab-case and serialize to a 24x24 viewBox the package implies.
 type HugeElement = [
   tag: string,
   props?: Record<string, string | number | boolean | undefined>,
@@ -76,7 +72,7 @@ const hugeiconsAttributeMarkup = (key: string, value: string | number | boolean 
   if (!name || value === undefined || value === false) return "";
   const text =
     typeof value === "string"
-      ? value.replace(/"/g, "&quot;").replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      ? value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;")
       : String(value);
   return ` ${name}="${text}"`;
 };

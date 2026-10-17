@@ -234,6 +234,20 @@ code {
   padding: 0;
 }
 
+.code-group {
+  background: #111111;
+  border: 1px solid #2e2e2e;
+}
+
+.code-group > .code-block {
+  border: 0;
+  background: transparent;
+}
+
+.code-group > .code-block + .code-block {
+  margin-top: 10px;
+}
+
 /* Fallback before JS applies code-block-body */
 .code-block > pre {
   overflow-x: auto;

@@ -243,7 +243,7 @@ import PmTabs from "../components/PmTabs.astro";
             <p class="docs-body">Import the component from the entry point that matches your framework:</p>
 
             <!-- React -->
-            <div data-fw-show="react" class="code-group">
+            <div data-fw-show="react">
               <CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
 
 // From a registered local name, or /assets/svg/logo.svg
@@ -255,18 +255,18 @@ export function MyComponent() {
       aria-label="Logo"
     />
   );
-}`} lang="tsx" />
+}
 
-              <CodeBlock code={`// From a remote URL with loading and fallback states
+// From a remote URL with loading and fallback states
 <SVG
   src="https://cdn.example.com/icon.svg"
   sanitize
   loading={<Spinner />}
   fallback={<FallbackIcon />}
   onSvgLoad={(markup) => console.log(markup)}
-/>`} lang="tsx" />
+/>
 
-              <CodeBlock code={`// From an inline SVG string
+// From an inline SVG string
 const LOGO = \`<svg viewBox='0 0 24 24'>...</svg>\`;
 
 <SVG
@@ -834,20 +834,21 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                   can only follow one strategy for choosing its plugin list, and the plugin refuses to
                   guess.
                 </p>
-                <div class="code-group">
-                  <CodeBlock code={`localSvgs({
+                <CodeBlock code={`// extra settings on the curated preset
+localSvgs({
   dirs: ["src/icons", "src/illustrations"],
   svgo: {
     filter: (name) => name.startsWith("social/"),
     multipass: true,
     floatPrecision: 3,
   },
-});`} lang="ts" file="vite.config.ts" />
-                  <CodeBlock code={`localSvgs({
+});
+
+// or a full passthrough with an explicit plugins list
+localSvgs({
   dirs: ["src/icons"],
   svgo: { plugins: ["preset-default", { name: "cleanupIds" }, "removeViewBox"] },
 });`} lang="ts" file="vite.config.ts" />
-                </div>
               </div>
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
@@ -1354,16 +1355,6 @@ export function IconGallery() {
 </Base>
 
 <style>
-  .code-group {
-    border: 1px solid #2e2e2e;
-    padding: 12px;
-  }
-  .code-group .code-block {
-    border: 0;
-  }
-  .code-group .code-block + .code-block {
-    margin-top: 12px;
-  }
   .docs-heading {
     margin-bottom: 1rem;
     font-family: var(--font-display);

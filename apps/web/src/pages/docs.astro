@@ -920,8 +920,10 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
             <p class="docs-body">
               <code class="inline-code">@mhaadi/svg/catalog</code> resolves <code class="inline-code">collection:icon</code>
               names from icon packages installed in your <code class="inline-code">node_modules</code>. No
-              network access, no per-icon imports. Register the names you use up front, then pass them
-              to <code class="inline-code">name</code> like any local SVG.
+              network access, no per-icon imports. Registration runs in Node at build time, so it needs
+              the filesystem; register the names you use up front and pass them
+              to <code class="inline-code">name</code> like any local SVG. Browser-only projects bundle the
+              icons into a generated data module instead.
             </p>
 
             <div class="mt-6 space-y-6">
@@ -960,7 +962,7 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
 
 registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot (browser-only projects use the <a href="#local-discovery" class="text-acid hover:underline">Vite plugin</a>).</li>
+                  <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot. Browser-only projects use <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> to write the icons into a data module instead.</li>
                   <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
                   <li>Returns the array of names that actually registered.</li>
                 </ul>
@@ -970,7 +972,7 @@ registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} la
               </div>
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
-                <h3 class="font-semibold text-[#e8e8e8] mb-3">bundleCatalogIcons, offline runtime</h3>
+                <h3 id="catalog-bundle" class="font-semibold text-[#e8e8e8] mb-3">bundleCatalogIcons, offline runtime</h3>
                 <p class="text-sm text-zinc-muted mb-3">
                   Writes resolved icon sources into a plain data module your app imports, for runtimes
                   that cannot read <code class="inline-code">node_modules</code> or fetch at all, such
@@ -991,7 +993,7 @@ bundleCatalogIcons({
                 </div>
                 <p class="text-sm text-zinc-muted mt-3">Register the map with the local registry your adapter already resolves <code class="inline-code">name</code> through, then render the icons by name:</p>
                 <div data-fw-show="react-native" class="hidden">
-                  <CodeBlock code={`import SVG from "@mhaadi/svg/react-native";
+                  <CodeBlock code={`import { SVG } from "@mhaadi/svg/react-native";
 import { registerLocalSvgs } from "@mhaadi/svg/local";
 import { bundledIcons } from "./icons/generated";
 

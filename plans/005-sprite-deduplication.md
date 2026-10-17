@@ -65,7 +65,7 @@ for arbitrary SVG handling:
    `colors.ts:109`).
 3. **External `<use>` references are dead.** Cross-document
    `<use href="sprite.svg#icon">` was removed in Chromium in 2017. Any
-   sprite must be hoisted into the *same document* as a hidden
+   sprite must be hoisted into the _same document_ as a hidden
    `<svg>` host. This is a hard wall, not a design choice: it rules
    out file-based sprites and constrains the architecture below.
 
@@ -121,13 +121,13 @@ instance, collects every `id` attribute into a map
 `svg-<random>-<n>` per rendered element, then calls `rewriteNodeIds`,
 which rewrites `id` attrs and every reference to those ids across:
 
-| Reference surface        | Where |
-| ------------------------ | ----- |
-| `href` / `xlink:href`    | `ids.ts:35-39` |
-| `aria-labelledby` & co   | `ids.ts:40-53` |
-| SMIL `begin`/`end`       | `ids.ts:54-65` |
+| Reference surface        | Where                                            |
+| ------------------------ | ------------------------------------------------ |
+| `href` / `xlink:href`    | `ids.ts:35-39`                                   |
+| `aria-labelledby` & co   | `ids.ts:40-53`                                   |
+| SMIL `begin`/`end`       | `ids.ts:54-65`                                   |
 | CSS `url(#x)` in `style` | `ids.ts:66-74` (escaped-CSS aware decode/encode) |
-| `<style>` blocks         | `ids.ts:77-90` (`rewriteStylesheet`) |
+| `<style>` blocks         | `ids.ts:77-90` (`rewriteStylesheet`)             |
 
 Note: `scopeParsedSvgIds` (`ids.ts:143-149`) exposes the produced map as
 `ParsedInlineSvg.ids`, and the component uses it to rewrite the
@@ -146,7 +146,7 @@ everything else (`overrideNode` walks every node; `overrideStyleText`
 handles fill/stroke declarations inside style attributes, preserving
 `!important`). The result is a fresh mutated tree cached per
 `(content, overrides)` pair (`colors.ts:109`, LRU capped at
-`MAX_CACHED_OVERRIDES`). This works today *because* each instance holds
+`MAX_CACHED_OVERRIDES`). This works today _because_ each instance holds
 an independent tree — the seam that breaks under sprites.
 
 ### 3. Root id + presentation (`ids.ts:122-141`, `presentation.ts`, `svg.tsx:126`)
@@ -183,8 +183,8 @@ Per-framework delivery: React `createPortal` into `document.body`
 Svelte/Solid imperative mount. Each deduped instance renders:
 
 ```tsx
-<svg {...rootProps, aria, viewBox, size}>
-  <title>…</title>   {/* per-instance, wrapper-level */}
+<svg {...(rootProps, aria, viewBox, size)}>
+  <title>…</title> {/* per-instance, wrapper-level */}
   <desc>…</desc>
   <use href={`#${symbolId}`} />
 </svg>
@@ -207,9 +207,9 @@ identity. Structure sketch:
 
 ```ts
 type SpriteSymbol = {
-  symbolId: string;          // one createSvgId() per registry entry
-  ids: ReadonlyMap<string, string>;  // original markup id → symbol-scoped id
-  node: SvgNode;             // scoped tree, title/desc stripped
+  symbolId: string; // one createSvgId() per registry entry
+  ids: ReadonlyMap<string, string>; // original markup id → symbol-scoped id
+  node: SvgNode; // scoped tree, title/desc stripped
 };
 ```
 
@@ -225,7 +225,7 @@ Notes:
   already correct.
 - `ids` (original → symbol-scoped) is exposed to the same consumers
   that consume `content.ids` today: `rewriteSvgAttributes(rootProps,
-  ids)` (`ids.ts:151-163`) rewrites wrapper attributes like
+ids)` (`ids.ts:151-163`) rewrites wrapper attributes like
   `aria-labelledby` so references into the markup's IDs keep resolving.
   With the sprite map, those references resolve into the symbol
   namespace. No format change, only a different map.
@@ -258,14 +258,14 @@ raw). Documented as a contract test in M1.
 
 ### `<use>` rendering path (per framework)
 
-| Surface | Sprite host delivery | Instance render |
-| ------- | ------------------------ | --------------- |
-| React   | `createPortal(host, document.body)`, lazy mount | `<use href={…}>` as a real React element (not `dangerouslySetInnerHTML`), SVG2 `href`, no `xlink:href` |
-| Vue     | `<Teleport to="body">` inside a `SpriteHost` component used by the deduped branch | attribute rewrite path unchanged (`src/vue/SVG.ts:209-226`) |
-| Svelte  | imperative append outside the component tree (`src/svelte/runtime.ts:41` scoping stays per-instance otherwise) | `rewriteSvgAttributes` shared path (`src/svelte/SVG.svelte:84`) |
-| Solid   | same imperative pattern (`src/solid/index.ts:86`) | shared path |
-| Native  | out of scope for M1 (see below) | — |
-| Astro   | out of scope (see below) | — |
+| Surface | Sprite host delivery                                                                                           | Instance render                                                                                        |
+| ------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| React   | `createPortal(host, document.body)`, lazy mount                                                                | `<use href={…}>` as a real React element (not `dangerouslySetInnerHTML`), SVG2 `href`, no `xlink:href` |
+| Vue     | `<Teleport to="body">` inside a `SpriteHost` component used by the deduped branch                              | attribute rewrite path unchanged (`src/vue/SVG.ts:209-226`)                                            |
+| Svelte  | imperative append outside the component tree (`src/svelte/runtime.ts:41` scoping stays per-instance otherwise) | `rewriteSvgAttributes` shared path (`src/svelte/SVG.svelte:84`)                                        |
+| Solid   | same imperative pattern (`src/solid/index.ts:86`)                                                              | shared path                                                                                            |
+| Native  | out of scope for M1 (see below)                                                                                | —                                                                                                      |
+| Astro   | out of scope (see below)                                                                                       | —                                                                                                      |
 
 For each framework file, the diff is contained: the instance render
 swaps `dangerouslySetInnerHTML` for a `<use>` child, and
@@ -328,7 +328,7 @@ Opt-in prop. Explicitly NOT automatic dedup by instance count.
 ```ts
 export type SvgProps = {
   // ...existing props
-  dedupe?: boolean;   // default false
+  dedupe?: boolean; // default false
 };
 ```
 
@@ -380,7 +380,7 @@ annotating sprite registry types helps readability).
    registered it).
 2. `src/svg.tsx`: `dedupe` prop; when true, render `use` instead of
    `dangerouslySetInnerHTML`, wire `rewriteSvgAttributes(rootProps,
-   sprite.ids)`, keep `present()` for title/desc. Keep per-instance
+sprite.ids)`, keep `present()` for title/desc. Keep per-instance
    prefixes for `uniqueIds` untouched when `dedupe` is false — no
    behavior change for existing users.
 3. Tests (minimum set, in `src/**/*.test.ts`):

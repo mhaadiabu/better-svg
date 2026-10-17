@@ -220,19 +220,19 @@ for SVGs that depend on the current session or need fresh responses.
 
 ## Entry points
 
-| Import                          | Framework             |
-| ------------------------------- | --------------------- |
-| `@mhaadi/svg`                   | React (default)       |
-| `@mhaadi/svg/react`             | React 18+             |
-| `@mhaadi/svg/react-native`      | React Native          |
-| `@mhaadi/svg/vue`               | Vue 3                 |
-| `@mhaadi/svg/svelte`            | Svelte 5 (runes)      |
-| `@mhaadi/svg/solid`             | Solid 1.9+            |
-| `@mhaadi/svg/astro`             | Astro 5+              |
-| `@mhaadi/svg/angular`           | Angular 20+           |
-| `@mhaadi/svg/vite`              | Vite registration     |
-| `@mhaadi/svg/vite/plugin`       | Vite 5+ config plugin |
-| `@mhaadi/svg/astro/integration` | Astro local discovery |
+| Import                          | Framework              |
+| ------------------------------- | ---------------------- |
+| `@mhaadi/svg`                   | React (default)        |
+| `@mhaadi/svg/react`             | React 18+              |
+| `@mhaadi/svg/react-native`      | React Native           |
+| `@mhaadi/svg/vue`               | Vue 3                  |
+| `@mhaadi/svg/svelte`            | Svelte 5 (runes)       |
+| `@mhaadi/svg/solid`             | Solid 1.9+             |
+| `@mhaadi/svg/astro`             | Astro 5+               |
+| `@mhaadi/svg/angular`           | Angular 20+            |
+| `@mhaadi/svg/vite`              | Vite registration      |
+| `@mhaadi/svg/vite/plugin`       | Vite 5+ config plugin  |
+| `@mhaadi/svg/astro/integration` | Astro local discovery  |
 | `@mhaadi/svg/local`             | Local SVG registration |
 | `@mhaadi/svg/catalog`           | Icon package catalog   |
 
@@ -497,10 +497,13 @@ hatch for assets known at build time:
 ```ts
 import { registerLocalSvgs } from "@mhaadi/svg/local";
 
-registerLocalSvgs({ "brand/logo": "<svg ...</svg>" }, {
-  override: false,
-  precompiled: { "brand/logo": { node: tree } },
-});
+registerLocalSvgs(
+  { "brand/logo": "<svg ...</svg>" },
+  {
+    override: false,
+    precompiled: { "brand/logo": { node: tree } },
+  },
+);
 ```
 
 Precompiled registration primes the parser your runtime uses: browser

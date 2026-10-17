@@ -39,7 +39,7 @@
   probe scripts' approaches.
 - **Status**: research DONE. **Implementation PARKED for the 0.4.0 cycle by
   maintainer decision.** 0.4.0 ships opt-in-only (PR #38 behavior). This
-  plan is the basis for the cycle *after* 0.4.0, once the opt-in pass has
+  plan is the basis for the cycle _after_ 0.4.0, once the opt-in pass has
   been used in the wild. Any implementation must rebase on the post-0.4.0
   state of PR #38 + #39.
 - **Planned at**: 2026-10-17 (research completed same month; svgo 4.1.0,
@@ -65,7 +65,7 @@ per-icon cost the runtime can already absorb — but SVGO's preset-default
 does three things this runtime cannot survive:
 
 1. **Id contract breakage.** `scopeSvgNodeIds` in
-   `packages/svg/src/core/ids.ts` maps *authored* ids to runtime-prefixed
+   `packages/svg/src/core/ids.ts` maps _authored_ ids to runtime-prefixed
    ids so caller CSS works. `cleanupIds` renames and removes ids before
    that mapping ever sees them, and whether caller-side CSS references
    those ids is undecidable from the file alone. This breaks the
@@ -94,7 +94,7 @@ Exact target shape for `LocalSvgOptions` / `SvgoOptions` (extends what
 export type SvgoPresetName = "thorough" | "safe";
 
 export type SvgoOption =
-  | boolean        // false = exact opt-out; svgo is never imported
+  | boolean // false = exact opt-out; svgo is never imported
   | SvgoPresetName // "thorough" (default after adoption) | "safe" (PR #38 behavior)
   | {
       plugins?: string[] | ((file: string) => string[]);
@@ -157,18 +157,18 @@ Rationale per override (each backed by a probe in the study):
 Facts an implementer must carry, each with one-line evidence from the
 per-plugin isolation matrix:
 
-| Plugin                                    | Class            | Evidence (one line) |
-| ----------------------------------------- | ---------------- | ------------------- |
-| `cleanupIds`                              | dangerous, preset-member | renames/removes ids the runtime maps as authored (composition battery) |
-| `removeUselessDefs`                       | dangerous, preset-member | `<use href="#thePath">` dangled, then the path was deleted |
-| `removeHiddenElems`                       | dangerous, preset-member | deletes visible dot shapes and referenced degenerate paths |
-| `inlineStyles`                             | dangerous defaults | `removeMatchedSelectors: true` strips id/class attrs (`deadIds=brandonly`) |
-| `removeTitle`                              | still-dangerous if curated | silently drops a11y content; presentation layer only recreates `<title>` when caller passes one |
-| `removeViewBox` / `removeDimensions`       | still-dangerous if curated | breaks the size-prop system via the width/height→viewBox derivation in `packages/svg/src/core/presentation.ts:55-58` |
-| `prefixIds`                                | still-dangerous if curated | rewrites every id (probe row: `renamed=Y`, size grew 1286→1475) |
-| `removeXlink`                              | still-dangerous if curated | rewrites xlink:href references; caller tooling may still target xlink |
-| `removeDesc`                               | SAFE in v4 defaults | only strips empty/boilerplate desc; the "safe" preset's override for it is redundant |
-| `convertPathData`, `convertColors`, `minifyStyles`, `collapseGroups`, etc. | safe | no invariant loss in isolation or composition |
+| Plugin                                                                     | Class                      | Evidence (one line)                                                                                                  |
+| -------------------------------------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `cleanupIds`                                                               | dangerous, preset-member   | renames/removes ids the runtime maps as authored (composition battery)                                               |
+| `removeUselessDefs`                                                        | dangerous, preset-member   | `<use href="#thePath">` dangled, then the path was deleted                                                           |
+| `removeHiddenElems`                                                        | dangerous, preset-member   | deletes visible dot shapes and referenced degenerate paths                                                           |
+| `inlineStyles`                                                             | dangerous defaults         | `removeMatchedSelectors: true` strips id/class attrs (`deadIds=brandonly`)                                           |
+| `removeTitle`                                                              | still-dangerous if curated | silently drops a11y content; presentation layer only recreates `<title>` when caller passes one                      |
+| `removeViewBox` / `removeDimensions`                                       | still-dangerous if curated | breaks the size-prop system via the width/height→viewBox derivation in `packages/svg/src/core/presentation.ts:55-58` |
+| `prefixIds`                                                                | still-dangerous if curated | rewrites every id (probe row: `renamed=Y`, size grew 1286→1475)                                                      |
+| `removeXlink`                                                              | still-dangerous if curated | rewrites xlink:href references; caller tooling may still target xlink                                                |
+| `removeDesc`                                                               | SAFE in v4 defaults        | only strips empty/boilerplate desc; the "safe" preset's override for it is redundant                                 |
+| `convertPathData`, `convertColors`, `minifyStyles`, `collapseGroups`, etc. | safe                       | no invariant loss in isolation or composition                                                                        |
 
 Key classification fact: **svgo 4.1 preset-default does NOT contain**
 `removeTitle`, `removeViewBox`, `removeDimensions`, `removeXlink`, or
@@ -201,14 +201,14 @@ structured-clone-safe). Serial with the mtime cache is the design.
 Benchmarks on an Intel i7-4600U (2-core/4-thread laptop CPU — a realistic
 floor, not a CI-class machine), svgo 4.1.0, Node 24:
 
-| Config           | ms/icon | Size vs raw | Scale notes |
-| ---------------- | ------- | ----------- | ----------- |
-| thorough         | 0.56    | 75.0%       | 500 icons 278 ms; 2000 icons 950 ms full pass |
-| safe             | 0.49    | 73.7%       | |
-| no-svgo baseline | 0.14    | 100%        | |
-| thorough + mtime cache | n/a first run | | full-reload re-transform 950 ms → ~10 ms at 2000 icons |
+| Config                 | ms/icon       | Size vs raw | Scale notes                                            |
+| ---------------------- | ------------- | ----------- | ------------------------------------------------------ |
+| thorough               | 0.56          | 75.0%       | 500 icons 278 ms; 2000 icons 950 ms full pass          |
+| safe                   | 0.49          | 73.7%       |                                                        |
+| no-svgo baseline       | 0.14          | 100%        |                                                        |
+| thorough + mtime cache | n/a first run |             | full-reload re-transform 950 ms → ~10 ms at 2000 icons |
 
-Hardware note: the 0.56 ms/icon figure is a *cold-cache sustained* rate on
+Hardware note: the 0.56 ms/icon figure is a _cold-cache sustained_ rate on
 2014-era silicon; modern dev machines will be faster. The load-bearing
 numbers are the ratios (thorough ≈ 4× baseline cost, ≈ 75% of raw size)
 and the cache delta (95× faster warm reload).
@@ -219,10 +219,10 @@ and the cache delta (95× faster warm reload).
 (children preserved, lost refs, dead ids, no unauthorized renames, viewBox,
 title, desc, metadata, style, mask, overrides, `<use>`):
 
-| Preset     | Invariants passed |
-| ---------- | ----------------- |
-| plain preset-default | **12 / 16** |
-| "thorough" | **16 / 16** |
+| Preset               | Invariants passed |
+| -------------------- | ----------------- |
+| plain preset-default | **12 / 16**       |
+| "thorough"           | **16 / 16**       |
 
 Failure modes observed under plain preset-default: id renames/removals
 (`cleanupIds`), dangling `"#thePath"` refs (`removeUselessDefs`),
@@ -256,7 +256,7 @@ Documented UX surface, from widest to narrowest:
 
 1. `svgo: false` — pre-change semantics; the module is never imported.
 2. `svgo: "safe"` — today's preset (PR #38 behavior).
-3. *(default)* `svgo: "thorough"` — safe-by-design composition.
+3. _(default)_ `svgo: "thorough"` — safe-by-design composition.
 4. Per-file function form `plugins: (file) => [...]` — fine-grained control,
    preserved from #38.
 5. Curated explicit plugin list + `onViolation` — power users; checker
@@ -332,16 +332,16 @@ browser."
 Machine-checkable, per milestone:
 
 - [ ] M1: `grep -c '"thorough"'` in the preset definition module ≥ 1;
-  byte-identical-output characterization test green with `svgo: false`
+      byte-identical-output characterization test green with `svgo: false`
 - [ ] M2: composition battery runs as vitest, 16/16 green under "thorough";
-  checker catches an induced breakage under a curated unsafe list
+      checker catches an induced breakage under a curated unsafe list
 - [ ] M3: warm reload measured ≤ 20 ms at 2000 fixtures
 - [ ] M4: README/CHANGELOG/release-notes text present (consumer tone,
-  not internal notes)
+      not internal notes)
 - [ ] `plans/README.md` status row updated for this plan
 - [ ] No version bump, no `CHANGELOG.md`, no `package.json` edits in
-  commits belonging to THIS plan's research deliverable (this plan is
-  research; packaging happens with the implementation under M1–M4)
+      commits belonging to THIS plan's research deliverable (this plan is
+      research; packaging happens with the implementation under M1–M4)
 
 ## STOP conditions
 

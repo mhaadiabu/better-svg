@@ -962,6 +962,14 @@ localSvgs({
                 <CodeBlock code={`import { registerCatalogIcons } from "@mhaadi/svg/catalog";
 
 registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} lang="ts" />
+                <p class="text-sm text-zinc-muted mb-3 mt-3">
+                  Hugeicons ships as an Iconify data package, so it needs one install of
+                  <code class="inline-code">@iconify-json/hugeicons</code> and then resolves through
+                  the same probe chain:
+                </p>
+                <CodeBlock code={`import { registerCatalogIcons } from "@mhaadi/svg/catalog";
+
+registerCatalogIcons(["hugeicons:house-01", "hugeicons:dashboard-speed-01"]);`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
                   <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot. Browser-only projects use <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> to write the icons into a data module instead.</li>
                   <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>

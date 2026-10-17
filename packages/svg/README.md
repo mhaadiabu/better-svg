@@ -447,7 +447,7 @@ local SVG:
 import SVG from "@mhaadi/svg/astro";
 import { registerCatalogIcons } from "@mhaadi/svg/catalog";
 
-registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);
+registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell", "hugeicons:house-01"]);
 ---
 
 <SVG name="lucide:house" width={24} height={24} />

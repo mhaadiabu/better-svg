@@ -43,7 +43,7 @@ generated `registerLocalSvgs` call to every evaluation of
 `@mhaadi/svg`'s local-registry module, and `resolveIconSource` already
 resolves `collection:icon` from `node_modules` at build time. The new
 work is one scan pass in the plugin that turns the strings it finds into
-an *inline markup* registration — no new runtime, no new module, no
+an _inline markup_ registration — no new runtime, no new module, no
 transform of user code.
 
 Core rules of the design:
@@ -78,7 +78,7 @@ Core rules of the design:
 Today the catalog is 0.4.0's manual step:
 
 ```ts
-registerCatalogIcons(["lucide:house", "lucide:arrow-right", /* ×98 more */]);
+registerCatalogIcons(["lucide:house", "lucide:arrow-right" /* ×98 more */]);
 ```
 
 Three concrete costs, in order of pain:
@@ -197,7 +197,7 @@ catalog icons at the **bottom** of that ladder automatically.
   with wrapped messages (`SVGO pass failed for "<name>": …`).
 
 Auto-scan sits between the two. The right default for a heuristic that
-runs against *all source files* is warn (doc strings and comments
+runs against _all source files_ is warn (doc strings and comments
 legitimately contain name-shaped strings); strict is opt-in when the
 name is impossible to render (collection installed, icon absent).
 
@@ -255,8 +255,8 @@ Side feature, same PR, one milestone: wildcards in the manual API, for
 runtimes outside the plugin's reach.
 
 ```ts
-registerCatalogIcons(["lucide:*"]);        // every name in the installed source
-registerCatalogIcons(["lucide:arrow*"]);   // trailing-`*` prefix match only
+registerCatalogIcons(["lucide:*"]); // every name in the installed source
+registerCatalogIcons(["lucide:arrow*"]); // trailing-`*` prefix match only
 bundleCatalogIcons({ names: ["lucide:*"], out: "./src/icons/generated.ts" });
 ```
 
@@ -292,7 +292,7 @@ Details that make or break it, decided here:
   Over-matches (CSS classes, doc strings) are resolved-away: probes miss
   `nonexistent-collection:x` and it costs nothing after resolution.
 - **Extension allowlist** (files exactly): `ts, tsx, js, jsx, mjs,
-  astro, vue, svelte, html, mdx`. This covers all six adapters' surfaces
+astro, vue, svelte, html, mdx`. This covers all six adapters' surfaces
   including Angular `.html` templates and inline `template:` strings
   (containing `.ts`). Files outside the list are simply not read.
 - **Ignore list is fixed and standard**: `node_modules`, `.git`,
@@ -355,7 +355,7 @@ plugin:
    `catalog: { strict: true }` escalates to a thrown error at transform
    time, message mirroring the bundle convention:
    `No source found for these catalog icons: lucide:hous… install
-   instructions for @iconify-json/<c>` is NOT appended here (it is
+instructions for @iconify-json/<c>` is NOT appended here (it is
    installed) — the message points at spelling and the files involved.
 2. **Collection with no installed probe package:**
    ```
@@ -405,7 +405,7 @@ applied in `registerCatalogIcons` and `bundleCatalogIcons`:
 - `col:*` → every name the installed source can serve for `col`
   (iconify: `icons` + `aliases` keys minus `hidden`; file packages:
   sorted `readdir` of the probe dirs; hugeicons: `dist/cjs` listing).
-  This is a *list* operation per collection, not per-icon.
+  This is a _list_ operation per collection, not per-icon.
 - `col:prefix*` → filter of the above.
 - Mixed lists (`["lucide:*", "tabler:settings"]`) expand and dedupe,
   sorted, deterministic.
@@ -450,7 +450,7 @@ dead icons silently.
    collections → classified #2, one info line per collection per build,
    not an error. `exclude` exists for sites that stay silent.
 2. **Typo in an installed collection**: classified #1. In default mode
-   the user sees a warning line instead of today's *nothing*; that is
+   the user sees a warning line instead of today's _nothing_; that is
    strictly better than 0.4.0's diff-the-return-array affordance being
    gone. `strict: true` makes CI fail — this is the setting the repo's
    fail-fast philosophy lives under.
@@ -458,7 +458,7 @@ dead icons silently.
    → 404 → adapter `fallback`), plus the dynamic-usage warning pointing
    to `registerCatalogIcons` for this case.
 4. **Names built by string concatenation** (`["lucide:", icon].join()`):
-    rarest case; invisible to the scan no matter how it is spelled. Same
+   rarest case; invisible to the scan no matter how it is spelled. Same
    fallback as today's miss. Accepted residual risk; not worth an
    esoteric detector.
 5. **Same icon name in a `dirs` file** (`src/assets/svg/lucide/house.svg`
@@ -485,6 +485,12 @@ dead icons silently.
 Ordered, not parallel. M1-M3 are the feature spine; each lands with its
 tests; package bump (`@mhaadi/svg` 0.5.0, minor) and changelog land in
 the same PR as M6 per repo rules.
+
+**Landed**: M1-M6 executed on `advisor/007-catalog-auto-registration`
+(commits `047a7b8` scan core, `97edce7` plugin wiring, classification,
+warnings, and dev rescan, `b78ede8` wildcards, `d146134` docs,
+`a6bb1ce` release bump). Deviations from the text below are recorded in
+"Implementation notes" at the bottom of this file.
 
 ### M1 — scan core (`feat(svg)`, branch `advisor/007-catalog-auto-registration`)
 
@@ -540,25 +546,69 @@ iconify-json/lucide-static stand-ins already used by both suites).
 ## Verification
 
 - [ ] M1: `pnpm run test` green with `vite/scan.test.ts` (≥ 10 cases:
-  shape, ignores, extensions, maxBytes, symlink loops, dedupe+sort).
+      shape, ignores, extensions, maxBytes, symlink loops, dedupe+sort).
 - [ ] M2: `vite/plugin.test.ts` asserts the scanned name lands in the
-  appended call, precedence tests pass, `catalog:false` output identical
-  to before (characterization: run transform with and without the
-  feature flag, diff strings).
+      appended call, precedence tests pass, `catalog:false` output identical
+      to before (characterization: run transform with and without the
+      feature flag, diff strings).
 - [ ] M3: each classification asserts its exact message; `strict: true`
-  throws with bundle-style text on typo case and does NOT throw on
-  not-installed case.
+      throws with bundle-style text on typo case and does NOT throw on
+      not-installed case.
 - [ ] M5: `"lucide:*"` fixture expansion = manually counted fixture
-  set; size log fires above the thresholds; explicit names still fail
-  the bundle script on miss.
+      set; size log fires above the thresholds; explicit names still fail
+      the bundle script on miss.
 - [ ] `pnpm run check-types`, `pnpm run lint`, `pnpm run test`,
-  `pnpm run build` all green (repo standard, from root).
+      `pnpm run build` all green (repo standard, from root).
 - [ ] Scan latency note: measure `scanCatalogNames` on the repo's own
-  `apps/web/src` + `packages` to sanity-check; target ≤ 100 ms here, ≤
-  200 ms on a 500-file distraction set. Report the number; don't ship
-  silently slow.
+      `apps/web/src` + `packages` to sanity-check; target ≤ 100 ms here, ≤
+      200 ms on a 500-file distraction set. Report the number; don't ship
+      silently slow.
 - [ ] `plans/README.md` status row updated for this plan by whoever
-  executes it (the planner does not track their own row).
+      executes it (the planner does not track their own row).
+
+## Implementation notes (executed 2026-10-21)
+
+Recorded decision deltas, so nobody diffs the plan against the code and
+suspects drift:
+
+- **`searchPaths` added to `CatalogScanOptions`.** Not in the API sketch
+  above. Reasons: tests need a fixture root instead of `process.cwd()`,
+  and monorepos keep icon sources outside the project root. Without it,
+  resolution defaults to the project root, matching how
+  `resolveIconSource` already treats `catalog.searchPaths`.
+- **Scan is policy-free, the plugin classifies.** `ScanResult.dynamic`
+  returns unfiltered template-literal hints (`file:line` + snippet +
+  collection). The plugin keeps a hint only when the collection appears
+  in static names or is installed, so prose-only collections stay quiet.
+  The plan pinned the filter inside the scan; moving it out kept the
+  scan unit-testable and the filtering visible in classification tests.
+- **Extensions are a fixed list, not an option.** `ScanOptions.extensions`
+  exists for tests; the plugin option surface has no knob for it. Broaden
+  later only with evidence.
+- **`exclude` matches paths**, directories or files, resolved against the
+  project root and prefix-matched. The plan's wording implied directories.
+- **hugeicons wildcard enumeration** reads `@hugeicons/core-free-icons`
+  `dist/cjs`, strips the `Icon.js` suffix, round-trips PascalCase to
+  kebab (digit runs keep their dash: `ArrowLeft01` → `arrow-left-01`,
+  `AArrowDown` → `a-arrow-down`, `1stBracket` → `1st-bracket`), then keeps
+  only names that resolve through the package's own probe. Non-kebab-round-trip
+  module names are dropped, not guessed.
+- **Latency, measured** (`scanCatalogNames`, cold plugin bundle, three
+  runs): `apps/web` 21-29 ms for 13 files / 92 names; synthetic 500-file
+  set 49-73 ms for 501 files; repo root (node_modules and caches ignored,
+  `.turbo`+`plans` excluded) 14 ms for 71 files. All under the ≤ 100 ms /
+  ≤ 200 ms targets. One caveat worth repeating: `apps/web` reports 92
+  names because docs pages quote icon names in prose — a docs site that
+  enables the scan needs `exclude` (or a narrow `include`), which is the
+  hedge this design already ships, not a new failure mode.
+- **Count line** prints once per outcome (deduped per plugin instance),
+  pluralized, e.g. `auto-registered 1 catalog icon from 1 source file
+(testy: 1)`.
+- **Dev rescan** debounces 50 ms, compares the outcome signature
+  (resolved names + typo names), and reloads only when it changes. Watch
+  cost is per-directory via `addWatchFile` on scanned directories, per
+  plan; the per-file `addWatchFile` calls stay on the SVG `dirs` side
+  where they already were.
 
 ## Out of scope, explicitly
 

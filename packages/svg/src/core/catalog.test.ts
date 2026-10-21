@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -235,6 +235,126 @@ describe("icon catalog", () => {
     expect(resolveSvgSource("reg:pin")).toBe("LOCAL");
     expect(registerCatalogIcons(["reg:pin"], { searchPaths: [fixture.root] })).toEqual(["reg:pin"]);
     expect(resolveSvgSource("reg:pin")).toBe("LOCAL");
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+});
+
+describe("catalog wildcards", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const iconifyFixture = () => {
+    const fixture = makeFixture();
+    fixture.write(
+      join("@iconify-json", "dim", "icons.json"),
+      JSON.stringify({
+        prefix: "dim",
+        width: 24,
+        height: 24,
+        icons: {
+          star: { body: "<path d='m1'/>" },
+          wide: { body: "<path d='m2'/>", left: 4, top: 2, width: 48, height: 12 },
+          ghost: { body: "<path d='gone'/>", hidden: true },
+        },
+        aliases: {
+          star2: { parent: "star" },
+          tall: { parent: "star", left: 1, top: 3, width: 32, height: 64 },
+        },
+      }),
+    );
+    return fixture;
+  };
+
+  it("expands a full-collection wildcard resolvable names only", () => {
+    const fixture = iconifyFixture();
+    expect(registerCatalogIcons(["dim:*"], { searchPaths: [fixture.root] })).toEqual([
+      "dim:star",
+      "dim:star2",
+      "dim:tall",
+      "dim:wide",
+    ]);
+    expect(resolveSvgSource("dim:wide")).toContain("<path d='m2'/>");
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
+  it("expands trailing-prefix wildcards", () => {
+    const fixture = iconifyFixture();
+    expect(registerCatalogIcons(["dim:star*"], { searchPaths: [fixture.root] })).toEqual([
+      "dim:star",
+      "dim:star2",
+    ]);
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
+  it("dedupes and sorts mixed lists of wildcards and explicit names", () => {
+    const fixture = iconifyFixture();
+    expect(
+      registerCatalogIcons(["dim:wide", "dim:star", "dim:*"], { searchPaths: [fixture.root] }),
+    ).toEqual(["dim:star", "dim:star2", "dim:tall", "dim:wide"]);
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
+  it("warns when a wildcard matches nothing", () => {
+    const fixture = iconifyFixture();
+    const warnings: string[] = [];
+    vi.spyOn(console, "warn").mockImplementation((message) => {
+      warnings.push(String(message));
+    });
+    expect(registerCatalogIcons(["dim:nope*"], { searchPaths: [fixture.root] })).toEqual([]);
+    expect(warnings.join("\n")).toContain(
+      '[@mhaadi/svg] catalog wildcard "dim:nope*" matched no installed icon names; is the icon package installed?',
+    );
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
+  it("enumerates svgs shipped by icon packages", () => {
+    const fixture = makeFixture();
+    fixture.write(
+      join("lucide-static", "icons", "house.svg"),
+      "<svg viewBox='0 0 24 24'><path d='lucide'/></svg>",
+    );
+    fixture.write(
+      join("lucide-static", "icons", "heart.svg"),
+      "<svg viewBox='0 0 24 24'><path d='heart'/></svg>",
+    );
+    fixture.write(join("lucide-static", "icons", "notes.md"), "not a svg");
+    expect(registerCatalogIcons(["lucide:*"], { searchPaths: [fixture.root] })).toEqual([
+      "lucide:heart",
+      "lucide:house",
+    ]);
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
+  it("enumerates hugeicons modules as kebab names", () => {
+    const fixture = makeFixture();
+    fixture.write(
+      join("@hugeicons", "core-free-icons", "dist", "cjs", "ArrowLeft01Icon.js"),
+      `module.exports = [["path", { d: "m1", key: "0" }]];`,
+    );
+    fixture.write(
+      join("@hugeicons", "core-free-icons", "dist", "cjs", "AArrowDownIcon.js"),
+      `module.exports = [["path", { d: "m2", key: "0" }]];`,
+    );
+    fixture.write(
+      join("@hugeicons", "core-free-icons", "dist", "cjs", "index.js"),
+      `module.exports = {};`,
+    );
+    expect(registerCatalogIcons(["hugeicons:*"], { searchPaths: [fixture.root] })).toEqual([
+      "hugeicons:a-arrow-down",
+      "hugeicons:arrow-left-01",
+    ]);
+    rmSync(fixture.root, { recursive: true, force: true });
+  });
+
+  it("reports the size when a wildcard registers many bytes", () => {
+    const fixture = iconifyFixture();
+    const warnings: string[] = [];
+    vi.spyOn(console, "warn").mockImplementation((message) => {
+      warnings.push(String(message));
+    });
+    registerCatalogIcons(["dim:*"], { searchPaths: [fixture.root] });
+    expect(warnings.join("\n")).not.toContain("wildcard catalog icons");
     rmSync(fixture.root, { recursive: true, force: true });
   });
 });

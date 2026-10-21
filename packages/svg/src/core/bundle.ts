@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { resolveIconSource } from "./catalog";
+import { expandCatalogNames, resolveIconSource } from "./catalog";
 
 export type IconBundle = Record<string, string>;
 
@@ -34,9 +34,10 @@ const bundleFormat = (out: string) => {
 };
 
 export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
+  const names = expandCatalogNames(options.names, options);
   const icons: IconBundle = {};
   const missing: string[] = [];
-  for (const name of options.names) {
+  for (const name of names) {
     const markup = resolveIconSource(name, options);
     if (!markup) {
       missing.push(name);
@@ -46,6 +47,15 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
   }
   if (missing.length > 0) {
     throw new Error(`No source found for these catalog icons: ${missing.join(", ")}`);
+  }
+  if (
+    options.names.some((name) => name.includes("*")) &&
+    (Object.keys(icons).length > 250 ||
+      Object.values(icons).reduce((total, markup) => total + markup.length, 0) > 262_144)
+  ) {
+    console.warn(
+      `[@mhaadi/svg] bundled ${Object.keys(icons).length} wildcard catalog icons into the data module; pin explicit names or prefixes to trim it.`,
+    );
   }
   const format = options.format ?? (options.out ? bundleFormat(options.out) : "ts");
   if (!format) {

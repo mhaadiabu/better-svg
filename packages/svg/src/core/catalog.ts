@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { registerLocalSvgs } from "./local";
@@ -23,6 +23,7 @@ type IconifyCollection = {
 type FileProbe = {
   package: string;
   file: (icon: string) => string;
+  dir: string;
 };
 
 export type CatalogOptions = {
@@ -38,12 +39,26 @@ const iconifyProbes = (collection: string): readonly string[] => [
 ];
 
 const packageProbes: Record<string, readonly FileProbe[]> = {
-  lucide: [{ package: "lucide-static", file: (icon) => `icons/${icon}.svg` }],
+  lucide: [{ package: "lucide-static", file: (icon) => `icons/${icon}.svg`, dir: "icons" }],
   tabler: [
-    { package: "@tabler/icons", file: (icon) => `icons/outline/${icon}.svg` },
-    { package: "@tabler/icons", file: (icon) => `icons/filled/${icon}.svg` },
+    {
+      package: "@tabler/icons",
+      file: (icon) => `icons/outline/${icon}.svg`,
+      dir: "icons/outline",
+    },
+    {
+      package: "@tabler/icons",
+      file: (icon) => `icons/filled/${icon}.svg`,
+      dir: "icons/filled",
+    },
   ],
-  phosphor: [{ package: "@phosphor-icons/core", file: (icon) => `assets/regular/${icon}.svg` }],
+  phosphor: [
+    {
+      package: "@phosphor-icons/core",
+      file: (icon) => `assets/regular/${icon}.svg`,
+      dir: "assets/regular",
+    },
+  ],
 };
 
 const hugeiconsPackage = "@hugeicons/core-free-icons";
@@ -244,13 +259,155 @@ export const resolveIconSource = (name: string, options: CatalogOptions = {}) =>
   return markup;
 };
 
-export const registerCatalogIcons = (names: readonly string[], options: CatalogOptions = {}) => {
-  const registered: string[] = [];
+export const collectionSourcePackages = (collection: string): readonly string[] => [
+  `@iconify-json/${collection}`,
+  ...(packageProbes[collection]?.map((probe) => probe.package) ?? []),
+  ...(collection === "hugeicons" ? [hugeiconsPackage] : []),
+];
+
+const statTarget = (path: string) => {
+  try {
+    return statSync(path);
+  } catch {
+    return undefined;
+  }
+};
+
+export const installedCollectionRoot = (
+  collection: string,
+  searchPaths: readonly string[],
+): string | undefined => {
+  for (const searchPath of searchPaths) {
+    for (const root of nodeModuleRoots(searchPath)) {
+      for (const probe of iconifyProbes(collection)) {
+        if (statTarget(join(root, probe))?.isFile()) return root;
+      }
+      for (const probe of packageProbes[collection] ?? []) {
+        if (statTarget(join(root, probe.package, probe.dir))?.isDirectory()) return root;
+      }
+      if (collection === "hugeicons") {
+        if (statTarget(join(root, hugeiconsPackage, "dist", "cjs"))?.isDirectory()) return root;
+      }
+    }
+  }
+  return undefined;
+};
+
+const pascalToKebab = (symbol: string) => {
+  let output = "";
+  let inDigitRun = false;
+  for (let index = 0; index < symbol.length; index++) {
+    const char = symbol[index] ?? "";
+    const upper = char >= "A" && char <= "Z";
+    const digit = char >= "0" && char <= "9";
+    const boundary = index > 0 && (upper || (digit && !inDigitRun));
+    output += `${boundary ? "-" : ""}${upper ? char.toLowerCase() : char}`;
+    inDigitRun = digit;
+  }
+  return output;
+};
+
+const readEntries = (path: string) => {
+  try {
+    return readdirSync(path, { withFileTypes: true });
+  } catch {
+    return undefined;
+  }
+};
+
+const enumeratedNames = new Map<string, string[]>();
+
+const enumerationKey = (collection: string, roots: readonly string[]) =>
+  `${collection}\u0000${roots.join("\u0001")}`;
+
+const enumerateCollection = (collection: string, roots: readonly string[]) => {
+  const candidates = new Set<string>();
+  for (const root of roots) {
+    for (const probe of iconifyProbes(collection)) {
+      const data = readIconifyCollection(join(root, probe));
+      if (!data) continue;
+      for (const icon of Object.keys(data.icons)) {
+        if (iconifyMarkup(data, icon) !== undefined) candidates.add(icon);
+      }
+      for (const icon of Object.keys(data.aliases ?? {})) {
+        if (iconifyMarkup(data, icon) !== undefined) candidates.add(icon);
+      }
+    }
+    for (const probe of packageProbes[collection] ?? []) {
+      const entries = readEntries(join(root, probe.package, probe.dir));
+      if (!entries) continue;
+      for (const entry of entries) {
+        if (!entry.name.endsWith(".svg")) continue;
+        candidates.add(entry.name.slice(0, -".svg".length));
+      }
+    }
+    if (collection === "hugeicons") {
+      const entries = readEntries(join(root, hugeiconsPackage, "dist", "cjs"));
+      if (!entries) continue;
+      for (const entry of entries) {
+        if (!entry.isFile() || !entry.name.endsWith("Icon.js")) continue;
+        const icon = pascalToKebab(entry.name.slice(0, -"Icon.js".length));
+        if (icon && hugeiconsProbe(icon, root)) candidates.add(icon);
+      }
+    }
+  }
+  return [...candidates].sort();
+};
+
+const parseWildcard = (name: string) => {
+  const separator = name.indexOf(":");
+  if (separator < 0) return undefined;
+  const collection = name.slice(0, separator);
+  const rest = name.slice(separator + 1);
+  if (!rest.endsWith("*")) return undefined;
+  const prefix = rest.slice(0, -1);
+  if (!collectionPattern.test(collection)) return undefined;
+  if (prefix && !iconPattern.test(prefix)) return undefined;
+  return { collection, prefix };
+};
+
+export const expandCatalogNames = (names: readonly string[], options: CatalogOptions = {}) => {
+  const roots = searchRoots(options);
+  const output = new Set<string>();
   for (const name of names) {
+    const wildcard = parseWildcard(name);
+    if (!wildcard) {
+      output.add(name);
+      continue;
+    }
+    const key = enumerationKey(wildcard.collection, roots);
+    let all = enumeratedNames.get(key);
+    if (!all) {
+      all = enumerateCollection(wildcard.collection, roots);
+      enumeratedNames.set(key, all);
+    }
+    const matched = wildcard.prefix ? all.filter((icon) => icon.startsWith(wildcard.prefix)) : all;
+    if (matched.length === 0) {
+      console.warn(
+        `[@mhaadi/svg] catalog wildcard "${name}" matched no installed icon names; is the icon package installed?`,
+      );
+    }
+    for (const icon of matched) output.add(`${wildcard.collection}:${icon}`);
+  }
+  return [...output].sort();
+};
+
+export const registerCatalogIcons = (names: readonly string[], options: CatalogOptions = {}) => {
+  const expanded = expandCatalogNames(names, options);
+  const wildcards = names.some((name) => name.includes("*"));
+  const registered: string[] = [];
+  let bytes = 0;
+  for (const name of expanded) {
     const markup = resolveIconSource(name, options);
     if (!markup) continue;
     registerLocalSvgs({ [name]: markup }, { override: false });
     registered.push(name);
+    bytes += markup.length;
+  }
+  if (wildcards && (registered.length > 250 || bytes > 262_144)) {
+    console.warn(
+      `[@mhaadi/svg] registered ${registered.length} wildcard catalog icons (~${Math.round(bytes / 1024)} KB of markup); pin explicit names or prefixes to trim the bundle.`,
+    );
   }
   return registered;
 };

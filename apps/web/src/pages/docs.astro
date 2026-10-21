@@ -713,6 +713,9 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
               The Vite plugin scans your icon directories at build time and registers them, so
               <code class="inline-code">&lt;SVG name="social/github"&gt;</code> renders inline with no
               fetch and no per-icon import. Add the plugin once, then use local files by name.
+              Catalog icons used anywhere in your source, such as
+              <code class="inline-code">lucide:house</code>, are registered the same way when you
+              enable <a href="#catalog-auto" class="text-acid hover:underline">catalog scanning</a>.
             </p>
             <p class="docs-body hidden" data-fw-show="react-native">
               React Native registers local sources ahead of build with
@@ -788,17 +791,21 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <p class="text-sm text-zinc-muted">
                   Each configured directory is watched. Adding, editing, or deleting an SVG file
                   invalidates the module graph and triggers a full page reload. An absent directory
-                  is skipped silently, not an error.
+                  is skipped silently, not an error. With
+                  <a href="#catalog-auto" class="text-acid hover:underline">catalog scanning</a> on,
+                  scanned source files are watched the same way: a change that shifts the
+                  registered set reloads the page.
                 </p>
               </div>
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-semibold text-[#e8e8e8] mb-3"><code class="inline-code">svgo</code> option</h3>
                 <p class="text-sm text-zinc-muted mb-3">
-                  Opt-in SVGO minification of discovered files at build time. Install svgo yourself.
+                  Opt-in SVGO minification of files the plugin produces at build time. Install svgo yourself.
                   It is an optional peer of <code class="inline-code">@mhaadi/svg</code>, build-time only,
-                  and never ships to the browser bundle. Discovered files are the only ones it touches:
-                  remote sources, <code class="inline-code">?raw</code> imports, and hand-registered markup are never optimized.
+                  and never ships to the browser bundle. Discovered files and scanned catalog icons are
+                  the only ones it touches: remote sources, <code class="inline-code">?raw</code> imports,
+                  and hand-registered markup are never optimized.
                 </p>
                 <div class="prop-table-wrapper mt-4 overflow-x-auto">
                   <table class="prop-table">
@@ -979,10 +986,41 @@ registerCatalogIcons(["hugeicons:home-01", "hugeicons:arrow-left-01"]);`} lang="
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
                   <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot. Browser-only projects use <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> to write the icons into a data module instead.</li>
                   <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
+                  <li>Names accept a single trailing wildcard: <code class="inline-code">registerCatalogIcons(["lucide:*"])</code> registers every name the installed lucide source can serve, <code class="inline-code">["lucide:arrow*"]</code> matches a name prefix, and <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> expands the same form for offline bundles. Wholesale expansion logs the icon count and approximate markup size once it exceeds 250 icons or 256 KB, and an explicit name in the same list still fails the bundle when it cannot resolve.</li>
                   <li>Returns the array of names that actually registered.</li>
                 </ul>
                 <p class="text-sm text-zinc-muted mt-3">
                   Registration <strong class="text-[#e8e8e8]">never errors</strong>. A misspelled icon or collection name is silently skipped. The name falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>, the fetch 404s, and the adapter's <code class="inline-code">fallback</code> state renders. Tell typos apart by diffing the return value against the input. Anything missing did not resolve from disk.
+                </p>
+              </div>
+
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" id="catalog-auto">
+                <h3 class="font-semibold text-[#e8e8e8] mb-3">Automatic registration</h3>
+                <p class="text-sm text-zinc-muted mb-3">
+                  Vite-plugin projects skip the array entirely. Enable the source scan and the
+                  plugin registers what your code actually references, resolved from the same
+                  installed packages:
+                </p>
+                <CodeBlock code={`import { defineConfig } from "vite";
+import localSvgs from "@mhaadi/svg/vite/plugin";
+
+export default defineConfig({
+  plugins: [localSvgs({ catalog: true })],
+});`} lang="ts" file="vite.config.ts" />
+                <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
+                  <li>The scan reads text files under the project root, skipping <code class="inline-code">node_modules</code>, <code class="inline-code">dist</code>, <code class="inline-code">.git</code>, and similar ignored directories, with the extensions <code class="inline-code">ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx</code>, and matches <code class="inline-code">collection:icon</code> literals in the same alphabet the resolver validates.</li>
+                  <li>Registration lands after the <code class="inline-code">dirs</code> scan with <code class="inline-code">override: false</code>, so local files and your own <code class="inline-code">registerLocalSvgs</code> calls keep precedence. <a href="#catalog-bundle" class="text-acid hover:underline">React Native</a> stays on bundled icons; the fallback chain is untouched.</li>
+                  <li>A name whose collection is installed but that resolves to nothing logs a warning naming the files involved (a typo, or a hidden icon). <code class="inline-code">{`catalog: { strict: true }`}</code> escalates that case to a build error: <code class="inline-code">{"No source found for these catalog icons: lucide:hous (catalog scan strict mode)."}</code></li>
+                  <li>A referenced collection with no installed package logs the install hint: <code class="inline-code">{"Add @iconify-json/lucide (or lucide-static) and rerun."}</code></li>
+                  <li>Dynamic names built from template literals, <code class="inline-code">{"`lucide:${id}`"}</code>, cannot resolve by scanning; they log a hint pointing at <code class="inline-code">registerCatalogIcons</code> and keep rendering through the <code class="inline-code">/assets/svg/{"{name}"}.svg</code> fallback.</li>
+                  <li>Warnings are advisory. Only <code class="inline-code">strict</code> fails the build, and only for names whose collection is installed.</li>
+                  <li>Narrow the scan with <code class="inline-code">{`catalog: { include: ["src"] }`}</code>, add ignored paths with <code class="inline-code">exclude</code>, lower <code class="inline-code">maxFileBytes</code> (default 512 KB), or aim <code class="inline-code">searchPaths</code> at icon packages installed outside the project. <code class="inline-code">svgo</code> and <code class="inline-code">precompiled</code> apply to scanned icons exactly as they do to files from <code class="inline-code">dirs</code>.</li>
+                </ul>
+                <p class="text-sm text-zinc-muted mt-3">
+                  The build prints one line when the scan registers something:
+                  <code class="inline-code">{"[@mhaadi/svg] auto-registered 12 catalog icons from 9 source files (lucide: 10, tabler: 2)"}</code>.
+                  In dev the scanned sources are watched: when a change shifts the registered set,
+                  the module graph invalidates and the page reloads.
                 </p>
               </div>
 

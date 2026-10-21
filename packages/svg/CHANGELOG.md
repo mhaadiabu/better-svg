@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+### Added
+
+- Auto-register catalog icons from source usage: `localSvgs({ catalog: true })` scans source files at build time for `collection:icon` literals and registers every name that resolves from installed icon packages, appended after the `dirs` scan with the same `override: false` precedence. A name in an installed collection that resolves to nothing warns with the files involved, a referenced collection with no installed package logs install instructions, and dynamic template names get a pointer at `registerCatalogIcons`. `catalog: { strict: true }` fails the build on unresolvable names from installed collections. `include`, `exclude`, `maxFileBytes`, and `searchPaths` scope the scan, `svgo` and `precompiled` apply to scanned icons like they do to discovered files, and React Native keeps `bundleCatalogIcons` untouched.
+- Expand catalog names with a single trailing wildcard: `registerCatalogIcons(["lucide:*"])` registers every name the installed source serves, `["lucide:arrow*"]` matches a name prefix, and `bundleCatalogIcons` expands the same form. Expansion logs the icon count and approximate markup size above 250 icons or 256 KB, wildcards that match nothing warn about the missing package, and explicit names in the same list still fail the bundle when they cannot resolve.
+
 ## 0.4.0
 
 ### Added

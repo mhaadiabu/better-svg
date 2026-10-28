@@ -20,6 +20,11 @@
   collections the scan has seen referenced, not all installed
   collections. Full per-collection unions once a collection qualifies.
   autoInstall explicitly out of scope (maintainer: not yet).
+- **Maintainer decision (2026-10-28, later same day)**: types are ON by
+  default — no opt-in flag required. `catalog: { types: false }`
+  disables, a string path relocates. `bundleCatalogIcons` writes types
+  by default in script mode (`out` set) and never in in-memory mode
+  (no `out`), keeping pure-data calls free of filesystem side effects.
 
 ## Problem
 

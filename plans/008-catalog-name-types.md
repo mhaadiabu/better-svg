@@ -41,7 +41,7 @@ interface, so the augment point must be its own module, never a
 re-export. Declared and computed here:
 
 ```ts
-export interface SvgCatalogIcons {}   // filled by generated d.ts
+export interface SvgCatalogIcons {} // filled by generated d.ts
 
 export type CatalogSvgName = {
   [C in keyof SvgCatalogIcons & string]: `${C}:${SvgCatalogIcons[C] & string}`;
@@ -54,7 +54,7 @@ export type SvgNameInput = SvgName;
 - Empty interface → `CatalogSvgName` is `never` → `SvgName` ≡ `string`
   (the `string & {}` idiom). Zero behavior change today.
 - `core/local.ts` switches to `export type { SvgName, SvgNameInput }
-  from "./names";` — import sites (`core/resolve.ts`, `core/web.ts`,
+from "./names";` — import sites (`core/resolve.ts`, `core/web.ts`,
   adapters, `src/local.ts`, `src/core/index.ts`) keep working.
 - `(string & {})` keeps dynamic names (`lucide:${id}`), unknown
   collections, and fetch-fallback names compiling. This feature is
@@ -158,6 +158,14 @@ gitignored. unplugin-icons demands the same `types` entry; precedent.
 
 ## Milestones
 
+Ordered. M1-M3 landed with tests; M4 lands docs + release in the same
+PR per repo rules.
+
+**Executed 2026-10-28** on `advisor/008-catalog-name-types`: M1
+(`be6235c` names module, subpath, Angular input), M2 (`07393bd`
+generator, plugin sync, bundle option), M3 (`f7b24c5` tests), M4
+(`011efdc`, `4e2e6a1`, `bf12b49` format, docs, release).
+
 **M1 — augmentable names** (`feat(svg)`): `core/names.ts`, local.ts
 re-export, `./catalog-types` subpath, Angular input type.
 
@@ -190,3 +198,34 @@ tsconfig line, framework coverage), CHANGELOG, version 0.6.0.
   with a scratch consumer type-check before shipping).
 - The generated d.ts breaks `vue-tsc`/`svelte-check`/`astro check` in
   the repo's own apps (run `pnpm run build` as the proxy).
+
+## Implementation notes (executed 2026-10-28)
+
+Recorded decision deltas so nobody diffs the plan against the code and
+suspects drift:
+
+- **The digest guard is a byte-compare.** `writeCatalogNameTypes`
+  compares the generated content against the file's current content
+  rather than extracting the digest comment by regex — strictly safer
+  (catches any drift, not just name-list changes) and one less parsing
+  failure mode. The digest comment stays in the file as the change
+  marker the design pinned; the skip check does not parse it.
+- **Augmentation is proven, not assumed.** The first STOP condition
+  (augmentation reaching `SvgName` through the adapters) is guarded by
+  `core/names-augment.test.ts`, which spawns real `tsc --noEmit` on a
+  scratch consumer with `--paths` mapping `@mhaadi/svg/catalog-types`
+  to `src/core/names.ts`. The positive run asserts
+  `"testy:house" extends CatalogSvgName`; the negative run re-checks
+  with an empty generated file and asserts tsc fails, so the guard
+  cannot pass vacuously. Both runs together cost ~1.4 s. Dist
+  resolution of the specifier is covered by `pnpm run build` plus the
+  exports map; apps/web does not opt into `types`, so no in-repo
+  consumer compiles a generated file end to end — the scratch check is
+  the proxy for that.
+- **`types: false` is explicit-off**, mirroring how `catalog` treats
+  `false`; the validation error covers values that are neither boolean
+  nor string.
+- **Angular coverage**: the component input is typed `input<SvgName>()`
+  so the language service sees the union. Actual Angular template
+  completion is unverified in this environment and documented as
+  best-effort in both docs.

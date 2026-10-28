@@ -88,5 +88,4 @@ export const resolveSvgSource = (name: string) => {
   return `/assets/svg/${normalized}.svg`;
 };
 
-export type SvgName = string;
-export type SvgNameInput = SvgName;
+export type { SvgName, SvgNameInput } from "./names";

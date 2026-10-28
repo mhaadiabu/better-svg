@@ -98,6 +98,10 @@
     "./catalog": {
       "types": "./dist/catalog.d.ts",
       "import": "./dist/catalog.js"
+    },
+    "./catalog-types": {
+      "types": "./dist/core/names.d.ts",
+      "import": "./dist/core/names.js"
     }
   },
   "publishConfig": {

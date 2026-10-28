@@ -18,6 +18,7 @@ import {
 import { DomSanitizer } from "@angular/platform-browser";
 import { createSvgPresentation } from "../core/presentation";
 import { withSvgColorOverrides } from "../core/colors";
+import type { SvgName } from "../core/names";
 import { createWebSvgController, mergeSvgAttributes, type WebSvgState } from "../core/web";
 
 @Component({
@@ -41,7 +42,7 @@ import { createWebSvgController, mergeSvgAttributes, type WebSvgState } from "..
 })
 export class SVG {
   readonly src = input<string>();
-  readonly name = input<string>();
+  readonly name = input<SvgName>();
   readonly fetchOptions = input<RequestInit>();
   readonly cache = input(true);
   readonly sanitize = input(true);

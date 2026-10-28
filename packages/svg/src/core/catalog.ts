@@ -392,6 +392,13 @@ export const expandCatalogNames = (names: readonly string[], options: CatalogOpt
   return [...output].sort();
 };
 
+// Sorted icon names an installed collection can serve, for generated
+// name types. Mirrors what wildcard expansion and resolution read.
+export const collectionIconNames = (
+  collection: string,
+  options: CatalogOptions = {},
+): readonly string[] => enumerateCollection(collection, searchRoots(options));
+
 export const registerCatalogIcons = (names: readonly string[], options: CatalogOptions = {}) => {
   const expanded = expandCatalogNames(names, options);
   const wildcards = names.some((name) => name.includes("*"));

@@ -1025,6 +1025,29 @@ export default defineConfig({
                 </p>
               </div>
 
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" id="catalog-types">
+                <h3 class="font-semibold text-[#e8e8e8] mb-3">Name types, editor autocomplete</h3>
+                <p class="text-sm text-zinc-muted mb-3">
+                  On by default. Once the scan sees a catalog name, a generated
+                  <code class="inline-code">svg-catalog.d.ts</code> lands in your project and augments
+                  <code class="inline-code">SvgName</code> with
+                  <code class="inline-code">collection:icon</code> unions read from the icon
+                  packages you have installed, so typing <code class="inline-code">name="lucide:</code>
+                  suggests the collection's real names. <code class="inline-code">{`catalog: { types: false }`}</code>
+                  turns the file off:
+                </p>
+                <CodeBlock code={`localSvgs(); // types written once the scan sees catalog names
+localSvgs({ catalog: { types: "types/svg-catalog.d.ts" } }); // relocatable
+localSvgs({ catalog: { types: false } }); // off`} lang="ts" />
+                <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
+                  <li>Unions cover the collections your source references (the scan's seen set, including dynamic-hint collections), listed in full so the first use of a new icon still completes.</li>
+                  <li>Regeneration is digest-based: the file rewrites only when an icon package's name list changes or a new collection qualifies.</li>
+                  <li>Suggestions, not enforcement: any string still compiles, which keeps dynamic names, unknown collections, and the <code class="inline-code">/assets/svg/{"{name}"}.svg</code> fallback working.</li>
+                  <li>Add the file to your <code class="inline-code">tsconfig</code> <code class="inline-code">include</code> and gitignore it; it is generated. React/Vue/Svelte/Solid templates pick the unions up through their TypeScript-backed language tools; Angular's component input is typed for its language service.</li>
+                  <li><a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> follows the same rule in script mode (<code class="inline-code">out</code> set): types file written by default, unions scoped to exactly the bundled names since an offline bundle's set is fixed.</li>
+                </ul>
+              </div>
+
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 id="catalog-bundle" class="font-semibold text-[#e8e8e8] mb-3">bundleCatalogIcons, offline runtime</h3>
                 <p class="text-sm text-zinc-muted mb-3">

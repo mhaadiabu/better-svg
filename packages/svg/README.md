@@ -246,6 +246,7 @@ for SVGs that depend on the current session or need fresh responses.
 | `@mhaadi/svg/astro/integration` | Astro local discovery  |
 | `@mhaadi/svg/local`             | Local SVG registration |
 | `@mhaadi/svg/catalog`           | Icon package catalog   |
+| `@mhaadi/svg/catalog-types`     | Generated name unions  |
 
 React Native requires `react-native` and `react-native-svg` as peer dependencies.
 
@@ -540,6 +541,40 @@ In dev the scan result is cached per plugin instance and re-scanned on
 file changes: when a scanned file changes, the plugin re-runs the scan and
 reloads the page if the registered set changed. When nothing is found the
 plugin emits nothing.
+
+### Name types
+
+Name types are on by default: with the plugin (and the scan) active, a
+generated `svg-catalog.d.ts` lands in your project and feeds editor
+autocomplete for the `name` prop. The file augments `SvgName` with
+`collection:icon` unions generated from the icon packages you have installed,
+so typing `name="lucide:` suggests the collection's real icon names. Nothing
+is written until the scan sees a catalog name; set `catalog: { types: false }`
+to turn the file off:
+
+```ts
+localSvgs(); // types file written once the scan sees catalog names
+localSvgs({ catalog: { types: "types/svg-catalog.d.ts" } }); // relocatable
+localSvgs({ catalog: { types: false } }); // off
+```
+
+The unions cover the collections your source actually references (the scan's
+seen set, including dynamic-hint collections), listed in full so the first
+use of a new icon still completes. Regeneration is digest-based: the file
+rewrites only when an icon package's name list changes or a new collection
+qualifies. Unions are suggestions, not enforcement — any string still
+compiles, which keeps dynamic names, unknown collections, and the
+`/assets/svg/{name}.svg` fallback working.
+
+The file is generated: add it to your `tsconfig` `include` (or a
+`/// <reference path="..." />` in an ambient entry) and gitignore it.
+React/Vue/Svelte/Solid templates pick the unions up through their
+TypeScript-backed language tools; Angular templates depend on the language
+service, and Angular's component input is typed for it. `bundleCatalogIcons`
+follows the same rule: script mode (an `out` path set) writes the types file
+by default, `types: false` turns it off, and in-memory calls (no `out`) never
+write unless `types` says so. Its unions are scoped to exactly the bundled
+names, since an offline bundle's set is fixed.
 
 ## Offline icon bundles
 

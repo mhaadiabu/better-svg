@@ -5,10 +5,12 @@ import { buildPrecompiledSvg } from "./precompile";
 import { runSvgoPass, type SvgoOption } from "./svgo";
 import { scanCatalogNames, scanExtensions, type ScanResult } from "./scan";
 import {
+  collectionIconNames,
   collectionSourcePackages,
   installedCollectionRoot,
   resolveIconSource,
 } from "../core/catalog";
+import { writeCatalogNameTypes, type CatalogNameEntry } from "../core/names-codegen";
 import type { PrecompiledLocalSvg } from "../core/local";
 
 export type CatalogScanOptions = {
@@ -17,6 +19,8 @@ export type CatalogScanOptions = {
   searchPaths?: string[];
   strict?: boolean;
   maxFileBytes?: number;
+  /** Generated name types. On by default (svg-catalog.d.ts at the root); a string relocates the file, false disables. */
+  types?: boolean | string;
 };
 
 const pluginPrefix = "[@mhaadi/svg]";
@@ -69,6 +73,22 @@ export const resolveCatalogOptions = (
       chosen.maxFileBytes <= 0)
   ) {
     throw new Error("The catalog option maxFileBytes must be a positive number of bytes.");
+  }
+  if (chosen.types !== undefined && chosen.types !== false && chosen.types !== true) {
+    if (typeof chosen.types !== "string") {
+      throw new Error("The catalog option types must be true or a relative .d.ts path.");
+    }
+    if (
+      !chosen.types.endsWith(".d.ts") ||
+      chosen.types.startsWith("/") ||
+      chosen.types.includes("\\") ||
+      chosen.types.split("/").includes("..") ||
+      /[*?{}[\]]/.test(chosen.types)
+    ) {
+      throw new Error(
+        "Catalog types path must be a relative path ending in .d.ts without globs or '..'.",
+      );
+    }
   }
   return chosen;
 };
@@ -229,6 +249,37 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
     }
   };
 
+  // Union scope is the maintainer decision from plan 008: only
+  // collections the scan has seen referenced (resolved, typo, or
+  // dynamic-hint-and-installed), enumerated in full so a first use of a
+  // new icon still completes. Uninstalled collections join after they
+  // are installed and the next scan runs. Types are on whenever the
+  // catalog scan is on; `types: false` is the explicit opt-out.
+  const syncCatalogTypes = (outcome: CatalogOutcome) => {
+    const option = catalogOptions?.types;
+    if (option === false || !root) return;
+    const label = typeof option === "string" ? option : "svg-catalog.d.ts";
+    const seen = new Set<string>();
+    for (const name of outcome.resolved.keys()) seen.add(collectionOf(name));
+    for (const entry of outcome.typos) seen.add(entry.collection);
+    for (const hint of outcome.hints) {
+      const collection = hint.match(/`([a-z][a-z0-9-]*):/)?.[1];
+      if (collection && installedCollectionRoot(collection, searchPaths())) seen.add(collection);
+    }
+    const entries: CatalogNameEntry[] = [];
+    for (const collection of [...seen].sort()) {
+      const names = collectionIconNames(collection, { searchPaths: searchPaths() });
+      if (names.length > 0) entries.push([collection, names]);
+    }
+    if (entries.length === 0) return;
+    if (writeCatalogNameTypes(resolve(root, label), entries) === "written") {
+      const totals = entries
+        .map(([collection, names]) => `${collection}: ${names.length}`)
+        .join(", ");
+      announce(`${pluginPrefix} catalog name types written to ${label} (${totals})`);
+    }
+  };
+
   const strictError = (outcome: CatalogOutcome) => {
     const names = outcome.typos.flatMap((entry) => entry.names);
     const files = [
@@ -287,6 +338,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
           void (async () => {
             if (!root) return;
             const outcome = await ensureOutcome(true);
+            syncCatalogTypes(outcome);
             const signature = outcomeSignature(outcome);
             if (signatureState.value !== undefined && signature === signatureState.value) return;
             signatureState.value = signature;
@@ -379,6 +431,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
         const emit = (message: string) => this.warn(message);
         const outcome = await ensureOutcome(false, addDirectory);
         emitCatalogReport(outcome, emit);
+        syncCatalogTypes(outcome);
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
         if (outcome.resolved.size > 0) {
           const catalogEntries = new Map<string, string>();

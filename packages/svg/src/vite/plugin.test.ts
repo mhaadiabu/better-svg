@@ -1,4 +1,5 @@
-import { mkdtemp, writeFile, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdtemp, readFile, writeFile, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -209,5 +210,50 @@ describe("catalog usage scan", () => {
     const run = await runTransformWith({ catalog: true });
     expect(run.warnings.join("\n")).toContain("dynamic catalog name at src/icons.ts:2");
     expect(run.warnings.join("\n")).toContain("`testy:${id}`");
+  });
+});
+
+describe("catalog name types", () => {
+  it("writes generated types by default, scoped to collections the scan saw", async () => {
+    await setupCatalog();
+    await writeFixture("src/ui/extra.tsx", '<SVG name="ghostly:star" />\n');
+    const run = await runTransformWith({ catalog: {} });
+    const file = await readFile(join(root, "svg-catalog.d.ts"), "utf8");
+    expect(file).toContain('import "@mhaadi/svg/catalog-types";');
+    expect(file).toContain('declare module "@mhaadi/svg/catalog-types" {');
+    expect(file).toContain('"testy": "house"');
+    expect(file).not.toContain('"ghostly"');
+    expect(run.info.join("\n")).toContain(
+      "catalog name types written to svg-catalog.d.ts (testy: 1)",
+    );
+  });
+
+  it("does not write types under types: false", async () => {
+    await setupCatalog();
+    const run = await runTransformWith({ catalog: { types: false } });
+    expect(existsSync(join(root, "svg-catalog.d.ts"))).toBe(false);
+    expect(run.info.join("\n")).not.toContain("catalog name types");
+  });
+
+  it("honors a custom types path and skips identical rewrites", async () => {
+    await setupCatalog();
+    const first = await runTransformWith({ catalog: { types: "types/names.d.ts" } });
+    const file = await readFile(join(root, "types", "names.d.ts"), "utf8");
+    expect(file).toContain('"testy": "house"');
+    expect(first.info.join("\n")).toContain("catalog name types written to types/names.d.ts");
+    const second = await runTransformWith({ catalog: { types: "types/names.d.ts" } });
+    expect(second.info.join("\n")).not.toContain("catalog name types written");
+  });
+
+  it("validates the types option", () => {
+    expect(() => localSvgs({ catalog: { types: 5 as never } })).toThrow(
+      "The catalog option types must be true or a relative .d.ts path.",
+    );
+    expect(() => localSvgs({ catalog: { types: "/tmp/x.d.ts" } })).toThrow(
+      "Catalog types path must be a relative path ending in .d.ts without globs or '..'.",
+    );
+    expect(() => localSvgs({ catalog: { types: "icons.ts" } })).toThrow(
+      "Catalog types path must be a relative path ending in .d.ts without globs or '..'.",
+    );
   });
 });

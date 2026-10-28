@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -159,6 +159,63 @@ describe("offline icon bundle wildcards", () => {
         searchPaths: [fixture.root],
       }),
     ).toThrow("No source found for these catalog icons: dim:typo, ghost:star");
+    fixture.cleanup();
+  });
+});
+
+describe("offline icon bundle name types", () => {
+  it("emits name types scoped to the bundled set", () => {
+    const fixture = fixtureIcons();
+    const types = join(fixture.root, "svg-catalog.d.ts");
+    const result = bundleCatalogIcons({
+      names: ["dim:star", "dim:star2", "dim:wide"],
+      searchPaths: [fixture.root],
+      types,
+    });
+    expect(result.types).toBe(types);
+    const content = readFileSync(types, "utf8");
+    expect(content).toContain('import "@mhaadi/svg/catalog-types";');
+    expect(content).toContain('"dim": "star" | "star2" | "wide"');
+    fixture.cleanup();
+  });
+
+  it("writes the types file next to the bundle in script mode by default", () => {
+    const fixture = fixtureIcons();
+    const previous = process.cwd();
+    process.chdir(fixture.root);
+    try {
+      const result = bundleCatalogIcons({
+        names: ["dim:star"],
+        searchPaths: [fixture.root],
+        out: "icons.ts",
+      });
+      expect(result.types).toBe(join(fixture.root, "svg-catalog.d.ts"));
+      expect(existsSync(join(fixture.root, "svg-catalog.d.ts"))).toBe(true);
+    } finally {
+      process.chdir(previous);
+    }
+    fixture.cleanup();
+  });
+
+  it("keeps in-memory bundling free of file writes and honors types: false", () => {
+    const fixture = fixtureIcons();
+    const previous = process.cwd();
+    process.chdir(fixture.root);
+    try {
+      expect(
+        bundleCatalogIcons({ names: ["dim:star"], searchPaths: [fixture.root] }).types,
+      ).toBeUndefined();
+      expect(existsSync(join(fixture.root, "svg-catalog.d.ts"))).toBe(false);
+      bundleCatalogIcons({
+        names: ["dim:star"],
+        searchPaths: [fixture.root],
+        out: "icons.ts",
+        types: false,
+      });
+      expect(existsSync(join(fixture.root, "svg-catalog.d.ts"))).toBe(false);
+    } finally {
+      process.chdir(previous);
+    }
     fixture.cleanup();
   });
 });

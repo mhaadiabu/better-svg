@@ -10,7 +10,7 @@ export type BundleOptions = {
   searchPaths?: readonly string[];
   format?: "ts" | "js";
   out?: string;
-  /** Emit generated name types for editor autocomplete. true: svg-catalog.d.ts at the cwd. */
+  /** Generated name types. Defaults beside `out` when `out` is set; `false` disables; a string anchors to the cwd. */
   types?: boolean | string;
 };
 
@@ -63,7 +63,11 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
   }
   // Bundle scope is exact: the shipped set is immutable for consumers
   // like React Native, so types list precisely the bundled names and
-  // never suggest an icon the bundle does not carry.
+  // never suggest an icon the bundle does not carry. Script mode (`out`
+  // set) writes the types file beside the generated module by default;
+  // in-memory calls (no `out`) never touch the filesystem unless
+  // `types` says so.
+  const typesOption = options.types ?? (options.out ? true : false);
   const grouped = new Map<string, Set<string>>();
   for (const name of Object.keys(icons)) {
     const at = name.indexOf(":");
@@ -74,9 +78,13 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
     grouped.set(collection, set);
   }
   let typesFile: string | undefined;
-  if (options.types && grouped.size > 0) {
-    const label = options.types === true ? "svg-catalog.d.ts" : options.types;
-    typesFile = resolve(process.cwd(), label);
+  if (typesOption !== false && grouped.size > 0) {
+    typesFile =
+      typeof typesOption === "string"
+        ? resolve(process.cwd(), typesOption)
+        : options.out
+          ? resolve(dirname(options.out), "svg-catalog.d.ts")
+          : resolve(process.cwd(), "svg-catalog.d.ts");
     writeCatalogNameTypes(
       typesFile,
       [...grouped.entries()].map(([collection, set]) => [collection, [...set]] as const),

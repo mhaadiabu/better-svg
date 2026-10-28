@@ -19,7 +19,7 @@ export type CatalogScanOptions = {
   searchPaths?: string[];
   strict?: boolean;
   maxFileBytes?: number;
-  /** Emit generated name types for editor autocomplete. true: svg-catalog.d.ts at the root. */
+  /** Generated name types. On by default (svg-catalog.d.ts at the root); a string relocates the file, false disables. */
   types?: boolean | string;
 };
 
@@ -253,11 +253,12 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
   // collections the scan has seen referenced (resolved, typo, or
   // dynamic-hint-and-installed), enumerated in full so a first use of a
   // new icon still completes. Uninstalled collections join after they
-  // are installed and the next scan runs.
+  // are installed and the next scan runs. Types are on whenever the
+  // catalog scan is on; `types: false` is the explicit opt-out.
   const syncCatalogTypes = (outcome: CatalogOutcome) => {
     const option = catalogOptions?.types;
-    if (!option || !root) return;
-    const label = option === true ? "svg-catalog.d.ts" : option;
+    if (option === false || !root) return;
+    const label = typeof option === "string" ? option : "svg-catalog.d.ts";
     const seen = new Set<string>();
     for (const name of outcome.resolved.keys()) seen.add(collectionOf(name));
     for (const entry of outcome.typos) seen.add(entry.collection);

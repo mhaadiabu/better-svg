@@ -214,10 +214,10 @@ describe("catalog usage scan", () => {
 });
 
 describe("catalog name types", () => {
-  it("writes generated types scoped to collections the scan saw", async () => {
+  it("writes generated types by default, scoped to collections the scan saw", async () => {
     await setupCatalog();
     await writeFixture("src/ui/extra.tsx", '<SVG name="ghostly:star" />\n');
-    const run = await runTransformWith({ catalog: { types: true } });
+    const run = await runTransformWith({ catalog: {} });
     const file = await readFile(join(root, "svg-catalog.d.ts"), "utf8");
     expect(file).toContain('import "@mhaadi/svg/catalog-types";');
     expect(file).toContain('declare module "@mhaadi/svg/catalog-types" {');
@@ -228,9 +228,9 @@ describe("catalog name types", () => {
     );
   });
 
-  it("does not write types unless the option asks for them", async () => {
+  it("does not write types under types: false", async () => {
     await setupCatalog();
-    const run = await runTransformWith({ catalog: {} });
+    const run = await runTransformWith({ catalog: { types: false } });
     expect(existsSync(join(root, "svg-catalog.d.ts"))).toBe(false);
     expect(run.info.join("\n")).not.toContain("catalog name types");
   });

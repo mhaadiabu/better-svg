@@ -162,3 +162,30 @@ describe("offline icon bundle wildcards", () => {
     fixture.cleanup();
   });
 });
+
+describe("offline icon bundle name types", () => {
+  it("emits name types scoped to the bundled set", () => {
+    const fixture = fixtureIcons();
+    const types = join(fixture.root, "svg-catalog.d.ts");
+    const result = bundleCatalogIcons({
+      names: ["dim:star", "dim:star2", "dim:wide"],
+      searchPaths: [fixture.root],
+      types,
+    });
+    expect(result.types).toBe(types);
+    const content = readFileSync(types, "utf8");
+    expect(content).toContain('import "@mhaadi/svg/catalog-types";');
+    expect(content).toContain('"dim": "star" | "star2" | "wide"');
+    fixture.cleanup();
+  });
+
+  it("does not emit name types without the option", () => {
+    const fixture = fixtureIcons();
+    const result = bundleCatalogIcons({
+      names: ["dim:star"],
+      searchPaths: [fixture.root],
+    });
+    expect(result.types).toBeUndefined();
+    fixture.cleanup();
+  });
+});

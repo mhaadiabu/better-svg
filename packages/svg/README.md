@@ -334,9 +334,10 @@ unless you enable the optional SVGO pass below. The existing
 `import "@mhaadi/svg/vite"` registration remains available for default
 directories, but the config plugin handles custom paths and Astro SSR.
 
-The same plugin accepts `catalog: true` to auto-register icon-package
-names that appear in your source; the scan behavior, warnings, and options
-live under [Icon catalog](#icon-catalog).
+The same plugin auto-registers icon-package names that appear in your
+source: the scan is on by default, `catalog: false` turns it off, and
+`catalog: { ... }` scopes it. Scan behavior, warnings, and options live
+under [Icon catalog](#icon-catalog).
 
 ## Optional SVGO pass
 
@@ -498,20 +499,21 @@ when it cannot resolve.
 
 ### Automatic registration
 
-Vite-plugin projects skip the array entirely. Enable the source scan and the
-plugin registers what your code actually references, resolved from the same
-installed packages:
+Vite-plugin projects skip the array entirely. The source scan is on by
+default: `localSvgs()` with no options registers what your code actually
+references, resolved from the same installed packages:
 
 ```ts
 // vite.config.ts or astro.config.mjs
-localSvgs({ catalog: true });
+localSvgs(); // scan on; localSvgs({ catalog: false }) disables it
 ```
 
 The scan reads text files under the project root (skipping `node_modules`,
 `dist`, `.git`, and similar ignored directories), with the extensions
 `ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx`, and matches
-`collection:icon` literals in the same alphabet the resolver validates. What
-it does with what it finds:
+`collection:icon` literals in the same alphabet the resolver validates. When
+the scan finds nothing, no registration is appended and the build output is
+byte-identical. What it does with what it finds:
 
 - Scanned registration is appended after the `dirs` registration with
   `override: false`, so local files and your own `registerLocalSvgs` calls

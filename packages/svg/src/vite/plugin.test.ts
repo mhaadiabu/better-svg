@@ -140,13 +140,17 @@ describe("catalog usage scan", () => {
     expect(run.warnings).toEqual([]);
   });
 
-  it("scans and registers only when the catalog option is on", async () => {
+  it("scans and registers by default, and stays off under catalog: false", async () => {
     await setupCatalog();
-    const run = await runTransformWith({});
-    expect(run.result?.code?.match(/registerLocalSvgs\(/g)?.length).toBe(1);
-    expect(run.result?.code).not.toContain("testy:house");
-    expect(run.warnings).toEqual([]);
-    expect(run.info).toEqual([]);
+    const on = await runTransformWith({});
+    expect(on.result?.code?.match(/registerLocalSvgs\(/g)?.length).toBe(2);
+    expect(on.result?.code).toContain('"testy:house"');
+    expect(on.warnings).toEqual([]);
+    const off = await runTransformWith({ catalog: false });
+    expect(off.result?.code?.match(/registerLocalSvgs\(/g)?.length).toBe(1);
+    expect(off.result?.code).not.toContain("testy:house");
+    expect(off.warnings).toEqual([]);
+    expect(off.info).toEqual([]);
   });
 
   it("inherits the svgo and precompiled passes for scanned catalog icons", async () => {
@@ -161,7 +165,7 @@ describe("catalog usage scan", () => {
   });
 
   it("emits no second call when the scan finds nothing", async () => {
-    const run = await runTransformWith({ catalog: true });
+    const run = await runTransformWith({});
     expect(run.result?.code?.match(/registerLocalSvgs\(/g)?.length).toBe(1);
     expect(run.warnings).toEqual([]);
     expect(run.info).toEqual([]);

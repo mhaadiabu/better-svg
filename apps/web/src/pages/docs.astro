@@ -714,8 +714,9 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
               <code class="inline-code">&lt;SVG name="social/github"&gt;</code> renders inline with no
               fetch and no per-icon import. Add the plugin once, then use local files by name.
               Catalog icons used anywhere in your source, such as
-              <code class="inline-code">lucide:house</code>, are registered the same way when you
-              enable <a href="#catalog-auto" class="text-acid hover:underline">catalog scanning</a>.
+              <code class="inline-code">lucide:house</code>, are registered the same way — the
+              source scan runs by default, no extra flag
+              (<a href="#catalog-auto" class="text-acid hover:underline">catalog scanning</a>).
             </p>
             <p class="docs-body hidden" data-fw-show="react-native">
               React Native registers local sources ahead of build with
@@ -791,8 +792,7 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <p class="text-sm text-zinc-muted">
                   Each configured directory is watched. Adding, editing, or deleting an SVG file
                   invalidates the module graph and triggers a full page reload. An absent directory
-                  is skipped silently, not an error. With
-                  <a href="#catalog-auto" class="text-acid hover:underline">catalog scanning</a> on,
+                  is skipped silently, not an error. Catalog scanning is on by default, and
                   scanned source files are watched the same way: a change that shifts the
                   registered set reloads the page.
                 </p>
@@ -997,17 +997,18 @@ registerCatalogIcons(["hugeicons:home-01", "hugeicons:arrow-left-01"]);`} lang="
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5" id="catalog-auto">
                 <h3 class="font-semibold text-[#e8e8e8] mb-3">Automatic registration</h3>
                 <p class="text-sm text-zinc-muted mb-3">
-                  Vite-plugin projects skip the array entirely. Enable the source scan and the
-                  plugin registers what your code actually references, resolved from the same
-                  installed packages:
+                  Vite-plugin projects skip the array entirely. The source scan is on by default,
+                  and the plugin registers what your code actually references, resolved from the
+                  same installed packages:
                 </p>
                 <CodeBlock code={`import { defineConfig } from "vite";
 import localSvgs from "@mhaadi/svg/vite/plugin";
 
 export default defineConfig({
-  plugins: [localSvgs({ catalog: true })],
+  plugins: [localSvgs()], // scan on by default; catalog: false disables it
 });`} lang="ts" file="vite.config.ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
+                  <li>When the scan finds nothing, no registration is appended and the build output is byte-identical — unused catalogs cost nothing.</li>
                   <li>The scan reads text files under the project root, skipping <code class="inline-code">node_modules</code>, <code class="inline-code">dist</code>, <code class="inline-code">.git</code>, and similar ignored directories, with the extensions <code class="inline-code">ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx</code>, and matches <code class="inline-code">collection:icon</code> literals in the same alphabet the resolver validates.</li>
                   <li>Registration lands after the <code class="inline-code">dirs</code> scan with <code class="inline-code">override: false</code>, so local files and your own <code class="inline-code">registerLocalSvgs</code> calls keep precedence. <a href="#catalog-bundle" class="text-acid hover:underline">React Native</a> stays on bundled icons; the fallback chain is untouched.</li>
                   <li>A name whose collection is installed but that resolves to nothing logs a warning naming the files involved (a typo, or a hidden icon). <code class="inline-code">{`catalog: { strict: true }`}</code> escalates that case to a build error: <code class="inline-code">{"No source found for these catalog icons: lucide:hous (catalog scan strict mode)."}</code></li>

@@ -38,9 +38,13 @@ const validatePathList = (kind: string, entries: readonly string[]) => {
 export const resolveCatalogOptions = (
   option: CatalogScanOptions | boolean | undefined,
 ): CatalogScanOptions | undefined => {
-  if (option === undefined || option === false) return undefined;
+  // Catalog scanning is on by default: an omitted option scans with the
+  // standard defaults and registers only what resolves, so unused
+  // collections emit nothing and the output stays byte-identical.
+  // `catalog: false` is the explicit opt-out.
+  if (option === false) return undefined;
   const chosen =
-    option === true
+    option === true || option === undefined
       ? {}
       : (() => {
           if (typeof option !== "object" || option === null || Array.isArray(option)) {
@@ -73,6 +77,11 @@ export type LocalSvgOptions = {
   dirs?: string[];
   svgo?: SvgoOption;
   precompiled?: boolean;
+  /**
+   * Catalog source scan. On by default; `false` disables it and an
+   * object adjusts scope (`include`, `exclude`, `strict`,
+   * `maxFileBytes`, `searchPaths`, `types`).
+   */
   catalog?: boolean | CatalogScanOptions;
 };
 

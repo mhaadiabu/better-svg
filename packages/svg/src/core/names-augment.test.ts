@@ -46,27 +46,19 @@ const runTsc = (dir: string) =>
   spawnSync(tsc, ["-p", join(dir, "tsconfig.json")], { encoding: "utf8" });
 
 describe("catalog name type augmentation", () => {
-  it(
-    "propagates generated unions into CatalogSvgName via module augmentation",
-    () => {
-      const dir = writeScratch(generateCatalogNameTypes([["testy", ["house", "zap"]]]));
-      const run = runTsc(dir);
-      if (run.status !== 0) {
-        throw new Error(`tsc rejected the augmentation:\n${run.stdout}\n${run.stderr}`);
-      }
-      rmSync(dir, { recursive: true, force: true });
-    },
-    30_000,
-  );
+  it("propagates generated unions into CatalogSvgName via module augmentation", () => {
+    const dir = writeScratch(generateCatalogNameTypes([["testy", ["house", "zap"]]]));
+    const run = runTsc(dir);
+    if (run.status !== 0) {
+      throw new Error(`tsc rejected the augmentation:\n${run.stdout}\n${run.stderr}`);
+    }
+    rmSync(dir, { recursive: true, force: true });
+  }, 30_000);
 
-  it(
-    "fails the same check without an augmentation, so the guard is not vacuous",
-    () => {
-      const dir = writeScratch(generateCatalogNameTypes([]));
-      const run = runTsc(dir);
-      expect(run.status, run.stdout + run.stderr).not.toBe(0);
-      rmSync(dir, { recursive: true, force: true });
-    },
-    30_000,
-  );
+  it("fails the same check without an augmentation, so the guard is not vacuous", () => {
+    const dir = writeScratch(generateCatalogNameTypes([]));
+    const run = runTsc(dir);
+    expect(run.status, run.stdout + run.stderr).not.toBe(0);
+    rmSync(dir, { recursive: true, force: true });
+  }, 30_000);
 });

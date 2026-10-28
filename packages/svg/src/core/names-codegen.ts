@@ -6,10 +6,7 @@ export type CatalogNameEntry = readonly [collection: string, names: readonly str
 
 const canonicalize = (entries: readonly CatalogNameEntry[]) =>
   entries
-    .map(
-      ([collection, names]) =>
-        [collection, [...new Set(names)].sort()] as const,
-    )
+    .map(([collection, names]) => [collection, [...new Set(names)].sort()] as const)
     .filter(([, names]) => names.length > 0)
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
 

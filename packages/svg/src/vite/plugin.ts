@@ -74,7 +74,7 @@ export const resolveCatalogOptions = (
   ) {
     throw new Error("The catalog option maxFileBytes must be a positive number of bytes.");
   }
-  if (chosen.types !== undefined && chosen.types !== true) {
+  if (chosen.types !== undefined && chosen.types !== false && chosen.types !== true) {
     if (typeof chosen.types !== "string") {
       throw new Error("The catalog option types must be true or a relative .d.ts path.");
     }
@@ -272,7 +272,9 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
     }
     if (entries.length === 0) return;
     if (writeCatalogNameTypes(resolve(root, label), entries) === "written") {
-      const totals = entries.map(([collection, names]) => `${collection}: ${names.length}`).join(", ");
+      const totals = entries
+        .map(([collection, names]) => `${collection}: ${names.length}`)
+        .join(", ");
       announce(`${pluginPrefix} catalog name types written to ${label} (${totals})`);
     }
   };

@@ -77,7 +77,10 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
   if (options.types && grouped.size > 0) {
     const label = options.types === true ? "svg-catalog.d.ts" : options.types;
     typesFile = resolve(process.cwd(), label);
-    writeCatalogNameTypes(typesFile, [...grouped.entries()].map(([collection, set]) => [collection, [...set]] as const));
+    writeCatalogNameTypes(
+      typesFile,
+      [...grouped.entries()].map(([collection, set]) => [collection, [...set]] as const),
+    );
   }
   const format = options.format ?? (options.out ? bundleFormat(options.out) : "ts");
   if (!format) {
@@ -90,5 +93,10 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
     mkdirSync(dirname(options.out), { recursive: true });
     writeFileSync(options.out, code);
   }
-  return { icons, code, ...(options.out ? { file: options.out } : {}), ...(typesFile ? { types: typesFile } : {}) };
+  return {
+    icons,
+    code,
+    ...(options.out ? { file: options.out } : {}),
+    ...(typesFile ? { types: typesFile } : {}),
+  };
 };

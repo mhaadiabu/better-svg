@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+### Added
+
+- Editor autocomplete for catalog icon names: `localSvgs({ catalog: { types: true } })` writes a generated `svg-catalog.d.ts` that augments `SvgName` with `collection:icon` unions read from the icon packages you have installed, so typing `name="lucide:` suggests real icon names in React, Vue, Svelte, Solid, and (best-effort) Angular templates. Unions cover the collections your source references, listed in full, and the file rewrites only when an icon package's name list changes. Pass a relative path to place the file elsewhere. Any string still compiles, so dynamic names, unknown collections, and the `/assets/svg/{name}.svg` fallback keep working.
+- Emit the same name types from `bundleCatalogIcons` with its `types` option, scoped to exactly the bundled names so offline runtimes never autocomplete an icon the bundle does not carry.
+
 ## 0.5.0
 
 ### Added

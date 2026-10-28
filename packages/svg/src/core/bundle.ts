@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { expandCatalogNames, resolveIconSource } from "./catalog";
+import { writeCatalogNameTypes } from "./names-codegen";
 
 export type IconBundle = Record<string, string>;
 
@@ -9,12 +10,15 @@ export type BundleOptions = {
   searchPaths?: readonly string[];
   format?: "ts" | "js";
   out?: string;
+  /** Emit generated name types for editor autocomplete. true: svg-catalog.d.ts at the cwd. */
+  types?: boolean | string;
 };
 
 export type BundleResult = {
   icons: IconBundle;
   code: string;
   file?: string;
+  types?: string;
 };
 
 const serializeIcons = (icons: IconBundle, format: "ts" | "js") => {
@@ -57,6 +61,24 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
       `[@mhaadi/svg] bundled ${Object.keys(icons).length} wildcard catalog icons into the data module; pin explicit names or prefixes to trim it.`,
     );
   }
+  // Bundle scope is exact: the shipped set is immutable for consumers
+  // like React Native, so types list precisely the bundled names and
+  // never suggest an icon the bundle does not carry.
+  const grouped = new Map<string, Set<string>>();
+  for (const name of Object.keys(icons)) {
+    const at = name.indexOf(":");
+    if (at <= 0) continue;
+    const collection = name.slice(0, at);
+    const set = grouped.get(collection) ?? new Set<string>();
+    set.add(name.slice(at + 1));
+    grouped.set(collection, set);
+  }
+  let typesFile: string | undefined;
+  if (options.types && grouped.size > 0) {
+    const label = options.types === true ? "svg-catalog.d.ts" : options.types;
+    typesFile = resolve(process.cwd(), label);
+    writeCatalogNameTypes(typesFile, [...grouped.entries()].map(([collection, set]) => [collection, [...set]] as const));
+  }
   const format = options.format ?? (options.out ? bundleFormat(options.out) : "ts");
   if (!format) {
     throw new Error(
@@ -68,5 +90,5 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
     mkdirSync(dirname(options.out), { recursive: true });
     writeFileSync(options.out, code);
   }
-  return { icons, code, ...(options.out ? { file: options.out } : {}) };
+  return { icons, code, ...(options.out ? { file: options.out } : {}), ...(typesFile ? { types: typesFile } : {}) };
 };

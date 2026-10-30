@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+
+const title = "404: Page Not Found | BetterSVG";
+---
+
+<Base title={title}>
+  <!-- NAV -->
+  <nav class="border-b border-coal-2 bg-coal">
+    <div class="mx-auto flex max-w-6xl items-center px-4 py-3 lg:py-4">
+      <a href="/" class="flex items-center gap-2.5">
+        <svg class="h-6 w-6 text-acid" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
+          <path d="M4 16 Q12 10 20 16 Q12 22 4 16Z" fill="currentColor" opacity="0.4"/>
+        </svg>
+        <span class="font-display text-xl tracking-wider text-[#e8e8e8]">BETTERSVG</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <section id="main-content" class="mx-auto flex min-h-[60vh] max-w-6xl flex-col items-center justify-center px-4 text-center">
+    <p class="font-mono text-xs tracking-widest text-acid uppercase">HTTP 404</p>
+    <h1 class="mt-4 font-display text-[clamp(3rem,10vw,7rem)] leading-none tracking-wider text-[#e8e8e8]">
+      DEAD<span class="text-acid acid-glow">END.</span>
+    </h1>
+    <p class="mt-6 max-w-md text-zinc-muted">
+      This page does not exist. It may have moved or the URL is wrong.
+    </p>
+    <a href="/docs" class="group mt-8 flex items-center gap-2 bg-acid px-5 py-2.5 text-sm font-semibold text-coal transition-all hover:bg-acid-dim hover:gap-3">
+      Back to the docs
+      <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </section>
+</Base>

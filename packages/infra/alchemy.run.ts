@@ -16,6 +16,7 @@ export const web = await Vite("web", {
   cwd: "../../apps/web",
   assets: {
     directory: "dist",
+    not_found_handling: "404-page",
     run_worker_first: true,
   },
   bindings: process.env.VITE_SERVER_URL

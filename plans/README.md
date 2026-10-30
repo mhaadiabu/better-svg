@@ -12,6 +12,7 @@ index.
 | 004  | Fix Flutter sanitizer (discarded result + close-tag leak) | P1       | S      | BLOCKED (no flutter toolchain — verified by reading; edits committed)                 |
 | 005  | Sprite deduplication design (`<symbol>` + `<use>`, #18)   | P2       | M      | DONE (plan delivered; implementation tracked under M1+)                               |
 | 006  | SVGO default-on policy and preset research                | P2       | M      | DONE (plan delivered; implementation parked by maintainer decision until after 0.4.0) |
+| 007  | Auto-register catalog icons from source usage (Vite scan) | P2       | M      | IN PROGRESS (implemented on `advisor/007-catalog-auto-registration`, draft PR open)   |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -32,3 +33,10 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   the sprite milestone must bail out of sprite mode when
   `fill`/`stroke` props are set instead of building on that changing
   code.
+- **007 (catalog auto-registration) is independent** of 004/005/006 but
+  inherits the plugin's `svgo`/`precompiled` options for scanned icons
+  rather than growing new ones. If 006 later changes those defaults,
+  scanned catalog icons pick the change up automatically through the
+  same code path — there is nothing extra to reconcile, just keep the
+  plan's rule that scanned registration reuses the dirs pipeline instead
+  of forking it.

@@ -334,13 +334,20 @@ unless you enable the optional SVGO pass below. The existing
 `import "@mhaadi/svg/vite"` registration remains available for default
 directories, but the config plugin handles custom paths and Astro SSR.
 
+The same plugin auto-registers icon-package names that appear in your
+source: the scan is on by default, `catalog: false` turns it off, and
+`catalog: { ... }` scopes it. Scan behavior, warnings, and options live
+under [Icon catalog](#icon-catalog).
+
 ## Optional SVGO pass
 
 The local-discovery plugins (`@mhaadi/svg/vite/plugin` and
 `@mhaadi/svg/astro/integration`) accept an `svgo` option that runs SVGO over
 every discovered file before registration. The pass is off by default and
 nothing is plumbed through unless you opt in. Remote, `?raw`, or manually
-registered SVGs are never touched.
+registered SVGs are never touched; catalog icons found by the `catalog`
+scan go through the same pipeline because the plugin produces their markup
+the same way.
 
 Install svgo first; it is an optional peer dependency:
 
@@ -481,6 +488,58 @@ falls back to the `/assets/svg/{collection:icon}.svg` URL, the request 404s,
 and the adapter's `fallback` state renders. To catch typos, compare the
 return value, the list of names that actually registered, against the list
 you passed in.
+
+Names also accept a single trailing wildcard. `registerCatalogIcons(["lucide:*"])`
+registers every name the installed lucide source can serve, and
+`["lucide:arrow*"]` matches a name prefix; `bundleCatalogIcons` expands the
+same list form, so an offline bundle can cover a whole collection. Expansion
+logs the icon count and approximate markup size once it exceeds 250 icons or
+256 KB, and an explicit name in the same list still fails `bundleCatalogIcons`
+when it cannot resolve.
+
+### Automatic registration
+
+Vite-plugin projects skip the array entirely. The source scan is on by
+default: `localSvgs()` with no options registers what your code actually
+references, resolved from the same installed packages:
+
+```ts
+// vite.config.ts or astro.config.mjs
+localSvgs(); // scan on; localSvgs({ catalog: false }) disables it
+```
+
+The scan reads text files under the project root (skipping `node_modules`,
+`dist`, `.git`, and similar ignored directories), with the extensions
+`ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx`, and matches
+`collection:icon` literals in the same alphabet the resolver validates. When
+the scan finds nothing, no registration is appended and the build output is
+byte-identical. What it does with what it finds:
+
+- Scanned registration is appended after the `dirs` registration with
+  `override: false`, so local files and your own `registerLocalSvgs` calls
+  keep precedence. React Native and other offline runtimes stay on
+  `bundleCatalogIcons`; nothing about the fallback chain changes.
+- A name whose collection is installed but that resolves to nothing logs a
+  warning naming the files involved (a typo, or a hidden icon).
+  `catalog: { strict: true }` escalates that case to a build error under the
+  same `No source found for these catalog icons` message the bundler uses.
+- A referenced collection with no installed package logs the install hint,
+  e.g. `Add @iconify-json/lucide (or lucide-static) and rerun.`
+- Dynamic names built from template literals (`` `lucide:${id}` ``) cannot
+  resolve by scanning; they log a hint pointing at `registerCatalogIcons`
+  and keep rendering through the `/assets/svg/{name}.svg` fallback.
+- Warnings are advisory by default; only `strict` fails the build, and it
+  fails only on names whose collection is installed.
+- Narrow the scan with `catalog: { include: ["src"] }`, add ignored paths
+  with `exclude`, lower `maxFileBytes` (default 512 KB), or pass
+  `searchPaths` when icon packages live outside the project. The `svgo` and
+  `precompiled` plugin options apply to scanned icons exactly as they do to
+  discovered files.
+
+In dev the scan result is cached per plugin instance and re-scanned on
+file changes: when a scanned file changes, the plugin re-runs the scan and
+reloads the page if the registered set changed. When nothing is found the
+plugin emits nothing.
 
 ## Offline icon bundles
 

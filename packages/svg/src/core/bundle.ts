@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { expandCatalogNames, resolveIconSource } from "./catalog";
 import { writeCatalogNameTypes } from "./names-codegen";
@@ -38,6 +38,12 @@ const bundleFormat = (out: string) => {
 };
 
 export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
+  const format = options.format ?? (options.out ? bundleFormat(options.out) : "ts");
+  if (!format) {
+    throw new Error(
+      `Unsupported bundle output extension: ${options.out}. Use .ts, .mts, .js, or .mjs, or set format.`,
+    );
+  }
   const names = expandCatalogNames(options.names, options);
   const icons: IconBundle = {};
   const missing: string[] = [];
@@ -78,23 +84,18 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
     grouped.set(collection, set);
   }
   let typesFile: string | undefined;
-  if (typesOption !== false && grouped.size > 0) {
-    typesFile =
+  if (typesOption !== false) {
+    const target =
       typeof typesOption === "string"
         ? resolve(process.cwd(), typesOption)
         : options.out
           ? resolve(dirname(options.out), "svg-catalog.d.ts")
           : resolve(process.cwd(), "svg-catalog.d.ts");
     writeCatalogNameTypes(
-      typesFile,
+      target,
       [...grouped.entries()].map(([collection, set]) => [collection, [...set]] as const),
     );
-  }
-  const format = options.format ?? (options.out ? bundleFormat(options.out) : "ts");
-  if (!format) {
-    throw new Error(
-      `Unsupported bundle output extension: ${options.out}. Use .ts, .mts, .js, or .mjs, or set format.`,
-    );
+    if (existsSync(target)) typesFile = target;
   }
   const code = serializeIcons(icons, format);
   if (options.out) {

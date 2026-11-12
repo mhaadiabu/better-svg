@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resolveIconSource, registerCatalogIcons } from "./catalog";
+import { resolveIconSource, registerCatalogIcons, installedCollections } from "./catalog";
 import { resolveSvgSource, registerLocalSvgs } from "./local";
 
 const makeFixture = () => {
@@ -16,6 +16,28 @@ const makeFixture = () => {
 };
 
 describe("icon catalog", () => {
+  it("discovers supported installed source packages without source references", () => {
+    const fixture = makeFixture();
+    try {
+      fixture.write("@iconify-json/testy/icons.json", JSON.stringify({ icons: {} }));
+      fixture.write("@iconify/json/json/other.json", JSON.stringify({ icons: {} }));
+      fixture.write("lucide-static/icons/house.svg", "<svg/>");
+      fixture.write("@tabler/icons/icons/filled/house.svg", "<svg/>");
+      fixture.write("@phosphor-icons/core/assets/regular/house.svg", "<svg/>");
+      fixture.write("@hugeicons/core-free-icons/dist/cjs/HouseIcon.js", "module.exports = [];");
+      expect(installedCollections({ searchPaths: [fixture.root, fixture.root] })).toEqual([
+        "hugeicons",
+        "lucide",
+        "other",
+        "phosphor",
+        "tabler",
+        "testy",
+      ]);
+    } finally {
+      rmSync(fixture.root, { recursive: true, force: true });
+    }
+  });
+
   it("rejects malformed names", () => {
     expect(resolveIconSource("", { searchPaths: ["/x"] })).toBeUndefined();
     expect(resolveIconSource("house", { searchPaths: ["/x"] })).toBeUndefined();

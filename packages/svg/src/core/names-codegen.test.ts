@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { generateCatalogNameTypes, writeCatalogNameTypes } from "./names-codegen";
@@ -45,5 +45,33 @@ describe("generated catalog name types", () => {
     expect(writeCatalogNameTypes(file, [["testy", ["house"]]])).toBe("unchanged");
     expect(writeCatalogNameTypes(file, [["testy", ["house", "zap"]]])).toBe("written");
     rmSync(root, { recursive: true, force: true });
+  });
+
+  it("clears stale generated declarations without creating unused files", () => {
+    const root = mkdtempSync(join(tmpdir(), "svg-names-empty-"));
+    const file = join(root, "svg-catalog.d.ts");
+    try {
+      expect(writeCatalogNameTypes(file, [])).toBe("unchanged");
+      expect(existsSync(file)).toBe(false);
+      writeCatalogNameTypes(file, [["testy", ["house"]]]);
+      expect(writeCatalogNameTypes(file, [])).toBe("written");
+      expect(readFileSync(file, "utf8")).not.toContain('"testy"');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("does not overwrite a user-owned declaration", () => {
+    const root = mkdtempSync(join(tmpdir(), "svg-names-owned-"));
+    const file = join(root, "svg-catalog.d.ts");
+    try {
+      writeFileSync(file, "export interface MyIcons {}");
+      expect(() => writeCatalogNameTypes(file, [["testy", ["house"]]])).toThrow(
+        "Refusing to overwrite",
+      );
+      expect(readFileSync(file, "utf8")).toBe("export interface MyIcons {}");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });

@@ -399,6 +399,38 @@ export const collectionIconNames = (
   options: CatalogOptions = {},
 ): readonly string[] => enumerateCollection(collection, searchRoots(options));
 
+export const installedCollections = (options: CatalogOptions = {}): readonly string[] => {
+  const collections = new Set<string>();
+  for (const root of new Set(searchRoots(options))) {
+    for (const entry of readEntries(join(root, "@iconify-json")) ?? []) {
+      if (
+        collectionPattern.test(entry.name) &&
+        statTarget(join(root, "@iconify-json", entry.name, "icons.json"))?.isFile()
+      )
+        collections.add(entry.name);
+    }
+    for (const entry of readEntries(join(root, "@iconify", "json", "json")) ?? []) {
+      if (entry.isFile() && entry.name.endsWith(".json")) {
+        const collection = entry.name.slice(0, -5);
+        if (collectionPattern.test(collection)) collections.add(collection);
+      }
+    }
+    for (const [collection, probes] of Object.entries(packageProbes)) {
+      if (probes.some((probe) => statTarget(join(root, probe.package, probe.dir))?.isDirectory()))
+        collections.add(collection);
+    }
+    if (statTarget(join(root, hugeiconsPackage, "dist", "cjs"))?.isDirectory())
+      collections.add("hugeicons");
+  }
+  return [...collections].sort();
+};
+
+export const clearCatalogCache = () => {
+  collectionData.clear();
+  fileMarkup.clear();
+  enumeratedNames.clear();
+};
+
 export const registerCatalogIcons = (names: readonly string[], options: CatalogOptions = {}) => {
   const expanded = expandCatalogNames(names, options);
   const wildcards = names.some((name) => name.includes("*"));

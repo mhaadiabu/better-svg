@@ -164,6 +164,20 @@ describe("offline icon bundle wildcards", () => {
 });
 
 describe("offline icon bundle name types", () => {
+  it("clears stale names when an offline bundle becomes empty", () => {
+    const fixture = fixtureIcons();
+    const out = join(fixture.root, "icons.ts");
+    try {
+      bundleCatalogIcons({ names: ["dim:star"], searchPaths: [fixture.root], out });
+      bundleCatalogIcons({ names: [], searchPaths: [fixture.root], out });
+      expect(readFileSync(join(fixture.root, "svg-catalog.d.ts"), "utf8")).toContain(
+        "interface SvgCatalogIcons {}",
+      );
+    } finally {
+      fixture.cleanup();
+    }
+  });
+
   it("emits name types scoped to the bundled set", () => {
     const fixture = fixtureIcons();
     const types = join(fixture.root, "svg-catalog.d.ts");

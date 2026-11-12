@@ -1,5 +1,5 @@
 // Augment point for generated catalog name types. The generated
-// svg-catalog.d.ts adds one entry per scan-seen collection here, keyed
+// svg-catalog.d.ts adds one entry per installed or selected collection here, keyed
 // by collection prefix, so `SvgName` widens to `collection:icon` unions
 // while staying open to any string (dynamic names, unknown
 // collections, the fetch fallback).

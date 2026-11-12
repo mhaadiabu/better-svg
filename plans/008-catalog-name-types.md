@@ -9,6 +9,9 @@
 
 ## Status
 
+Current behavior follows the maintainer's 2026-11-12 decision below. It
+supersedes the original referenced-collections-only scope.
+
 - **Priority**: P1 (completes the "TypeScript-first" positioning the
   docs claim but never shipped; the v0.1.0 moat was marketing)
 - **Effort**: M
@@ -234,3 +237,32 @@ suspects drift:
   so the language service sees the union. Actual Angular template
   completion is unverified in this environment and documented as
   best-effort in both docs.
+
+## Review corrections, 2026-11-12
+
+- The maintainer chose discovery of supported installed collections by default,
+  with `catalog.collections` to narrow editor suggestions. This option does not
+  restrict source registration. Automatic package installation remains out of
+  scope.
+- Generate during `configResolved`, before page requests or registry imports.
+  First-use completion no longer depends on an existing source reference.
+- Watch package manifests and lockfiles at the configured search paths and
+  their ancestor directories. Refresh source caches and generated declarations
+  on dependency changes. Manual package replacement without a manifest or
+  lockfile change requires restarting Vite.
+- Empty installed or selected sets clear existing generated declarations.
+  Empty offline bundles do the same. Fresh empty projects create no file.
+  Never overwrite declarations without the generator's ownership header.
+- Packed-consumer verification exposed additional declaration-emission bugs.
+  Explicit React, Vue, and Angular export annotations preserve the augmentable
+  name alias. Astro must omit the native `name` and `src` attributes before
+  inheriting its SVG options.
+- `scripts/check-catalog-types.mjs` copies npm's publish-listed files into a
+  temporary consumer and uses real package exports, without source-path
+  aliases. It checks generated suggestions through all eight public adapter
+  entry points and React JSX using TypeScript's language service. Clearing the
+  declaration must remove those suggestions. `check:package` runs this check
+  after sourcemap verification.
+- Other framework template language-service integrations remain dependent on
+  their editor tooling. The packed prop declarations are verified; no claim
+  is made that every framework's template editor was exercised.

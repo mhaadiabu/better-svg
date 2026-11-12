@@ -553,35 +553,48 @@ plugin emits nothing.
 
 ### Name types
 
-Name types are on by default: with the plugin (and the scan) active, a
-generated `svg-catalog.d.ts` lands in your project and feeds editor
-autocomplete for the `name` prop. The file augments `SvgName` with
-`collection:icon` unions generated from the icon packages you have installed,
-so typing `name="lucide:` suggests the collection's real icon names. Nothing
-is written until the scan sees a catalog name; set `catalog: { types: false }`
-to turn the file off:
+Name types are on by default. When Vite resolves its configuration,
+`svgPlugin()` discovers installed icon collections and writes
+`svg-catalog.d.ts`, before any page request or registry import. The generated
+file augments `SvgName`, so typing `name="lucide:` suggests real names before
+you have written your first icon. The plugin does not install packages.
 
 ```ts
-localSvgs(); // types file written once the scan sees catalog names
-localSvgs({ catalog: { types: "types/svg-catalog.d.ts" } }); // relocatable
-localSvgs({ catalog: { types: false } }); // off
+svgPlugin();
+svgPlugin({ catalog: { collections: ["lucide", "tabler"] } });
+svgPlugin({ catalog: { types: "types/svg-catalog.d.ts" } });
+svgPlugin({ catalog: { types: false } });
 ```
 
-The unions cover the collections your source actually references (the scan's
-seen set, including dynamic-hint collections), listed in full so the first
-use of a new icon still completes. Regeneration is digest-based: the file
-rewrites only when an icon package's name list changes or a new collection
-qualifies. Unions are suggestions, not enforcement — any string still
-compiles, which keeps dynamic names, unknown collections, and the
-`/assets/svg/{name}.svg` fallback working.
+By default the unions cover every installed collection the resolver supports,
+including Iconify data packages and the supported SVG and Hugeicons sources.
+`catalog.collections` narrows suggestions only, not source registration.
+Use it when a package such as `@iconify/json` contains more collections than
+you want in the editor. `collections: []` clears the suggestions.
 
-The file is generated: add it to your `tsconfig` `include` (or a
-`/// <reference path="..." />` in an ambient entry) and gitignore it.
-React/Vue/Svelte/Solid templates pick the unions up through their
-TypeScript-backed language tools; Angular templates depend on the language
-service, and Angular's component input is typed for it. `bundleCatalogIcons`
-follows the same rule: script mode (an `out` path set) writes the types file
-by default, `types: false` turns it off, and in-memory calls (no `out`) never
+In dev, package manifest and lockfile changes refresh collection discovery,
+cached source data, and the generated file. Restart Vite if you replace a
+source package manually without changing a manifest or lockfile. Identical
+content does not rewrite the file. Removing the last installed or selected
+collection clears old generated declarations. No file is created if there
+have never been any suggestions. The generator refuses to overwrite a file
+without its generated-file header.
+
+These are suggestions, not validation. Any string still compiles, including
+dynamic names, unknown collections, and `/assets/svg/{name}.svg` fallbacks.
+
+Include the generated file in your `tsconfig` and gitignore it. Keep any
+other existing `include` entries:
+
+```json
+{ "include": ["src", "svg-catalog.d.ts"] }
+```
+
+Start Vite once to create the file. Framework template completion depends on
+its language tools. The published adapter prop types share the generated
+union; React JSX completion is also checked with TypeScript's language
+service. `bundleCatalogIcons` writes the types file in script mode
+by default when `out` is set, `types: false` turns it off, and in-memory calls without `out` never
 write unless `types` says so. Its unions are scoped to exactly the bundled
 names, since an offline bundle's set is fixed.
 

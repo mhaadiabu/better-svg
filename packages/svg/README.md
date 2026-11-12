@@ -516,8 +516,8 @@ svgPlugin(); // scan on; svgPlugin({ catalog: false }) disables it
 The scan reads source files under the project root, skipping `node_modules`,
 build output, declarations, tests, and stories. It supports
 `ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx` and reads complete
-`collection:icon` string literals in code and `name` attributes. It skips
-comments, markup prose, Markdown code examples, class names, and embedded
+`collection:icon` string literals in code and component or SVG `name` attributes. It skips
+comments, markup prose, Markdown code examples, class names, native form and metadata names, and embedded
 example strings. It is a source heuristic, not dependency-graph tree shaking.
 Constants and arrays can register icons even if their modules are unused. When
 the scan finds nothing, no registration is appended and the build output is
@@ -547,8 +547,8 @@ byte-identical. What it does with what it finds:
 
 In dev the scan result is cached per plugin instance and re-scanned on
 file changes: when a scanned file changes, the plugin re-runs the scan and
-reloads the page if the registered set changed. When nothing is found the
-plugin emits nothing.
+reloads the page if the registered set changed. When no names resolve, no
+catalog registration is appended.
 
 ## Offline icon bundles
 

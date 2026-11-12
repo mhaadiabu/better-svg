@@ -1,7 +1,7 @@
 import type { Dirent } from "node:fs";
 import { readFile, readdir, realpath, stat } from "node:fs/promises";
 import { relative, resolve, sep } from "node:path";
-import { catalogLiterals } from "./extract";
+import { catalogLiterals } from "./extract.js";
 
 export type ScanOptions = {
   include?: string[];

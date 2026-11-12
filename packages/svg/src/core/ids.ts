@@ -1,5 +1,5 @@
-import type { SvgNode } from "./ast";
-import { inlineSvgFromNode, type ParsedInlineSvg } from "./sanitize";
+import type { SvgNode } from "./ast.js";
+import { inlineSvgFromNode, type ParsedInlineSvg } from "./sanitize.js";
 
 let nextId = 0;
 const instanceKey = Math.random().toString(36).slice(2);

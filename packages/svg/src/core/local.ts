@@ -1,7 +1,7 @@
-import { sanitizeNode, domParserAvailable, type SvgNode } from "./ast";
-import { cacheParsedSvg } from "./cache";
-import { inlineSvgFromNode, parseInlineSvg } from "./sanitize";
-import { isInlineSvg } from "./url";
+import { sanitizeNode, domParserAvailable, type SvgNode } from "./ast.js";
+import { cacheParsedSvg } from "./cache.js";
+import { inlineSvgFromNode, parseInlineSvg } from "./sanitize.js";
+import { isInlineSvg } from "./url.js";
 
 type SvgModuleMap = Record<string, string>;
 
@@ -46,7 +46,7 @@ const seedPrecompiled = (name: string, markup: string, tree: SvgNode) => {
     cacheParsedSvg(markup, true, parsed, markup, parseInlineSvg);
     return;
   }
-  void import("./xml")
+  void import("./xml.js")
     .then(({ parseXmlSvg }) => cacheParsedSvg(markup, true, parsed, markup, parseXmlSvg))
     .catch(() => {});
 };
@@ -88,4 +88,4 @@ export const resolveSvgSource = (name: string) => {
   return `/assets/svg/${normalized}.svg`;
 };
 
-export type { SvgName, SvgNameInput } from "./names";
+export type { SvgName, SvgNameInput } from "./names.js";

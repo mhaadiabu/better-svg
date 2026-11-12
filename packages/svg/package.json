@@ -119,6 +119,8 @@
     "check:package": "node scripts/check-package.mjs && node scripts/check-catalog-types.mjs"
   },
   "dependencies": {
+    "@csstools/css-tokenizer": "^3.0.4",
+    "@iconify/utils": "^3.1.7",
     "@xmldom/xmldom": "^0.9.12"
   },
   "devDependencies": {

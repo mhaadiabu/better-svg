@@ -1,6 +1,6 @@
-import { renderNode, type SvgNode } from "./ast";
-import { createSvgId } from "./ids";
-import type { ParsedInlineSvg } from "./sanitize";
+import { renderNode, type SvgNode } from "./ast.js";
+import { createSvgId } from "./ids.js";
+import type { ParsedInlineSvg } from "./sanitize.js";
 
 export type SvgPresentation = {
   size?: string | number;

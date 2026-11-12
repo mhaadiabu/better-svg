@@ -16,18 +16,18 @@ import {
   resolveSource,
   toCamelCase,
   type SvgNameInput,
-} from "../core";
+} from "../core/index.js";
 import {
   createSvgId,
   rewriteSvgAttributes,
   rewriteSvgValue,
   scopeParsedSvgIds,
   withSvgRootId,
-} from "../core/ids";
-import { withSvgColorOverrides } from "../core/colors";
+} from "../core/ids.js";
+import { withSvgColorOverrides } from "../core/colors.js";
 
-import type { ParsedInlineSvg } from "../core/sanitize";
-import { createSvgPresentation, svgDimensions, svgViewBox } from "../core/presentation";
+import type { ParsedInlineSvg } from "../core/sanitize.js";
+import { createSvgPresentation, svgDimensions, svgViewBox } from "../core/presentation.js";
 
 type State = { status: "loading" } | { status: "error" } | { status: "ready"; content: ParsedSvg };
 

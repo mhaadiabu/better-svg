@@ -17,6 +17,32 @@
 - Report missing packages for explicit icon names, warn about typos in installed collections, and explain manual registration for dynamic names, including dynamic-only collections. `catalog.strict` turns typo warnings into build errors. Comments, prose, documentation examples, classes, declarations, tests, and stories do not register icons.
 - Expand catalog names with a single trailing wildcard: `registerCatalogIcons(["lucide:*"])` registers every name the installed source serves, `["lucide:arrow*"]` matches a name prefix, and `bundleCatalogIcons` expands the same form. Expansion logs the icon count and approximate markup size above 250 icons or 256 KB, wildcards that match nothing warn about the missing package, and explicit names in the same list still fail the bundle when they cannot resolve.
 
+## 0.4.3
+
+### Security
+
+- Decode CSS tokens before checking style URLs, so escaped function names and escaped targets cannot bypass fragment-only filtering.
+- Reject malformed CSS URL syntax and resource-selection functions such as `image-set()`, `image()`, and `src()` in sanitized styles.
+
+### Fixed
+
+- Canonicalize alternate XLink namespace prefixes so references survive HTML insertion and per-instance ID rewriting.
+
+## 0.4.2
+
+### Fixed
+
+- Return missing-source results for unknown catalog prefixes such as `constructor`, and reject malformed Iconify collections without crashing.
+- Preserve Iconify flips and rotations across alias chains and offline bundles.
+- Preserve the native Hugeicons wrapper's unfilled default for outline paths.
+
+## 0.4.1
+
+### Fixed
+
+- Resolve the catalog, Vite plugin, and Astro integration in native Node ESM, including their internal module imports.
+- Use explicit JavaScript paths in published declarations and framework adapters.
+
 ## 0.4.0
 
 ### Added

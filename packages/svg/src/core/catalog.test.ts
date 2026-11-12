@@ -166,13 +166,13 @@ describe("icon catalog", () => {
       }),
     );
     expect(resolveIconSource("hugeicons:arrow-left-01", { searchPaths: [fixture.root] })).toBe(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 6C15 6 9 10.4 9 12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M15 6C15 6 9 10.4 9 12" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" /></svg>`,
     );
     expect(resolveIconSource("hugeicons:a-arrow-down", { searchPaths: [fixture.root] })).toBe(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m2" fill="currentColor" fill-rule="evenodd" /></svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="m2" fill="currentColor" fill-rule="evenodd" /></svg>`,
     );
     expect(resolveIconSource("hugeicons:zodiac-taurus", { searchPaths: [fixture.root] })).toBe(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="15" r="6" /><path d="m6" /></svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="15" r="6" /><path d="m6" /></svg>`,
     );
     expect(resolveIconSource("hugeicons:missing", { searchPaths: [fixture.root] })).toBeUndefined();
     rmSync(fixture.root, { recursive: true, force: true });

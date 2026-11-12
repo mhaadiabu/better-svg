@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, symlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { posix } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,3 +33,33 @@ assert.ok(
   "The published package must not include test files.",
 );
 console.log(`Verified ${maps.length} published sourcemaps.`);
+
+const temporary = await mkdtemp(join(tmpdir(), "svg-package-"));
+try {
+  const archiveJson = JSON.parse(
+    execFileSync("npm", ["pack", "--ignore-scripts", "--json", "--pack-destination", temporary], {
+      cwd: fileURLToPath(root),
+      encoding: "utf8",
+    }),
+  );
+  const [archive] = Array.isArray(archiveJson) ? archiveJson : Object.values(archiveJson);
+  execFileSync("tar", ["-xzf", join(temporary, archive.filename), "-C", temporary]);
+  const packageRoot = join(temporary, "package");
+  await symlink(
+    fileURLToPath(new URL("node_modules/", root)),
+    join(packageRoot, "node_modules"),
+    "junction",
+  );
+  execFileSync(
+    process.execPath,
+    [
+      "--input-type=module",
+      "-e",
+      'for (const entry of ["local", "catalog", "vite/plugin", "astro/integration"]) await import(`@mhaadi/svg/${entry}`);',
+    ],
+    { cwd: packageRoot, stdio: "pipe" },
+  );
+  console.log("Verified packed Node ESM entry points without a bundler.");
+} finally {
+  await rm(temporary, { recursive: true, force: true });
+}

@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { expandCatalogNames, resolveIconSource } from "./catalog";
-import { writeCatalogNameTypes } from "./names-codegen";
+import { expandCatalogNames, resolveIconSource } from "./catalog.js";
+import { writeCatalogNameTypes } from "./names-codegen.js";
 
 export type IconBundle = Record<string, string>;
 

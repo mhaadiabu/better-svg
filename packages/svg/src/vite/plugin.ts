@@ -2,9 +2,9 @@ import { readdir, readFile, realpath, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
 import type { Plugin } from "vite";
-import { buildPrecompiledSvg } from "./precompile";
-import { runSvgoPass, type SvgoOption } from "./svgo";
-import { scanCatalogNames, scanExtensions, type ScanResult, type ScanHint } from "./scan";
+import { buildPrecompiledSvg } from "./precompile.js";
+import { runSvgoPass, type SvgoOption } from "./svgo.js";
+import { scanCatalogNames, scanExtensions, type ScanResult, type ScanHint } from "./scan.js";
 import {
   collectionIconNames,
   installedCollections,
@@ -12,9 +12,9 @@ import {
   collectionSourcePackages,
   installedCollectionRoot,
   resolveIconSource,
-} from "../core/catalog";
-import { writeCatalogNameTypes, type CatalogNameEntry } from "../core/names-codegen";
-import type { PrecompiledLocalSvg } from "../core/local";
+} from "../core/catalog.js";
+import { writeCatalogNameTypes, type CatalogNameEntry } from "../core/names-codegen.js";
+import type { PrecompiledLocalSvg } from "../core/local.js";
 
 export type CatalogScanOptions = {
   include?: string[];
@@ -122,7 +122,7 @@ export type SvgPluginOptions = {
 
 export type LocalSvgOptions = SvgPluginOptions;
 
-export type { SvgoOptions, SvgoOption } from "./svgo";
+export type { SvgoOptions, SvgoOption } from "./svgo.js";
 
 export type CatalogOutcome = {
   resolved: Map<string, string>;

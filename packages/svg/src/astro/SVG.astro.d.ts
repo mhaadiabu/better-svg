@@ -1,9 +1,9 @@
 import type { HTMLAttributes } from "astro/types";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
-import type { AstroSvgOptions } from "./runtime";
-export { registerLocalSvgs } from "../core/local";
+import type { AstroSvgOptions } from "./runtime.js";
+export { registerLocalSvgs } from "../core/local.js";
 
-import type { SvgPresentation } from "../core/presentation";
+import type { SvgPresentation } from "../core/presentation.js";
 
 export interface Props
   extends Omit<HTMLAttributes<"svg">, "style" | "name" | "src">, AstroSvgOptions, SvgPresentation {

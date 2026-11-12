@@ -45,8 +45,8 @@ Features established SVG tools have that @mhaadi/svg doesn't. Ordered by how muc
       `collection:icon-ish` names from installed npm icon packages (hugeicons, lucide, tabler,
       phosphor) would let callers stop writing `<SVG src={...import...}>` boilerplate per icon set.
       Status: shipped — PR #35 (`@mhaadi/svg/catalog`: Iconify collections, per-package SVG probes,
-      alias chains, `registerCatalogIcons`). Follow-up for a later cycle: harden collection-shape
-      validation (empty `{}` payloads pass; `collection.height` fallback missing).
+      alias chains, `registerCatalogIcons`). Empty-object rejection and collection-height fallback
+      shipped before 0.4.0; the audit-fix stack adds null and nested-entry validation.
 
 - [x] Offline icon bundling
       Iconify lets you bundle icon data into the app so the renderer never touches the network.
@@ -86,8 +86,8 @@ From the final external audit, not blocking the 0.4.0 merge:
 
 - Sanitizer pass 2: external `https://` SVG documents still loadable via `<image>`/`<feImage>`;
   decide on an allowlist policy mirroring the `<use>` restriction.
-- Catalog hardening: reject well-formed-but-empty collection JSON (`{}` currently passes), fix
-  the `collection.height` fallback when only `height` is defined.
+- Catalog follow-up resolved in the audit-fix stack: null and malformed nested entries are rejected,
+  prototype-named lookups do not throw, and alias transformations and native Hugeicons fill defaults are preserved.
 - SSR observability: `seedPrecompiled`'s xmldom parse failure is silently swallowed; "warn once"
   would help debugging.
 - Docs hygiene after the merge chain: one `pnpm run check` reformat pass on README/plans (non-blocking).

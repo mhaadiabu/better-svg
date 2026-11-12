@@ -271,15 +271,20 @@ included). Href-like attributes are also matched by namespace-resolved local
 name, so `xlink:href` and re-prefixed variants such as `evil:href` are checked
 exactly like `href`, and the rules differ per element:
 
-| Element                | Allowed href targets                                                                                                           | Anything else                                                                                |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| `<use>`                | same-document fragments (`#id`, empty)                                                                                         | stripped, including remote `https:` and protocol-relative references                         |
-| `<image>`, `<feImage>` | same-document fragments (`#id`, empty), relative and remote URLs (protocol-relative included), `blob:`, non-SVG `data:image/*` | `data:image/svg+xml` stripped in all spellings, including `svg+xml-compressed`               |
-| `<a>`                  | same-document fragments (`#id`, empty), remote, relative, `blob:`                                                              | every `data:` target stripped                                                                |
-| other elements         | same-document fragments (`#id`, empty), remote, relative, `blob:`, `data:image/*`                                              | unknown schemes stripped                                                                     |
-| `style` attribute      | `url(#...)` same-document fragments                                                                                            | remote and `data:` `url()` targets stripped, including whitespace-padded `url (…) ` spelling |
+| Element                | Allowed href targets                                                                                                           | Anything else                                                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<use>`                | same-document fragments (`#id`, empty)                                                                                         | stripped, including remote `https:` and protocol-relative references                                                                                                            |
+| `<image>`, `<feImage>` | same-document fragments (`#id`, empty), relative and remote URLs (protocol-relative included), `blob:`, non-SVG `data:image/*` | `data:image/svg+xml` stripped in all spellings, including `svg+xml-compressed`                                                                                                  |
+| `<a>`                  | same-document fragments (`#id`, empty), remote, relative, `blob:`                                                              | every `data:` target stripped                                                                                                                                                   |
+| other elements         | same-document fragments (`#id`, empty), remote, relative, `blob:`, `data:image/*`                                              | unknown schemes stripped                                                                                                                                                        |
+| `style` attribute      | `url(#...)` same-document fragments, with CSS escapes decoded before checking                                                  | remote and `data:` targets, malformed CSS URL syntax, whitespace-separated `url (...)`, and resource-selection functions such as `image-set()`, `image()`, and `src()` stripped |
 
 Keep it on for any untrusted SVG input.
+
+Styles containing rejected values are dropped as a whole. Valid XLink aliases are
+serialized with the canonical `xlink:` prefix so references survive HTML insertion
+and ID rewriting. Sanitization is not a no-network guarantee. The image and link
+URL permissions in the table still apply; use CSP to restrict requests further.
 
 Set `sanitize={false}` only for fully-trusted SVG you control; the rendered
 markup then bypasses the strip pass and can carry inline scripts and event

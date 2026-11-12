@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { expandCatalogNames, resolveIconSource } from "./catalog";
+import { expandCatalogNames, resolveIconSource } from "./catalog.js";
 
 export type IconBundle = Record<string, string>;
 

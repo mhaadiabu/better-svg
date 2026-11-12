@@ -1,10 +1,10 @@
-import { ensureParsedSvg } from "../core/cache";
-import { parseXmlSvg } from "../core/xml";
-import { resolveMarkup, resolveSource } from "../core/resolve";
-import { decodeDataUrl, isInlineSvg } from "../core/url";
-import type { ParsedInlineSvg } from "../core/sanitize";
-import type { WebSvgOptions } from "../core/web";
-import { createSvgId, scopeParsedSvgIds } from "../core/ids";
+import { ensureParsedSvg } from "../core/cache.js";
+import { parseXmlSvg } from "../core/xml.js";
+import { resolveMarkup, resolveSource } from "../core/resolve.js";
+import { decodeDataUrl, isInlineSvg } from "../core/url.js";
+import type { ParsedInlineSvg } from "../core/sanitize.js";
+import type { WebSvgOptions } from "../core/web.js";
+import { createSvgId, scopeParsedSvgIds } from "../core/ids.js";
 
 export type AstroSvgOptions = WebSvgOptions & { allowedOrigins?: readonly string[] };
 

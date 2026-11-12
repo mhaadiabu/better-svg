@@ -612,6 +612,25 @@ suspects drift:
 
 ## Out of scope, explicitly
 
+### Review corrections, 2026-11-12
+
+- `svgPlugin` and `SvgPluginOptions` are the canonical Vite API names.
+  `localSvgs` and `LocalSvgOptions` remain compatibility aliases. The Astro
+  integration keeps its existing `svg()` name.
+- Scan complete literals in code and `name` attributes rather than arbitrary
+  colon-separated text. Skip comments, markup prose, Markdown examples,
+  class values, embedded examples, declarations, tests, and stories. Constants
+  and arrays remain supported, including unused modules. This is not
+  dependency-graph tree shaking.
+- Missing-package warnings require an explicit `name` attribute. Other unknown
+  strings stay quiet. Installed collections still report misspelled literals.
+- Dynamic-only installed collections produce hints. Hints retain their
+  collection, file, line, and snippet as structured data.
+- Dev rescans report diagnostics even if registration does not change, surface
+  errors instead of swallowing them, and cancel pending work on server close.
+- These decisions supersede the original broad-text scan and the note above
+  requiring docs sites to exclude their example prose.
+
 - Bundlers without a Vite-plugin equivalent (webpack / turbopack RSC
   `next build`): users there keep the manual `registerCatalogIcons` +
   `bundleCatalogIcons` flow. A shared unplugin core is attractive after

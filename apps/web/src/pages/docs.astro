@@ -729,11 +729,11 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="react vue svelte solid angular">
                 <p class="docs-body mb-3"><strong class="text-[#e8e8e8]">One entry in vite.config.ts:</strong></p>
                 <CodeBlock code={`import { defineConfig } from "vite";
-import localSvgs from "@mhaadi/svg/vite/plugin";
+import svgPlugin from "@mhaadi/svg/vite/plugin";
 
 export default defineConfig({
   plugins: [
-    localSvgs({
+    svgPlugin({
       // optional; default: ["src/assets/svg", "app/assets/svg"]
       dirs: ["src/icons", "src/illustrations"],
     }),
@@ -846,7 +846,7 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                   guess.
                 </p>
                 <CodeBlock code={`// extra settings on the curated preset
-localSvgs({
+svgPlugin({
   dirs: ["src/icons", "src/illustrations"],
   svgo: {
     filter: (name) => name.startsWith("social/"),
@@ -856,7 +856,7 @@ localSvgs({
 });
 
 // or a full passthrough with an explicit plugins list
-localSvgs({
+svgPlugin({
   dirs: ["src/icons"],
   svgo: { plugins: ["preset-default", { name: "cleanupIds" }, "removeViewBox"] },
 });`} lang="ts" file="vite.config.ts" />
@@ -873,7 +873,7 @@ localSvgs({
                   sanitize pass entirely and only does per-instance work such as id scoping and color
                   overrides. The trade is bundle size. The parsed tree travels next to the registered markup.
                 </p>
-                <CodeBlock code={`localSvgs({ dirs: ["src/icons"], svgo: true, precompiled: true });`} lang="ts" />
+                <CodeBlock code={`svgPlugin({ dirs: ["src/icons"], svgo: true, precompiled: true });`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
                   <li>Feed it only markup the plugin itself produced, never a hand-built tree.</li>
                   <li>At runtime the registration validates and re-sanitizes each tree and rejects malformed input with a build error.</li>
@@ -1002,22 +1002,26 @@ registerCatalogIcons(["hugeicons:home-01", "hugeicons:arrow-left-01"]);`} lang="
                   same installed packages:
                 </p>
                 <CodeBlock code={`import { defineConfig } from "vite";
-import localSvgs from "@mhaadi/svg/vite/plugin";
+import svgPlugin from "@mhaadi/svg/vite/plugin";
 
 export default defineConfig({
-  plugins: [localSvgs()], // scan on by default; catalog: false disables it
+  plugins: [svgPlugin()], // scan on by default; catalog: false disables it
 });`} lang="ts" file="vite.config.ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
                   <li>When the scan finds nothing, no registration is appended and the build output is byte-identical — unused catalogs cost nothing.</li>
-                  <li>The scan reads text files under the project root, skipping <code class="inline-code">node_modules</code>, <code class="inline-code">dist</code>, <code class="inline-code">.git</code>, and similar ignored directories, with the extensions <code class="inline-code">ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx</code>, and matches <code class="inline-code">collection:icon</code> literals in the same alphabet the resolver validates.</li>
+                  <li>The scan reads complete string literals in code and <code class="inline-code">name</code> attributes across <code class="inline-code">ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx</code>. It skips comments, markup prose, Markdown examples, classes, declarations, tests, stories, and build output. This is a source heuristic, not dependency-graph tree shaking. Unused constants can still register icons.</li>
                   <li>Registration lands after the <code class="inline-code">dirs</code> scan with <code class="inline-code">override: false</code>, so local files and your own <code class="inline-code">registerLocalSvgs</code> calls keep precedence. <a href="#catalog-bundle" class="text-acid hover:underline">React Native</a> stays on bundled icons; the fallback chain is untouched.</li>
                   <li>A name whose collection is installed but that resolves to nothing logs a warning naming the files involved (a typo, or a hidden icon). <code class="inline-code">{`catalog: { strict: true }`}</code> escalates that case to a build error: <code class="inline-code">{"No source found for these catalog icons: lucide:hous (catalog scan strict mode)."}</code></li>
-                  <li>A referenced collection with no installed package logs the install hint: <code class="inline-code">{"Add @iconify-json/lucide (or lucide-static) and rerun."}</code></li>
+                  <li>A <code class="inline-code">name</code> attribute referencing a collection with no installed package logs the install hint: <code class="inline-code">{"Add @iconify-json/lucide (or lucide-static) and rerun."}</code> Other unknown strings stay quiet.</li>
                   <li>Dynamic names built from template literals, <code class="inline-code">{"`lucide:${id}`"}</code>, cannot resolve by scanning; they log a hint pointing at <code class="inline-code">registerCatalogIcons</code> and keep rendering through the <code class="inline-code">/assets/svg/{"{name}"}.svg</code> fallback.</li>
                   <li>Warnings are advisory. Only <code class="inline-code">strict</code> fails the build, and only for names whose collection is installed.</li>
                   <li>Narrow the scan with <code class="inline-code">{`catalog: { include: ["src"] }`}</code>, add ignored paths with <code class="inline-code">exclude</code>, lower <code class="inline-code">maxFileBytes</code> (default 512 KB), or aim <code class="inline-code">searchPaths</code> at icon packages installed outside the project. <code class="inline-code">svgo</code> and <code class="inline-code">precompiled</code> apply to scanned icons exactly as they do to files from <code class="inline-code">dirs</code>.</li>
                 </ul>
                 <p class="text-sm text-zinc-muted mt-3">
+                  <code class="inline-code">svgPlugin</code> is the default and named export.
+                  <code class="inline-code">localSvgs</code> and <code class="inline-code">LocalSvgOptions</code>
+                  remain compatibility aliases for <code class="inline-code">svgPlugin</code> and
+                  <code class="inline-code">SvgPluginOptions</code>.
                   The build prints one line when the scan registers something:
                   <code class="inline-code">{"[@mhaadi/svg] auto-registered 12 catalog icons from 9 source files (lucide: 10, tabler: 2)"}</code>.
                   In dev the scanned sources are watched: when a change shifts the registered set,

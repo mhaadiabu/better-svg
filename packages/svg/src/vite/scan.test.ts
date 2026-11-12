@@ -113,12 +113,80 @@ describe("catalog usage scan", () => {
     await write(root, "src/icons.ts", "const id = 1;\nexport const C = `lucide:${id}`;\n");
     const result = await scanCatalogNames(root);
     expect(result.names).toEqual([]);
-    expect(result.dynamic).toEqual(["src/icons.ts:2 (`lucide:${id}`)"]);
+    expect(result.dynamic).toEqual([
+      {
+        collection: "lucide",
+        file: "src/icons.ts",
+        line: 2,
+        snippet: "lucide:${id}",
+        explicit: false,
+      },
+    ]);
   });
 
   it("leaves unrelated template literals alone", async () => {
     await write(root, "src/plain.ts", "const a = `hello-${name}`;\nconst b = `${prefix}:x`;\n");
     const result = await scanCatalogNames(root);
     expect(result.dynamic).toEqual([]);
+  });
+
+  it("skips comments, markup prose, classes, imports, and embedded examples", async () => {
+    await write(
+      root,
+      "src/page.astro",
+      [
+        "---",
+        'import { ClientRouter } from "astro:transitions";',
+        'const home = "lucide:house";',
+        '// const unused = "lucide:comment";',
+        '/* "lucide:block-comment" */',
+        "---",
+        '<!-- <SVG name="lucide:html-comment" /> -->',
+        '<p>Use "lucide:prose" here.</p>',
+        '<div class="lg:hidden" class:list={["hover:text-acid"]}>',
+        '<CodeBlock code={`<SVG name="lucide:example" />`} />',
+        '<SVG name="lucide:star" />',
+        "</div>",
+      ].join("\n"),
+    );
+    const result = await scanCatalogNames(root);
+    expect(result.names).toEqual(["lucide:house", "lucide:star"]);
+    expect([...result.explicitNames]).toEqual(["lucide:star"]);
+  });
+
+  it("ignores markdown examples while scanning MDX components", async () => {
+    await write(
+      root,
+      "src/page.mdx",
+      [
+        'Use "lucide:prose" or `"lucide:inline"`.',
+        "```tsx",
+        '<SVG name="lucide:example" />',
+        "```",
+        '<SVG name="lucide:house" />',
+      ].join("\n"),
+    );
+    expect((await scanCatalogNames(root)).names).toEqual(["lucide:house"]);
+  });
+
+  it("reads framework bindings and script constants without registering template prefixes", async () => {
+    await write(
+      root,
+      "src/Nav.vue",
+      '<script setup>const home = "lucide:house";</script><template><SVG :name="\'tabler:star\'" /></template>',
+    );
+    await write(root, "src/app.html", "<svg [name]=\"'phosphor:bell'\"></svg>");
+    await write(root, "src/Nav.tsx", "<SVG name={`lucide:arrow-${direction}`} />");
+    const result = await scanCatalogNames(root);
+    expect(result.names).toEqual(["lucide:house", "phosphor:bell", "tabler:star"]);
+    expect(result.dynamic).toEqual([
+      {
+        collection: "lucide",
+        file: "src/Nav.tsx",
+        line: 1,
+        snippet: "lucide:arrow-${direction}",
+        explicit: true,
+      },
+    ]);
   });
 });

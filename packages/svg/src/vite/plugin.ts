@@ -3,7 +3,7 @@ import { relative, resolve, sep } from "node:path";
 import type { Plugin } from "vite";
 import { buildPrecompiledSvg } from "./precompile";
 import { runSvgoPass, type SvgoOption } from "./svgo";
-import { scanCatalogNames, scanExtensions, type ScanResult } from "./scan";
+import { scanCatalogNames, scanExtensions, type ScanResult, type ScanHint } from "./scan";
 import {
   collectionSourcePackages,
   installedCollectionRoot,
@@ -73,17 +73,19 @@ export const resolveCatalogOptions = (
   return chosen;
 };
 
-export type LocalSvgOptions = {
+export type SvgPluginOptions = {
   dirs?: string[];
   svgo?: SvgoOption;
   precompiled?: boolean;
   /**
    * Catalog source scan. On by default; `false` disables it and an
    * object adjusts scope (`include`, `exclude`, `strict`,
-   * `maxFileBytes`, `searchPaths`, `types`).
+   * `maxFileBytes`, `searchPaths`).
    */
   catalog?: boolean | CatalogScanOptions;
 };
+
+export type LocalSvgOptions = SvgPluginOptions;
 
 export type { SvgoOptions, SvgoOption } from "./svgo";
 
@@ -91,7 +93,7 @@ export type CatalogOutcome = {
   resolved: Map<string, string>;
   typos: { collection: string; names: string[] }[];
   uninstalled: { collection: string; sample: string }[];
-  hints: string[];
+  hints: ScanHint[];
   files: number;
   filesBy: Map<string, string[]>;
 };
@@ -119,16 +121,22 @@ export const classifyScan = (
   for (const collection of collections) {
     const names = unresolved.filter((name) => collectionOf(name) === collection);
     if (installed.has(collection)) typos.push({ collection, names });
-    else uninstalled.push({ collection, sample: names[0] ?? collection });
+    else {
+      const sample = names.find((name) => result.explicitNames.has(name));
+      if (sample) uninstalled.push({ collection, sample });
+    }
   }
   const known = new Set([
-    ...resolved.keys().map(collectionOf),
-    ...result.names.map(collectionOf),
+    ...[...resolved.keys()].map(collectionOf),
+    ...[...result.explicitNames].map(collectionOf),
     ...installed,
   ]);
   const hints = result.dynamic.filter((hint) => {
-    const collection = hint.match(/`([a-z][a-z0-9-]*):/)?.[1];
-    return collection !== undefined && known.has(collection);
+    return (
+      hint.explicit ||
+      known.has(hint.collection) ||
+      installedCollectionRoot(hint.collection, searchPaths) !== undefined
+    );
   });
   return {
     resolved,
@@ -140,7 +148,7 @@ export const classifyScan = (
   };
 };
 
-export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
+export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
   if (
     dirs.some(
@@ -194,7 +202,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
   };
 
   const outcomeSignature = (outcome: CatalogOutcome) =>
-    [...outcome.resolved.keys(), ...outcome.typos.flatMap((entry) => entry.names)].join("\n");
+    JSON.stringify({ resolved: [...outcome.resolved], typos: catalogStrict ? outcome.typos : [] });
 
   const emitCatalogReport = (outcome: CatalogOutcome, warn?: (message: string) => void) => {
     for (const entry of outcome.typos) {
@@ -224,7 +232,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
     for (const hint of outcome.hints) {
       report(
         warn,
-        `${pluginPrefix} dynamic catalog name at ${hint}. Scanning resolves literal names only; register these with registerCatalogIcons or keep the /assets/svg/{name}.svg fallback.`,
+        `${pluginPrefix} dynamic catalog name at ${hint.file}:${hint.line} (\`${hint.snippet}\`). Scanning resolves literal names only; register these with registerCatalogIcons or keep the /assets/svg/{name}.svg fallback.`,
       );
     }
   };
@@ -257,7 +265,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
   const scannedSourceRoot = () => `${root.replace(/\\/g, "/")}/`;
 
   return {
-    name: "@mhaadi/svg/local",
+    name: "@mhaadi/svg",
     enforce: "pre",
     config: () => ({
       ssr: { noExternal: ["@mhaadi/svg"] },
@@ -273,6 +281,8 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
         server.ws.send({ type: "full-reload" });
       };
       let pending: ReturnType<typeof setTimeout> | undefined;
+      let closed = false;
+      const warn = (message: string) => server.config.logger.warn(message);
       const recatalog = (file: string) => {
         if (!catalogOptions) return;
         const path = file.replace(/\\/g, "/");
@@ -280,27 +290,51 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
         const extension = dot < 0 ? "" : path.slice(dot + 1).toLowerCase();
         if (!scanExtensions.has(extension)) return;
         if (!path.startsWith(scannedSourceRoot())) return;
+        const localPath = relative(root, file).split(sep).join("/");
+        const included = catalogOptions.include ?? ["."];
+        const inDirectory = (directory: string) => {
+          const path = relative(root, resolve(root, directory)).split(sep).join("/");
+          return !path || localPath === path || localPath.startsWith(`${path}/`);
+        };
+        if (!included.some(inDirectory) || catalogOptions.exclude?.some(inDirectory)) return;
+        if (localPath.split("/").includes("node_modules") || file.endsWith(".d.ts")) return;
         scanState.dirty = true;
         if (pending) clearTimeout(pending);
         pending = setTimeout(() => {
           pending = undefined;
           void (async () => {
-            if (!root) return;
+            if (!root || closed) return;
             const outcome = await ensureOutcome(true);
+            if (closed) return;
+            emitCatalogReport(outcome, warn);
+            if (catalogStrict && outcome.typos.length > 0) {
+              server.ws.send({
+                type: "error",
+                err: { message: strictError(outcome).message, stack: "", plugin: "@mhaadi/svg" },
+              });
+            }
             const signature = outcomeSignature(outcome);
             if (signatureState.value !== undefined && signature === signatureState.value) return;
             signatureState.value = signature;
             server.moduleGraph.invalidateAll();
             server.ws.send({ type: "full-reload" });
-          })().catch(() => {});
+          })().catch((cause: unknown) => {
+            if (!closed)
+              warn(
+                `${pluginPrefix} catalog scan failed: ${cause instanceof Error ? cause.message : String(cause)}`,
+              );
+          });
         }, 50);
       };
       const onEvent = (file: string) => {
         refresh(file);
         recatalog(file);
       };
+      for (const dir of dirs) server.watcher.add(resolve(root, dir));
       server.watcher.on("add", onEvent).on("change", onEvent).on("unlink", onEvent);
       server.httpServer?.once("close", () => {
+        closed = true;
+        if (pending) clearTimeout(pending);
         server.watcher.off("add", onEvent).off("change", onEvent).off("unlink", onEvent);
       });
     },
@@ -378,6 +412,7 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
         const addDirectory = (directory: string) => this.addWatchFile(directory);
         const emit = (message: string) => this.warn(message);
         const outcome = await ensureOutcome(false, addDirectory);
+        signatureState.value = outcomeSignature(outcome);
         emitCatalogReport(outcome, emit);
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
         if (outcome.resolved.size > 0) {
@@ -427,4 +462,6 @@ export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
   };
 };
 
-export default localSvgs;
+export const localSvgs = svgPlugin;
+
+export default svgPlugin;

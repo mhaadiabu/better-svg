@@ -1,5 +1,5 @@
-import { parseXmlNode } from "../core/xml";
-import type { PrecompiledLocalSvg } from "../core/local";
+import { parseXmlNode } from "../core/xml.js";
+import type { PrecompiledLocalSvg } from "../core/local.js";
 
 export const buildPrecompiledSvg = (markup: string, name: string): PrecompiledLocalSvg => {
   const node = parseXmlNode(markup, true);

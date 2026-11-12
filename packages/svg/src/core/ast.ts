@@ -4,7 +4,7 @@ import {
   isSafeResourceUrl,
   isSafeUrl,
   isSameDocumentUrl,
-} from "./url";
+} from "./url.js";
 import type { Element as XmlElement } from "@xmldom/xmldom";
 
 export type SvgAttribute = { name: string; value: string };

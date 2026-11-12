@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1
+
+### Fixed
+
+- Resolve the catalog, Vite plugin, and Astro integration in native Node ESM, including their internal module imports.
+- Use explicit JavaScript paths in published declarations and framework adapters.
+
 ## 0.4.0
 
 ### Added

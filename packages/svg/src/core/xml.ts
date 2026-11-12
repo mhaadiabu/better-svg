@@ -1,6 +1,6 @@
 import { DOMParser } from "@xmldom/xmldom";
-import { sanitizeNode, toNodeFromElement } from "./ast";
-import { inlineSvgFromNode } from "./sanitize";
+import { sanitizeNode, toNodeFromElement } from "./ast.js";
+import { inlineSvgFromNode } from "./sanitize.js";
 
 export const parseXmlNode = (markup: string, sanitize: boolean) => {
   try {

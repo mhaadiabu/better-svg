@@ -58,13 +58,13 @@ export const bundleCatalogIcons = (options: BundleOptions): BundleResult => {
   if (missing.length > 0) {
     throw new Error(`No source found for these catalog icons: ${missing.join(", ")}`);
   }
+  const markupSize = Object.values(icons).reduce((total, markup) => total + markup.length, 0);
   if (
     options.names.some((name) => name.includes("*")) &&
-    (Object.keys(icons).length > 250 ||
-      Object.values(icons).reduce((total, markup) => total + markup.length, 0) > 262_144)
+    (Object.keys(icons).length > 250 || markupSize > 262_144)
   ) {
     console.warn(
-      `[@mhaadi/svg] bundled ${Object.keys(icons).length} wildcard catalog icons into the data module; pin explicit names or prefixes to trim it.`,
+      `[@mhaadi/svg] bundled ${Object.keys(icons).length} wildcard catalog icons, approximately ${Math.ceil(markupSize / 1024)} KB of markup, into the data module; pin explicit names or prefixes to trim it.`,
     );
   }
   // Bundle scope is exact: the shipped set is immutable for consumers

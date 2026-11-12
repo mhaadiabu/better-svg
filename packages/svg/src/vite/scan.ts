@@ -96,8 +96,13 @@ const followEntry = async (directory: string, child: Dirent): Promise<Entry> => 
   return undefined;
 };
 
-const readSourceFile = async (path: string, maxFileBytes: number) => {
+const readSourceFile = async (
+  path: string,
+  maxFileBytes: number,
+  isExcluded: (path: string) => boolean,
+) => {
   const id = await realpath(path);
+  if (isExcluded(id)) return undefined;
   const info = await stat(id);
   if (info.size > maxFileBytes) return undefined;
   return { text: await readFile(id, "utf8"), id };
@@ -127,6 +132,7 @@ export const scanCatalogNames = async (
     let entries;
     try {
       target = await realpath(directory);
+      if (isExcluded(target)) return;
       entries = await readdir(target, { withFileTypes: true });
     } catch (cause) {
       if (
@@ -158,7 +164,7 @@ export const scanCatalogNames = async (
           return;
         let source: Awaited<ReturnType<typeof readSourceFile>>;
         try {
-          source = await readSourceFile(entry.path, maxFileBytes);
+          source = await readSourceFile(entry.path, maxFileBytes, isExcluded);
         } catch {
           return;
         }

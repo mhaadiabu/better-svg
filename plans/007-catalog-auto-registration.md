@@ -230,7 +230,7 @@ type LocalSvgOptions = {
   dirs?: string[];
   svgo?: SvgoOption;
   precompiled?: boolean;
-  /** Omit/off: no scanning (today's behavior). true: defaults. */
+  /** Omitted/true: scan with defaults. false: disable scanning. */
   catalog?: boolean | CatalogScanOptions;
 };
 ```
@@ -477,8 +477,8 @@ dead icons silently.
    runtime fs touch) matters for caching consumers.
 8. **Symbolic links**: follow file symlinks, skip loops, exactly like
    the `dirs` walk (ancestor set + `realpath`).
-9. **`catalog: false` / omitted option**: plugin byte-identical to
-   today. Existing consumers are untouched without opt-in.
+9. **`catalog: false`**: scanning is disabled. Omitting the option scans with
+   defaults and registers only referenced names that resolve to installed sources.
 
 ## Milestones
 

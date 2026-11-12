@@ -1,6 +1,7 @@
 import type { Dirent } from "node:fs";
 import { readFile, readdir, realpath, stat } from "node:fs/promises";
 import { relative, resolve, sep } from "node:path";
+import { catalogLiterals } from "./extract";
 
 export type ScanOptions = {
   include?: string[];
@@ -14,7 +15,8 @@ export type ScanResult = {
   references: number;
   files: number;
   filesBy: Map<string, string[]>;
-  dynamic: string[];
+  explicitNames: Set<string>;
+  dynamic: ScanHint[];
 };
 
 export type ScanHooks = {
@@ -47,6 +49,7 @@ const ignoredDirectories = new Set([
   ".turbo",
   ".vite",
   "__snapshots__",
+  "__tests__",
   "build",
   "coverage",
   "dist",
@@ -55,49 +58,20 @@ const ignoredDirectories = new Set([
   "output",
 ]);
 
-const namePattern = /\b([a-z][a-z0-9-]{1,30}):([a-z0-9][a-z0-9._-]{0,96})\b/g;
-const templatePattern = /`(?:[^`\\]|\\[\s\S])*`/g;
-const dynamicPattern = /[a-z][a-z0-9-]*:[a-z0-9._-]*\$\{/;
-
 export const scanExtensions = new Set(defaultExtensions);
 
-type Hint = { collection: string; file: string; line: number; snippet: string };
+export type ScanHint = {
+  collection: string;
+  file: string;
+  line: number;
+  snippet: string;
+  explicit: boolean;
+};
 
 const lineNumberAt = (text: string, index: number) => {
   let line = 1;
   for (let at = -1; (at = text.indexOf("\n", at + 1)) >= 0 && at < index; line++);
   return line;
-};
-
-const collectNames = (text: string, file: string, hits: Map<string, Set<string>>) => {
-  let references = 0;
-  for (const match of text.matchAll(namePattern)) {
-    const name = `${match[1]}:${match[2]}`;
-    if (!name) continue;
-    references += 1;
-    let files = hits.get(name);
-    if (!files) {
-      files = new Set<string>();
-      hits.set(name, files);
-    }
-    files.add(file);
-  }
-  return references;
-};
-
-const collectDynamic = (text: string, file: string, hints: Hint[]) => {
-  for (const match of text.matchAll(templatePattern)) {
-    const literal = match[0] ?? "";
-    if (!literal || !dynamicPattern.test(literal)) continue;
-    const collection = literal.match(/([a-z][a-z0-9-]*):/)?.[1];
-    if (!collection) continue;
-    hints.push({
-      collection,
-      file,
-      line: lineNumberAt(text, match.index ?? 0),
-      snippet: literal.slice(1, -1).replace(/\s+/g, " ").slice(0, 80),
-    });
-  }
 };
 
 type Entry =
@@ -139,7 +113,8 @@ export const scanCatalogNames = async (
   const maxFileBytes = options.maxFileBytes ?? defaultMaxFileBytes;
   const excludes = new Set((options.exclude ?? []).map((entry) => resolve(root, entry)));
   const hits = new Map<string, Set<string>>();
-  const hints: Hint[] = [];
+  const hints: ScanHint[] = [];
+  const explicitNames = new Set<string>();
   const visitedFiles = new Set<string>();
   let references = 0;
   let files = 0;
@@ -179,6 +154,8 @@ export const scanCatalogNames = async (
         const dot = entry.name.lastIndexOf(".");
         const extension = dot < 0 ? "" : entry.name.slice(dot + 1).toLowerCase();
         if (!extensions.has(extension) || isExcluded(entry.path)) return;
+        if (/\.(?:test|spec|stories)\.[^.]+$/.test(entry.name) || entry.name.endsWith(".d.ts"))
+          return;
         let source: Awaited<ReturnType<typeof readSourceFile>>;
         try {
           source = await readSourceFile(entry.path, maxFileBytes);
@@ -189,8 +166,24 @@ export const scanCatalogNames = async (
         visitedFiles.add(source.id);
         files += 1;
         const file = relative(root, source.id).split(sep).join("/");
-        references += collectNames(source.text, file, hits);
-        collectDynamic(source.text, file, hints);
+        for (const literal of catalogLiterals(source.text, extension)) {
+          const collection = literal.value.slice(0, literal.value.indexOf(":"));
+          if (literal.value.includes("${")) {
+            hints.push({
+              collection,
+              file,
+              line: lineNumberAt(source.text, literal.index),
+              snippet: literal.value.replace(/\s+/g, " ").slice(0, 80),
+              explicit: literal.explicit,
+            });
+            continue;
+          }
+          references++;
+          if (literal.explicit) explicitNames.add(literal.value);
+          const matches = hits.get(literal.value) ?? new Set<string>();
+          matches.add(file);
+          hits.set(literal.value, matches);
+        }
       }),
     );
   };
@@ -200,8 +193,10 @@ export const scanCatalogNames = async (
   const names = [...hits.keys()].sort();
   const filesBy = new Map<string, string[]>();
   for (const [name, store] of hits) filesBy.set(name, [...store].sort());
-  const dynamic = hints.map((hint) => `${hint.file}:${hint.line} (\`${hint.snippet}\`)`).sort();
-  return { names, references, files, filesBy, dynamic };
+  const dynamic = hints.sort(
+    (left, right) => left.file.localeCompare(right.file) || left.line - right.line,
+  );
+  return { names, references, files, filesBy, explicitNames, dynamic };
 };
 
 export default scanCatalogNames;

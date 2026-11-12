@@ -171,7 +171,7 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
         const name = /^<([a-zA-Z][\w.:-]*|(?=>))/.exec(text.slice(position))?.[1];
         if (
           name !== undefined &&
-          (text.indexOf(`</${name}`, position) >= 0 || /^<[^>]*\/>/.test(text.slice(position)))
+          (/^<[^>]*\/>/.test(text.slice(position)) || text.indexOf(`</${name}`, position) >= 0)
         ) {
           position = scanMarkup(position, limit, name);
         } else position++;

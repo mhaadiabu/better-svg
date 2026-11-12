@@ -22,6 +22,9 @@ export type CatalogScanOptions = {
 const pluginPrefix = "[@mhaadi/svg]";
 
 const validatePathList = (kind: string, entries: readonly string[]) => {
+  if (!Array.isArray(entries) || entries.some((entry) => typeof entry !== "string")) {
+    throw new Error(`${kind} must be an array of relative paths.`);
+  }
   for (const entry of entries) {
     if (
       !entry ||
@@ -56,8 +59,12 @@ export const resolveCatalogOptions = (
         })();
   validatePathList("Catalog scan directories", chosen.include ?? ["."]);
   validatePathList("Catalog excluded directories", chosen.exclude ?? []);
-  for (const path of chosen.searchPaths ?? []) {
-    if (!path) throw new Error("Catalog searchPaths entries must be non-empty paths.");
+  if (
+    chosen.searchPaths !== undefined &&
+    (!Array.isArray(chosen.searchPaths) ||
+      chosen.searchPaths.some((path) => typeof path !== "string" || !path))
+  ) {
+    throw new Error("Catalog searchPaths must be an array of non-empty paths.");
   }
   if (chosen.strict !== undefined && typeof chosen.strict !== "boolean") {
     throw new Error("The catalog option strict must be a boolean.");
@@ -194,11 +201,19 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     );
   };
 
-  const ensureOutcome = async (fresh: boolean, addDirectory?: (path: string) => void) => {
-    if (fresh || scanState.dirty || !scanState.outcome) {
-      scanState.outcome = classifyScan(await runScan(addDirectory), searchPaths());
-    }
-    return scanState.outcome;
+  let scanQueue = Promise.resolve();
+  const ensureOutcome = (fresh: boolean, addDirectory?: (path: string) => void) => {
+    const result = scanQueue.then(async () => {
+      if (fresh || scanState.dirty || !scanState.outcome) {
+        scanState.outcome = classifyScan(await runScan(addDirectory), searchPaths());
+      }
+      return scanState.outcome;
+    });
+    scanQueue = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
   };
 
   const outcomeSignature = (outcome: CatalogOutcome) =>
@@ -232,7 +247,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     for (const hint of outcome.hints) {
       report(
         warn,
-        `${pluginPrefix} dynamic catalog name at ${hint.file}:${hint.line} (\`${hint.snippet}\`). Scanning resolves literal names only; register these with registerCatalogIcons or keep the /assets/svg/{name}.svg fallback.`,
+        `${pluginPrefix} dynamic catalog name at ${hint.file}:${hint.line} (\`${hint.snippet}\`). Scanning resolves literal names only; use registerCatalogIcons in Node build code, or generate a client map with bundleCatalogIcons and registerLocalSvgs. Otherwise the /assets/svg/{name}.svg fallback is used.`,
       );
     }
   };

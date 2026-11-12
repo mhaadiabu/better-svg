@@ -16,7 +16,16 @@ export const web = await Vite("web", {
   cwd: "../../apps/web",
   assets: {
     directory: "dist",
-    run_worker_first: true,
+    not_found_handling: "404-page",
+    run_worker_first: [
+      "/*",
+      "!/_astro/*",
+      "!/favicon.svg",
+      "!/favicon.ico",
+      "!/apple-touch-icon.png",
+      "!/og-image.png",
+      "!/robots.txt",
+    ],
   },
   bindings: process.env.VITE_SERVER_URL
     ? {

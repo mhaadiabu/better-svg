@@ -610,9 +610,7 @@ suspects drift:
   plan; the per-file `addWatchFile` calls stay on the SVG `dirs` side
   where they already were.
 
-## Out of scope, explicitly
-
-### Review corrections, 2026-11-12
+## Review corrections, 2026-11-12
 
 - `svgPlugin` and `SvgPluginOptions` are the canonical Vite API names.
   `localSvgs` and `LocalSvgOptions` remain compatibility aliases. The Astro
@@ -630,6 +628,8 @@ suspects drift:
   errors instead of swallowing them, and cancel pending work on server close.
 - These decisions supersede the original broad-text scan and the note above
   requiring docs sites to exclude their example prose.
+
+## Out of scope, explicitly
 
 - Bundlers without a Vite-plugin equivalent (webpack / turbopack RSC
   `next build`): users there keep the manual `registerCatalogIcons` +

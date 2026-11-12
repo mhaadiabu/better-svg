@@ -64,6 +64,7 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
     const head = /^<(\/?)([a-zA-Z][\w.:-]*|(?=>))/.exec(text.slice(start));
     if (!head) return undefined;
     const name = head[2] ?? "";
+    const iconElement = /^[A-Z]/.test(name) || name === "svg" || name.includes("-");
     const closing = head[1] === "/";
     let position = start + head[0].length;
     while (position < limit) {
@@ -89,11 +90,12 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
       if (text[position] !== "=") continue;
       position++;
       while (/\s/.test(text[position] ?? "")) position++;
-      const explicit = ["name", ":name", "v-bind:name", "[name]"].includes(attribute);
+      const explicit =
+        iconElement && ["name", ":name", "v-bind:name", "[name]"].includes(attribute);
       const before = literals.length;
       const quote = text[position];
       if (quote === '"' || quote === "'") {
-        const end = quotedEnd(position, limit, explicit, attribute === "name");
+        const end = quotedEnd(position, limit, explicit, explicit && attribute === "name");
         if (explicit && attribute !== "name") scanCode(position + 1, end - 1, false, true);
         position = end;
       } else if (quote === "{") {
@@ -103,7 +105,11 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
         if (explicit) record(value, position, true);
         position += Math.max(1, value.length);
       }
-      if (/^(?:class(?:Name|:.*)?|style|code)$/.test(attribute)) literals.length = before;
+      if (
+        /^(?:class(?:Name|:.*)?|style|code)$/.test(attribute) ||
+        (!iconElement && attribute === "name")
+      )
+        literals.length = before;
     }
     return { end: limit, name, closing, selfClosing: true };
   };

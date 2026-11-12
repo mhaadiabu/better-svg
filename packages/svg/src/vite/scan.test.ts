@@ -143,6 +143,8 @@ describe("catalog usage scan", () => {
         "---",
         '<!-- <SVG name="lucide:html-comment" /> -->',
         '<p>Use "lucide:prose" here.</p>',
+        '<meta name="twitter:card" content="summary_large_image" />',
+        '<input name={"lucide:field"} />',
         '<div class="lg:hidden" class:list={["hover:text-acid"]}>',
         '<CodeBlock code={`<SVG name="lucide:example" />`} />',
         '<SVG name="lucide:star" />',

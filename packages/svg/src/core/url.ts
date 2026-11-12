@@ -1,3 +1,13 @@
+import {
+  isTokenFunction,
+  isTokenIdent,
+  isTokenString,
+  isTokenURL,
+  isTokenWhiteSpaceOrComment,
+  tokenize,
+  TokenType,
+} from "@csstools/css-tokenizer";
+
 export const isInlineSvg = (source: string) => {
   const trimmed = source.trim();
   return (
@@ -71,10 +81,36 @@ export const isSafeResourceUrl = (value: string) => {
 };
 
 export const hasUnsafeUrl = (value: string) => {
-  const pattern = /url\s*\(([^)]+)\)/gi;
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(value))) {
-    if (!isSameDocumentUrl(match[1] ?? "")) return true;
+  let malformed = false;
+  const tokens = tokenize(
+    { css: value },
+    {
+      onParseError: () => {
+        malformed = true;
+      },
+    },
+  ).filter((token) => !isTokenWhiteSpaceOrComment(token));
+  if (malformed) return true;
+  for (const [index, token] of tokens.entries()) {
+    if (token[0] === TokenType.BadURL || token[0] === TokenType.BadString) return true;
+    if (isTokenURL(token) && !isSameDocumentUrl(token[4].value)) return true;
+    if (
+      isTokenIdent(token) &&
+      token[4].value.toLowerCase() === "url" &&
+      tokens[index + 1]?.[0] === TokenType.OpenParen
+    )
+      return true;
+    if (!isTokenFunction(token)) continue;
+    const name = token[4].value.toLowerCase();
+    if (["image", "image-set", "-webkit-image-set", "src"].includes(name)) return true;
+    if (name !== "url") continue;
+    const target = tokens[index + 1];
+    if (
+      !isTokenString(target) ||
+      tokens[index + 2]?.[0] !== TokenType.CloseParen ||
+      !isSameDocumentUrl(target[4].value)
+    )
+      return true;
   }
   return false;
 };

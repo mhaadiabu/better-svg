@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.3
+
+### Security
+
+- Decode CSS tokens before checking style URLs, so escaped function names and escaped targets cannot bypass fragment-only filtering.
+- Reject malformed CSS URL syntax and resource-selection functions such as `image-set()`, `image()`, and `src()` in sanitized styles.
+
+### Fixed
+
+- Canonicalize alternate XLink namespace prefixes so references survive HTML insertion and per-instance ID rewriting.
+
 ## 0.4.2
 
 ### Fixed

@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.4.3
+
+### Security
+
+- Decode CSS tokens before checking style URLs, so escaped function names and escaped targets cannot bypass fragment-only filtering.
+- Reject malformed CSS URL syntax and resource-selection functions such as `image-set()`, `image()`, and `src()` in sanitized styles.
+
+### Fixed
+
+- Canonicalize alternate XLink namespace prefixes so references survive HTML insertion and per-instance ID rewriting.
+
+## 0.4.2
+
+### Fixed
+
+- Return missing-source results for unknown catalog prefixes such as `constructor`, and reject malformed Iconify collections without crashing.
+- Preserve Iconify flips and rotations across alias chains and offline bundles.
+- Preserve the native Hugeicons wrapper's unfilled default for outline paths.
+
+## 0.4.1
+
+### Fixed
+
+- Resolve the catalog, Vite plugin, and Astro integration in native Node ESM, including their internal module imports.
+- Use explicit JavaScript paths in published declarations and framework adapters.
+
 ## 0.4.0
 
 ### Added

@@ -1,12 +1,12 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import { mergeSvgAttributes } from "../core/web";
-import { withSvgColorOverrides } from "../core/colors";
-import { loadAstroSvg, type AstroSvgOptions } from "./runtime";
-import { withSvgRootId } from "../core/ids";
-export { registerLocalSvgs } from "../core/local";
+import { mergeSvgAttributes } from "../core/web.js";
+import { withSvgColorOverrides } from "../core/colors.js";
+import { loadAstroSvg, type AstroSvgOptions } from "./runtime.js";
+import { withSvgRootId } from "../core/ids.js";
+export { registerLocalSvgs } from "../core/local.js";
 
-import { createSvgPresentation, type SvgPresentation } from "../core/presentation";
+import { createSvgPresentation, type SvgPresentation } from "../core/presentation.js";
 
 export interface Props extends Omit<HTMLAttributes<"svg">, "style">, AstroSvgOptions, SvgPresentation {
   style?: string;

@@ -5,7 +5,7 @@ import {
   splitAttributes,
   toNodeFromElement,
   type SvgNode,
-} from "./ast";
+} from "./ast.js";
 
 export type ParsedInlineSvg<Style = Record<string, string>> = {
   node: SvgNode;

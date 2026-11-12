@@ -1,8 +1,8 @@
-import { ensureParsedSvg } from "./cache";
-import { resolveMarkup, resolveSource } from "./resolve";
-import type { SvgNameInput } from "./local";
-import type { ParsedInlineSvg } from "./sanitize";
-import { createSvgId, rewriteSvgAttributes, scopeParsedSvgIds } from "./ids";
+import { ensureParsedSvg } from "./cache.js";
+import { resolveMarkup, resolveSource } from "./resolve.js";
+import type { SvgNameInput } from "./local.js";
+import type { ParsedInlineSvg } from "./sanitize.js";
+import { createSvgId, rewriteSvgAttributes, scopeParsedSvgIds } from "./ids.js";
 
 export type WebSvgOptions = {
   src?: string;
@@ -62,7 +62,7 @@ export const createWebSvgController = () => {
   return { load, abort: () => current?.abort() };
 };
 
-import { svgDimensions, svgViewBox, type SvgPresentation } from "./presentation";
+import { svgDimensions, svgViewBox, type SvgPresentation } from "./presentation.js";
 
 export type WebSvgAttributes = SvgPresentation & {
   width?: string | number;

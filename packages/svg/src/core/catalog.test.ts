@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resolveIconSource, registerCatalogIcons, installedCollections } from "./catalog";
+import {
+  resolveIconSource,
+  registerCatalogIcons,
+  installedCollections,
+  clearCatalogCache,
+} from "./catalog";
 import { resolveSvgSource, registerLocalSvgs } from "./local";
 
 const makeFixture = () => {
@@ -16,6 +21,25 @@ const makeFixture = () => {
 };
 
 describe("icon catalog", () => {
+  it("refreshes cached Hugeicons modules after a dependency change", () => {
+    const fixture = makeFixture();
+    const modulePath = "@hugeicons/core-free-icons/dist/cjs/HouseIcon.js";
+    try {
+      fixture.write(modulePath, 'module.exports = [["path", {d: "before"}]];');
+      expect(resolveIconSource("hugeicons:house", { searchPaths: [fixture.root] })).toContain(
+        "before",
+      );
+      fixture.write(modulePath, 'module.exports = [["path", {d: "after"}]];');
+      clearCatalogCache();
+      expect(resolveIconSource("hugeicons:house", { searchPaths: [fixture.root] })).toContain(
+        "after",
+      );
+    } finally {
+      clearCatalogCache();
+      rmSync(fixture.root, { recursive: true, force: true });
+    }
+  });
+
   it("discovers supported installed source packages without source references", () => {
     const fixture = makeFixture();
     try {

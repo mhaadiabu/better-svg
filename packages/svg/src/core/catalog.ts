@@ -63,6 +63,7 @@ const packageProbes: Record<string, readonly FileProbe[]> = {
 
 const hugeiconsPackage = "@hugeicons/core-free-icons";
 const hugeiconsViewBox = "0 0 24 24";
+const hugeiconsModules = new Map<string, ReturnType<typeof createRequire>>();
 
 type HugeElement = [
   tag: string,
@@ -116,7 +117,10 @@ const hugeiconsMarkup = (elements: readonly unknown[]) => {
 const hugeiconsProbe = (icon: string, root: string) => {
   const file = join(root, hugeiconsPackage, "dist", "cjs", `${pascalCase(icon)}Icon.js`);
   try {
-    return hugeiconsMarkup(createRequire(file)(file) as readonly unknown[]);
+    const load = createRequire(file);
+    const target = load.resolve(file);
+    hugeiconsModules.set(target, load);
+    return hugeiconsMarkup(load(target) as readonly unknown[]);
   } catch {
     return undefined;
   }
@@ -429,6 +433,8 @@ export const clearCatalogCache = () => {
   collectionData.clear();
   fileMarkup.clear();
   enumeratedNames.clear();
+  for (const [file, load] of hugeiconsModules) delete load.cache[file];
+  hugeiconsModules.clear();
 };
 
 export const registerCatalogIcons = (names: readonly string[], options: CatalogOptions = {}) => {

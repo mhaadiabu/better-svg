@@ -1,15 +1,15 @@
 import * as React from "react";
-import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "./core";
-import { withSvgColorOverrides } from "./core/colors";
-import { createSvgId, rewriteSvgAttributes, scopeParsedSvgIds, withSvgRootId } from "./core/ids";
+import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "./core/index.js";
+import { withSvgColorOverrides } from "./core/colors.js";
+import { createSvgId, rewriteSvgAttributes, scopeParsedSvgIds, withSvgRootId } from "./core/ids.js";
 
-import type { ParsedInlineSvg } from "./core/sanitize";
+import type { ParsedInlineSvg } from "./core/sanitize.js";
 import {
   createSvgPresentation,
   svgDimensions,
   svgViewBox,
   type SvgPresentation,
-} from "./core/presentation";
+} from "./core/presentation.js";
 
 type SvgSourceProps = { src: string; name?: never } | { name: SvgNameInput; src?: never };
 

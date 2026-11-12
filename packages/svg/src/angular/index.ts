@@ -16,9 +16,9 @@ import {
   viewChild,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { createSvgPresentation } from "../core/presentation";
-import { withSvgColorOverrides } from "../core/colors";
-import { createWebSvgController, mergeSvgAttributes, type WebSvgState } from "../core/web";
+import { createSvgPresentation } from "../core/presentation.js";
+import { withSvgColorOverrides } from "../core/colors.js";
+import { createWebSvgController, mergeSvgAttributes, type WebSvgState } from "../core/web.js";
 
 @Component({
   selector: "better-svg",

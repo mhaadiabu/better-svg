@@ -1,2 +1,2 @@
-export { registerLocalSvgs } from "./core/local";
-export type { SvgName, SvgNameInput, PrecompiledLocalSvg } from "./core/local";
+export { registerLocalSvgs } from "./core/local.js";
+export type { SvgName, SvgNameInput, PrecompiledLocalSvg } from "./core/local.js";

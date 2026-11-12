@@ -1,8 +1,8 @@
-import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "../core";
-import { createSvgId, scopeParsedSvgIds } from "../core/ids";
+import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "../core/index.js";
+import { createSvgId, scopeParsedSvgIds } from "../core/ids.js";
 
-import type { SvgPresentation } from "../core/presentation";
-import type { ParsedInlineSvg } from "../core/sanitize";
+import type { SvgPresentation } from "../core/presentation.js";
+import type { ParsedInlineSvg } from "../core/sanitize.js";
 
 export type SvelteSvgProps = SvgPresentation & {
   src?: string;

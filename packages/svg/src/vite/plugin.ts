@@ -1,9 +1,9 @@
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
 import { resolve, relative, sep } from "node:path";
 import type { Plugin } from "vite";
-import { buildPrecompiledSvg } from "./precompile";
-import { runSvgoPass, type SvgoOption } from "./svgo";
-import type { PrecompiledLocalSvg } from "../core/local";
+import { buildPrecompiledSvg } from "./precompile.js";
+import { runSvgoPass, type SvgoOption } from "./svgo.js";
+import type { PrecompiledLocalSvg } from "../core/local.js";
 
 export type LocalSvgOptions = {
   dirs?: string[];
@@ -11,7 +11,7 @@ export type LocalSvgOptions = {
   precompiled?: boolean;
 };
 
-export type { SvgoOptions, SvgoOption } from "./svgo";
+export type { SvgoOptions, SvgoOption } from "./svgo.js";
 
 export const localSvgs = (options: LocalSvgOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];

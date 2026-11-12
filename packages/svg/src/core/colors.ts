@@ -1,6 +1,6 @@
-import type { SvgNode } from "./ast";
-import { rewriteSvgValue } from "./ids";
-import { inlineSvgFromNode, type ParsedInlineSvg } from "./sanitize";
+import type { SvgNode } from "./ast.js";
+import { rewriteSvgValue } from "./ids.js";
+import { inlineSvgFromNode, type ParsedInlineSvg } from "./sanitize.js";
 
 export type SvgColorOverrides = {
   fill?: string;

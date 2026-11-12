@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
-import { registerLocalSvgs } from "./local";
+import { mergeIconData } from "@iconify/utils/lib/icon/merge";
+import { iconToSVG } from "@iconify/utils/lib/svg/build";
+import { registerLocalSvgs } from "./local.js";
 
 type IconifyIcon = {
   body?: string;
@@ -11,6 +13,9 @@ type IconifyIcon = {
   height?: number;
   hidden?: boolean;
   parent?: string;
+  hFlip?: boolean;
+  vFlip?: boolean;
+  rotate?: number;
 };
 
 type IconifyCollection = {
@@ -95,7 +100,7 @@ const hugeiconsMarkup = (elements: readonly unknown[]) => {
     )
     .join("");
   if (!body) return undefined;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${hugeiconsViewBox}">${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${hugeiconsViewBox}" fill="none">${body}</svg>`;
 };
 
 const hugeiconsProbe = (icon: string, root: string) => {
@@ -135,6 +140,41 @@ const searchRoots = (options: CatalogOptions) =>
 const collectionData = new Map<string, IconifyCollection | null>();
 const fileMarkup = new Map<string, string>();
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const hasValidDimensions = (value: Record<string, unknown>) =>
+  ["left", "top", "width", "height"].every((key) => {
+    const dimension = value[key];
+    return (
+      dimension === undefined ||
+      (typeof dimension === "number" &&
+        Number.isFinite(dimension) &&
+        ((key !== "width" && key !== "height") || dimension > 0))
+    );
+  });
+
+const isIconifyIcon = (value: unknown, alias: boolean): value is IconifyIcon =>
+  isRecord(value) &&
+  (alias ? typeof value.parent === "string" : typeof value.body === "string") &&
+  (value.body === undefined || typeof value.body === "string") &&
+  (value.parent === undefined || typeof value.parent === "string") &&
+  hasValidDimensions(value) &&
+  ["hFlip", "vFlip", "hidden"].every(
+    (key) => value[key] === undefined || typeof value[key] === "boolean",
+  ) &&
+  (value.rotate === undefined ||
+    (typeof value.rotate === "number" && Number.isInteger(value.rotate)));
+
+const isIconifyCollection = (value: unknown): value is IconifyCollection =>
+  isRecord(value) &&
+  hasValidDimensions(value) &&
+  isRecord(value.icons) &&
+  Object.values(value.icons).every((icon) => isIconifyIcon(icon, false)) &&
+  (value.aliases === undefined ||
+    (isRecord(value.aliases) &&
+      Object.values(value.aliases).every((icon) => isIconifyIcon(icon, true))));
+
 const readIconifyCollection = (file: string) => {
   if (collectionData.has(file)) return collectionData.get(file) ?? undefined;
   let markup;
@@ -145,15 +185,8 @@ const readIconifyCollection = (file: string) => {
   }
   let parsed: IconifyCollection | null;
   try {
-    const raw = JSON.parse(markup) as IconifyCollection;
-    parsed =
-      raw &&
-      typeof raw === "object" &&
-      !Array.isArray(raw.icons) &&
-      typeof raw.icons === "object" &&
-      !Array.isArray(raw.aliases)
-        ? raw
-        : null;
+    const raw: unknown = JSON.parse(markup);
+    parsed = isIconifyCollection(raw) ? raw : null;
   } catch {
     parsed = null;
   }
@@ -177,7 +210,13 @@ const readSvgFile = (file: string) => {
 const iconifyIcon = (collection: IconifyCollection, icon: string) => {
   const visited = new Set<string>([icon]);
   const chain: IconifyIcon[] = [];
-  let data = collection.icons[icon] ?? collection.aliases?.[icon];
+  const lookup = (name: string) =>
+    Object.hasOwn(collection.icons, name)
+      ? collection.icons[name]
+      : collection.aliases && Object.hasOwn(collection.aliases, name)
+        ? collection.aliases[name]
+        : undefined;
+  let data = lookup(icon);
   while (data) {
     if (data.hidden) return undefined;
     chain.push(data);
@@ -185,18 +224,17 @@ const iconifyIcon = (collection: IconifyCollection, icon: string) => {
       const parent = data.parent;
       if (!parent || visited.has(parent)) return undefined;
       visited.add(parent);
-      data = collection.icons[parent] ?? collection.aliases?.[parent];
+      data = lookup(parent);
       continue;
     }
-    const nearest = (key: "left" | "top" | "width" | "height") =>
-      chain.map((entry) => entry[key]).find((value) => value !== undefined);
-    return {
-      body: data.body,
-      left: nearest("left"),
-      top: nearest("top"),
-      width: nearest("width"),
-      height: nearest("height"),
-    };
+    return chain.reduceRight<IconifyIcon & { body: string }>(
+      (parent, child) => mergeIconData(parent, child),
+      {
+        body: data.body,
+        width: collection.width ?? 16,
+        height: collection.height ?? 16,
+      },
+    );
   }
   return undefined;
 };
@@ -204,11 +242,8 @@ const iconifyIcon = (collection: IconifyCollection, icon: string) => {
 const iconifyMarkup = (collection: IconifyCollection, icon: string) => {
   const data = iconifyIcon(collection, icon);
   if (!data) return undefined;
-  const left = data.left ?? 0;
-  const top = data.top ?? 0;
-  const width = data.width ?? collection.width ?? 16;
-  const height = data.height ?? collection.height ?? 16;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left} ${top} ${width} ${height}">${data.body}</svg>`;
+  const rendered = iconToSVG(data);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${rendered.attributes.viewBox}">${rendered.body}</svg>`;
 };
 
 const findIconMarkup = (collection: string, icon: string, roots: readonly string[]) => {
@@ -224,7 +259,8 @@ const findIconMarkup = (collection: string, icon: string, roots: readonly string
         if (markup) return markup;
       }
     }
-    for (const probe of packageProbes[collection] ?? []) {
+    const probes = Object.hasOwn(packageProbes, collection) ? packageProbes[collection] : undefined;
+    for (const probe of probes ?? []) {
       const markup = readSvgFile(join(root, probe.package, probe.file(icon)));
       if (markup) return markup;
     }

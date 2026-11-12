@@ -1,3 +1,3 @@
-export { SVG } from "./svg";
-export type { SvgProps } from "./svg";
-export type { SvgName } from "./core";
+export { SVG } from "./svg.js";
+export type { SvgProps } from "./svg.js";
+export type { SvgName } from "./core/index.js";

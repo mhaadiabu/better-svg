@@ -14,6 +14,7 @@ import {
   signal,
   untracked,
   viewChild,
+  type InputSignal,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { createSvgPresentation } from "../core/presentation";
@@ -42,7 +43,7 @@ import { createWebSvgController, mergeSvgAttributes, type WebSvgState } from "..
 })
 export class SVG {
   readonly src = input<string>();
-  readonly name = input<SvgName>();
+  readonly name: InputSignal<SvgName | undefined> = input<SvgName>();
   readonly fetchOptions = input<RequestInit>();
   readonly cache = input(true);
   readonly sanitize = input(true);

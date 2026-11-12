@@ -116,7 +116,7 @@
     "test:watch": "vitest",
     "build:angular": "ngc -p tsconfig.angular.json",
     "build:astro": "node scripts/build-astro.mjs",
-    "check:package": "node scripts/check-package.mjs"
+    "check:package": "node scripts/check-package.mjs && node scripts/check-catalog-types.mjs"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.12"

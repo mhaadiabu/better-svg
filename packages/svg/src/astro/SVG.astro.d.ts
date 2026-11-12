@@ -6,7 +6,7 @@ export { registerLocalSvgs } from "../core/local";
 import type { SvgPresentation } from "../core/presentation";
 
 export interface Props
-  extends Omit<HTMLAttributes<"svg">, "style">, AstroSvgOptions, SvgPresentation {
+  extends Omit<HTMLAttributes<"svg">, "style" | "name" | "src">, AstroSvgOptions, SvgPresentation {
   style?: string;
 }
 

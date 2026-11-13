@@ -70,6 +70,7 @@ const hugeiconsPackage = "@hugeicons/core-free-icons";
 const probesForCollection = (collection: string) =>
   Object.hasOwn(packageProbes, collection) ? (packageProbes[collection] ?? []) : [];
 const hugeiconsViewBox = "0 0 24 24";
+const hugeiconsModules = new Map<string, ReturnType<typeof createRequire>>();
 
 type HugeElement = [
   tag: string,
@@ -123,7 +124,10 @@ const hugeiconsMarkup = (elements: readonly unknown[]) => {
 const hugeiconsProbe = (icon: string, root: string) => {
   const file = join(root, hugeiconsPackage, "dist", "cjs", `${pascalCase(icon)}Icon.js`);
   try {
-    return hugeiconsMarkup(createRequire(file)(file) as readonly unknown[]);
+    const load = createRequire(file);
+    const target = load.resolve(file);
+    hugeiconsModules.set(target, load);
+    return hugeiconsMarkup(load(target) as readonly unknown[]);
   } catch {
     return undefined;
   }
@@ -427,6 +431,47 @@ export const expandCatalogNames = (names: readonly string[], options: CatalogOpt
     for (const icon of matched) output.add(`${wildcard.collection}:${icon}`);
   }
   return [...output].sort();
+};
+
+// Sorted icon names an installed collection can serve, for generated
+// name types. Mirrors what wildcard expansion and resolution read.
+export const collectionIconNames = (
+  collection: string,
+  options: CatalogOptions = {},
+): readonly string[] => enumerateCollection(collection, searchRoots(options));
+
+export const installedCollections = (options: CatalogOptions = {}): readonly string[] => {
+  const collections = new Set<string>();
+  for (const root of new Set(searchRoots(options))) {
+    for (const entry of readEntries(join(root, "@iconify-json")) ?? []) {
+      if (
+        collectionPattern.test(entry.name) &&
+        statTarget(join(root, "@iconify-json", entry.name, "icons.json"))?.isFile()
+      )
+        collections.add(entry.name);
+    }
+    for (const entry of readEntries(join(root, "@iconify", "json", "json")) ?? []) {
+      if (entry.isFile() && entry.name.endsWith(".json")) {
+        const collection = entry.name.slice(0, -5);
+        if (collectionPattern.test(collection)) collections.add(collection);
+      }
+    }
+    for (const [collection, probes] of Object.entries(packageProbes)) {
+      if (probes.some((probe) => statTarget(join(root, probe.package, probe.dir))?.isDirectory()))
+        collections.add(collection);
+    }
+    if (statTarget(join(root, hugeiconsPackage, "dist", "cjs"))?.isDirectory())
+      collections.add("hugeicons");
+  }
+  return [...collections].sort();
+};
+
+export const clearCatalogCache = () => {
+  collectionData.clear();
+  fileMarkup.clear();
+  enumeratedNames.clear();
+  for (const [file, load] of hugeiconsModules) delete load.cache[file];
+  hugeiconsModules.clear();
 };
 
 export const registerCatalogIcons = (names: readonly string[], options: CatalogOptions = {}) => {

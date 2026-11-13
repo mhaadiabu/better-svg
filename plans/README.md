@@ -12,7 +12,8 @@ index.
 | 004  | Fix Flutter sanitizer (discarded result + close-tag leak) | P1       | S      | BLOCKED (no flutter toolchain — verified by reading; edits committed)                 |
 | 005  | Sprite deduplication design (`<symbol>` + `<use>`, #18)   | P2       | M      | DONE (plan delivered; implementation tracked under M1+)                               |
 | 006  | SVGO default-on policy and preset research                | P2       | M      | DONE (plan delivered; implementation parked by maintainer decision until after 0.4.0) |
-| 007  | Auto-register catalog icons from source usage (Vite scan) | P2       | M      | IN PROGRESS (implemented on `advisor/007-catalog-auto-registration`, draft PR open)   |
+| 007  | Auto-register catalog icons from source usage (Vite scan) | P2       | M      | IN PROGRESS (implemented and verified, PR #48 awaiting review)                        |
+| 008  | Generated autocomplete types for catalog icon names       | P1       | M      | IN PROGRESS (implemented and verified, PR #49 stacks on PR #48)                       |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 

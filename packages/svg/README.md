@@ -246,6 +246,7 @@ for SVGs that depend on the current session or need fresh responses.
 | `@mhaadi/svg/astro/integration` | Astro local discovery  |
 | `@mhaadi/svg/local`             | Local SVG registration |
 | `@mhaadi/svg/catalog`           | Icon package catalog   |
+| `@mhaadi/svg/catalog-types`     | Generated name unions  |
 
 React Native requires `react-native` and `react-native-svg` as peer dependencies.
 
@@ -554,6 +555,53 @@ In dev the scan result is cached per plugin instance and re-scanned on
 file changes: when a scanned file changes, the plugin re-runs the scan and
 reloads the page if the registered set changed. When no names resolve, no
 catalog registration is appended.
+
+### Name types
+
+Name types are on by default. When Vite resolves its configuration,
+`svgPlugin()` discovers installed icon collections and writes
+`svg-catalog.d.ts`, before any page request or registry import. The generated
+file augments `SvgName`, so typing `name="lucide:` suggests real names before
+you have written your first icon. The plugin does not install packages.
+
+```ts
+svgPlugin();
+svgPlugin({ catalog: { collections: ["lucide", "tabler"] } });
+svgPlugin({ catalog: { types: "types/svg-catalog.d.ts" } });
+svgPlugin({ catalog: { types: false } });
+```
+
+By default the unions cover every installed collection the resolver supports,
+including Iconify data packages and the supported SVG and Hugeicons sources.
+`catalog.collections` narrows suggestions only, not source registration.
+Use it when a package such as `@iconify/json` contains more collections than
+you want in the editor. `collections: []` clears the suggestions.
+
+In dev, package manifest and lockfile changes refresh collection discovery,
+cached source data, and the generated file. Restart Vite if you replace a
+source package manually without changing a manifest or lockfile. Identical
+content does not rewrite the file. Removing the last installed or selected
+collection clears old generated declarations. No file is created if there
+have never been any suggestions. The generator refuses to overwrite a file
+without its generated-file header.
+
+These are suggestions, not validation. Any string still compiles, including
+dynamic names, unknown collections, and `/assets/svg/{name}.svg` fallbacks.
+
+Include the generated file in your `tsconfig` and gitignore it. Keep any
+other existing `include` entries:
+
+```json
+{ "include": ["src", "svg-catalog.d.ts"] }
+```
+
+Start Vite once to create the file. Framework template completion depends on
+its language tools. The published adapter prop types share the generated
+union; React JSX completion is also checked with TypeScript's language
+service. `bundleCatalogIcons` writes the types file in script mode
+by default when `out` is set, `types: false` turns it off, and in-memory calls without `out` never
+write unless `types` says so. Its unions are scoped to exactly the bundled
+names, since an offline bundle's set is fixed.
 
 ## Offline icon bundles
 

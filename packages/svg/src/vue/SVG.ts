@@ -7,6 +7,8 @@ import {
   h,
   type PropType,
   type Slot,
+  type DefineComponent,
+  type ExtractPublicPropTypes,
 } from "vue";
 import {
   ensureParsedSvg,
@@ -58,45 +60,56 @@ const styleToText = (
 
 export { styleToText };
 
-export const SVG = defineComponent({
+const svgProps = {
+  id: { type: String as PropType<string | undefined>, default: undefined },
+  src: { type: String as PropType<string | undefined>, default: undefined },
+  name: { type: [String, Number] as PropType<SvgNameInput | undefined>, default: undefined },
+  fetchOptions: { type: Object as PropType<RequestInit | undefined>, default: undefined },
+  cache: { type: Boolean, default: true },
+  sanitize: { type: Boolean, default: true },
+  uniqueIds: { type: Boolean, default: true },
+  onSvgLoad: {
+    type: Function as PropType<((markup: string) => void) | undefined>,
+    default: undefined,
+  },
+  onSvgError: {
+    type: Function as PropType<((error: Error) => void) | undefined>,
+    default: undefined,
+  },
+  size: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
+  title: { type: String, default: undefined },
+  desc: { type: String, default: undefined },
+  width: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
+  height: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
+  viewBox: { type: String as PropType<string | undefined>, default: undefined },
+  fill: { type: String as PropType<string | undefined>, default: undefined },
+  stroke: { type: String as PropType<string | undefined>, default: undefined },
+  role: { type: String as PropType<string | undefined>, default: undefined },
+  ariaLabel: { type: String as PropType<string | undefined>, default: undefined },
+  ariaHidden: {
+    type: [Boolean, String] as PropType<boolean | "true" | "false" | undefined>,
+    default: undefined,
+  },
+  class: { type: String as PropType<string | undefined>, default: undefined },
+  style: {
+    type: [String, Object] as PropType<string | Record<string, string | number> | undefined>,
+    default: undefined,
+  },
+};
+
+export const SVG: DefineComponent<
+  ExtractPublicPropTypes<typeof svgProps>,
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  ["svg-load", "svg-error"]
+> = defineComponent({
   name: "SVG",
   inheritAttrs: false,
-  props: {
-    id: { type: String as PropType<string | undefined>, default: undefined },
-    src: { type: String as PropType<string | undefined>, default: undefined },
-    name: { type: [String, Number] as PropType<SvgNameInput | undefined>, default: undefined },
-    fetchOptions: { type: Object as PropType<RequestInit | undefined>, default: undefined },
-    cache: { type: Boolean, default: true },
-    sanitize: { type: Boolean, default: true },
-    uniqueIds: { type: Boolean, default: true },
-    onSvgLoad: {
-      type: Function as PropType<((markup: string) => void) | undefined>,
-      default: undefined,
-    },
-    onSvgError: {
-      type: Function as PropType<((error: Error) => void) | undefined>,
-      default: undefined,
-    },
-    size: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
-    title: { type: String, default: undefined },
-    desc: { type: String, default: undefined },
-    width: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
-    height: { type: [String, Number] as PropType<string | number | undefined>, default: undefined },
-    viewBox: { type: String as PropType<string | undefined>, default: undefined },
-    fill: { type: String as PropType<string | undefined>, default: undefined },
-    stroke: { type: String as PropType<string | undefined>, default: undefined },
-    role: { type: String as PropType<string | undefined>, default: undefined },
-    ariaLabel: { type: String as PropType<string | undefined>, default: undefined },
-    ariaHidden: {
-      type: [Boolean, String] as PropType<boolean | "true" | "false" | undefined>,
-      default: undefined,
-    },
-    class: { type: String as PropType<string | undefined>, default: undefined },
-    style: {
-      type: [String, Object] as PropType<string | Record<string, string | number> | undefined>,
-      default: undefined,
-    },
-  },
+  props: svgProps,
   emits: ["svg-load", "svg-error"],
   setup(props, { slots, emit, attrs }) {
     const prefix = createSvgId();

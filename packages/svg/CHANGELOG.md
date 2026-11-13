@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0
+
+### Added
+
+- Generate editor suggestions for installed icon collections at Vite configuration startup, before the first icon is written. `catalog.collections` narrows suggestions without restricting registered source literals. `catalog.types: false` disables generation, and a relative declaration path relocates the file. Suggestions remain open to arbitrary strings and dynamic names.
+- Refresh suggestions when package manifests or lockfiles change, clear stale declarations when the last installed or selected collection disappears, and preserve user-owned files. Identical generated content is not rewritten.
+- `bundleCatalogIcons` writes name suggestions for exactly the bundled icons by default when `out` is set. Empty bundles clear stale generated suggestions. In-memory calls write nothing unless `types` explicitly requests a file.
+
 ## 0.5.0
 
 ### Added

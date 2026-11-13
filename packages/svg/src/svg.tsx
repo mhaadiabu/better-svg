@@ -13,7 +13,10 @@ import {
 
 type SvgSourceProps = { src: string; name?: never } | { name: SvgNameInput; src?: never };
 
-export type SvgProps = Omit<React.SVGProps<SVGSVGElement>, "children" | "dangerouslySetInnerHTML"> &
+export type SvgProps = Omit<
+  React.SVGProps<SVGSVGElement>,
+  "children" | "dangerouslySetInnerHTML" | "name" | "src"
+> &
   SvgSourceProps &
   SvgPresentation & {
     fetchOptions?: RequestInit;
@@ -26,7 +29,9 @@ export type SvgProps = Omit<React.SVGProps<SVGSVGElement>, "children" | "dangero
     onSvgError?: (error: Error) => void;
   };
 
-export const SVG = React.forwardRef<SVGSVGElement, SvgProps>(
+type SvgComponent = React.ForwardRefExoticComponent<SvgProps & React.RefAttributes<SVGSVGElement>>;
+
+export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
   (
     {
       src,

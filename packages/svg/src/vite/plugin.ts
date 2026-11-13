@@ -1,14 +1,19 @@
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
-import { relative, resolve, sep } from "node:path";
+import { existsSync } from "node:fs";
+import { dirname, relative, resolve, sep } from "node:path";
 import type { Plugin } from "vite";
 import { buildPrecompiledSvg } from "./precompile.js";
 import { runSvgoPass, type SvgoOption } from "./svgo.js";
 import { scanCatalogNames, scanExtensions, type ScanResult, type ScanHint } from "./scan.js";
 import {
+  collectionIconNames,
+  installedCollections,
+  clearCatalogCache,
   collectionSourcePackages,
   installedCollectionRoot,
   resolveIconSource,
 } from "../core/catalog.js";
+import { writeCatalogNameTypes, type CatalogNameEntry } from "../core/names-codegen.js";
 import type { PrecompiledLocalSvg } from "../core/local.js";
 
 export type CatalogScanOptions = {
@@ -17,6 +22,9 @@ export type CatalogScanOptions = {
   searchPaths?: string[];
   strict?: boolean;
   maxFileBytes?: number;
+  /** Generated name types. On by default (svg-catalog.d.ts at the root); a string relocates the file, false disables. */
+  types?: boolean | string;
+  collections?: readonly string[];
 };
 
 const pluginPrefix = "[@mhaadi/svg]";
@@ -77,6 +85,33 @@ export const resolveCatalogOptions = (
   ) {
     throw new Error("The catalog option maxFileBytes must be a positive number of bytes.");
   }
+  if (chosen.types !== undefined && chosen.types !== false && chosen.types !== true) {
+    if (typeof chosen.types !== "string") {
+      throw new Error("The catalog option types must be true or a relative .d.ts path.");
+    }
+    if (
+      !chosen.types.endsWith(".d.ts") ||
+      chosen.types.startsWith("/") ||
+      chosen.types.includes("\\") ||
+      chosen.types.split("/").includes("..") ||
+      /[*?{}[\]]/.test(chosen.types)
+    ) {
+      throw new Error(
+        "Catalog types path must be a relative path ending in .d.ts without globs or '..'.",
+      );
+    }
+  }
+  if (
+    chosen.collections !== undefined &&
+    (!Array.isArray(chosen.collections) ||
+      chosen.collections.some(
+        (collection) => typeof collection !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(collection),
+      ))
+  ) {
+    throw new Error(
+      "Catalog collections must be an array of collection prefixes, such as ['lucide'].",
+    );
+  }
   return chosen;
 };
 
@@ -87,7 +122,7 @@ export type SvgPluginOptions = {
   /**
    * Catalog source scan. On by default; `false` disables it and an
    * object adjusts scope (`include`, `exclude`, `strict`,
-   * `maxFileBytes`, `searchPaths`).
+   * `maxFileBytes`, `searchPaths`, `types`, `collections`).
    */
   catalog?: boolean | CatalogScanOptions;
 };
@@ -252,6 +287,27 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     }
   };
 
+  const syncCatalogTypes = () => {
+    const option = catalogOptions?.types;
+    if (!catalogOptions || option === false || !root) return;
+    const label = typeof option === "string" ? option : "svg-catalog.d.ts";
+    const collections =
+      catalogOptions.collections ?? installedCollections({ searchPaths: searchPaths() });
+    const entries: CatalogNameEntry[] = [];
+    for (const collection of [...new Set(collections)].sort()) {
+      const names = collectionIconNames(collection, { searchPaths: searchPaths() });
+      if (names.length > 0) entries.push([collection, names]);
+    }
+    if (writeCatalogNameTypes(resolve(root, label), entries) === "written") {
+      const totals = entries
+        .map(([collection, names]) => `${collection}: ${names.length}`)
+        .join(", ");
+      announce(
+        `${pluginPrefix} catalog name types written to ${label} (${totals || "no installed icons"})`,
+      );
+    }
+  };
+
   const strictError = (outcome: CatalogOutcome) => {
     const names = outcome.typos.flatMap((entry) => entry.names);
     const files = [
@@ -288,6 +344,8 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     }),
     configResolved(config) {
       root = config.root;
+      clearCatalogCache();
+      syncCatalogTypes();
     },
     configureServer(server) {
       const refresh = (file: string) => {
@@ -298,21 +356,55 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       let pending: ReturnType<typeof setTimeout> | undefined;
       let closed = false;
       const warn = (message: string) => server.config.logger.warn(message);
+      const dependencyFiles = new Set<string>();
+      for (const searchPath of searchPaths()) {
+        let directory = resolve(searchPath);
+        for (;;) {
+          for (const name of [
+            "package.json",
+            "pnpm-lock.yaml",
+            "package-lock.json",
+            "yarn.lock",
+            "bun.lock",
+            "bun.lockb",
+          ]) {
+            const file = resolve(directory, name);
+            if (existsSync(file)) dependencyFiles.add(file);
+          }
+          const parent = dirname(directory);
+          if (parent === directory) break;
+          directory = parent;
+        }
+      }
+      if (catalogOptions) server.watcher.add([...dependencyFiles]);
       const recatalog = (file: string) => {
         if (!catalogOptions) return;
+        const dependencyChanged = dependencyFiles.has(resolve(file));
         const path = file.replace(/\\/g, "/");
         const dot = path.lastIndexOf(".");
         const extension = dot < 0 ? "" : path.slice(dot + 1).toLowerCase();
-        if (!scanExtensions.has(extension)) return;
-        if (!path.startsWith(scannedSourceRoot())) return;
+        if (
+          !dependencyChanged &&
+          (!scanExtensions.has(extension) || !path.startsWith(scannedSourceRoot()))
+        )
+          return;
         const localPath = relative(root, file).split(sep).join("/");
         const included = catalogOptions.include ?? ["."];
         const inDirectory = (directory: string) => {
           const path = relative(root, resolve(root, directory)).split(sep).join("/");
           return !path || localPath === path || localPath.startsWith(`${path}/`);
         };
-        if (!included.some(inDirectory) || catalogOptions.exclude?.some(inDirectory)) return;
-        if (localPath.split("/").includes("node_modules") || file.endsWith(".d.ts")) return;
+        if (
+          !dependencyChanged &&
+          (!included.some(inDirectory) || catalogOptions.exclude?.some(inDirectory))
+        )
+          return;
+        if (
+          !dependencyChanged &&
+          (localPath.split("/").includes("node_modules") || file.endsWith(".d.ts"))
+        )
+          return;
+        if (dependencyChanged) clearCatalogCache();
         scanState.dirty = true;
         if (pending) clearTimeout(pending);
         pending = setTimeout(() => {
@@ -321,6 +413,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
             if (!root || closed) return;
             const outcome = await ensureOutcome(true);
             if (closed) return;
+            syncCatalogTypes();
             emitCatalogReport(outcome, warn);
             if (catalogStrict && outcome.typos.length > 0) {
               server.ws.send({
@@ -429,6 +522,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
         const outcome = await ensureOutcome(false, addDirectory);
         signatureState.value = outcomeSignature(outcome);
         emitCatalogReport(outcome, emit);
+        syncCatalogTypes();
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
         if (outcome.resolved.size > 0) {
           const catalogEntries = new Map<string, string>();

@@ -37,7 +37,7 @@ lines.push(
   "",
   "## Browser warm remounts",
   "",
-  "| Profile | Scenario | Valid warm samples | Ready median / p95 ms | Paint-opportunity median / p95 ms | Update commit median ms | First-sample requests | Warm median requests |",
+  "| Profile | Scenario | Valid warm samples | Ready median / p95 ms | Paint-opportunity median / p95 ms | Update commit median ms | First-sample resource loads | Warm median resource loads |",
   "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
 );
 const summaries = [];
@@ -77,6 +77,7 @@ for (const run of browser.runs) {
 lines.push(
   "",
   "The first sample and every failed sample remain in the raw JSON. A fresh document is required per profile and scenario to label the first sample library-cache-cold. Fresh runtime URL tokens avoid prior HTTP-cache hits; warm samples retain each library's normal request caching. Two animation frames measure a paint opportunity, not physical presentation. Opacity updates apply to the SVG for static adapters and Better SVG, and to the documented wrapper for react-svg. Memory readings and long tasks are diagnostics, not leak evidence.",
+  "Resource loads count SVG Resource Timing entries, including cache hits and coalesced fetches. They are not necessarily separate network requests. Transferred-resource counts and transfer bytes remain in the raw data. Encoded body sizes can count a cached body more than once. The Resource Timing buffer is expanded to retain the repeated-icon workload.",
   "",
   "## Correctness observations",
   "",

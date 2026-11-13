@@ -4,6 +4,7 @@ import { flushSync } from "react-dom";
 import { RenderIcon, names, profile, fixtureHash, experimentHash } from "./adapter.jsx";
 
 const stage = document.getElementById("stage");
+performance.setResourceTimingBufferSize(20_000);
 const frame = () =>
   new Promise((resolve) => {
     const handle = requestAnimationFrame(() => {
@@ -95,6 +96,7 @@ const sample = async (indices, phase) => {
     updateCommitMs,
     updatePaintOpportunityMs,
     requests: resources.length,
+    transferredResources: resources.filter((entry) => entry.transferSize > 0).length,
     transferBytes: resources.reduce((total, entry) => total + entry.transferSize, 0),
     encodedBodyBytes: resources.reduce((total, entry) => total + entry.encodedBodySize, 0),
     elements: stage.querySelectorAll("*").length,

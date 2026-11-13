@@ -90,7 +90,9 @@ equivalent merely because their file sizes differ.
   one icon, many instances of one icon, and many unique icons. Wait for all SVGs,
   inspect final dimensions and computed paints, then record a paint-opportunity
   proxy using two animation frames. This is not a physical display timestamp.
-- Runtime request counts and transferred bytes, including duplicate requests.
+- Runtime resource-load counts and transferred bytes, including duplicate loads.
+  Resource Timing entries include cache hits and coalesced fetches, so they are
+  not a wire-level request count. Encoded body sizes can repeat cached bodies.
   Count failures and timeouts rather than dropping slow or failed samples.
 - Node SSR latency and compressed HTML only for adapters that render the expected
   number of SVGs. This is component serialization, not server TTFB.

@@ -4,6 +4,49 @@ This private workspace compares React SVG workflows before changing Better SVG's
 optimizer. It does not change the published package or enable optimization by
 default. It uses Node scripts, Vite, and an actual browser, not a new test framework.
 
+## Run it
+
+From the repository root:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm --filter @mhaadi/svg build
+pnpm --filter @better-svg/benchmarks bench:prepare
+SVG_BENCH_REPETITIONS=5 pnpm --filter @better-svg/benchmarks bench:node
+pnpm --filter @better-svg/benchmarks bench:serve
+```
+
+Open `http://127.0.0.1:4174/` in a visible desktop browser and click
+"Run browser matrix". Keep the page visible until it reports that it saved
+`.cache/browser.json`. Then, in another terminal:
+
+```sh
+pnpm --filter @better-svg/benchmarks bench:report
+```
+
+The collector runs the profiles sequentially in fresh 1200 by 720 same-origin
+frames, one document per profile and scenario. It rotates profile order between
+scenarios. Each scenario records one first-use sample, three warmups, and 15 warm
+samples. First-use samples are single observations, not stable latency estimates.
+Browser-process and operating-system caches are not reset between documents.
+No other benchmark, build, or dev server should run during collection.
+Frame callbacks that stall for a second mark the affected sample invalid, even
+if the browser reports the document as visible. Host-window occlusion can pause
+frames without updating that visibility value.
+
+The server binds to loopback only. It accepts browser results at one fixed file,
+with an origin check, a per-session token, and an 8 MiB request limit. It serves
+uncompressed responses. Gzip and Brotli sizes are offline output measurements,
+not the compression used by this HTTP server.
+
+Generated apps, builds, and raw measurements stay in `packages/benchmarks/.cache`.
+`report.md` and `summary.json` appear there after reporting. To include local
+exports, run `bench:prepare -- --corpus /absolute/path/to/svg-files` instead of the
+normal preparation command. Only top-level `.svg` files are read. Preparation
+replaces generated profile folders, so rerun both Node and browser measurements
+after changing the corpus or scripts. Unique-icon rendering samples across the
+whole input list, including repository assets and any extra exports.
+
 ## Comparison groups
 
 - Static assets: Better SVG with optimization off, its current configuration, and

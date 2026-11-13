@@ -4,10 +4,21 @@ import { flushSync } from "react-dom";
 import { RenderIcon, names, profile, fixtureHash } from "./adapter.jsx";
 
 const stage = document.getElementById("stage");
-const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+const frame = () =>
+  new Promise((resolve) => {
+    const handle = requestAnimationFrame(() => {
+      clearTimeout(timer);
+      resolve(true);
+    });
+    const timer = setTimeout(() => {
+      cancelAnimationFrame(handle);
+      resolve(false);
+    }, 1000);
+  });
 const settle = async () => {
-  await frame();
-  await frame();
+  const first = await frame();
+  const second = await frame();
+  return first && second;
 };
 let activeRoot;
 
@@ -54,7 +65,7 @@ const sample = async (indices, phase) => {
     mountCommitMs = performance.now() - before;
   });
   const readyMs = performance.now() - start;
-  await settle();
+  const mountFrames = await settle();
   const paintOpportunityMs = performance.now() - start;
   const bounds = [...stage.querySelectorAll("svg")].map((node) => node.getBoundingClientRect());
   const sizeMismatch = bounds.filter(
@@ -63,7 +74,7 @@ const sample = async (indices, phase) => {
   const beforeUpdate = performance.now();
   flushSync(() => activeRoot.render(renderIcons(indices, 1)));
   const updateCommitMs = performance.now() - beforeUpdate;
-  await settle();
+  const updateFrames = await settle();
   const updatePaintOpportunityMs = performance.now() - beforeUpdate;
   const updates = stage.querySelectorAll('[data-bench-state="1"]').length;
   const resources = performance
@@ -72,6 +83,8 @@ const sample = async (indices, phase) => {
   return {
     phase,
     ...state,
+    status:
+      state.status === "ready" && (!mountFrames || !updateFrames) ? "frame-stalled" : state.status,
     expected: indices.length,
     sizeMismatch,
     updates,
@@ -164,12 +177,17 @@ const inspect = (svg) => {
     stroke: getComputedStyle(node).stroke,
     insideMask: Boolean(node.closest("mask")),
   }));
-  const ids = [...svg.querySelectorAll("[id]")].map((node) => node.id);
-  const references = [...svg.querySelectorAll("*")].flatMap((node) =>
+  const ids = [svg, ...svg.querySelectorAll("[id]")]
+    .filter((node) => node.id)
+    .map((node) => node.id);
+  const references = [svg, ...svg.querySelectorAll("*")].flatMap((node) =>
     [...node.attributes].flatMap((attr) =>
-      [...attr.value.matchAll(/url\(["']?#([^\s)'" ]+)/g)].map((match) => match[1]),
+      attr.localName === "href" && attr.value.startsWith("#")
+        ? [attr.value.slice(1)]
+        : [...attr.value.matchAll(/url\(["']?#([^\s)'" ]+)/g)].map((match) => match[1]),
     ),
   );
+  const labelledBy = (svg.getAttribute("aria-labelledby") ?? "").split(/\s+/).filter(Boolean);
   return {
     role: svg.getAttribute("role"),
     title: svg.querySelector("title")?.textContent ?? null,
@@ -177,6 +195,8 @@ const inspect = (svg) => {
     ids,
     references,
     dangling: references.filter((id) => !ids.includes(id)),
+    labelledBy,
+    danglingLabels: labelledBy.filter((id) => !ids.includes(id)),
     paints,
     foreignObjects: svg.querySelectorAll("foreignObject").length,
     pathsInPair: svg.querySelectorAll("g.pair > path").length,
@@ -202,13 +222,14 @@ const contracts = async () => {
     const state = await ready(2, () =>
       flushSync(() => activeRoot.render(renderIcons([index, index], 0, props))),
     );
-    await settle();
+    const painted = await settle();
     const svgs = [...stage.querySelectorAll("svg")];
     const observations = svgs.map(inspect);
     const ids = observations.flatMap((svg) => svg.ids);
     result.push({
       name,
       ...state,
+      status: state.status === "ready" && !painted ? "frame-stalled" : state.status,
       observations,
       duplicateIds: ids.filter((id, position) => ids.indexOf(id) !== position),
       errors: [...window.svgBenchmarkErrors],
@@ -219,7 +240,7 @@ const contracts = async () => {
     flushSync(() => activeRoot.unmount());
     activeRoot = undefined;
   }
-  return { profile, cases: result };
+  return { profile, fixtureHash, cases: result };
 };
 
 const moduleReadyMs = performance.now();

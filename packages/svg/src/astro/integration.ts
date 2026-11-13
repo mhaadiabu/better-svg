@@ -1,11 +1,11 @@
 import type { AstroIntegration } from "astro";
-import { localSvgs, type LocalSvgOptions } from "../vite/plugin.js";
+import { svgPlugin, type SvgPluginOptions } from "../vite/plugin.js";
 
-export const svg = (options: LocalSvgOptions = {}): AstroIntegration => ({
+export const svg = (options: SvgPluginOptions = {}): AstroIntegration => ({
   name: "@mhaadi/svg",
   hooks: {
     "astro:config:setup": ({ updateConfig }) => {
-      updateConfig({ vite: { plugins: [localSvgs(options)] } });
+      updateConfig({ vite: { plugins: [svgPlugin(options)] } });
     },
   },
 });

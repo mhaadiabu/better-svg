@@ -137,3 +137,28 @@ describe("offline icon bundles", () => {
     fixture.cleanup();
   });
 });
+
+describe("offline icon bundle wildcards", () => {
+  it("expands wildcards into the bundled data module", () => {
+    const fixture = fixtureIcons();
+    const result = bundleCatalogIcons({ names: ["dim:*"], searchPaths: [fixture.root] });
+    expect(Object.keys(result.icons)).toEqual(["dim:star", "dim:star2", "dim:wide"]);
+    expect(result.code).toContain('"dim:star"');
+    expect(result.code).toContain('"dim:wide"');
+    fixture.cleanup();
+  });
+
+  it("expands prefix wildcards but still fails fast on explicit misses", () => {
+    const fixture = fixtureIcons();
+    expect(
+      Object.keys(bundleCatalogIcons({ names: ["dim:sta*"], searchPaths: [fixture.root] }).icons),
+    ).toEqual(["dim:star", "dim:star2"]);
+    expect(() =>
+      bundleCatalogIcons({
+        names: ["dim:*", "dim:typo", "ghost:star"],
+        searchPaths: [fixture.root],
+      }),
+    ).toThrow("No source found for these catalog icons: dim:typo, ghost:star");
+    fixture.cleanup();
+  });
+});

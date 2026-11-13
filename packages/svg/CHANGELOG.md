@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+### Added
+
+- Auto-register catalog icons from complete source literals and `name` attributes by default. `catalog: false` opts out. Local registrations keep precedence, and scanned icons use the same SVGO and precompilation options as local files.
+- Use `svgPlugin()` from `@mhaadi/svg/vite/plugin` for local discovery and catalog registration. `localSvgs()` and `LocalSvgOptions` remain compatible aliases for `svgPlugin()` and `SvgPluginOptions`.
+- Report missing packages for explicit icon names, warn about typos in installed collections, and explain manual registration for dynamic names, including dynamic-only collections. `catalog.strict` turns typo warnings into build errors. Comments, prose, documentation examples, classes, declarations, tests, and stories do not register icons.
+- Expand catalog names with a single trailing wildcard: `registerCatalogIcons(["lucide:*"])` registers every name the installed source serves, `["lucide:arrow*"]` matches a name prefix, and `bundleCatalogIcons` expands the same form. Expansion logs the icon count and approximate markup size above 250 icons or 256 KB, wildcards that match nothing warn about the missing package, and explicit names in the same list still fail the bundle when they cannot resolve.
+
 ## 0.4.3
 
 ### Security

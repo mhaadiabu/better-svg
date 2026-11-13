@@ -304,10 +304,10 @@ file such as `social/github.svg` uses `name="social/github"`.
 ```ts
 // vite.config.ts
 import { defineConfig } from "vite";
-import localSvgs from "@mhaadi/svg/vite/plugin";
+import svgPlugin from "@mhaadi/svg/vite/plugin";
 
 export default defineConfig({
-  plugins: [localSvgs({ dirs: ["src/icons", "src/illustrations"] })],
+  plugins: [svgPlugin({ dirs: ["src/icons", "src/illustrations"] })],
 });
 ```
 
@@ -339,13 +339,20 @@ unless you enable the optional SVGO pass below. The existing
 `import "@mhaadi/svg/vite"` registration remains available for default
 directories, but the config plugin handles custom paths and Astro SSR.
 
+The same plugin auto-registers icon-package names that appear in your
+source: the scan is on by default, `catalog: false` turns it off, and
+`catalog: { ... }` scopes it. Scan behavior, warnings, and options live
+under [Icon catalog](#icon-catalog).
+
 ## Optional SVGO pass
 
 The local-discovery plugins (`@mhaadi/svg/vite/plugin` and
 `@mhaadi/svg/astro/integration`) accept an `svgo` option that runs SVGO over
 every discovered file before registration. The pass is off by default and
 nothing is plumbed through unless you opt in. Remote, `?raw`, or manually
-registered SVGs are never touched.
+registered SVGs are never touched; catalog icons found by the `catalog`
+scan go through the same pipeline because the plugin produces their markup
+the same way.
 
 Install svgo first; it is an optional peer dependency:
 
@@ -362,7 +369,7 @@ keep working. The `preset` and `plugins` options are incompatible;
 combining them in the same settings object fails the build.
 
 ```ts
-localSvgs({ dirs: ["src/icons"], svgo: true });
+svgPlugin({ dirs: ["src/icons"], svgo: true });
 ```
 
 You can switch the pass per file (per-collection: match name prefixes) with
@@ -373,7 +380,7 @@ it. Names are relative to each configured directory, so a file
 `social/github`:
 
 ```ts
-localSvgs({
+svgPlugin({
   dirs: ["src/icons", "src/illustrations"],
   svgo: {
     filter: (name) => name.startsWith("social/"),
@@ -389,7 +396,7 @@ plugins, unknown names fail the build, and the SVGO settings you choose are
 sent to svgo as given.
 
 ```ts
-localSvgs({
+svgPlugin({
   dirs: ["src/icons"],
   svgo: { plugins: ["preset-default", { name: "cleanupIds" }, "removeViewBox"] },
 });
@@ -487,6 +494,67 @@ and the adapter's `fallback` state renders. To catch typos, compare the
 return value, the list of names that actually registered, against the list
 you passed in.
 
+Names also accept a single trailing wildcard. `registerCatalogIcons(["lucide:*"])`
+registers every name the installed lucide source can serve, and
+`["lucide:arrow*"]` matches a name prefix; `bundleCatalogIcons` expands the
+same list form, so an offline bundle can cover a whole collection. Expansion
+logs the icon count and approximate markup size once it exceeds 250 icons or
+256 KB, and an explicit name in the same list still fails `bundleCatalogIcons`
+when it cannot resolve.
+
+### Automatic registration
+
+`svgPlugin` is the Vite plugin's default and named export. The earlier
+`localSvgs` export and `LocalSvgOptions` type remain compatibility aliases
+for `svgPlugin` and `SvgPluginOptions`. Astro's `svg()` integration uses the
+same plugin and options.
+
+Vite-plugin projects skip the array entirely. The source scan is on by
+default: `svgPlugin()` with no options registers what your code actually
+references, resolved from the same installed packages:
+
+```ts
+// vite.config.ts or astro.config.mjs
+svgPlugin(); // scan on; svgPlugin({ catalog: false }) disables it
+```
+
+The scan reads source files under the project root, skipping `node_modules`,
+build output, declarations, tests, and stories. It supports
+`ts, tsx, js, jsx, mjs, astro, vue, svelte, html, mdx` and reads complete
+`collection:icon` string literals in code and component or SVG `name` attributes. It skips
+comments, markup prose, Markdown code examples, class names, native form and metadata names, and embedded
+example strings. It is a source heuristic, not dependency-graph tree shaking.
+Constants and arrays can register icons even if their modules are unused. When
+the scan finds nothing, no registration is appended and the build output is
+byte-identical. What it does with what it finds:
+
+- Scanned registration is appended after the `dirs` registration with
+  `override: false`, so local files and your own `registerLocalSvgs` calls
+  keep precedence. React Native and other offline runtimes stay on
+  `bundleCatalogIcons`; nothing about the fallback chain changes.
+- A name whose collection is installed but that resolves to nothing logs a
+  warning naming the files involved (a typo, or a hidden icon).
+  `catalog: { strict: true }` escalates that case to a build error under the
+  same `No source found for these catalog icons` message the bundler uses.
+- A `name` attribute referencing a collection with no installed package logs the install hint,
+  e.g. `Add @iconify-json/lucide (or lucide-static) and rerun.` Other unknown
+  strings stay quiet, so event topics and module names do not suggest packages.
+- Dynamic names built from template literals (`` `lucide:${id}` ``) cannot
+  resolve by scanning; they log a hint pointing at `registerCatalogIcons`
+  and keep rendering through the `/assets/svg/{name}.svg` fallback.
+- Warnings are advisory by default; only `strict` fails the build, and it
+  fails only on names whose collection is installed.
+- Narrow the scan with `catalog: { include: ["src"] }`, add ignored paths
+  with `exclude`, lower `maxFileBytes` (default 512 KB), or pass
+  `searchPaths` when icon packages live outside the project. The `svgo` and
+  `precompiled` plugin options apply to scanned icons exactly as they do to
+  discovered files.
+
+In dev the scan result is cached per plugin instance and re-scanned on
+file changes: when a scanned file changes, the plugin re-runs the scan and
+reloads the page if the registered set changed. When no names resolve, no
+catalog registration is appended.
+
 ## Offline icon bundles
 
 `bundleCatalogIcons` (also from `@mhaadi/svg/catalog`) writes the resolved icon
@@ -555,7 +623,7 @@ scoping and color overrides. The runtime registration mode stays the default,
 and dynamic sources keep the full runtime path.
 
 ```ts
-localSvgs({ dirs: ["src/icons"], svgo: true, precompiled: true });
+svgPlugin({ dirs: ["src/icons"], svgo: true, precompiled: true });
 ```
 
 The trade, in one sentence: build-time mode ships the parsed tree next to the

@@ -52,10 +52,17 @@ export const cacheParsedSvg = (
   setBounded(parsedCache, keyFor(source, sanitize), { parsed, markup, parser }, PARSED_CACHE_LIMIT);
 };
 
-export const getCachedMarkup = (source: string): string | undefined => touch(markupCache, source);
+export const getCachedMarkup = (
+  source: string,
+  redirect: RequestRedirect = "follow",
+): string | undefined => touch(markupCache, JSON.stringify([source, redirect]));
 
-export const cacheMarkup = (source: string, markup: string): void => {
-  setBounded(markupCache, source, markup, PARSED_CACHE_LIMIT);
+export const cacheMarkup = (
+  source: string,
+  markup: string,
+  redirect: RequestRedirect = "follow",
+): void => {
+  setBounded(markupCache, JSON.stringify([source, redirect]), markup, PARSED_CACHE_LIMIT);
 };
 
 export const clearSvgCache = (): void => {

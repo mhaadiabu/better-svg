@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.1
+
+### Fixed
+
+- Share concurrent URL loads for explicitly public SVG responses without letting one caller's cancellation abort other callers. Custom fetch options and private, unmarked, or non-cacheable responses remain independent.
+- Keep URL requests and cached markup separate for each redirect policy so a cached redirect-following response cannot bypass a stricter caller's policy.
+
 ## 0.6.0
 
 ### Added

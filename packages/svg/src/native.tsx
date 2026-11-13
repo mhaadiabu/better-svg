@@ -1,7 +1,7 @@
 import * as React from "react";
-import { parseXmlNode } from "./core/xml";
-import { createSvgId, rewriteSvgAttributes, scopeSvgNodeIds } from "./core/ids";
-import { svgDimensions, svgViewBox, type SvgPresentation } from "./core/presentation";
+import { parseXmlNode } from "./core/xml.js";
+import { createSvgId, rewriteSvgAttributes, scopeSvgNodeIds } from "./core/ids.js";
+import { svgDimensions, svgViewBox, type SvgPresentation } from "./core/presentation.js";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 import {
   Svg,
@@ -34,7 +34,7 @@ import {
   type SvgNode,
   parseInlineStyle,
   toCamelCase,
-} from "./core";
+} from "./core/index.js";
 
 const TAG_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
   svg: Svg as unknown as React.ComponentType<Record<string, unknown>>,

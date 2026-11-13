@@ -1,1 +1,1 @@
-export { SVG, default, toCamelCaseStyle, styleToText } from "./SVG";
+export { SVG, default, toCamelCaseStyle, styleToText } from "./SVG.js";

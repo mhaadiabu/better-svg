@@ -11,16 +11,16 @@ import {
   type JSX,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { withSvgRootId } from "../core/ids";
-import { withSvgColorOverrides } from "../core/colors";
+import { withSvgRootId } from "../core/ids.js";
+import { withSvgColorOverrides } from "../core/colors.js";
 import {
   createWebSvgController,
   mergeSvgAttributes,
   type WebSvgOptions,
   type WebSvgState,
-} from "../core/web";
+} from "../core/web.js";
 
-import { createSvgPresentation, type SvgPresentation } from "../core/presentation";
+import { createSvgPresentation, type SvgPresentation } from "../core/presentation.js";
 
 export type SvgProps = Omit<
   JSX.SvgSVGAttributes<SVGSVGElement>,

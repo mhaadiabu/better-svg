@@ -1,5 +1,5 @@
-import { parseAndSanitize, type SvgNode } from "./ast";
-import { parseInlineSvg, type ParsedInlineSvg } from "./sanitize";
+import { parseAndSanitize, type SvgNode } from "./ast.js";
+import { parseInlineSvg, type ParsedInlineSvg } from "./sanitize.js";
 
 type CacheKey = string;
 

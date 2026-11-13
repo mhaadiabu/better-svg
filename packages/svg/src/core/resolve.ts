@@ -1,6 +1,6 @@
-import { decodeDataUrl, isInlineSvg } from "./url";
-import { resolveSvgSource as resolveLocalSvg, type SvgNameInput } from "./local";
-import { cacheMarkup, getCachedMarkup } from "./cache";
+import { decodeDataUrl, isInlineSvg } from "./url.js";
+import { resolveSvgSource as resolveLocalSvg, type SvgNameInput } from "./local.js";
+import { cacheMarkup, getCachedMarkup } from "./cache.js";
 
 const pending = new Map<string, object>();
 

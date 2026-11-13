@@ -1,4 +1,4 @@
-import { registerLocalSvgs } from "./core/local";
+import { registerLocalSvgs } from "./core/local.js";
 
 const srcSvgs = import.meta.glob("/src/assets/svg/**/*.svg", {
   eager: true,

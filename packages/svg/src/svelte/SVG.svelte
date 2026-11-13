@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onDestroy, untrack } from "svelte";
-  import { createSvgController, type SvelteSvgProps, type SvgState } from "./runtime";
-  import { rewriteSvgAttributes, rewriteSvgValue } from "../core/ids";
-  import { withSvgColorOverrides } from "../core/colors";
+  import { createSvgController, type SvelteSvgProps, type SvgState } from "./runtime.js";
+  import { rewriteSvgAttributes, rewriteSvgValue } from "../core/ids.js";
+  import { withSvgColorOverrides } from "../core/colors.js";
 
-  import { createSvgPresentation, svgDimensions, svgViewBox } from "../core/presentation";
+  import { createSvgPresentation, svgDimensions, svgViewBox } from "../core/presentation.js";
 
   let {
     src,

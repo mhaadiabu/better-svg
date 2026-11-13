@@ -127,9 +127,20 @@ export const domParserAvailable = () =>
 
 export const toNodeFromElement = (element: Element | XmlElement): SvgNode => {
   const attrs: SvgAttribute[] = [];
+  const xlinkNamespace = "http://www.w3.org/1999/xlink";
+  let aliasedXlink = false;
   for (let i = 0; i < element.attributes.length; i++) {
     const attr = element.attributes.item(i);
-    if (attr) attrs.push({ name: attr.name, value: attr.value });
+    if (attr) {
+      const name = attr.namespaceURI === xlinkNamespace ? `xlink:${attr.localName}` : attr.name;
+      if (name !== attr.name) aliasedXlink = true;
+      attrs.push({ name, value: attr.value });
+    }
+  }
+  if (aliasedXlink) {
+    const declaration = attrs.find((attr) => attr.name === "xmlns:xlink");
+    if (declaration) declaration.value = xlinkNamespace;
+    else attrs.push({ name: "xmlns:xlink", value: xlinkNamespace });
   }
   const children: SvgNode[] = [];
   for (let child = element.firstChild; child; child = child.nextSibling) {

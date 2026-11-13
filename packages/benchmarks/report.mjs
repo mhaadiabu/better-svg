@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { cache, summarize } from "./config.mjs";
 
@@ -89,6 +89,7 @@ lines.push(
   "",
 );
 const output = join(cache, "report.md");
+await mkdir(cache, { recursive: true });
 await writeFile(output, lines.join("\n"));
 await writeFile(
   join(cache, "summary.json"),

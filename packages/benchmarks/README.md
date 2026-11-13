@@ -4,6 +4,9 @@ This private workspace compares React SVG workflows before changing Better SVG's
 optimizer. It does not change the published package or enable optimization by
 default. It uses Node scripts, Vite, and an actual browser, not a new test framework.
 
+The [November 13 pilot](baselines/2026-11-13/README.md) contains findings, raw
+measurements, and the generated report. It is a decision aid, not a leaderboard.
+
 ## Run it
 
 From the repository root:

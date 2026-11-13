@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
-import { RenderIcon, names, profile, fixtureHash } from "./adapter.jsx";
+import { RenderIcon, names, profile, fixtureHash, experimentHash } from "./adapter.jsx";
 
 const stage = document.getElementById("stage");
 const frame = () =>
@@ -122,6 +122,7 @@ const runSuite = async ({ repetitions = 15, warmups = 3, scenario: selectedScena
   const result = {
     profile,
     fixtureHash,
+    experimentHash,
     initialResources: performance.getEntriesByType("resource").map((entry) => ({
       name: new URL(entry.name).pathname,
       transferBytes: entry.transferSize,
@@ -240,7 +241,7 @@ const contracts = async () => {
     flushSync(() => activeRoot.unmount());
     activeRoot = undefined;
   }
-  return { profile, fixtureHash, cases: result };
+  return { profile, fixtureHash, experimentHash, cases: result };
 };
 
 const moduleReadyMs = performance.now();

@@ -24,6 +24,7 @@ const run = async ({ repetitions = 15, warmups = 3 } = {}) => {
     const manifest = await fetch("/manifest.json").then((response) => response.json());
     const data = {
       fixtureHash: manifest.fixtureHash,
+      experimentHash: manifest.experimentHash,
       collectedAt: new Date().toISOString(),
       runs: [],
       contracts: [],

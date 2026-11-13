@@ -41,6 +41,7 @@ const server = createServer(async (request, response) => {
       const manifest = JSON.parse(await readFile(join(cache, "manifest.json"), "utf8"));
       if (
         data.fixtureHash !== manifest.fixtureHash ||
+        data.experimentHash !== manifest.experimentHash ||
         !Array.isArray(data.runs) ||
         !Array.isArray(data.contracts)
       ) {

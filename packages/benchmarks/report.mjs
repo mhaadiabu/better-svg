@@ -8,6 +8,11 @@ const node = JSON.parse(await readFile(nodeFile, "utf8"));
 const browser = JSON.parse(await readFile(browserFile, "utf8"));
 if (browser.fixtureHash !== node.manifest.fixtureHash)
   throw new Error("Node and browser fixture hashes do not match");
+if (browser.experimentHash !== node.manifest.experimentHash)
+  throw new Error("Node and browser experiment hashes do not match");
+for (const run of [...browser.runs, ...browser.contracts])
+  if (run.experimentHash !== node.manifest.experimentHash)
+    throw new Error(`Stale browser document for ${run.profile}`);
 const decimal = (value) => (value === null ? "unsupported" : value.toFixed(2));
 const lines = [
   "# React SVG benchmark pilot",

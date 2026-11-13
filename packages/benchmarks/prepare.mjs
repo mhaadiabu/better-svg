@@ -92,6 +92,19 @@ const metadata = {
   ),
   svgrSvgo: packageVersion("svgo", createRequire(require.resolve("@svgr/plugin-svgo"))),
 };
+const experiment = createHash("sha256").update(JSON.stringify(metadata));
+for (const file of [
+  "config.mjs",
+  "client.jsx",
+  "prepare.mjs",
+  "measure.mjs",
+  "vite.mjs",
+  "collect.mjs",
+  "serve.mjs",
+])
+  experiment.update(await readFile(join(directory, file)));
+experiment.update(await readFile(join(root, "pnpm-lock.yaml")));
+metadata.experimentHash = experiment.digest("hex");
 await writeFile(join(cache, "manifest.json"), JSON.stringify(metadata, null, 2));
 await writeFile(join(cache, "corpus.json"), JSON.stringify(entries));
 for (const profile of profiles.flatMap((profile) => [
@@ -144,7 +157,7 @@ for (const profile of profiles.flatMap((profile) => [
   } else {
     adapter = `import { SVG } from "@mhaadi/svg/react";\nexport const RenderIcon = ({name, ...props}) => React.createElement(SVG, {...props, ${profile.kind === "url" ? 'src:`/icons/${name}.svg?run=${globalThis.svgBenchmarkToken ?? "ssr"}`' : "name"}, onSvgError:reportError});`;
   }
-  const generated = `import * as React from "react";\nconst reportError = error => { if (typeof window !== "undefined") (window.svgBenchmarkErrors ??= []).push(String(error)); };\n${adapter}\nexport const names = ${JSON.stringify(activeEntries.map((entry) => entry.name))};\nexport const profile = ${JSON.stringify(profile.id)};\nexport const fixtureHash = ${JSON.stringify(metadata.fixtureHash)};\n`;
+  const generated = `import * as React from "react";\nconst reportError = error => { if (typeof window !== "undefined") (window.svgBenchmarkErrors ??= []).push(String(error)); };\n${adapter}\nexport const names = ${JSON.stringify(activeEntries.map((entry) => entry.name))};\nexport const profile = ${JSON.stringify(profile.id)};\nexport const fixtureHash = ${JSON.stringify(metadata.fixtureHash)};\nexport const experimentHash = ${JSON.stringify(metadata.experimentHash)};\n`;
   await writeFile(join(folder, "adapter.jsx"), generated);
   await copyFile(join(directory, "client.jsx"), join(folder, "client.jsx"));
   await writeFile(

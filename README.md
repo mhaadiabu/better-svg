@@ -29,6 +29,11 @@ packages/flutter svg_flutter (Dart, flutter_svg)
 
 ## Scripts
 
+Use Node.js 22.13 or newer on the 22.x line, 24.3 or newer on the 24.x line, or
+26 or newer, and pnpm 11.15.1 for workspace development. The React Native development
+dependency and the verification tools require these versions. The published SVG
+package still supports Node.js 18 and newer.
+
 - `pnpm run dev`: Start the workspace in development mode
 - `pnpm run build`: Build all packages and apps
 - `pnpm run check-types`: Check TypeScript types

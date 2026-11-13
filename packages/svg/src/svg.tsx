@@ -2,6 +2,8 @@ import * as React from "react";
 import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "./core/index.js";
 import { withSvgColorOverrides } from "./core/colors.js";
 import { createSvgId, rewriteSvgAttributes, scopeParsedSvgIds, withSvgRootId } from "./core/ids.js";
+import { getCachedMarkup } from "./core/cache.js";
+import { decodeDataUrl, isInlineSvg } from "./core/url.js";
 
 import type { ParsedInlineSvg } from "./core/sanitize.js";
 import {
@@ -31,6 +33,36 @@ export type SvgProps = Omit<
 
 type SvgComponent = React.ForwardRefExoticComponent<SvgProps & React.RefAttributes<SVGSVGElement>>;
 
+type SvgResult = { content: ParsedInlineSvg; markup: string } | { error: Error };
+
+const subscribeToClient = () => () => undefined;
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
+
+const prepareSvg = (
+  source: string,
+  markup: string,
+  {
+    sanitize,
+    cache,
+    uniqueIds,
+    prefix,
+  }: {
+    sanitize: boolean;
+    cache: boolean;
+    uniqueIds: boolean;
+    prefix: string;
+  },
+): SvgResult => {
+  try {
+    const inline = ensureParsedSvg(source, markup, sanitize, cache);
+    if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
+    return { content: uniqueIds ? scopeParsedSvgIds(inline, prefix) : inline, markup };
+  } catch (error) {
+    return { error: error instanceof Error ? error : new Error("Failed to load SVG.") };
+  }
+};
+
 export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
   (
     {
@@ -57,13 +89,32 @@ export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
     },
     ref,
   ) => {
-    const [content, setContent] = React.useState<ParsedInlineSvg | null>(null);
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [error, setError] = React.useState<Error | null>(null);
     const [prefix] = React.useState(createSvgId);
     const [present] = React.useState(() => createSvgPresentation());
+    const client = React.useSyncExternalStore(subscribeToClient, clientSnapshot, serverSnapshot);
 
     const resolvedSource = React.useMemo(() => resolveSource(src, name), [name, src]);
+    const request = React.useMemo(
+      () => ({ source: resolvedSource, fetchOptions, cache, sanitize, uniqueIds, prefix }),
+      [resolvedSource, fetchOptions, cache, sanitize, uniqueIds, prefix],
+    );
+    const immediate = React.useMemo(() => {
+      if (!client) return null;
+      if (!request.source) return { error: new Error("Either name or src is required.") };
+      const trimmed = request.source.trim();
+      const markup = isInlineSvg(trimmed)
+        ? trimmed
+        : (decodeDataUrl(trimmed) ??
+          (request.cache && request.fetchOptions === undefined
+            ? getCachedMarkup(request.source)
+            : undefined));
+      return markup === undefined ? null : prepareSvg(request.source, markup, request);
+    }, [request, client]);
+    const [loaded, setLoaded] = React.useState<{
+      request: typeof request;
+      result: SvgResult;
+    } | null>(null);
+    const result = loaded?.request === request ? loaded.result : immediate;
 
     const onLoadRef = React.useRef(onSvgLoad);
     const onErrorRef = React.useRef(onSvgError);
@@ -73,62 +124,60 @@ export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
     });
 
     React.useEffect(() => {
+      if (!client) return;
       let active = true;
-      const controller = new AbortController();
-      setIsLoading(true);
-      setError(null);
-      setContent(null);
+      const controller = immediate ? undefined : new AbortController();
+      const resolution = controller
+        ? resolveMarkup(request.source ?? "", {
+            fetchOptions: request.fetchOptions,
+            signal: controller.signal,
+            cache: request.cache,
+          }).then((markup) => prepareSvg(request.source ?? "", markup, request))
+        : Promise.resolve(immediate);
 
-      if (!resolvedSource) {
-        const err = new Error("Either name or src is required.");
-        setError(err);
-        setIsLoading(false);
-        onErrorRef.current?.(err);
-        return () => {
-          active = false;
-          controller.abort();
-        };
-      }
-
-      const runWithCached = (markup: string) => {
-        const inline = ensureParsedSvg(resolvedSource, markup, sanitize, cache);
-        if (!inline) throw new Error("SVG markup is invalid or unavailable in this environment.");
-        const scoped = uniqueIds ? scopeParsedSvgIds(inline, prefix) : inline;
-        setContent(scoped);
-        setIsLoading(false);
-        onLoadRef.current?.(markup);
-      };
-
-      resolveMarkup(resolvedSource, { fetchOptions, signal: controller.signal, cache })
-        .then((markup) => {
-          if (!active) return;
-          runWithCached(markup);
+      resolution
+        .then((resolved) => {
+          if (!active || !resolved) return;
+          if ("error" in resolved) throw resolved.error;
+          if (!immediate) setLoaded({ request, result: resolved });
+          onLoadRef.current?.(resolved.markup);
         })
         .catch((err) => {
           if (!active) return;
           if (err instanceof DOMException && err.name === "AbortError") return;
           const normalized = err instanceof Error ? err : new Error("Failed to load SVG.");
-          setError(normalized);
-          setIsLoading(false);
+          setLoaded({ request, result: { error: normalized } });
           onErrorRef.current?.(normalized);
         });
 
       return () => {
         active = false;
-        controller.abort();
+        controller?.abort();
       };
-    }, [resolvedSource, fetchOptions, cache, sanitize, uniqueIds, prefix]);
+    }, [request, immediate, client]);
 
-    if (isLoading) {
+    const content = result && "content" in result ? result.content : null;
+    const presented = React.useMemo(
+      () =>
+        content
+          ? present(withSvgRootId(withSvgColorOverrides(content, { fill, stroke }), rest.id), {
+              title,
+              desc,
+            })
+          : null,
+      [content, present, fill, stroke, rest.id, title, desc],
+    );
+    const markup = presented?.innerHTML ?? "";
+    const innerHTML = React.useMemo(() => ({ __html: markup }), [markup]);
+
+    if (!result) {
       return loading ? <>{loading}</> : null;
     }
 
-    if (error || !content) {
+    if (!presented) {
       return fallback ? <>{fallback}</> : null;
     }
 
-    const colored = withSvgColorOverrides(content, { fill, stroke });
-    const presented = present(withSvgRootId(colored, rest.id), { title, desc });
     const mergedClassName = [presented.className, className].filter(Boolean).join(" ");
     const mergedStyle = presented.style ? { ...presented.style, ...style } : style;
     const rootProps =
@@ -152,7 +201,7 @@ export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
         {...rewriteSvgAttributes(rootProps, presented.ids)}
         className={mergedClassName || undefined}
         style={rewriteSvgAttributes(mergedStyle ?? {}, presented.ids) as React.CSSProperties}
-        dangerouslySetInnerHTML={{ __html: presented.innerHTML }}
+        dangerouslySetInnerHTML={innerHTML}
       />
     );
   },

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.2
+
+### Fixed
+
+- Return missing-source results for unknown catalog prefixes such as `constructor`, and reject malformed Iconify collections without crashing.
+- Preserve Iconify flips and rotations across alias chains and offline bundles.
+- Preserve the native Hugeicons wrapper's unfilled default for outline paths.
+
 ## 0.4.1
 
 ### Fixed

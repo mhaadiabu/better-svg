@@ -41,6 +41,12 @@ import { SVG } from "@mhaadi/svg/react";
 />
 ```
 
+On React clients, inline markup, registered icons, data URLs, and publicly cached
+URL responses render without a loading pass. Uncached URLs still use `loading`.
+Server rendering and the initial hydration render keep the loading placeholder.
+Load and error callbacks run after commit, including for immediately available
+sources. Root-only prop updates preserve the existing SVG child elements.
+
 ## React Native
 
 Requires `react-native` and `react-native-svg` as peer dependencies.

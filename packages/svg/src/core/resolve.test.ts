@@ -182,6 +182,25 @@ describe("resolveMarkup", () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
+  it("starts independent private loads at headers without waiting for the first body", async () => {
+    const body = deferred<string>();
+    const firstResponse = new Response("", { headers: { "Cache-Control": "private" } });
+    vi.spyOn(firstResponse, "text").mockReturnValue(body.promise);
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(firstResponse)
+      .mockResolvedValueOnce(new Response("<svg id='second'/>"));
+    vi.stubGlobal("fetch", fetchMock);
+    const source = "https://example.com/slow-private.svg";
+    const first = resolveMarkup(source, makeOptions({ cache: true }));
+    const second = resolveMarkup(source, makeOptions({ cache: true }));
+    expect(await second).toBe("<svg id='second'/>");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    body.resolve("<svg id='first'/>");
+    expect(await first).toBe("<svg id='first'/>");
+    expect(getCachedMarkup(source)).toBeUndefined();
+  });
+
   it.each(["cache", "fetchOptions"])(
     "bypasses reuse with %s disabled or customized",
     async (bypass) => {

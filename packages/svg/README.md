@@ -225,6 +225,16 @@ attributes. `none` values and gradient references are preserved. Angular uses `s
 props, and `TemplateRef` inputs for loading and fallback.
 
 Remote markup caching is shared across adapters and limited to 500 entries.
+Concurrent URL loads share one request when caching is enabled and the response
+is explicitly public. Each caller can cancel independently. The request is
+aborted when every caller cancels. Redirect policies use separate requests and
+cache entries.
+
+Callers initially wait for the response headers to establish its cache policy.
+If it is not explicitly public, joined callers start independent requests without
+waiting for the first response body. Custom `fetchOptions` or `cache={false}`
+skip this coordination entirely.
+
 Only responses marked `Cache-Control: public` enter this cache. Responses
 marked `private`, `no-store`, or `no-cache` and custom `fetchOptions` bypass it. Use `cache={false}`
 for SVGs that depend on the current session or need fresh responses.

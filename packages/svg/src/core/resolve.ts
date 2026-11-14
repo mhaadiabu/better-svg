@@ -2,11 +2,12 @@ import { decodeDataUrl, isInlineSvg } from "./url.js";
 import { resolveSvgSource as resolveLocalSvg, type SvgNameInput } from "./local.js";
 import { cacheMarkup, getCachedMarkup } from "./cache.js";
 
-type MarkupResponse = { markup: string; publicResponse: boolean };
+type SvgResponse = { response: Response; publicResponse: boolean };
 type PendingRequest = {
   controller: AbortController;
   consumers: number;
-  result: Promise<MarkupResponse>;
+  response: Promise<SvgResponse>;
+  result: Promise<string>;
 };
 
 const pending = new Map<string, PendingRequest>();
@@ -18,7 +19,7 @@ export type ResolveOptions = {
   redirect?: RequestRedirect;
 };
 
-const fetchMarkup = async (source: string, options: ResolveOptions): Promise<MarkupResponse> => {
+const fetchSvg = async (source: string, options: ResolveOptions): Promise<SvgResponse> => {
   const fetchImpl = typeof fetch === "function" ? fetch : undefined;
   if (!fetchImpl) throw new Error("Fetch is not available in this environment.");
 
@@ -38,7 +39,6 @@ const fetchMarkup = async (source: string, options: ResolveOptions): Promise<Mar
     throw new Error(`Failed to fetch SVG: ${response.status} ${response.statusText}`);
   }
 
-  const markup = await response.text();
   const directives = (response.headers.get("Cache-Control") ?? "")
     .toLowerCase()
     .split(",")
@@ -46,14 +46,15 @@ const fetchMarkup = async (source: string, options: ResolveOptions): Promise<Mar
   const publicResponse =
     directives.includes("public") &&
     !directives.some((directive) => ["private", "no-store", "no-cache"].includes(directive ?? ""));
-  return { markup, publicResponse };
+  return { response, publicResponse };
 };
 
 const consumeRequest = (
   key: string,
   request: PendingRequest,
   signal: AbortSignal,
-): Promise<MarkupResponse> =>
+  joined: boolean,
+): Promise<string | null> =>
   new Promise((resolve, reject) => {
     request.consumers++;
     const release = () => {
@@ -69,7 +70,10 @@ const consumeRequest = (
       reject(signal.reason ?? new DOMException("The operation was aborted.", "AbortError"));
     };
     signal.addEventListener("abort", abort, { once: true });
-    request.result.then(
+    const result = joined
+      ? request.response.then((response) => (response.publicResponse ? request.result : null))
+      : request.result;
+    result.then(
       (result) => {
         if (signal.aborted) return;
         release();
@@ -94,7 +98,7 @@ export const resolveMarkup = async (source: string, options: ResolveOptions): Pr
     throw options.signal.reason ?? new DOMException("The operation was aborted.", "AbortError");
 
   const useCache = options.cache && options.fetchOptions === undefined;
-  if (!useCache) return (await fetchMarkup(source, options)).markup;
+  if (!useCache) return (await fetchSvg(source, options)).response.text();
   const cached = getCachedMarkup(source, options.redirect);
   if (cached !== undefined) return cached;
 
@@ -103,15 +107,17 @@ export const resolveMarkup = async (source: string, options: ResolveOptions): Pr
   const joined = request !== undefined;
   if (!request) {
     const controller = new AbortController();
-    const result = fetchMarkup(source, { ...options, signal: controller.signal });
+    const response = fetchSvg(source, { ...options, signal: controller.signal });
     request = {
       controller,
       consumers: 0,
-      result: result
-        .then((response) => {
-          if (response.publicResponse && !controller.signal.aborted && pending.get(key) === request)
-            cacheMarkup(source, response.markup, options.redirect);
-          return response;
+      response,
+      result: response
+        .then(async ({ response, publicResponse }) => {
+          const markup = await response.text();
+          if (publicResponse && !controller.signal.aborted && pending.get(key) === request)
+            cacheMarkup(source, markup, options.redirect);
+          return markup;
         })
         .finally(() => {
           if (pending.get(key) === request) pending.delete(key);
@@ -119,9 +125,9 @@ export const resolveMarkup = async (source: string, options: ResolveOptions): Pr
     };
     pending.set(key, request);
   }
-  const response = await consumeRequest(key, request, options.signal);
-  if (joined && !response.publicResponse) return (await fetchMarkup(source, options)).markup;
-  return response.markup;
+  const markup = await consumeRequest(key, request, options.signal, joined);
+  if (markup === null) return (await fetchSvg(source, options)).response.text();
+  return markup;
 };
 
 export const resolveSource = (src: string | undefined, name: SvgNameInput | undefined) => {

@@ -1,5 +1,8 @@
 # SVG workflow benchmarks
 
+The [runtime fixes follow-up](baselines/2026-11-14-runtime-fixes/README.md) contains
+interleaved before/after measurements for React rendering and URL sharing.
+
 This private workspace compares React SVG workflows before changing Better SVG's
 optimizer. It does not change the published package or enable optimization by
 default. It uses Node scripts, Vite, and an actual browser, not a new test framework.

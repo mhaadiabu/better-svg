@@ -21,7 +21,7 @@ overrides:
   "@svgr/plugin-svgo>deepmerge": "-"
   "source-map-js@>=1.0.0 <1.2.2": 1.2.2
   "undici@>=8.0.0 <8.12.2": 8.12.2
-  "vite@>=8.3.0 <8.3.3": 8.3.3
+  "vite@>=8.3.0 <8.3.8": 8.3.8
   "zod@>=4.0.0 <4.6.6": 4.6.6
   "alchemy>glob": 14.0.2
   "baseline-browser-mapping@>=2.0.0 <2.11.0": 2.11.0

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as sanitize from "./sanitize";
+import { parseXmlNode } from "./xml";
 import {
   __svgCacheSize,
   __svgNodeCacheSize,
@@ -98,12 +99,14 @@ describe("LRU eviction", () => {
   it("evicts the node cache when full (lower limit)", () => {
     clearSvgCache();
     for (let i = 0; i < 200; i++) {
-      ensureParsedNode(`n-evict-${i}`, "<svg><rect/></svg>", true);
+      ensureParsedNode(`n-evict-${i}`, "<svg><rect/></svg>", true, true, parseXmlNode);
     }
     expect(__svgNodeCacheSize()).toBe(200);
-    ensureParsedNode("n-evict-new", "<svg><rect/></svg>", true);
+    ensureParsedNode("n-evict-new", "<svg><rect/></svg>", true, true, parseXmlNode);
     expect(__svgNodeCacheSize()).toBe(200);
-    expect(ensureParsedNode("n-evict-0", "<svg><rect/></svg>", true)).not.toBeNull();
+    expect(
+      ensureParsedNode("n-evict-0", "<svg><rect/></svg>", true, true, parseXmlNode),
+    ).not.toBeNull();
   });
 });
 
@@ -125,13 +128,13 @@ describe("cache=false bypasses parsed cache", () => {
   it("ensureParsedNode with cache=false skips cache read and write", () => {
     clearSvgCache();
     const MARKUP2 = "<svg><rect/></svg>";
-    ensureParsedNode("n-bypass", MARKUP2, true, true);
+    ensureParsedNode("n-bypass", MARKUP2, true, true, parseXmlNode);
     expect(__svgNodeCacheSize()).toBe(1);
 
-    ensureParsedNode("n-bypass", MARKUP2, true, false);
+    ensureParsedNode("n-bypass", MARKUP2, true, false, parseXmlNode);
     expect(__svgNodeCacheSize()).toBe(1);
 
-    ensureParsedNode("n-fresh", MARKUP2, true, false);
+    ensureParsedNode("n-fresh", MARKUP2, true, false, parseXmlNode);
     expect(__svgNodeCacheSize()).toBe(1);
   });
 });

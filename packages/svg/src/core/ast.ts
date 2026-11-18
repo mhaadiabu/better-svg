@@ -92,28 +92,6 @@ const VOID_ELEMENTS = new Set([
   "wbr",
 ]);
 
-const XML_ENTITIES: Record<string, string> = {
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-  amp: "&",
-};
-
-const decodeEntities = (value: string) =>
-  value.replace(
-    /&(#(?:[xX][0-9a-fA-F]+|[0-9]+)|lt|gt|quot|apos|amp);/g,
-    (match, entity: string) => {
-      if (!entity.startsWith("#")) return XML_ENTITIES[entity] ?? match;
-      const hexadecimal = entity[1]?.toLowerCase() === "x";
-      const codePoint = Number.parseInt(entity.slice(hexadecimal ? 2 : 1), hexadecimal ? 16 : 10);
-      if (codePoint === 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
-        return "\uFFFD";
-      }
-      return String.fromCodePoint(codePoint);
-    },
-  );
-
 const encodeAttr = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -156,112 +134,6 @@ export const toNodeFromElement = (element: Element | XmlElement): SvgNode => {
     }
   }
   return { tag: element.tagName, attrs, children };
-};
-
-const parseAttributes = (raw: string): SvgAttribute[] => {
-  const attrs: SvgAttribute[] = [];
-  const pattern = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*("([^"]*)"|'([^']*)'|([^\s"'>]+))/g;
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(raw))) {
-    const name = match[1] ?? "";
-    const value = match[3] ?? match[4] ?? match[5] ?? "";
-    if (!name) continue;
-    attrs.push({ name, value: decodeEntities(value) });
-  }
-  return attrs;
-};
-
-const parseWithRegex = (markup: string): SvgNode | null => {
-  const cleaned = markup.replace(/<\?xml[\s\S]*?\?>/g, "").replace(/<!DOCTYPE[\s\S]*?>/gi, "");
-  const openTag = cleaned.match(/<svg\b((?:"[^"]*"|'[^']*'|[^'">])*)>/i);
-  if (!openTag) return null;
-  const openTagIndex = openTag.index ?? 0;
-  const openTagEnd = openTagIndex + openTag[0].length;
-  const root: SvgNode = {
-    tag: "svg",
-    attrs: parseAttributes(openTag[1] ?? ""),
-    children: [],
-  };
-  if (/\/\s*>$/.test(openTag[0])) return root;
-  const lastClose = cleaned.lastIndexOf("</svg");
-  if (lastClose < openTagEnd) return null;
-  const inner = cleaned.slice(openTagEnd, lastClose);
-
-  const stack: SvgNode[] = [root];
-  const tagPattern = /<\/?([a-zA-Z][a-zA-Z0-9:-]*)\b((?:"[^"]*"|'[^']*'|[^'">])*)>/g;
-  let cursor = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = tagPattern.exec(inner))) {
-    const before = inner.slice(cursor, match.index);
-    if (before && stack.length > 0) {
-      const parent = stack[stack.length - 1];
-      if (parent) {
-        if (before.trim().length > 0) {
-          parent.children.push({
-            tag: "#text",
-            attrs: [],
-            children: [],
-            text: decodeEntities(before),
-          });
-        }
-      }
-    }
-
-    const full = match[0];
-    const tag = (match[1] ?? "").toLowerCase();
-    const attrs = parseAttributes(match[2] ?? "");
-    const isClose = full.startsWith("</");
-    const isSelfClose = !isClose && (full.endsWith("/>") || VOID_ELEMENTS.has(tag));
-
-    if (isClose) {
-      let depth = stack.length - 1;
-      while (depth > 0) {
-        const top = stack[depth];
-        if (top && top.tag.toLowerCase() === tag) break;
-        depth--;
-      }
-      if (depth > 0) stack.length = depth;
-    } else {
-      const node: SvgNode = { tag, attrs, children: [] };
-      const parent = stack[stack.length - 1];
-      if (parent) parent.children.push(node);
-      if (!isSelfClose) stack.push(node);
-    }
-
-    cursor = match.index + full.length;
-  }
-
-  const trailing = inner.slice(cursor);
-  if (trailing && stack.length > 0) {
-    const parent = stack[stack.length - 1];
-    if (parent && trailing.trim().length > 0) {
-      parent.children.push({
-        tag: "#text",
-        attrs: [],
-        children: [],
-        text: decodeEntities(trailing),
-      });
-    }
-  }
-
-  return root;
-};
-
-const parseWithDom = (markup: string): SvgNode | null => {
-  const parser = new DOMParser();
-  const parsedDocument = parser.parseFromString(markup, "image/svg+xml");
-  if (parsedDocument.querySelector("parsererror")) return null;
-  const svg = parsedDocument.querySelector("svg");
-  if (!svg) return null;
-  return toNodeFromElement(svg);
-};
-
-export const parseSvgString = (markup: string): SvgNode | null => {
-  if (domParserAvailable()) {
-    return parseWithDom(markup);
-  }
-  return parseWithRegex(markup);
 };
 
 const hrefLikeAttributeIsUnsafe = (tagLower: string, value: string) => {
@@ -320,13 +192,6 @@ const serializeNode = (node: SvgNode, html: boolean): string => {
 };
 
 export const renderNode = (node: SvgNode): string => serializeNode(node, false);
-
-export const parseAndSanitize = (markup: string, sanitize: boolean): SvgNode | null => {
-  const root = parseSvgString(markup);
-  if (!root) return null;
-  const cleaned = sanitize ? sanitizeNode(root) : root;
-  return cleaned;
-};
 
 export const toCamelCase = (value: string) =>
   value.replace(/^-/, "").replace(/-([a-z])/g, (_, char) => char.toUpperCase());

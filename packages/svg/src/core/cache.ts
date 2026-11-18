@@ -1,7 +1,8 @@
-import { parseAndSanitize, sanitizeNode, type SvgNode } from "./ast.js";
+import { sanitizeNode, type SvgNode } from "./ast.js";
 import { inlineSvgFromNode, parseInlineSvg, type ParsedInlineSvg } from "./sanitize.js";
 
 type CacheKey = string;
+type NodeParser = (markup: string, sanitize: boolean) => SvgNode | null;
 
 export const deferredLocalSvgPrefix = "better-svg:local:";
 
@@ -12,10 +13,7 @@ const parsedCache = new Map<
   CacheKey,
   { parsed: ParsedInlineSvg; markup?: string; parser: typeof parseInlineSvg | null }
 >();
-const nodeCache = new Map<
-  CacheKey,
-  { node: SvgNode; markup: string; parser: typeof parseAndSanitize }
->();
+const nodeCache = new Map<CacheKey, { node: SvgNode; markup: string; parser: NodeParser }>();
 const markupCache = new Map<string, string>();
 const localTrees = new Map<string, { node: SvgNode; sanitized?: SvgNode | null }>();
 
@@ -113,8 +111,8 @@ export const ensureParsedNode = (
   source: string,
   markup: string,
   sanitize: boolean,
-  cache = true,
-  parse = parseAndSanitize,
+  cache: boolean,
+  parse: NodeParser,
 ): SvgNode | null => {
   if (cache) {
     if (source.startsWith(deferredLocalSvgPrefix)) source = markup;

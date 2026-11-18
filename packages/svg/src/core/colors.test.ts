@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { parseSvgString, renderNode } from "./ast";
+import { renderNode } from "./ast";
 import { withSvgColorOverrides } from "./colors";
 import { scopeParsedSvgIds } from "./ids";
-import { inlineSvgFromNode } from "./sanitize";
+import { inlineSvgFromNode, parseInlineSvg } from "./sanitize";
 
 const parse = (markup: string) => {
-  const node = parseSvgString(markup);
+  const node = parseInlineSvg(markup, false)?.node;
   if (!node) throw new Error("failed to parse fixture");
   return inlineSvgFromNode(node);
 };

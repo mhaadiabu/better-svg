@@ -4,7 +4,13 @@ import { dirname, relative, resolve, sep } from "node:path";
 import type { Plugin } from "vite";
 import { buildPackedSvg, buildPrecompiledSvg } from "./precompile.js";
 import { runSvgoPass, type SvgoOption } from "./svgo.js";
-import { scanCatalogNames, scanExtensions, type ScanResult, type ScanHint } from "./scan.js";
+import {
+  scanCatalogNames,
+  scanExtensions,
+  scanLocalSvgNames,
+  type ScanResult,
+  type ScanHint,
+} from "./scan.js";
 import {
   collectionIconNames,
   installedCollections,
@@ -116,7 +122,7 @@ export const resolveCatalogOptions = (
 
 export type SvgPluginOptions = {
   dirs?: string[];
-  include?: readonly string[];
+  pruneLocal?: boolean;
   svgo?: SvgoOption;
   precompiled?: boolean | "tree";
   /**
@@ -208,8 +214,6 @@ export const classifyScan = (
 
 export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
-  if (options.include !== undefined) validatePathList("Local SVG names", options.include);
-  const includedNames = options.include && new Set(options.include);
   const optimizeSvg = async (markup: string, name: string) => {
     if (!options.svgo) return markup;
     try {
@@ -237,6 +241,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const catalogOptions = resolveCatalogOptions(options.catalog);
   const catalogStrict = catalogOptions?.strict === true;
   let root = "";
+  let pruneLocal = false;
   const scanState: { dirty: boolean; outcome?: CatalogOutcome } = { dirty: true };
   const signatureState: { value?: string } = { value: undefined };
   const reported = new Set<string>();
@@ -372,6 +377,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     }),
     configResolved(config) {
       root = config.root;
+      pruneLocal = config.command === "build" && options.pruneLocal === true;
       clearCatalogCache();
       syncCatalogTypes();
     },
@@ -491,6 +497,13 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
         !/(?:\/@mhaadi\/svg|\/packages\/svg)\/(?:dist|src)\/core\/local\.(?:js|ts)$/.test(path)
       )
         return;
+      const usedNames =
+        pruneLocal && dirs.some((dir) => existsSync(resolve(root, dir)))
+          ? await scanLocalSvgNames(root, {
+              onDirectory: (directory) => this.addWatchFile(directory),
+              onFile: (file) => this.addWatchFile(file),
+            })
+          : undefined;
       const entries = new Map<string, string>();
       watchedDirectories.clear();
       watchedFiles.clear();
@@ -520,7 +533,7 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
           if (info.isDirectory()) await visit(path, base, nextAncestors);
           else if (info.isFile() && file.name.endsWith(".svg")) {
             const name = relative(base, path).split(sep).join("/").slice(0, -4);
-            if (includedNames && !includedNames.has(name)) continue;
+            if (usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))) continue;
             this.addWatchFile(path);
             const target = await realpath(path);
             watchedFiles.add(target);
@@ -530,7 +543,7 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
           }
         }
       };
-      for (const dir of includedNames?.size === 0 ? [] : dirs) {
+      for (const dir of dirs) {
         const base = resolve(root, dir);
         await visit(base, base);
       }

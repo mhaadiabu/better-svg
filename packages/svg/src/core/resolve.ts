@@ -1,5 +1,9 @@
 import { decodeDataUrl, isInlineSvg } from "./url.js";
-import { resolveSvgSource as resolveLocalSvg, type SvgNameInput } from "./local.js";
+import {
+  loadDeferredLocalSvg,
+  resolveSvgSource as resolveLocalSvg,
+  type SvgNameInput,
+} from "./local.js";
 import { cacheMarkup, getCachedMarkup } from "./cache.js";
 
 type SvgResponse = { response: Response; publicResponse: boolean };
@@ -96,6 +100,9 @@ export const resolveMarkup = async (source: string, options: ResolveOptions): Pr
   if (dataSvg) return dataSvg;
   if (options.signal.aborted)
     throw options.signal.reason ?? new DOMException("The operation was aborted.", "AbortError");
+
+  const deferred = loadDeferredLocalSvg(source);
+  if (deferred) return resolveMarkup(await deferred, options);
 
   const useCache = options.cache && options.fetchOptions === undefined;
   if (!useCache) return (await fetchSvg(source, options)).response.text();

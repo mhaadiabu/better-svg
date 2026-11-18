@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
@@ -33,6 +34,7 @@ export type CatalogScanOptions = {
 };
 
 const pluginPrefix = "[@mhaadi/svg]";
+const deferredRegistryPrefix = "\0better-svg:deferred-local:";
 
 const validatePathList = (kind: string, entries: readonly string[]) => {
   if (!Array.isArray(entries) || entries.some((entry) => typeof entry !== "string")) {
@@ -242,6 +244,8 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const catalogStrict = catalogOptions?.strict === true;
   let root = "";
   let pruneLocal = false;
+  const deferredRegistries = new Map<string, string>();
+  const deferredRegistryByPath = new Map<string, string>();
   const scanState: { dirty: boolean; outcome?: CatalogOutcome } = { dirty: true };
   const signatureState: { value?: string } = { value: undefined };
   const reported = new Set<string>();
@@ -480,7 +484,12 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
         server.watcher.off("add", onEvent).off("change", onEvent).off("unlink", onEvent);
       });
     },
+    resolveId(id) {
+      if (deferredRegistries.has(id)) return id;
+    },
     async load(id) {
+      const registry = deferredRegistries.get(id);
+      if (registry !== undefined) return registry;
       if (!id.endsWith(".svg?better-svg")) return;
       const path = id.slice(0, -"?better-svg".length);
       this.addWatchFile(path);
@@ -490,21 +499,26 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       return `import { createStaticSvg } from "@mhaadi/svg/react/static";
 export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
     },
-    async transform(code, id) {
+    async transform(code, id, transformOptions) {
       const path = id.split("?")[0]?.replace(/\\/g, "/");
       if (
         !path ||
+        path.startsWith("\0") ||
         !/(?:\/@mhaadi\/svg|\/packages\/svg)\/(?:dist|src)\/core\/local\.(?:js|ts)$/.test(path)
       )
         return;
       const usedNames =
-        pruneLocal && dirs.some((dir) => existsSync(resolve(root, dir)))
+        pruneLocal &&
+        !transformOptions?.ssr &&
+        this.environment?.config.consumer !== "server" &&
+        dirs.some((dir) => existsSync(resolve(root, dir)))
           ? await scanLocalSvgNames(root, {
               onDirectory: (directory) => this.addWatchFile(directory),
               onFile: (file) => this.addWatchFile(file),
             })
           : undefined;
       const entries = new Map<string, string>();
+      const deferred = new Map<string, string>();
       watchedDirectories.clear();
       watchedFiles.clear();
       const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {
@@ -533,13 +547,17 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
           if (info.isDirectory()) await visit(path, base, nextAncestors);
           else if (info.isFile() && file.name.endsWith(".svg")) {
             const name = relative(base, path).split(sep).join("/").slice(0, -4);
-            if (usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))) continue;
             this.addWatchFile(path);
             const target = await realpath(path);
             watchedFiles.add(target);
             this.addWatchFile(target);
-            if (!entries.has(name))
-              entries.set(name, await optimizeSvg(await readFile(path, "utf8"), name));
+            if (!entries.has(name) && !deferred.has(name)) {
+              const destination =
+                usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))
+                  ? deferred
+                  : entries;
+              destination.set(name, await optimizeSvg(await readFile(path, "utf8"), name));
+            }
           }
         }
       };
@@ -548,6 +566,20 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
         await visit(base, base);
       }
       let appended = emitRegistration(entries, options.precompiled);
+      if (deferred.size > 0) {
+        const register =
+          options.precompiled === "tree" ? "registerLocalSvgTrees" : "registerLocalSvgs";
+        const source = `import { ${register} } from ${JSON.stringify(path)};
+export default function register() {
+  ${emitRegistration(deferred, options.precompiled)}
+}`;
+        const moduleId = deferredRegistryPrefix + createHash("sha256").update(source).digest("hex");
+        const previous = deferredRegistryByPath.get(path);
+        if (previous) deferredRegistries.delete(previous);
+        deferredRegistryByPath.set(path, moduleId);
+        deferredRegistries.set(moduleId, source);
+        appended += `\nregisterDeferredLocalSvgs(${JSON.stringify([...deferred.keys()])}, () => import(${JSON.stringify(moduleId)}).then(({ default: register }) => register()));\n`;
+      }
 
       if (catalogOptions) {
         const addDirectory = (directory: string) => this.addWatchFile(directory);
@@ -560,6 +592,7 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
         if (outcome.resolved.size > 0) {
           const catalogEntries = new Map<string, string>();
           for (const [name, markup] of outcome.resolved) {
+            if (deferred.has(name)) continue;
             catalogEntries.set(name, await optimizeSvg(markup, name));
           }
           const tallies = new Map<string, number>();

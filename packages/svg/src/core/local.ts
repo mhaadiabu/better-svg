@@ -16,6 +16,8 @@ type RegisterOptions = {
 type LocalSvgTree = { packed: PackedSvgNode } | { markup: string; node: SvgNode };
 
 const localSvgByName = new Map<string, string | LocalSvgTree>();
+const deferredLocalSvgs = new Map<string, () => Promise<void>>();
+const deferredSourcePrefix = "better-svg:local:";
 
 const normalizeName = (value: string) =>
   value
@@ -91,8 +93,32 @@ export const registerLocalSvgTrees = (entries: [name: string, node: PackedSvgNod
   }
 };
 
-export const resolveSvgSource = (name: string) => {
-  const normalized = normalizeName(name);
+export const registerDeferredLocalSvgs = (names: string[], register: () => Promise<void>) => {
+  let pending: Promise<void> | undefined;
+  const load = () =>
+    (pending ??= register().catch((error: unknown) => {
+      pending = undefined;
+      throw error;
+    }));
+  for (const key of names) {
+    const name = pathToName(key);
+    if (name) deferredLocalSvgs.set(name, load);
+  }
+};
+
+export const loadDeferredLocalSvg = (source: string) => {
+  if (!source.startsWith(deferredSourcePrefix)) return;
+  const name = source.slice(deferredSourcePrefix.length);
+  const load = deferredLocalSvgs.get(name);
+  if (!load) return;
+  return load().then(() => {
+    const resolved = resolveNormalizedSvgSource(name);
+    if (resolved === source) throw new Error(`Could not load local SVG "${name}".`);
+    return resolved;
+  });
+};
+
+const resolveNormalizedSvgSource = (normalized: string) => {
   let local = localSvgByName.get(normalized);
   if (typeof local === "string" && local) return local;
   if (typeof local === "object") {
@@ -105,7 +131,10 @@ export const resolveSvgSource = (name: string) => {
     cacheLocalSvgTree(markup, node);
     return markup;
   }
+  if (deferredLocalSvgs.has(normalized)) return deferredSourcePrefix + normalized;
   return `/assets/svg/${normalized}.svg`;
 };
+
+export const resolveSvgSource = (name: string) => resolveNormalizedSvgSource(normalizeName(name));
 
 export type { SvgName, SvgNameInput } from "./names.js";

@@ -449,6 +449,17 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
         server.watcher.off("add", onEvent).off("change", onEvent).off("unlink", onEvent);
       });
     },
+    async load(id) {
+      if (!id.endsWith(".svg?better-svg")) return;
+      const path = id.slice(0, -"?better-svg".length);
+      this.addWatchFile(path);
+      const name = relative(root, path).split(sep).join("/").slice(0, -4);
+      const markup = await readFile(path, "utf8");
+      const source = options.svgo ? await runSvgoPass(markup, name, options.svgo) : markup;
+      const { node } = buildPrecompiledSvg(source, name);
+      return `import { createStaticSvg } from "@mhaadi/svg/react/static";
+export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
+    },
     async transform(code, id) {
       const path = id.split("?")[0]?.replace(/\\/g, "/");
       if (

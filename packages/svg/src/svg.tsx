@@ -1,26 +1,16 @@
 import * as React from "react";
 import { ensureParsedSvg, resolveMarkup, resolveSource, type SvgNameInput } from "./core/index.js";
-import { withSvgColorOverrides } from "./core/colors.js";
-import { createSvgId, rewriteSvgAttributes, scopeParsedSvgIds, withSvgRootId } from "./core/ids.js";
+import { createSvgId, scopeParsedSvgIds } from "./core/ids.js";
 import { getCachedMarkup } from "./core/cache.js";
 import { decodeDataUrl, isInlineSvg } from "./core/url.js";
 
 import type { ParsedInlineSvg } from "./core/sanitize.js";
-import {
-  createSvgPresentation,
-  svgDimensions,
-  svgViewBox,
-  type SvgPresentation,
-} from "./core/presentation.js";
+import { useSvgArtwork, type SvgArtworkProps } from "./svg-artwork.js";
 
 type SvgSourceProps = { src: string; name?: never } | { name: SvgNameInput; src?: never };
 
-export type SvgProps = Omit<
-  React.SVGProps<SVGSVGElement>,
-  "children" | "dangerouslySetInnerHTML" | "name" | "src"
-> &
-  SvgSourceProps &
-  SvgPresentation & {
+export type SvgProps = SvgArtworkProps &
+  SvgSourceProps & {
     fetchOptions?: RequestInit;
     cache?: boolean;
     sanitize?: boolean;
@@ -76,21 +66,11 @@ export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
       fallback,
       onSvgLoad,
       onSvgError,
-      size,
-      width,
-      height,
-      title,
-      desc,
-      className,
-      style,
-      fill,
-      stroke,
       ...rest
     },
     ref,
   ) => {
     const [prefix] = React.useState(createSvgId);
-    const [present] = React.useState(() => createSvgPresentation());
     const client = React.useSyncExternalStore(subscribeToClient, clientSnapshot, serverSnapshot);
 
     const resolvedSource = React.useMemo(() => resolveSource(src, name), [name, src]);
@@ -157,53 +137,9 @@ export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
     }, [request, immediate, client]);
 
     const content = result && "content" in result ? result.content : null;
-    const presented = React.useMemo(
-      () =>
-        content
-          ? present(withSvgRootId(withSvgColorOverrides(content, { fill, stroke }), rest.id), {
-              title,
-              desc,
-            })
-          : null,
-      [content, present, fill, stroke, rest.id, title, desc],
-    );
-    const markup = presented?.innerHTML ?? "";
-    const innerHTML = React.useMemo(() => ({ __html: markup }), [markup]);
-
-    if (!result) {
-      return loading ? <>{loading}</> : null;
-    }
-
-    if (!presented) {
-      return fallback ? <>{fallback}</> : null;
-    }
-
-    const mergedClassName = [presented.className, className].filter(Boolean).join(" ");
-    const mergedStyle = presented.style ? { ...presented.style, ...style } : style;
-    const rootProps =
-      fill === undefined && stroke === undefined
-        ? rest
-        : {
-            ...rest,
-            ...(fill !== undefined ? { fill } : {}),
-            ...(stroke !== undefined ? { stroke } : {}),
-          };
-
-    return (
-      <svg
-        ref={ref}
-        {...presented.attrs}
-        aria-labelledby={
-          rest["aria-label"] !== undefined ? undefined : presented.attrs["aria-labelledby"]
-        }
-        {...svgDimensions({ size, width, height })}
-        viewBox={svgViewBox(presented.attrs, { size, width, height, viewBox: rest.viewBox })}
-        {...rewriteSvgAttributes(rootProps, presented.ids)}
-        className={mergedClassName || undefined}
-        style={rewriteSvgAttributes(mergedStyle ?? {}, presented.ids) as React.CSSProperties}
-        dangerouslySetInnerHTML={innerHTML}
-      />
-    );
+    const artwork = useSvgArtwork(content, rest, ref);
+    if (!result) return loading ? <>{loading}</> : null;
+    return artwork ?? (fallback ? <>{fallback}</> : null);
   },
 );
 

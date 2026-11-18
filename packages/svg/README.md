@@ -726,6 +726,31 @@ adapters parse with the browser's XML parser and the Astro adapter with
 `@xmldom/xmldom`. Seeding is best-effort, so a failed prime costs a re-parse
 at runtime and never a thrown error.
 
+## Import a static React icon
+
+With `svgPlugin()` enabled, add `?better-svg` to a React import. The plugin
+parses and sanitizes the file at build time. The component renders on the
+server and can hydrate on the client. It needs no SVG parser or URL loader
+and a production build can drop unused imports.
+
+```tsx
+import Logo from "./icons/logo.svg?better-svg";
+
+<Logo size={24} title="Acme" />;
+```
+
+TypeScript projects can add the following to their `vite-env.d.ts`:
+
+```ts
+/// <reference types="@mhaadi/svg/vite/static" />
+```
+
+The component supports refs, styling, paint overrides, accessible labels,
+and ID scoping. `onSvgLoad` runs after the client commits and receives the
+sanitized SVG serialized as XML. Invalid SVG files fail the build. Static
+imports always sanitize the SVG. Function-form `svgo` options receive the
+file's project-relative path without `.svg`.
+
 ## Size and accessible text
 
 ```tsx

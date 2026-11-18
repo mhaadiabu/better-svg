@@ -538,6 +538,10 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
           : undefined;
       const entries = new Map<string, string>();
       const deferred = new Map<string, string>();
+      const watch = (file: string) => {
+        if (devServer) devServer.watcher.add(file);
+        else this.addWatchFile(file);
+      };
       watchedDirectories.clear();
       watchedFiles.clear();
       const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {
@@ -553,7 +557,7 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
         }
         const nextAncestors = new Set(ancestors).add(target);
         watchedDirectories.add(target);
-        this.addWatchFile(target);
+        watch(target);
         for (const file of files.sort((a, b) => a.name.localeCompare(b.name))) {
           const path = resolve(directory, file.name);
           let info;
@@ -566,10 +570,10 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
           if (info.isDirectory()) await visit(path, base, nextAncestors);
           else if (info.isFile() && file.name.endsWith(".svg")) {
             const name = relative(base, path).split(sep).join("/").slice(0, -4);
-            this.addWatchFile(path);
+            watch(path);
             const target = await realpath(path);
             watchedFiles.add(target);
-            this.addWatchFile(target);
+            if (target !== path) watch(target);
             if (!entries.has(name) && !deferred.has(name)) {
               const destination =
                 usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))
@@ -601,9 +605,8 @@ export default function register() {
       }
 
       if (catalogOptions) {
-        const addDirectory = (directory: string) => this.addWatchFile(directory);
         const emit = (message: string) => this.warn(message);
-        const outcome = await ensureOutcome(false, addDirectory);
+        const outcome = await ensureOutcome(false, watch);
         signatureState.value = outcomeSignature(outcome);
         emitCatalogReport(outcome, emit);
         syncCatalogTypes();

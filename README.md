@@ -38,3 +38,6 @@ package still supports Node.js 18 and newer.
 - `pnpm run build`: Build all packages and apps
 - `pnpm run check-types`: Check TypeScript types
 - `pnpm run check`: Run Oxlint and Oxfmt
+
+The private [SVG workflow benchmarks](./packages/benchmarks/README.md) compare
+rendering, build costs, and optimization without changing package defaults.

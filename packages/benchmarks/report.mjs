@@ -61,8 +61,8 @@ lines.push(
   "",
   "## Browser warm remounts",
   "",
-  "| Profile | Scenario | Valid warm samples | Ready median / p95 ms | Paint-opportunity median / p95 ms | Update commit median ms | First-use resource entries / transferred responses / bytes | Warm median resource loads |",
-  "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+  "| Profile | Scenario | Valid warm samples | Ready median / p95 ms | Paint-opportunity median / p95 ms | Update commit median ms | First-use ready ms | First-use resource entries / transferred responses / bytes | Warm median resource loads |",
+  "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
 );
 const summaries = [];
 for (const run of browser.runs) {
@@ -70,20 +70,20 @@ for (const run of browser.runs) {
     throw new Error(`Stale browser document for ${run.profile}`);
   for (const scenario of run.scenarios) {
     const warm = scenario.samples.filter((sample) => sample.phase === "warm");
-    const valid = warm.filter(
-      (sample) =>
-        sample.status === "ready" &&
-        sample.rendered === sample.expected &&
-        sample.updates === sample.expected &&
-        sample.sizeMismatch === 0 &&
-        sample.errors.length === 0,
-    );
+    const isValid = (sample) =>
+      sample.status === "ready" &&
+      sample.rendered === sample.expected &&
+      sample.updates === sample.expected &&
+      sample.sizeMismatch === 0 &&
+      sample.errors.length === 0;
+    const valid = warm.filter(isValid);
     const timing = (key) => summarize(valid.map((sample) => sample[key]));
     const ready = timing("readyMs"),
       paint = timing("paintOpportunityMs"),
       update = timing("updateCommitMs"),
       requests = timing("requests");
     const first = scenario.samples[0];
+    const firstReadyMs = isValid(first) ? first.readyMs : null;
     summaries.push({
       profile: run.profile,
       scenario: scenario.scenario,
@@ -95,13 +95,14 @@ for (const run of browser.runs) {
       requests,
       firstUse: {
         status: first.status,
+        readyMs: firstReadyMs,
         resources: first.requests,
         transferredResponses: first.transferredResources,
         bytes: first.transferBytes,
       },
     });
     lines.push(
-      `| ${run.profile} | ${scenario.scenario} | ${valid.length}/${warm.length} | ${decimal(ready.median)} / ${decimal(ready.p95)} | ${decimal(paint.median)} / ${decimal(paint.p95)} | ${decimal(update.median)} | ${first.requests} / ${first.transferredResources ?? "n/a"} / ${first.transferBytes ?? "n/a"} | ${decimal(requests.median)} |`,
+      `| ${run.profile} | ${scenario.scenario} | ${valid.length}/${warm.length} | ${decimal(ready.median)} / ${decimal(ready.p95)} | ${decimal(paint.median)} / ${decimal(paint.p95)} | ${decimal(update.median)} | ${firstReadyMs === null ? "invalid" : decimal(firstReadyMs)} | ${first.requests} / ${first.transferredResources ?? "n/a"} / ${first.transferBytes ?? "n/a"} | ${decimal(requests.median)} |`,
     );
   }
 }

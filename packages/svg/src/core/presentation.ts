@@ -60,8 +60,7 @@ export const svgViewBox = (
 
 type SvgContent<Style> = ParsedInlineSvg<Style>;
 
-export const createSvgPresentation = <Style = Record<string, string>>() => {
-  const prefix = createSvgId();
+export const createSvgPresentation = <Style = Record<string, string>>(prefix = createSvgId()) => {
   const rendered = new WeakMap<SvgNode, string>();
   const renderChild = (node: SvgNode) => {
     let markup = rendered.get(node);

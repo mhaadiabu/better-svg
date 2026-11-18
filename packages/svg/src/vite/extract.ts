@@ -21,7 +21,11 @@ const voidTags = new Set([
   "wbr",
 ]);
 
-export const catalogLiterals = (source: string, extension: string): CatalogLiteral[] => {
+const scanLiterals = (
+  source: string,
+  extension: string,
+  onDynamic?: () => void,
+): CatalogLiteral[] => {
   const literals: CatalogLiteral[] = [];
   const text =
     extension === "mdx"
@@ -31,6 +35,12 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
       : source;
 
   const record = (value: string, index: number, explicit: boolean) => {
+    if (onDynamic) {
+      if (!explicit) return;
+      if (value.includes("\\") || value.includes("&") || value.includes("{{")) onDynamic();
+      else if (!value.includes("${")) literals.push({ value, index, explicit });
+      return;
+    }
     if (
       /^[a-z0-9][a-z0-9-]*:[a-z0-9][a-z0-9._-]*$/.test(value) ||
       /^[a-z0-9][a-z0-9-]*:[a-z0-9._-]*\$\{/.test(value)
@@ -38,6 +48,9 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
       literals.push({ value, index, explicit });
     }
   };
+
+  const isSingleLiteral = (value: string) =>
+    /^(?:"[^"\\]*"|'[^'\\]*'|`[^`\\]*`)$/.test(value.trim()) && !value.includes("${");
 
   const quotedEnd = (start: number, limit: number, explicit: boolean, collect: boolean) => {
     const quote = text[start];
@@ -64,7 +77,11 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
     const head = /^<(\/?)([a-zA-Z][\w.:-]*|(?=>))/.exec(text.slice(start));
     if (!head) return undefined;
     const name = head[2] ?? "";
-    const iconElement = /^[A-Z]/.test(name) || name === "svg" || name.includes("-");
+    const iconElement =
+      /^[A-Z]/.test(name) ||
+      name === "svg" ||
+      name.includes("-") ||
+      (onDynamic !== undefined && name.includes("."));
     const closing = head[1] === "/";
     let position = start + head[0].length;
     while (position < limit) {
@@ -77,6 +94,8 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
       if (text[position] === ">")
         return { end: position + 1, name, closing, selfClosing: voidTags.has(name.toLowerCase()) };
       if (text[position] === "{") {
+        if (onDynamic && iconElement && /^\{\s*(?:\.\.\.|name\s*\})/.test(text.slice(position)))
+          onDynamic();
         position = scanCode(position + 1, limit, true);
         continue;
       }
@@ -85,21 +104,31 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
         position++;
         continue;
       }
+      if (iconElement && /^(?:v-bind(?:$|:\[)|:\[)/.test(attribute)) onDynamic?.();
       position += attribute.length;
       while (/\s/.test(text[position] ?? "")) position++;
       if (text[position] !== "=") continue;
       position++;
       while (/\s/.test(text[position] ?? "")) position++;
       const explicit =
-        iconElement && ["name", ":name", "v-bind:name", "[name]"].includes(attribute);
+        iconElement &&
+        (["name", ":name", "v-bind:name", "[name]"].includes(attribute) ||
+          (onDynamic !== undefined && /^(?:bind-name|(?:v-bind)?:name\..+)$/.test(attribute)));
       const before = literals.length;
       const quote = text[position];
       if (quote === '"' || quote === "'") {
         const end = quotedEnd(position, limit, explicit, explicit && attribute === "name");
-        if (explicit && attribute !== "name") scanCode(position + 1, end - 1, false, true);
+        if (explicit && attribute !== "name") {
+          const expression = text.slice(position + 1, end - 1);
+          if (onDynamic && !isSingleLiteral(expression)) onDynamic();
+          scanCode(position + 1, end - 1, false, true);
+        }
         position = end;
       } else if (quote === "{") {
-        position = scanCode(position + 1, limit, true, explicit);
+        const end = scanCode(position + 1, limit, true, explicit);
+        if (explicit && onDynamic && !isSingleLiteral(text.slice(position + 1, end - 1)))
+          onDynamic();
+        position = end;
       } else {
         const value = /^[^\s>]+/.exec(text.slice(position))?.[0] ?? "";
         if (explicit) record(value, position, true);
@@ -171,7 +200,8 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
         const name = /^<([a-zA-Z][\w.:-]*|(?=>))/.exec(text.slice(position))?.[1];
         if (
           name !== undefined &&
-          (/^<[^>]*\/>/.test(text.slice(position)) || text.indexOf(`</${name}`, position) >= 0)
+          ((onDynamic ? /^<[^<]*\/>/ : /^<[^>]*\/>/).test(text.slice(position)) ||
+            text.indexOf(`</${name}`, position) >= 0)
         ) {
           position = scanMarkup(position, limit, name);
         } else position++;
@@ -191,3 +221,9 @@ export const catalogLiterals = (source: string, extension: string): CatalogLiter
   } else scanCode(0, text.length);
   return literals;
 };
+
+export const catalogLiterals = (source: string, extension: string) =>
+  scanLiterals(source, extension);
+
+export const localSvgLiterals = (source: string, extension: string, onDynamic: () => void) =>
+  scanLiterals(source, extension, onDynamic);

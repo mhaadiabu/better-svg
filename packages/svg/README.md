@@ -41,6 +41,12 @@ import { SVG } from "@mhaadi/svg/react";
 />
 ```
 
+On React clients, inline markup, registered icons, data URLs, and publicly cached
+URL responses render without a loading pass. Uncached URLs still use `loading`.
+Server rendering and the initial hydration render keep the loading placeholder.
+Load and error callbacks run after commit, including for immediately available
+sources. Root-only prop updates preserve the existing SVG child elements.
+
 ## React Native
 
 Requires `react-native` and `react-native-svg` as peer dependencies.
@@ -225,9 +231,17 @@ attributes. `none` values and gradient references are preserved. Angular uses `s
 props, and `TemplateRef` inputs for loading and fallback.
 
 Remote markup caching is shared across adapters and limited to 500 entries.
-Only responses marked `Cache-Control: public` enter this cache. Responses
-marked `private`, `no-store`, or `no-cache` and custom `fetchOptions` bypass it. Use `cache={false}`
-for SVGs that depend on the current session or need fresh responses.
+Concurrent URL loads share one request when caching is enabled and the response
+is explicitly public. Each caller can cancel independently. The request is
+aborted when every caller cancels. Redirect policies use separate requests and
+cache entries.
+
+Callers initially wait for the response headers to establish its cache policy.
+When the first request fails or its headers rule out sharing, joined callers
+start independent requests. Sharing and caching require `Cache-Control: public`
+and skip responses with `Vary`, `private`, `no-store`, or `no-cache`. Browser
+CORS responses also skip sharing because their headers can hide `Vary`.
+Custom `fetchOptions` and `cache={false}` bypass this coordination.
 
 ## Entry points
 
@@ -700,6 +714,59 @@ Precompiled registration primes the parser your runtime uses: browser
 adapters parse with the browser's XML parser and the Astro adapter with
 `@xmldom/xmldom`. Seeding is best-effort, so a failed prime costs a re-parse
 at runtime and never a thrown error.
+
+Use `precompiled: "tree"` to ship just the parsed tree for discovered files
+and scanned catalog icons. The first lookup decodes the tree and serializes
+it as XML. The default renderer sanitizes the tree on demand, and cached
+renders reuse it without parsing XML. `sanitize={false}` still renders the
+unsanitized tree and is only for trusted SVG files.
+
+```ts
+svgPlugin({ dirs: ["src/icons"], precompiled: "tree" });
+```
+
+In tree mode, `onSvgLoad` receives serialized XML. Use `precompiled: true` if
+you need the original registered markup in the callback.
+
+## Keep unused local icons out of the initial bundle
+
+By default, the plugin scans your project source during browser production builds. It
+includes the names it finds in the initial registry and puts the remaining
+files in a separate chunk. If a Vite plugin or dependency supplies a name the
+scan missed, the first lookup loads that chunk before the icon renders.
+The chunk contains only files from the configured discovery directories.
+Names with no registry entry still resolve to `/assets/svg/{name}.svg`.
+
+When the scanner detects a runtime name, such as `<SVG name={selectedIcon} />`
+or a props spread, it includes the full registry up front. Server and
+development builds also keep the full registry available immediately. Set
+`pruneLocal: false` to include every discovered file up front in browser builds.
+
+## Import a static React icon
+
+With `svgPlugin()` enabled, add `?better-svg` to a React import. The plugin
+parses and sanitizes the file at build time. The component renders on the
+server and can hydrate on the client. It needs no SVG parser or URL loader
+and a production build can drop unused imports.
+
+```tsx
+import Logo from "./icons/logo.svg?better-svg";
+
+<Logo size={24} title="Acme" />;
+```
+
+TypeScript projects can add the following to their `vite-env.d.ts`:
+
+```ts
+/// <reference types="@mhaadi/svg/vite/static" />
+```
+
+The component supports refs, styling, paint overrides, accessible labels,
+and ID scoping. `onSvgLoad` runs after the client commits and receives the
+sanitized SVG serialized as XML. Invalid SVG files fail the build. Static
+imports always sanitize the SVG. In development this feature requires a Vite
+version that exposes its filesystem authorization check. Function-form
+`svgo` options receive the file's project-relative path without `.svg`.
 
 ## Size and accessible text
 

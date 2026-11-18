@@ -1,7 +1,7 @@
-import { sanitizeNode, domParserAvailable, renderNode, type SvgNode } from "./ast.js";
+import { sanitizeNode, renderNode, type SvgNode } from "./ast.js";
 import { cacheLocalSvgTree, cacheParsedSvg, deferredLocalSvgPrefix } from "./cache.js";
 import { unpackSvgNode, type PackedSvgNode } from "./packed-svg.js";
-import { inlineSvgFromNode, parseInlineSvg } from "./sanitize.js";
+import { inlineSvgFromNode } from "./sanitize.js";
 import { isInlineSvg } from "./url.js";
 
 type SvgModuleMap = Record<string, string>;
@@ -45,14 +45,7 @@ const isSvgTree = (value: unknown): value is SvgNode => {
 const seedPrecompiled = (name: string, markup: string, tree: SvgNode) => {
   const node = sanitizeNode(tree);
   if (!node) throw new Error(`Precompiled SVG "${name}" is not a valid sanitized svg tree.`);
-  const parsed = inlineSvgFromNode(node);
-  if (domParserAvailable()) {
-    cacheParsedSvg(markup, true, parsed, markup, parseInlineSvg);
-    return;
-  }
-  void import("./xml.js")
-    .then(({ parseXmlSvg }) => cacheParsedSvg(markup, true, parsed, markup, parseXmlSvg))
-    .catch(() => {});
+  cacheParsedSvg(markup, true, inlineSvgFromNode(node), markup, null);
 };
 
 export const registerLocalSvgs = (entries: SvgModuleMap, options: RegisterOptions = {}) => {

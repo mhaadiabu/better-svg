@@ -10,7 +10,7 @@ const NODE_CACHE_LIMIT = 200;
 
 const parsedCache = new Map<
   CacheKey,
-  { parsed: ParsedInlineSvg; markup?: string; parser?: typeof parseInlineSvg }
+  { parsed: ParsedInlineSvg; markup?: string; parser: typeof parseInlineSvg | null }
 >();
 const nodeCache = new Map<
   CacheKey,
@@ -50,7 +50,7 @@ export const cacheParsedSvg = (
   sanitize: boolean,
   parsed: ParsedInlineSvg,
   markup?: string,
-  parser = parseInlineSvg,
+  parser: typeof parseInlineSvg | null = parseInlineSvg,
 ): void => {
   setBounded(parsedCache, keyFor(source, sanitize), { parsed, markup, parser }, PARSED_CACHE_LIMIT);
 };
@@ -101,7 +101,8 @@ export const ensureParsedSvg = (
   if (!cache) return parse(markup, sanitize);
   if (source.startsWith(deferredLocalSvgPrefix)) source = markup;
   const cached = touch(parsedCache, keyFor(source, sanitize));
-  if (cached?.markup === markup && cached.parser === parse) return cached.parsed;
+  if (cached?.markup === markup && (cached.parser === parse || cached.parser === null))
+    return cached.parsed;
   const tree = getLocalSvgTree(source, markup, sanitize);
   const parsed = tree ? inlineSvgFromNode(tree) : parse(markup, sanitize);
   if (parsed) cacheParsedSvg(source, sanitize, parsed, markup, parse);

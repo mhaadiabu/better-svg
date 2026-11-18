@@ -117,6 +117,7 @@ export const resolveCatalogOptions = (
 
 export type SvgPluginOptions = {
   dirs?: string[];
+  include?: readonly string[];
   svgo?: SvgoOption;
   precompiled?: boolean;
   /**
@@ -192,6 +193,8 @@ export const classifyScan = (
 
 export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
+  if (options.include !== undefined) validatePathList("Local SVG names", options.include);
+  const includedNames = options.include && new Set(options.include);
   if (
     dirs.some(
       (dir) =>
@@ -483,6 +486,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
           if (info.isDirectory()) await visit(path, base, nextAncestors);
           else if (info.isFile() && file.name.endsWith(".svg")) {
             const name = relative(base, path).split(sep).join("/").slice(0, -4);
+            if (includedNames && !includedNames.has(name)) continue;
             this.addWatchFile(path);
             const target = await realpath(path);
             watchedFiles.add(target);
@@ -507,7 +511,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
           }
         }
       };
-      for (const dir of dirs) {
+      for (const dir of includedNames?.size === 0 ? [] : dirs) {
         const base = resolve(root, dir);
         await visit(base, base);
       }

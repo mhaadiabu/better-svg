@@ -318,6 +318,15 @@ Add the Vite plugin to discover files in `src/assets/svg` and `app/assets/svg`.
 Then `<SVG name="logo" />` renders `logo.svg` without fetching it. A nested
 file such as `social/github.svg` uses `name="social/github"`.
 
+Use `include` to ship only selected files from the discovery directories. List
+their names relative to those directories, without the `.svg` extension.
+Include every name you pass dynamically. An empty list disables file
+registration. The catalog scan has its own settings.
+
+```ts
+svgPlugin({ dirs: ["src/icons"], include: ["logo", "social/github"] });
+```
+
 ```ts
 // vite.config.ts
 import { defineConfig } from "vite";

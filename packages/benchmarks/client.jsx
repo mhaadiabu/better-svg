@@ -144,6 +144,7 @@ const runSuite = async ({ repetitions = 15, warmups = 3, scenario: selectedScena
   };
   for (const [scenario, indices] of [
     ["one", [0]],
+    ["grid-24", Array.from({ length: 24 }, (_unused, index) => index % 8)],
     ["repeated-1000", Array(1000).fill(0)],
     [
       "unique-100",

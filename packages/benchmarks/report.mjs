@@ -17,11 +17,16 @@ if (browser.experimentHash !== node.manifest.experimentHash)
 for (const run of [...browser.runs, ...browser.contracts])
   if (run.experimentHash !== node.manifest.experimentHash)
     throw new Error(`Stale browser document for ${run.profile}`);
-const decimal = (value) => (value === null ? "unsupported" : value.toFixed(2));
+const decimal = (value) => (typeof value === "number" ? value.toFixed(2) : "unsupported");
 const lines = [
   "# React SVG benchmark pilot",
   "",
   `Library source commit: ${node.manifest.sourceCommit}.`,
+  ...(node.manifest.betterSvg
+    ? [
+        `Better SVG published: ${node.manifest.betterSvg.published}. Workspace: ${node.manifest.betterSvg.workspace}.`,
+      ]
+    : []),
   `Fixture hash: ${node.manifest.fixtureHash}.`,
   "",
   "This is a local desktop pilot, not a universal ranking. Build sizes include the benchmark controller and React. Runtime URL profiles also emit separate SVG assets. Emitted deployment size is not the same as bytes fetched for one scenario. Timings do not include SVG package compilation or fixture generation. SVGR compilation and optimization run inside each Vite build and development transform.",
@@ -35,13 +40,28 @@ for (const profile of node.profiles)
   lines.push(
     `| ${profile.profile} | ${profile.totalBytes.gzip} | ${decimal(profile.buildMs.median)} | ${profile.dev.every((sample) => sample.status === "error") ? "FAILED" : decimal(profile.startupEntryMs.median)} | ${profile.dev.every((sample) => sample.status === "error") ? "FAILED" : decimal(profile.editTransformMs.median)} | ${profile.ssr.rendered} | ${decimal(profile.ssr.milliseconds.median)} |`,
   );
+if (node.profiles[0]?.javascript) {
+  lines.push(
+    "",
+    "## JavaScript delivery",
+    "",
+    "Gzip bytes include React and the page code. Initial bytes include every statically imported chunk. Emitted bytes also include deferred chunks. The sparse page uses one icon from the same discovery directory as the full matrix.",
+    "",
+    "| Profile | Full initial JS | Full emitted JS | One-icon initial JS | One-icon emitted JS |",
+    "| --- | ---: | ---: | ---: | ---: |",
+  );
+  for (const profile of node.profiles)
+    lines.push(
+      `| ${profile.profile} | ${profile.javascript.initialGzip} | ${profile.javascript.totalGzip} | ${profile.sparseJavascript.initialGzip} | ${profile.sparseJavascript.totalGzip} |`,
+    );
+}
 lines.push(
   "",
   "Node timing uses fresh Vite worker processes for development measurements. The filesystem cache is uncontrolled. Edit-transform timing explicitly invalidates the affected module after writing one generated SVG and waits for transformed output. It is not browser HMR, React update latency, or page reload latency. Build timing uses rotated adapter order in one Node process, so process and library import caches can be warm. SSR measures React serialization, not HTTP TTFB.",
   "",
   "## Browser warm remounts",
   "",
-  "| Profile | Scenario | Valid warm samples | Ready median / p95 ms | Paint-opportunity median / p95 ms | Update commit median ms | First-sample resource loads | Warm median resource loads |",
+  "| Profile | Scenario | Valid warm samples | Ready median / p95 ms | Paint-opportunity median / p95 ms | Update commit median ms | First-use resource entries / transferred responses / bytes | Warm median resource loads |",
   "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
 );
 const summaries = [];
@@ -63,6 +83,7 @@ for (const run of browser.runs) {
       paint = timing("paintOpportunityMs"),
       update = timing("updateCommitMs"),
       requests = timing("requests");
+    const first = scenario.samples[0];
     summaries.push({
       profile: run.profile,
       scenario: scenario.scenario,
@@ -72,9 +93,15 @@ for (const run of browser.runs) {
       paint,
       update,
       requests,
+      firstUse: {
+        status: first.status,
+        resources: first.requests,
+        transferredResponses: first.transferredResources,
+        bytes: first.transferBytes,
+      },
     });
     lines.push(
-      `| ${run.profile} | ${scenario.scenario} | ${valid.length}/${warm.length} | ${decimal(ready.median)} / ${decimal(ready.p95)} | ${decimal(paint.median)} / ${decimal(paint.p95)} | ${decimal(update.median)} | ${scenario.samples[0].requests} | ${decimal(requests.median)} |`,
+      `| ${run.profile} | ${scenario.scenario} | ${valid.length}/${warm.length} | ${decimal(ready.median)} / ${decimal(ready.p95)} | ${decimal(paint.median)} / ${decimal(paint.p95)} | ${decimal(update.median)} | ${first.requests} / ${first.transferredResources ?? "n/a"} / ${first.transferBytes ?? "n/a"} | ${decimal(requests.median)} |`,
     );
   }
 }
@@ -89,7 +116,7 @@ lines.push(
   "",
   "## Coverage gaps",
   "",
-  "The corpus includes catalog icons and two small repository assets, not a representative set of editor exports. This run does not measure real mobile devices, React Native, Flutter, Astro SSR, unplugin-icons, hydration, bandwidth-limited HTTP delivery, GPU presentation, or browser engines not listed in the raw browser metadata. Do not extrapolate desktop timings to those environments.",
+  "The corpus includes catalog icons and two small repository assets, not a representative set of editor exports. This run does not measure real mobile devices, React Native, Flutter, Astro SSR, hydration, bandwidth-limited HTTP delivery, GPU presentation, or browser engines not listed in the raw browser metadata. Do not extrapolate desktop timings to those environments.",
   "",
 );
 const output = join(cache, "report.md");
@@ -101,6 +128,7 @@ await writeFile(
     {
       environment: node.environment,
       versions: node.manifest.versions,
+      betterSvg: node.manifest.betterSvg,
       svgrSvgo: node.manifest.svgrSvgo,
       profiles: node.profiles,
       browser: summaries,

@@ -18,6 +18,7 @@
     "scripts",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
+    "src/vite/static.d.ts",
     "vitest.config.ts",
     "vitest.setup.ts",
     "src/angular/**"

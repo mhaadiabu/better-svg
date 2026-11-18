@@ -52,10 +52,6 @@
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
     },
-    "./react/static": {
-      "types": "./dist/react-static.d.ts",
-      "import": "./dist/react-static.js"
-    },
     "./react-native": {
       "types": "./dist/native.d.ts",
       "import": "./dist/native.js"

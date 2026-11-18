@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
-import type { Plugin } from "vite";
+import { fileURLToPath } from "node:url";
+import type { Plugin, ViteDevServer } from "vite";
 import { buildPackedSvg, buildPrecompiledSvg } from "./precompile.js";
 import { runSvgoPass, type SvgoOption } from "./svgo.js";
 import {
@@ -244,6 +245,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const catalogStrict = catalogOptions?.strict === true;
   let root = "";
   let pruneLocal = false;
+  let devServer: ViteDevServer | undefined;
   const deferredRegistries = new Map<string, string>();
   const deferredRegistryByPath = new Map<string, string>();
   const scanState: { dirty: boolean; outcome?: CatalogOutcome } = { dirty: true };
@@ -386,6 +388,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       syncCatalogTypes();
     },
     configureServer(server) {
+      devServer = server;
       const refresh = (file: string) => {
         if (!containsSvg(file)) return;
         server.moduleGraph.invalidateAll();
@@ -493,10 +496,26 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       if (!id.endsWith(".svg?better-svg")) return;
       const path = id.slice(0, -"?better-svg".length);
       this.addWatchFile(path);
+      if (devServer) {
+        const { isFileServingAllowed, normalizePath } = await import("vite");
+        if (typeof isFileServingAllowed !== "function") {
+          this.error("Static SVG imports in development require Vite filesystem authorization.");
+        }
+        if (
+          !isFileServingAllowed(normalizePath(path), devServer) ||
+          !isFileServingAllowed(normalizePath(await realpath(path)), devServer)
+        ) {
+          this.error("Static SVG import is outside Vite's allowed filesystem paths.");
+        }
+      }
       const name = relative(root, path).split(sep).join("/").slice(0, -4);
       const source = await optimizeSvg(await readFile(path, "utf8"), name);
       const { node } = buildPrecompiledSvg(source, name);
-      return `import { createStaticSvg } from "@mhaadi/svg/react/static";
+      const runtime = fileURLToPath(new URL("../react-static.js", import.meta.url)).replace(
+        /\\/g,
+        "/",
+      );
+      return `import { createStaticSvg } from ${JSON.stringify(runtime)};
 export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
     },
     async transform(code, id, transformOptions) {

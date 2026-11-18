@@ -237,24 +237,22 @@ describe("resolveMarkup", () => {
     expect(getCachedMarkup(source, "error")).toBeUndefined();
   });
 
-  it("releases failed requests so callers can retry", async () => {
+  it("lets joined callers make their own request when the first request fails", async () => {
     const response = deferred<Response>();
     const fetchMock = vi
       .fn<typeof fetch>()
       .mockReturnValueOnce(response.promise)
-      .mockImplementationOnce(async () => publicSvg());
+      .mockImplementation(async () => publicSvg());
     vi.stubGlobal("fetch", fetchMock);
     const source = "https://example.com/retry.svg";
     const first = resolveMarkup(source, makeOptions({ cache: true }));
     const second = resolveMarkup(source, makeOptions({ cache: true }));
-    const rejections = Promise.all([
-      expect(first).rejects.toThrow("Offline"),
-      expect(second).rejects.toThrow("Offline"),
-    ]);
+    const rejected = expect(first).rejects.toThrow("Offline");
     response.reject(new Error("Offline"));
-    await rejections;
+    await rejected;
+    await expect(second).resolves.toBe("<svg/>");
     expect(await resolveMarkup(source, makeOptions({ cache: true }))).toBe("<svg/>");
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it("does not fetch or join a request for an already aborted caller", async () => {

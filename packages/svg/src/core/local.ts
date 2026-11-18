@@ -1,5 +1,6 @@
-import { sanitizeNode, domParserAvailable, type SvgNode } from "./ast.js";
-import { cacheParsedSvg } from "./cache.js";
+import { sanitizeNode, domParserAvailable, renderNode, type SvgNode } from "./ast.js";
+import { cacheLocalSvgTree, cacheParsedSvg } from "./cache.js";
+import { unpackSvgNode, type PackedSvgNode } from "./packed-svg.js";
 import { inlineSvgFromNode, parseInlineSvg } from "./sanitize.js";
 import { isInlineSvg } from "./url.js";
 
@@ -12,7 +13,9 @@ type RegisterOptions = {
   precompiled?: Record<string, PrecompiledLocalSvg>;
 };
 
-const localSvgByName = new Map<string, string>();
+type LocalSvgTree = { packed: PackedSvgNode } | { markup: string; node: SvgNode };
+
+const localSvgByName = new Map<string, string | LocalSvgTree>();
 
 const normalizeName = (value: string) =>
   value
@@ -81,10 +84,27 @@ export const registerLocalSvgs = (entries: SvgModuleMap, options: RegisterOption
   }
 };
 
+export const registerLocalSvgTrees = (entries: [name: string, node: PackedSvgNode][]) => {
+  for (const [key, packed] of entries) {
+    const name = pathToName(key);
+    if (name && !localSvgByName.has(name)) localSvgByName.set(name, { packed });
+  }
+};
+
 export const resolveSvgSource = (name: string) => {
   const normalized = normalizeName(name);
-  const local = localSvgByName.get(normalized);
-  if (local) return local;
+  let local = localSvgByName.get(normalized);
+  if (typeof local === "string" && local) return local;
+  if (typeof local === "object") {
+    if ("packed" in local) {
+      const node = unpackSvgNode(local.packed);
+      local = { markup: renderNode(node), node };
+      localSvgByName.set(normalized, local);
+    }
+    const { markup, node } = local;
+    cacheLocalSvgTree(markup, node);
+    return markup;
+  }
   return `/assets/svg/${normalized}.svg`;
 };
 

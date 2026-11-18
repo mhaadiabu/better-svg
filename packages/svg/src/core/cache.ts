@@ -1,5 +1,5 @@
-import { parseAndSanitize, type SvgNode } from "./ast.js";
-import { parseInlineSvg, type ParsedInlineSvg } from "./sanitize.js";
+import { parseAndSanitize, sanitizeNode, type SvgNode } from "./ast.js";
+import { inlineSvgFromNode, parseInlineSvg, type ParsedInlineSvg } from "./sanitize.js";
 
 type CacheKey = string;
 
@@ -15,6 +15,7 @@ const nodeCache = new Map<
   { node: SvgNode; markup: string; parser: typeof parseAndSanitize }
 >();
 const markupCache = new Map<string, string>();
+const localTrees = new Map<string, { node: SvgNode; sanitized?: SvgNode | null }>();
 
 const keyFor = (source: string, sanitize: boolean): CacheKey =>
   `${sanitize ? "s:" : "u:"}${source}`;
@@ -69,9 +70,24 @@ export const clearSvgCache = (): void => {
   parsedCache.clear();
   nodeCache.clear();
   markupCache.clear();
+  localTrees.clear();
 };
 
 export const __svgCacheSize = (): number => parsedCache.size;
+
+export const cacheLocalSvgTree = (markup: string, node: SvgNode) => {
+  if (touch(localTrees, markup)?.node === node) return;
+  setBounded(localTrees, markup, { node }, PARSED_CACHE_LIMIT);
+};
+
+const getLocalSvgTree = (source: string, markup: string, sanitize: boolean) => {
+  if (source !== markup) return;
+  const tree = touch(localTrees, markup);
+  if (!tree) return;
+  if (!sanitize) return tree.node;
+  if (tree.sanitized === undefined) tree.sanitized = sanitizeNode(tree.node);
+  return tree.sanitized;
+};
 
 export const ensureParsedSvg = (
   source: string,
@@ -80,12 +96,12 @@ export const ensureParsedSvg = (
   cache = true,
   parse = parseInlineSvg,
 ): ParsedInlineSvg | null => {
-  if (cache) {
-    const cached = touch(parsedCache, keyFor(source, sanitize));
-    if (cached?.markup === markup && cached.parser === parse) return cached.parsed;
-  }
-  const parsed = parse(markup, sanitize);
-  if (parsed && cache) cacheParsedSvg(source, sanitize, parsed, markup, parse);
+  if (!cache) return parse(markup, sanitize);
+  const cached = touch(parsedCache, keyFor(source, sanitize));
+  if (cached?.markup === markup && cached.parser === parse) return cached.parsed;
+  const tree = getLocalSvgTree(source, markup, sanitize);
+  const parsed = tree ? inlineSvgFromNode(tree) : parse(markup, sanitize);
+  if (parsed) cacheParsedSvg(source, sanitize, parsed, markup, parse);
   return parsed;
 };
 
@@ -100,7 +116,7 @@ export const ensureParsedNode = (
     const key = keyFor(source, sanitize);
     const entry = touch(nodeCache, key);
     if (entry?.markup === markup && entry.parser === parse) return entry.node;
-    const node = parse(markup, sanitize);
+    const node = getLocalSvgTree(source, markup, sanitize) ?? parse(markup, sanitize);
     if (node) setBounded(nodeCache, key, { node, markup, parser: parse }, NODE_CACHE_LIMIT);
     return node;
   }

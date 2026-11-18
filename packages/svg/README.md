@@ -726,6 +726,19 @@ adapters parse with the browser's XML parser and the Astro adapter with
 `@xmldom/xmldom`. Seeding is best-effort, so a failed prime costs a re-parse
 at runtime and never a thrown error.
 
+Use `precompiled: "tree"` to ship just the parsed tree for discovered files
+and scanned catalog icons. The first lookup decodes the tree and serializes
+it as XML. The default renderer sanitizes the tree on demand, and cached
+renders reuse it without parsing XML. `sanitize={false}` still renders the
+unsanitized tree and is only for trusted SVG files.
+
+```ts
+svgPlugin({ dirs: ["src/icons"], precompiled: "tree" });
+```
+
+In tree mode, `onSvgLoad` receives serialized XML. Use `precompiled: true` if
+you need the original registered markup in the callback.
+
 ## Import a static React icon
 
 With `svgPlugin()` enabled, add `?better-svg` to a React import. The plugin

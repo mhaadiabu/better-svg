@@ -1,4 +1,4 @@
-import { fork, execFileSync } from "node:child_process";
+import { fork } from "node:child_process";
 import { readFile, readdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -6,7 +6,14 @@ import { performance } from "node:perf_hooks";
 import { cpus, platform, release } from "node:os";
 import { gzipSync, brotliCompressSync, constants } from "node:zlib";
 import { build, createServer } from "vite";
-import { cache, directory, profiles, summarize } from "./config.mjs";
+import {
+  cache,
+  directory,
+  profiles,
+  readPreparedManifest,
+  sourceCommit,
+  summarize,
+} from "./config.mjs";
 import { viteConfig } from "./vite.mjs";
 
 const worker = process.argv.indexOf("--worker");
@@ -23,13 +30,14 @@ if (worker !== -1) {
     const target =
       profile.kind === "better"
         ? resolve(directory, "../svg/dist/core/local.js")
-        : profile.kind === "svgr"
+        : profile.kind === "svgr" || profile.kind === "static"
           ? join(config.root, "icons", "lucide-a-arrow-down.svg")
           : null;
     let editTransformMs = null;
     if (target) {
+      const query = profile.kind === "static" ? "better-svg" : "component";
       const request =
-        profile.kind === "better" ? `/@fs${target}` : "/icons/lucide-a-arrow-down.svg?component";
+        profile.kind === "better" ? `/@fs${target}` : `/icons/lucide-a-arrow-down.svg?${query}`;
       await server.transformRequest(request);
       const sourceFile = join(config.root, "icons", "lucide-a-arrow-down.svg");
       const original = await readFile(sourceFile, "utf8");
@@ -38,9 +46,6 @@ if (worker !== -1) {
         await writeFile(sourceFile, original.replace("<svg ", '<svg data-benchmark-edit="1" '));
         for (const module of server.moduleGraph.getModulesByFile(target) ?? [])
           server.moduleGraph.invalidateModule(module);
-        if (profile.kind === "svgr")
-          for (const module of server.moduleGraph.getModulesByFile(sourceFile) ?? [])
-            server.moduleGraph.invalidateModule(module);
         await server.transformRequest(request);
         editTransformMs = performance.now() - editing;
       } finally {
@@ -62,7 +67,7 @@ if (worker !== -1) {
   process.env.NODE_ENV = "production";
   const React = await import("react");
   const { renderToString } = await import("react-dom/server");
-  const manifest = JSON.parse(await readFile(join(cache, "manifest.json"), "utf8"));
+  const manifest = await readPreparedManifest();
   const repetitions = Number(process.env.SVG_BENCH_REPETITIONS ?? 5);
   if (!Number.isInteger(repetitions) || repetitions < 1 || repetitions > 100)
     throw new Error("SVG_BENCH_REPETITIONS must be between 1 and 100");
@@ -187,11 +192,13 @@ if (worker !== -1) {
       release: release(),
       cpu: cpus()[0].model,
       logicalCpus: cpus().length,
-      sourceCommit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+      sourceCommit: sourceCommit(),
     },
     repetitions,
     profiles: [...results.values()],
   };
+  if (data.environment.sourceCommit !== manifest.sourceCommit)
+    throw new Error("Source changed during measurement. Run bench:prepare again.");
   await writeFile(join(cache, "node.json"), JSON.stringify(data, null, 2));
   console.log(`Saved ${join(cache, "node.json")}`);
 }

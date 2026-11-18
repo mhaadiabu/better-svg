@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { readFile, stat, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { extname, join, resolve, sep } from "node:path";
-import { cache, profiles, directory } from "./config.mjs";
+import { cache, profiles, directory, readPreparedManifest } from "./config.mjs";
 
 const mime = {
   ".html": "text/html",
@@ -14,6 +14,7 @@ const mime = {
 const allowed = new Set(profiles.flatMap((profile) => [profile.id, `contracts-${profile.id}`]));
 const port = Number(process.env.PORT ?? 4174);
 const token = randomUUID();
+const prepared = await readPreparedManifest();
 const server = createServer(async (request, response) => {
   try {
     const host = request.headers.host;
@@ -38,8 +39,9 @@ const server = createServer(async (request, response) => {
         chunks.push(chunk);
       }
       const data = JSON.parse(Buffer.concat(chunks).toString("utf8"));
-      const manifest = JSON.parse(await readFile(join(cache, "manifest.json"), "utf8"));
+      const manifest = await readPreparedManifest();
       if (
+        manifest.experimentHash !== prepared.experimentHash ||
         data.fixtureHash !== manifest.fixtureHash ||
         data.experimentHash !== manifest.experimentHash ||
         !Array.isArray(data.runs) ||
@@ -73,7 +75,7 @@ const server = createServer(async (request, response) => {
     if (url.pathname === "/manifest.json") {
       response
         .writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" })
-        .end(await readFile(join(cache, "manifest.json")));
+        .end(JSON.stringify(prepared));
       return;
     }
     let file;

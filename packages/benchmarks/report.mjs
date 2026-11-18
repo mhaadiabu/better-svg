@@ -6,6 +6,10 @@ const nodeFile = process.argv[2] ? resolve(process.argv[2]) : join(cache, "node.
 const browserFile = process.argv[3] ? resolve(process.argv[3]) : join(cache, "browser.json");
 const node = JSON.parse(await readFile(nodeFile, "utf8"));
 const browser = JSON.parse(await readFile(browserFile, "utf8"));
+if (node.environment.sourceCommit !== node.manifest.sourceCommit)
+  throw new Error(
+    "Node results were collected from a different commit than the benchmark preparation",
+  );
 if (browser.fixtureHash !== node.manifest.fixtureHash)
   throw new Error("Node and browser fixture hashes do not match");
 if (browser.experimentHash !== node.manifest.experimentHash)

@@ -3,10 +3,9 @@ import { readFile, readdir, mkdir, writeFile, copyFile, rm } from "node:fs/promi
 import { createRequire } from "node:module";
 import { readFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
-import { execFileSync } from "node:child_process";
 import { parseXmlNode } from "../svg/dist/core/xml.js";
 import { renderNode, parseInlineStyle } from "../svg/dist/core/ast.js";
-import { cache, directory, profiles, root } from "./config.mjs";
+import { cache, directory, profiles, root, sourceCommit } from "./config.mjs";
 
 const require = createRequire(import.meta.url);
 const packageVersion = (name, resolver = require) => {
@@ -45,10 +44,12 @@ for (const file of ["apps/web/public/favicon.svg", "apps/web/public/assets/svg/l
     markup: await readFile(join(root, file), "utf8"),
   });
 }
-const extraIndex = process.argv.indexOf("--corpus");
+if (process.argv.includes("--corpus"))
+  throw new Error("Use --trusted-corpus only for SVG files you trust to run in the browser.");
+const extraIndex = process.argv.indexOf("--trusted-corpus");
 if (extraIndex !== -1) {
   const supplied = process.argv[extraIndex + 1];
-  if (!supplied) throw new Error("--corpus requires a directory");
+  if (!supplied) throw new Error("--trusted-corpus requires a directory");
   const folder = resolve(supplied);
   for (const [index, file] of (await readdir(folder))
     .filter((file) => file.endsWith(".svg"))
@@ -75,7 +76,7 @@ for (const file of (await readdir(join(directory, "fixtures")))
 }
 await mkdir(cache, { recursive: true });
 const metadata = {
-  sourceCommit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(),
+  sourceCommit: sourceCommit(),
   fixtureHash: createHash("sha256")
     .update(JSON.stringify([...entries, ...capabilities]))
     .digest("hex"),
@@ -122,11 +123,12 @@ for (const profile of profiles.flatMap((profile) => [
       await writeFile(join(folder, "public", "icons", `${entry.name}.svg`), entry.markup);
   }
   let adapter;
-  if (profile.kind === "svgr") {
+  if (profile.kind === "svgr" || profile.kind === "static") {
     const imports = [];
+    const query = profile.kind === "static" ? "better-svg" : "component";
     for (const [index, entry] of activeEntries.entries()) {
       imports.push(
-        `import Icon${index} from ${JSON.stringify(`./icons/${entry.name}.svg?component`)};`,
+        `import Icon${index} from ${JSON.stringify(`./icons/${entry.name}.svg?${query}`)};`,
       );
     }
     adapter = `${imports.join("\n")}\nconst icons = {${activeEntries.map((entry, index) => `${JSON.stringify(entry.name)}: Icon${index}`).join(",")}};\nexport const RenderIcon = ({ name, ...props }) => React.createElement(icons[name], props);`;

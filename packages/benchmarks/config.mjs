@@ -1,9 +1,37 @@
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
+import { readFile } from "node:fs/promises";
 
 export const directory = fileURLToPath(new URL(".", import.meta.url));
 export const cache = join(directory, ".cache");
 export const root = fileURLToPath(new URL("../../", import.meta.url));
+
+export const sourceCommit = () => {
+  const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+  const changes = git(
+    "status",
+    "--porcelain",
+    "--untracked-files=no",
+    "--",
+    "packages/benchmarks",
+    "packages/svg",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "apps/web/public",
+  );
+  if (changes) throw new Error("Commit benchmark and SVG input changes before collecting results.");
+  return git("rev-parse", "HEAD");
+};
+
+export const readPreparedManifest = async () => {
+  const manifest = JSON.parse(await readFile(join(cache, "manifest.json"), "utf8"));
+  if (manifest.sourceCommit !== sourceCommit())
+    throw new Error(
+      "Benchmark preparation belongs to a different commit. Run bench:prepare again.",
+    );
+  return manifest;
+};
 export const narrow = {
   plugins: [
     "removeDoctype",
@@ -33,6 +61,8 @@ export const profiles = [
   { id: "better-precompiled", kind: "better", svgo: false, precompiled: true },
   { id: "better-precompiled-current", kind: "better", svgo: true, precompiled: true },
   { id: "better-precompiled-narrow", kind: "better", svgo: narrow, precompiled: true },
+  { id: "better-tree", kind: "better", svgo: false, precompiled: "tree" },
+  { id: "better-static", kind: "static", svgo: false },
   { id: "svgr-raw", kind: "svgr", svgo: false },
   { id: "svgr-optimized", kind: "svgr", svgo: true },
   { id: "inline", kind: "inline" },

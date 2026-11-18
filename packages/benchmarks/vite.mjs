@@ -13,11 +13,12 @@ export const viteConfig = (profile) => ({
   logLevel: "silent",
   clearScreen: false,
   plugins:
-    profile.kind === "better"
+    profile.kind === "better" || profile.kind === "static"
       ? [
           svgPlugin({
             dirs: ["icons"],
             catalog: false,
+            pruneLocal: false,
             svgo: profile.svgo,
             precompiled: profile.precompiled,
           }),

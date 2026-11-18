@@ -44,16 +44,22 @@ not the compression used by this HTTP server.
 
 Generated apps, builds, and raw measurements stay in `packages/benchmarks/.cache`.
 `report.md` and `summary.json` appear there after reporting. To include local
-exports, run `bench:prepare -- --corpus /absolute/path/to/svg-files` instead of the
-normal preparation command. Only top-level `.svg` files are read. Preparation
+exports, run `bench:prepare -- --trusted-corpus /absolute/path/to/svg-files` instead of the
+normal preparation command. Only use SVG files you trust to run in your browser.
+The raw inline profile renders their active content in the collector's origin.
+Only top-level `.svg` files are read. Preparation
 replaces generated profile folders, so rerun both Node and browser measurements
 after changing the corpus or scripts. Unique-icon rendering samples across the
 whole input list, including repository assets and any extra exports.
+Build the SVG package from the same commit before preparing. Preparation and
+collection reject tracked changes to benchmark inputs or a different source commit.
 
 ## Comparison groups
 
 - Static assets: Better SVG with optimization off, its current configuration, and
-  an experimental narrow configuration. Precompilation is a separate variant.
+  an experimental narrow configuration. The precompiled tree and static React
+  import profiles use the same corpus. Named Better SVG profiles disable
+  pruning for the full-catalog comparison.
   Compare with SVGR with its optimizer disabled and enabled, plus a React inline
   markup control. The control uses `dangerouslySetInnerHTML`, not generated React
   child elements, and does not sanitize or scope IDs.

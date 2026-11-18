@@ -1,10 +1,18 @@
+import { createHash } from "node:crypto";
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
-import type { Plugin } from "vite";
-import { buildPrecompiledSvg } from "./precompile.js";
+import { fileURLToPath } from "node:url";
+import type { Plugin, ViteDevServer } from "vite";
+import { buildPackedSvg, buildPrecompiledSvg } from "./precompile.js";
 import { runSvgoPass, type SvgoOption } from "./svgo.js";
-import { scanCatalogNames, scanExtensions, type ScanResult, type ScanHint } from "./scan.js";
+import {
+  scanCatalogNames,
+  scanExtensions,
+  scanLocalSvgNames,
+  type ScanResult,
+  type ScanHint,
+} from "./scan.js";
 import {
   collectionIconNames,
   installedCollections,
@@ -14,7 +22,6 @@ import {
   resolveIconSource,
 } from "../core/catalog.js";
 import { writeCatalogNameTypes, type CatalogNameEntry } from "../core/names-codegen.js";
-import type { PrecompiledLocalSvg } from "../core/local.js";
 
 export type CatalogScanOptions = {
   include?: string[];
@@ -28,6 +35,7 @@ export type CatalogScanOptions = {
 };
 
 const pluginPrefix = "[@mhaadi/svg]";
+const deferredRegistryPrefix = "\0better-svg:deferred-local:";
 
 const validatePathList = (kind: string, entries: readonly string[]) => {
   if (!Array.isArray(entries) || entries.some((entry) => typeof entry !== "string")) {
@@ -117,8 +125,9 @@ export const resolveCatalogOptions = (
 
 export type SvgPluginOptions = {
   dirs?: string[];
+  pruneLocal?: boolean;
   svgo?: SvgoOption;
-  precompiled?: boolean;
+  precompiled?: boolean | "tree";
   /**
    * Catalog source scan. On by default; `false` disables it and an
    * object adjusts scope (`include`, `exclude`, `strict`,
@@ -130,6 +139,22 @@ export type SvgPluginOptions = {
 export type LocalSvgOptions = SvgPluginOptions;
 
 export type { SvgoOptions, SvgoOption } from "./svgo.js";
+
+const emitRegistration = (entries: Map<string, string>, mode: SvgPluginOptions["precompiled"]) => {
+  if (mode === "tree") {
+    const trees = Array.from(entries, ([name, markup]) => [name, buildPackedSvg(markup, name)]);
+    return `\nregisterLocalSvgTrees(${JSON.stringify(trees)});\n`;
+  }
+  const registration = mode
+    ? JSON.stringify({
+        override: false,
+        precompiled: Object.fromEntries(
+          Array.from(entries, ([name, markup]) => [name, buildPrecompiledSvg(markup, name)]),
+        ),
+      })
+    : "{ override: false }";
+  return `\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(entries))}, ${registration});\n`;
+};
 
 export type CatalogOutcome = {
   resolved: Map<string, string>;
@@ -192,6 +217,16 @@ export const classifyScan = (
 
 export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
+  const optimizeSvg = async (markup: string, name: string) => {
+    if (!options.svgo) return markup;
+    try {
+      return await runSvgoPass(markup, name, options.svgo);
+    } catch (cause) {
+      if (cause instanceof Error)
+        throw new Error(`SVGO pass failed for "${name}": ${cause.message}`, { cause });
+      throw cause;
+    }
+  };
   if (
     dirs.some(
       (dir) =>
@@ -209,6 +244,10 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const catalogOptions = resolveCatalogOptions(options.catalog);
   const catalogStrict = catalogOptions?.strict === true;
   let root = "";
+  let pruneLocal = false;
+  let devServer: ViteDevServer | undefined;
+  const deferredRegistries = new Map<string, string>();
+  const deferredRegistryByPath = new Map<string, string>();
   const scanState: { dirty: boolean; outcome?: CatalogOutcome } = { dirty: true };
   const signatureState: { value?: string } = { value: undefined };
   const reported = new Set<string>();
@@ -344,10 +383,12 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     }),
     configResolved(config) {
       root = config.root;
+      pruneLocal = config.command === "build" && options.pruneLocal !== false;
       clearCatalogCache();
       syncCatalogTypes();
     },
     configureServer(server) {
+      devServer = server;
       const refresh = (file: string) => {
         if (!containsSvg(file)) return;
         server.moduleGraph.invalidateAll();
@@ -446,15 +487,57 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
         server.watcher.off("add", onEvent).off("change", onEvent).off("unlink", onEvent);
       });
     },
-    async transform(code, id) {
+    resolveId(id) {
+      if (deferredRegistries.has(id)) return id;
+    },
+    async load(id) {
+      const registry = deferredRegistries.get(id);
+      if (registry !== undefined) return registry;
+      if (!id.endsWith(".svg?better-svg")) return;
+      const path = id.slice(0, -"?better-svg".length);
+      this.addWatchFile(path);
+      if (devServer) {
+        const { isFileServingAllowed, normalizePath } = await import("vite");
+        if (typeof isFileServingAllowed !== "function") {
+          this.error("Static SVG imports in development require Vite filesystem authorization.");
+        }
+        if (
+          !isFileServingAllowed(normalizePath(path), devServer) ||
+          !isFileServingAllowed(normalizePath(await realpath(path)), devServer)
+        ) {
+          this.error("Static SVG import is outside Vite's allowed filesystem paths.");
+        }
+      }
+      const name = relative(root, path).split(sep).join("/").slice(0, -4);
+      const source = await optimizeSvg(await readFile(path, "utf8"), name);
+      const { node } = buildPrecompiledSvg(source, name);
+      const runtime = fileURLToPath(new URL("../react-static.js", import.meta.url)).replace(
+        /\\/g,
+        "/",
+      );
+      return `import { createStaticSvg } from ${JSON.stringify(runtime)};
+export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
+    },
+    async transform(code, id, transformOptions) {
       const path = id.split("?")[0]?.replace(/\\/g, "/");
       if (
         !path ||
+        path.startsWith("\0") ||
         !/(?:\/@mhaadi\/svg|\/packages\/svg)\/(?:dist|src)\/core\/local\.(?:js|ts)$/.test(path)
       )
         return;
+      const usedNames =
+        pruneLocal &&
+        !transformOptions?.ssr &&
+        this.environment?.config.consumer !== "server" &&
+        dirs.some((dir) => existsSync(resolve(root, dir)))
+          ? await scanLocalSvgNames(root, {
+              onDirectory: (directory) => this.addWatchFile(directory),
+              onFile: (file) => this.addWatchFile(file),
+            })
+          : undefined;
       const entries = new Map<string, string>();
-      const precompiled = options.precompiled ? new Map<string, PrecompiledLocalSvg>() : undefined;
+      const deferred = new Map<string, string>();
       watchedDirectories.clear();
       watchedFiles.clear();
       const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {
@@ -487,22 +570,12 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
             const target = await realpath(path);
             watchedFiles.add(target);
             this.addWatchFile(target);
-            if (!entries.has(name)) {
-              let markup = await readFile(path, "utf8");
-              if (options.svgo) {
-                try {
-                  markup = await runSvgoPass(markup, name, options.svgo);
-                } catch (cause) {
-                  if (cause instanceof Error) {
-                    throw new Error(`SVGO pass failed for "${name}": ${cause.message}`, {
-                      cause,
-                    });
-                  }
-                  throw cause;
-                }
-              }
-              entries.set(name, markup);
-              if (precompiled) precompiled.set(name, buildPrecompiledSvg(markup, name));
+            if (!entries.has(name) && !deferred.has(name)) {
+              const destination =
+                usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))
+                  ? deferred
+                  : entries;
+              destination.set(name, await optimizeSvg(await readFile(path, "utf8"), name));
             }
           }
         }
@@ -511,10 +584,21 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
         const base = resolve(root, dir);
         await visit(base, base);
       }
-      const registration = precompiled
-        ? JSON.stringify({ override: false, precompiled: Object.fromEntries(precompiled) })
-        : "{ override: false }";
-      let appended = `\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(entries))}, ${registration});\n`;
+      let appended = emitRegistration(entries, options.precompiled);
+      if (deferred.size > 0) {
+        const register =
+          options.precompiled === "tree" ? "registerLocalSvgTrees" : "registerLocalSvgs";
+        const source = `import { ${register} } from ${JSON.stringify(path)};
+export default function register() {
+  ${emitRegistration(deferred, options.precompiled)}
+}`;
+        const moduleId = deferredRegistryPrefix + createHash("sha256").update(source).digest("hex");
+        const previous = deferredRegistryByPath.get(path);
+        if (previous) deferredRegistries.delete(previous);
+        deferredRegistryByPath.set(path, moduleId);
+        deferredRegistries.set(moduleId, source);
+        appended += `\nregisterDeferredLocalSvgs(${JSON.stringify([...deferred.keys()])}, () => import(${JSON.stringify(moduleId)}).then(({ default: register }) => register()));\n`;
+      }
 
       if (catalogOptions) {
         const addDirectory = (directory: string) => this.addWatchFile(directory);
@@ -526,23 +610,9 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
         if (outcome.resolved.size > 0) {
           const catalogEntries = new Map<string, string>();
-          const catalogPrecompiled = precompiled
-            ? new Map<string, PrecompiledLocalSvg>()
-            : undefined;
           for (const [name, markup] of outcome.resolved) {
-            let source = markup;
-            if (options.svgo) {
-              try {
-                source = await runSvgoPass(markup, name, options.svgo);
-              } catch (cause) {
-                if (cause instanceof Error) {
-                  throw new Error(`SVGO pass failed for "${name}": ${cause.message}`, { cause });
-                }
-                throw cause;
-              }
-            }
-            catalogEntries.set(name, source);
-            if (catalogPrecompiled) catalogPrecompiled.set(name, buildPrecompiledSvg(source, name));
+            if (deferred.has(name)) continue;
+            catalogEntries.set(name, await optimizeSvg(markup, name));
           }
           const tallies = new Map<string, number>();
           for (const name of catalogEntries.keys()) {
@@ -556,13 +626,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
           announce(
             `${pluginPrefix} auto-registered ${catalogEntries.size} catalog icon${catalogEntries.size === 1 ? "" : "s"} from ${outcome.files} source file${outcome.files === 1 ? "" : "s"} (${totals})`,
           );
-          const catalogRegistration = catalogPrecompiled
-            ? JSON.stringify({
-                override: false,
-                precompiled: Object.fromEntries(catalogPrecompiled),
-              })
-            : "{ override: false }";
-          appended += `\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(catalogEntries))}, ${catalogRegistration});\n`;
+          appended += emitRegistration(catalogEntries, options.precompiled);
         }
       }
 

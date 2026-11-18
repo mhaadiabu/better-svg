@@ -1,6 +1,6 @@
 {
   "name": "@mhaadi/svg",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "description": "Inline SVG rendering for React, React Native, Vue, Svelte, Solid, Astro, and Angular.",
   "keywords": [
     "angular",
@@ -87,6 +87,9 @@
       "types": "./dist/vite/plugin.d.ts",
       "import": "./dist/vite/plugin.js"
     },
+    "./vite/static": {
+      "types": "./src/vite/static.d.ts"
+    },
     "./astro/integration": {
       "types": "./dist/astro/integration.d.ts",
       "import": "./dist/astro/integration.js"
@@ -134,7 +137,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "astro": "^7.3.5",
+    "astro": "^7.4.7",
     "happy-dom": "^21.0.4",
     "react": "catalog:",
     "react-dom": "catalog:",

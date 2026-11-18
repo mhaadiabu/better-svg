@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.2
+
+### Fixed
+
+- Render inline, registered, data-URL, and publicly cached SVGs in the first React client commit instead of an empty loading commit followed by an asynchronous render. Server rendering and hydration retain the loading placeholder, and load callbacks still run after commit.
+- Preserve SVG child DOM when only root props change, avoiding unnecessary HTML replacement while retaining sanitization, ID scoping, accessibility labels, and paint overrides.
+
+## 0.6.1
+
+### Fixed
+
+- Share concurrent URL loads for explicitly public SVG responses without letting one caller's cancellation abort other callers. Custom fetch options and private, unmarked, or non-cacheable responses remain independent.
+- Keep URL requests and cached markup separate for each redirect policy so a cached redirect-following response cannot bypass a stricter caller's policy.
+
 ## 0.6.0
 
 ### Added

@@ -183,7 +183,7 @@ describe("precompiled registration without a window parser", () => {
     vi.unstubAllGlobals();
   });
 
-  it("seeds the xmldom parser used by SSR adapters", async () => {
+  it("seeds the parsed cache synchronously for SSR adapters", () => {
     vi.stubGlobal("window", undefined);
     vi.stubGlobal("document", undefined);
     vi.stubGlobal("DOMParser", undefined);
@@ -194,9 +194,7 @@ describe("precompiled registration without a window parser", () => {
       },
     );
     const markup = resolveSvgSource("ssr") as string;
-    await vi.waitFor(() => {
-      expect(getCachedParsedSvg(markup, true)).not.toBeNull();
-    });
+    expect(getCachedParsedSvg(markup, true)).not.toBeNull();
     const seeded = ensureParsedSvg(markup, markup, true, true, parseXmlSvg);
     expect(seeded).not.toBeNull();
     expect(seeded?.attrs).toEqual({ viewBox: "0 0 24 24" });

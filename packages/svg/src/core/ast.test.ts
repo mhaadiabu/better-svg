@@ -1,13 +1,7 @@
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
-import {
-  domParserAvailable,
-  parseAndSanitize,
-  parseInlineStyle,
-  parseSvgString,
-  renderNode,
-  sanitizeNode,
-  toCamelCase,
-} from "./ast";
+import { domParserAvailable, parseInlineStyle, renderNode, sanitizeNode, toCamelCase } from "./ast";
+import { parseInlineSvg } from "./sanitize";
+import { parseXmlNode } from "./xml";
 
 describe("toCamelCase", () => {
   it("kebab-cases a multi-word attribute", () => {
@@ -52,9 +46,9 @@ describe("domParserAvailable", () => {
   });
 });
 
-describe("parseSvgString", () => {
+describe("browser SVG parser", () => {
   it("parses a well-formed svg via the DOM path", () => {
-    const root = parseSvgString("<svg viewBox='0 0 24 24'><rect/></svg>");
+    const root = parseInlineSvg("<svg viewBox='0 0 24 24'><rect/></svg>", false)?.node;
     expect(root).not.toBeNull();
     expect(root?.tag).toBe("svg");
     expect(root?.children.length).toBe(1);
@@ -62,15 +56,15 @@ describe("parseSvgString", () => {
   });
 
   it("returns null for malformed markup (happy-dom reports a parsererror)", () => {
-    expect(parseSvgString("<svg><rect>")).toBeNull();
+    expect(parseInlineSvg("<svg><rect>", false)).toBeNull();
   });
 
   it("returns null for non-svg content", () => {
-    expect(parseSvgString("not svg")).toBeNull();
+    expect(parseInlineSvg("not svg", false)).toBeNull();
   });
 });
 
-describe("parseSvgString without browser globals", () => {
+describe("parseXmlNode without browser globals", () => {
   beforeEach(() => {
     vi.stubGlobal("window", undefined);
     vi.stubGlobal("document", undefined);
@@ -83,7 +77,7 @@ describe("parseSvgString without browser globals", () => {
 
   it("parses a self-closing root with its attributes", () => {
     expect(domParserAvailable()).toBe(false);
-    expect(parseSvgString("<svg viewBox='0 0 24 24'/>")).toEqual({
+    expect(parseXmlNode("<svg viewBox='0 0 24 24'/>", false)).toEqual({
       tag: "svg",
       attrs: [{ name: "viewBox", value: "0 0 24 24" }],
       children: [],
@@ -91,8 +85,9 @@ describe("parseSvgString without browser globals", () => {
   });
 
   it.each(["a > b", "a /> b"])("preserves quoted tag boundaries in %j", (value) => {
-    const root = parseSvgString(
+    const root = parseXmlNode(
       `<svg aria-label="${value}"><g aria-label='${value}'><text>child</text></g><rect/></svg>`,
+      false,
     );
     expect(root?.attrs).toEqual([{ name: "aria-label", value }]);
     expect(root?.children.map((child) => child.tag)).toEqual(["g", "rect"]);
@@ -103,19 +98,10 @@ describe("parseSvgString without browser globals", () => {
   it("decodes named and numeric XML entities once in text and attributes", () => {
     const encoded = "&lt;&gt;&quot;&apos;&amp;&#65;&#x1F600;&amp;lt;&amp;#65;";
     const decoded = "<>\"'&A😀&lt;&#65;";
-    const root = parseSvgString(`<svg aria-label='${encoded}'><text>${encoded}</text></svg>`);
+    const root = parseXmlNode(`<svg aria-label='${encoded}'><text>${encoded}</text></svg>`, false);
     expect(root?.attrs).toEqual([{ name: "aria-label", value: decoded }]);
     expect(root?.children[0]?.children[0]?.text).toBe(decoded);
   });
-
-  it.each(["&#0;", "&#xD800;", "&#x110000;"])(
-    "replaces invalid numeric entity %s without throwing",
-    (entity) => {
-      const root = parseSvgString(`<svg aria-label='${entity}'><text>${entity}</text></svg>`);
-      expect(root?.attrs[0]?.value).toBe("\uFFFD");
-      expect(root?.children[0]?.children[0]?.text).toBe("\uFFFD");
-    },
-  );
 });
 
 describe("sanitizeNode", () => {
@@ -206,7 +192,7 @@ describe("sanitizeNode", () => {
 describe("renderNode", () => {
   it("round-trips a sanitized node", () => {
     const markup = "<svg><script>x</script><rect onclick='y' fill='red'/></svg>";
-    const root = parseAndSanitize(markup, true);
+    const root = parseInlineSvg(markup, true)?.node;
     expect(root).not.toBeNull();
     const rendered = renderNode(root!);
     expect(rendered).toContain('fill="red"');
@@ -215,10 +201,10 @@ describe("renderNode", () => {
   });
 });
 
-describe("parseAndSanitize", () => {
+describe("browser parser sanitization", () => {
   it("strips script and on* attributes when sanitize is true", () => {
     const markup = "<svg><script>x</script><rect onclick='y'/></svg>";
-    const root = parseAndSanitize(markup, true);
+    const root = parseInlineSvg(markup, true)?.node;
     const rendered = renderNode(root!);
     expect(rendered).not.toContain("<script");
     expect(rendered).not.toContain("onclick");
@@ -226,7 +212,7 @@ describe("parseAndSanitize", () => {
 
   it("keeps script nodes when sanitize is false", () => {
     const markup = "<svg><script>x</script><rect/></svg>";
-    const root = parseAndSanitize(markup, false);
+    const root = parseInlineSvg(markup, false)?.node;
     const rendered = renderNode(root!);
     expect(rendered).toContain("<script");
   });

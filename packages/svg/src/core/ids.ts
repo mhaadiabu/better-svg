@@ -4,6 +4,7 @@ import { inlineSvgFromNode, type ParsedInlineSvg } from "./sanitize.js";
 let nextId = 0;
 const instanceKey = Math.random().toString(36).slice(2);
 const rootOverrides = new WeakMap<ParsedInlineSvg, { id: string; content: ParsedInlineSvg }>();
+const contentWithoutIds = new WeakSet<ParsedInlineSvg>();
 
 const decodeCssId = (value: string) =>
   value.replace(
@@ -123,8 +124,9 @@ export const withSvgRootId = (
   content: ParsedInlineSvg,
   id: string | undefined,
 ): ParsedInlineSvg => {
+  if (id === undefined) return content;
   const previousId = content.node.attrs.find((attr) => attr.name.toLowerCase() === "id")?.value;
-  if (id === undefined || previousId === undefined || id === previousId) return content;
+  if (previousId === undefined || id === previousId) return content;
   const cached = rootOverrides.get(content);
   if (cached?.id === id) return cached.content;
   const parsed = inlineSvgFromNode(rewriteNodeIds(content.node, new Map([[previousId, id]])));
@@ -141,8 +143,12 @@ export const withSvgRootId = (
 };
 
 export const scopeParsedSvgIds = (content: ParsedInlineSvg, prefix: string): ParsedInlineSvg => {
+  if (contentWithoutIds.has(content)) return content;
   const { node, ids } = scopeSvgNodeIds(content.node, prefix);
-  if (!ids.size) return content;
+  if (!ids.size) {
+    contentWithoutIds.add(content);
+    return content;
+  }
   const parsed = inlineSvgFromNode(node);
   parsed.ids = ids;
   return parsed;

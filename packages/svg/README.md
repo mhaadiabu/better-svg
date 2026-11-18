@@ -710,10 +710,9 @@ registerLocalSvgs(
 );
 ```
 
-Precompiled registration primes the parser your runtime uses: browser
-adapters parse with the browser's XML parser and the Astro adapter with
-`@xmldom/xmldom`. Seeding is best-effort, so a failed prime costs a re-parse
-at runtime and never a thrown error.
+Precompiled registration fills the parsed cache synchronously. Browser and
+Astro renders can reuse the sanitized tree without loading a parser to seed
+the cache. An evicted entry can still be parsed from its markup.
 
 Use `precompiled: "tree"` to ship just the parsed tree for discovered files
 and scanned catalog icons. The first lookup decodes the tree and serializes

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseInlineSvg } from "./sanitize";
-import { parseAndSanitize, renderNode } from "./ast";
+import { renderNode } from "./ast";
 
 describe("parseInlineSvg", () => {
   it("strips mixed-case event handlers and dangerous tags", () => {
@@ -32,13 +32,13 @@ describe("parseInlineSvg", () => {
   });
 
   it("escapes parsed text before inserting it into an HTML document", () => {
-    const root = parseAndSanitize(
+    const result = parseInlineSvg(
       "<svg><text>&lt;img src=x onerror=alert(1)&gt; &amp; text</text></svg>",
       true,
     );
-    expect(root).not.toBeNull();
+    expect(result).not.toBeNull();
     const container = document.createElement("div");
-    container.innerHTML = renderNode(root!);
+    container.innerHTML = renderNode(result!.node);
     expect(container.querySelector("img")).toBeNull();
     expect(container.textContent).toBe("<img src=x onerror=alert(1)> & text");
   });

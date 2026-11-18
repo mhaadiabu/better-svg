@@ -60,7 +60,7 @@ export const svgViewBox = (
 
 type SvgContent<Style> = ParsedInlineSvg<Style>;
 
-export const createSvgPresentation = <Style = Record<string, string>>(prefix = createSvgId()) => {
+export const createSvgPresentation = <Style = Record<string, string>>(prefix?: string) => {
   const rendered = new WeakMap<SvgNode, string>();
   const renderChild = (node: SvgNode) => {
     let markup = rendered.get(node);
@@ -86,7 +86,9 @@ export const createSvgPresentation = <Style = Record<string, string>>(prefix = c
     ] as const) {
       if (text === undefined) continue;
       const existing = children.find((child) => child.tag.toLowerCase() === tag);
-      const id = existing?.attrs.find((attr) => attr.name === "id")?.value ?? `${prefix}-${tag}`;
+      const id =
+        existing?.attrs.find((attr) => attr.name === "id")?.value ??
+        `${(prefix ??= createSvgId())}-${tag}`;
       const label: SvgNode = {
         tag,
         attrs: [

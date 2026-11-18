@@ -1,5 +1,9 @@
 import { decodeDataUrl, isInlineSvg } from "./url.js";
-import { resolveSvgSource as resolveLocalSvg, type SvgNameInput } from "./local.js";
+import {
+  loadDeferredLocalSvg,
+  resolveSvgSource as resolveLocalSvg,
+  type SvgNameInput,
+} from "./local.js";
 import { cacheMarkup, getCachedMarkup } from "./cache.js";
 
 type SvgResponse = { response: Response; publicResponse: boolean };
@@ -45,6 +49,8 @@ const fetchSvg = async (source: string, options: ResolveOptions): Promise<SvgRes
     .map((directive) => directive.split("=")[0]?.trim());
   const publicResponse =
     directives.includes("public") &&
+    response.type !== "cors" &&
+    !response.headers.has("Vary") &&
     !directives.some((directive) => ["private", "no-store", "no-cache"].includes(directive ?? ""));
   return { response, publicResponse };
 };
@@ -71,7 +77,10 @@ const consumeRequest = (
     };
     signal.addEventListener("abort", abort, { once: true });
     const result = joined
-      ? request.response.then((response) => (response.publicResponse ? request.result : null))
+      ? request.response.then(
+          (response) => (response.publicResponse ? request.result : null),
+          () => null,
+        )
       : request.result;
     result.then(
       (result) => {
@@ -96,6 +105,9 @@ export const resolveMarkup = async (source: string, options: ResolveOptions): Pr
   if (dataSvg) return dataSvg;
   if (options.signal.aborted)
     throw options.signal.reason ?? new DOMException("The operation was aborted.", "AbortError");
+
+  const deferred = loadDeferredLocalSvg(source);
+  if (deferred) return resolveMarkup(await deferred, options);
 
   const useCache = options.cache && options.fetchOptions === undefined;
   if (!useCache) return (await fetchSvg(source, options)).response.text();

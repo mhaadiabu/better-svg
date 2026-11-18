@@ -87,6 +87,9 @@
       "types": "./dist/vite/plugin.d.ts",
       "import": "./dist/vite/plugin.js"
     },
+    "./vite/static": {
+      "types": "./src/vite/static.d.ts"
+    },
     "./astro/integration": {
       "types": "./dist/astro/integration.d.ts",
       "import": "./dist/astro/integration.js"

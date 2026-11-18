@@ -1,5 +1,5 @@
 import { sanitizeNode, domParserAvailable, renderNode, type SvgNode } from "./ast.js";
-import { cacheLocalSvgTree, cacheParsedSvg } from "./cache.js";
+import { cacheLocalSvgTree, cacheParsedSvg, deferredLocalSvgPrefix } from "./cache.js";
 import { unpackSvgNode, type PackedSvgNode } from "./packed-svg.js";
 import { inlineSvgFromNode, parseInlineSvg } from "./sanitize.js";
 import { isInlineSvg } from "./url.js";
@@ -17,7 +17,6 @@ type LocalSvgTree = { packed: PackedSvgNode } | { markup: string; node: SvgNode 
 
 const localSvgByName = new Map<string, string | LocalSvgTree>();
 const deferredLocalSvgs = new Map<string, () => Promise<void>>();
-const deferredSourcePrefix = "better-svg:local:";
 
 const normalizeName = (value: string) =>
   value
@@ -107,8 +106,8 @@ export const registerDeferredLocalSvgs = (names: string[], register: () => Promi
 };
 
 export const loadDeferredLocalSvg = (source: string) => {
-  if (!source.startsWith(deferredSourcePrefix)) return;
-  const name = source.slice(deferredSourcePrefix.length);
+  if (!source.startsWith(deferredLocalSvgPrefix)) return;
+  const name = source.slice(deferredLocalSvgPrefix.length);
   const load = deferredLocalSvgs.get(name);
   if (!load) return;
   return load().then(() => {
@@ -131,7 +130,7 @@ const resolveNormalizedSvgSource = (normalized: string) => {
     cacheLocalSvgTree(markup, node);
     return markup;
   }
-  if (deferredLocalSvgs.has(normalized)) return deferredSourcePrefix + normalized;
+  if (deferredLocalSvgs.has(normalized)) return deferredLocalSvgPrefix + normalized;
   return `/assets/svg/${normalized}.svg`;
 };
 

@@ -237,13 +237,11 @@ aborted when every caller cancels. Redirect policies use separate requests and
 cache entries.
 
 Callers initially wait for the response headers to establish its cache policy.
-If it is not explicitly public, joined callers start independent requests without
-waiting for the first response body. Custom `fetchOptions` or `cache={false}`
-skip this coordination entirely.
-
-Only responses marked `Cache-Control: public` enter this cache. Responses
-marked `private`, `no-store`, or `no-cache` and custom `fetchOptions` bypass it. Use `cache={false}`
-for SVGs that depend on the current session or need fresh responses.
+When the first request fails or its headers rule out sharing, joined callers
+start independent requests. Sharing and caching require `Cache-Control: public`
+and skip responses with `Vary`, `private`, `no-store`, or `no-cache`. Browser
+CORS responses also skip sharing because their headers can hide `Vary`.
+Custom `fetchOptions` and `cache={false}` bypass this coordination.
 
 ## Entry points
 
@@ -766,8 +764,9 @@ TypeScript projects can add the following to their `vite-env.d.ts`:
 The component supports refs, styling, paint overrides, accessible labels,
 and ID scoping. `onSvgLoad` runs after the client commits and receives the
 sanitized SVG serialized as XML. Invalid SVG files fail the build. Static
-imports always sanitize the SVG. Function-form `svgo` options receive the
-file's project-relative path without `.svg`.
+imports always sanitize the SVG. In development this feature requires a Vite
+version that exposes its filesystem authorization check. Function-form
+`svgo` options receive the file's project-relative path without `.svg`.
 
 ## Size and accessible text
 

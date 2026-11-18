@@ -49,6 +49,8 @@ const fetchSvg = async (source: string, options: ResolveOptions): Promise<SvgRes
     .map((directive) => directive.split("=")[0]?.trim());
   const publicResponse =
     directives.includes("public") &&
+    response.type !== "cors" &&
+    !response.headers.has("Vary") &&
     !directives.some((directive) => ["private", "no-store", "no-cache"].includes(directive ?? ""));
   return { response, publicResponse };
 };
@@ -75,7 +77,10 @@ const consumeRequest = (
     };
     signal.addEventListener("abort", abort, { once: true });
     const result = joined
-      ? request.response.then((response) => (response.publicResponse ? request.result : null))
+      ? request.response.then(
+          (response) => (response.publicResponse ? request.result : null),
+          () => null,
+        )
       : request.result;
     result.then(
       (result) => {

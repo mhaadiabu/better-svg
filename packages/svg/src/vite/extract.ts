@@ -206,14 +206,6 @@ const scanLiterals = (
           position = scanMarkup(position, limit, name);
         } else position++;
       } else {
-        if (
-          onDynamic &&
-          /[a-z]/.test(text[position] ?? "") &&
-          !/[\w$]/.test(text[position - 1] ?? "") &&
-          /^(?:createElement|jsx|jsxs|jsxDEV|h)\s*\(/.test(text.slice(position, position + 100))
-        ) {
-          onDynamic();
-        }
         if (expression && text[position] === "{") depth++;
         if (expression && text[position] === "}" && --depth === 0) return position + 1;
         position++;

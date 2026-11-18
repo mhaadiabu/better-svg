@@ -112,7 +112,7 @@ export const SVG: SvgComponent = React.forwardRef<SVGSVGElement, SvgProps>(
             fetchOptions: request.fetchOptions,
             signal: controller.signal,
             cache: request.cache,
-          }).then((markup) => prepareSvg(request.source ?? "", markup, request))
+          }).then((markup) => (active ? prepareSvg(request.source ?? "", markup, request) : null))
         : Promise.resolve(immediate);
 
       resolution

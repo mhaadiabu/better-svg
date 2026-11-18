@@ -3,6 +3,8 @@ import { inlineSvgFromNode, parseInlineSvg, type ParsedInlineSvg } from "./sanit
 
 type CacheKey = string;
 
+export const deferredLocalSvgPrefix = "better-svg:local:";
+
 const PARSED_CACHE_LIMIT = 500;
 const NODE_CACHE_LIMIT = 200;
 
@@ -97,6 +99,7 @@ export const ensureParsedSvg = (
   parse = parseInlineSvg,
 ): ParsedInlineSvg | null => {
   if (!cache) return parse(markup, sanitize);
+  if (source.startsWith(deferredLocalSvgPrefix)) source = markup;
   const cached = touch(parsedCache, keyFor(source, sanitize));
   if (cached?.markup === markup && cached.parser === parse) return cached.parsed;
   const tree = getLocalSvgTree(source, markup, sanitize);
@@ -113,6 +116,7 @@ export const ensureParsedNode = (
   parse = parseAndSanitize,
 ): SvgNode | null => {
   if (cache) {
+    if (source.startsWith(deferredLocalSvgPrefix)) source = markup;
     const key = keyFor(source, sanitize);
     const entry = touch(nodeCache, key);
     if (entry?.markup === markup && entry.parser === parse) return entry.node;

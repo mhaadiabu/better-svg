@@ -381,7 +381,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     }),
     configResolved(config) {
       root = config.root;
-      pruneLocal = config.command === "build" && options.pruneLocal === true;
+      pruneLocal = config.command === "build" && options.pruneLocal !== false;
       clearCatalogCache();
       syncCatalogTypes();
     },

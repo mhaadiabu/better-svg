@@ -732,18 +732,17 @@ you need the original registered markup in the callback.
 
 ## Keep unused local icons out of the initial bundle
 
-```ts
-svgPlugin({ dirs: ["src/icons"], pruneLocal: true });
-```
-
-The plugin scans your project source during browser production builds. It
+By default, the plugin scans your project source during browser production builds. It
 includes the names it finds in the initial registry and puts the remaining
 files in a separate chunk. If a Vite plugin or dependency supplies a name the
 scan missed, the first lookup loads that chunk before the icon renders.
+The chunk contains only files from the configured discovery directories.
+Names with no registry entry still resolve to `/assets/svg/{name}.svg`.
 
 When the scanner detects a runtime name, such as `<SVG name={selectedIcon} />`
 or a props spread, it includes the full registry up front. Server and
-development builds also keep the full registry available immediately.
+development builds also keep the full registry available immediately. Set
+`pruneLocal: false` to include every discovered file up front in browser builds.
 
 ## Import a static React icon
 

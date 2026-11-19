@@ -1,5 +1,6 @@
 ---
 import GitHubIcon from "../icons/github.svg";
+import NpmIcon from "../icons/npm.svg";
 import { frameworks } from "../data/frameworks";
 import Base from "../layouts/Base.astro";
 import HomeBenchmarks from "../components/HomeBenchmarks.astro";
@@ -181,8 +182,9 @@ const featureCards = [
           <ul role="list" class="flex items-center gap-5">
             {logos.map(({ id, label, Logo }) => (
               <li>
-                <a href={`/docs?fw=${id}`} aria-label={`${label} docs`} title={label} class="framework-logo block">
+                <a href={`/docs?fw=${id}`} aria-label={`${label} docs`} class="framework-logo relative block">
                   <Logo class="h-6 w-6" aria-hidden="true" />
+                  <span class="logo-tip" aria-hidden="true">{label}</span>
                 </a>
               </li>
             ))}
@@ -304,7 +306,9 @@ const featureCards = [
         <a href="/benchmarks" class="text-xs text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>
         <a href="/changelog" class="text-xs text-zinc-muted hover:text-acid transition-colors">Changelog</a>
         <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-xs text-zinc-muted hover:text-acid transition-colors">GitHub</a>
-        <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-xs text-zinc-muted hover:text-acid transition-colors">npm</a>
+        <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" aria-label="BetterSVG on npm" class="inline-flex items-center text-zinc-muted transition-colors hover:text-acid">
+          <NpmIcon class="h-5 w-8" aria-hidden="true" />
+        </a>
       </div>
       <p class="text-xs text-[#3a3a3a]">MIT License · {new Date().getFullYear()}</p>
     </div>

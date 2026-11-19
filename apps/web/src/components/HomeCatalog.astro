@@ -42,8 +42,8 @@ const steps = [
 
     <div class="min-w-0 border border-coal-4 bg-coal" data-catalog>
       <Tabs>
-        <TabsList aria-label="Icon pack" class="px-1">
-          {catalogPacks.map((pack) => <TabsTrigger value={pack.id} class="px-2.5 text-xs">{pack.label}</TabsTrigger>)}
+        <TabsList aria-label="Icon pack" class="grid grid-cols-4">
+          {catalogPacks.map((pack) => <TabsTrigger value={pack.id} class="min-w-0 px-1 text-xs sm:px-2.5">{pack.label}</TabsTrigger>)}
         </TabsList>
         {catalogPacks.map((pack, index) => (
           <TabsContent value={pack.id} hidden={index !== 0} data-pack={pack.id} class="mt-0">
@@ -55,18 +55,17 @@ const steps = [
                   data-name={`${pack.id}:${icon.name}`}
                   aria-label={`${pack.id}:${icon.name}`}
                   aria-pressed={iconIndex === 0}
-                  title={`${pack.id}:${icon.name}`}
                   class="grid aspect-square place-items-center bg-coal text-zinc-400 transition-colors hover:bg-coal-1 hover:text-[#e8e8e8] focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid aria-pressed:bg-coal-1 aria-pressed:text-acid"
                 >
                   <svg class="h-6 w-6" viewBox={pack.viewBox} aria-hidden="true" set:html={icon.body} />
                 </button>
               ))}
             </div>
-            <div class="flex items-center gap-5 border-t border-coal-4 bg-coal-1 p-5">
-              <div class="grid h-20 w-20 shrink-0 place-items-center border border-coal-4 bg-coal text-acid">
+            <div class="flex items-center gap-3 border-t border-coal-4 bg-coal-1 p-3 sm:gap-5 sm:p-5">
+              <div class="grid size-12 shrink-0 place-items-center border border-coal-4 bg-coal text-acid sm:size-20">
                 <svg class="h-10 w-10" viewBox={pack.viewBox} aria-hidden="true" data-preview set:html={pack.icons[0].body} />
               </div>
-              <pre class="min-w-0 overflow-x-auto font-mono text-xs leading-6 sm:text-sm sm:leading-7"><code><span class="text-[#4a4a4a]">$ pnpm add {pack.pkg}</span>
+              <pre class="min-w-0 font-mono text-xs leading-5 whitespace-pre-wrap [overflow-wrap:anywhere] sm:text-sm sm:leading-7"><code><span class="text-zinc-muted">$ pnpm add {pack.pkg}</span>
 <span class="text-[#555]">&lt;</span><span class="text-[#79b8ff]">SVG</span> <span class="text-[#ffb347]">name</span><span class="text-[#555]">=</span><span class="text-[#76d9b0]">"<span data-code-name>{`${pack.id}:${pack.icons[0].name}`}</span>"</span> <span class="text-[#555]">/&gt;</span></code></pre>
             </div>
           </TabsContent>

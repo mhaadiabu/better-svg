@@ -674,17 +674,10 @@ code {
 }
 
 .framework-logo {
-  filter: grayscale(1) brightness(1.7);
-  opacity: 0.6;
-  transition:
-    filter 200ms ease,
-    opacity 200ms ease,
-    transform 200ms ease;
+  transition: transform 200ms ease;
 }
 
 .framework-logo:hover,
 .framework-logo:focus-visible {
-  filter: none;
-  opacity: 1;
   transform: translateY(-2px);
 }

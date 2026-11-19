@@ -8,7 +8,13 @@ const versions = getHeadings().filter((heading) => heading.depth === 2);
 <Base title="Changelog | BetterSVG" description="Version history and changes to @mhaadi/svg.">
   <nav id="changelog-header" class="sticky top-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-y-2 px-4 py-4">
-      <a href="/" class="font-display text-xl tracking-wider text-[#e8e8e8]">BETTERSVG</a>
+      <a href="/" class="flex items-center gap-2.5 group">
+        <svg class="h-6 w-6 text-acid group-hover:scale-110 transition-transform" aria-hidden="true" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
+          <path d="M4 16 Q12 10 20 16 Q12 22 4 16Z" fill="currentColor" opacity="0.4"/>
+        </svg>
+        <span class="font-display text-xl tracking-wider text-[#e8e8e8]">BETTERSVG</span>
+      </a>
       <div class="flex items-center gap-5 text-sm">
         <a href="/docs" class="text-zinc-muted hover:text-acid transition-colors">Docs</a>
         <a href="/benchmarks" class="text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>

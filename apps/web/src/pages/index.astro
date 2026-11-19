@@ -3,6 +3,7 @@ import GitHubIcon from "../icons/github.svg";
 import { frameworks } from "../data/frameworks";
 import Base from "../layouts/Base.astro";
 import HomeBenchmarks from "../components/HomeBenchmarks.astro";
+import HomeCatalog from "../components/HomeCatalog.astro";
 import InstallCommand from "../components/InstallCommand.astro";
 import ReactLogo from "../icons/react.svg";
 import VueLogo from "../icons/vue.svg";
@@ -10,7 +11,6 @@ import SvelteLogo from "../icons/svelte.svg";
 import SolidLogo from "../icons/solid.svg";
 import AstroLogo from "../icons/astro.svg";
 import AngularLogo from "../icons/angular.svg";
-import CodeBlock from "../components/CodeBlock.astro";
 import svgPkg from "../../../../packages/svg/package.json";
 
 const version = svgPkg.version;
@@ -301,47 +301,8 @@ const featureCards = [
     </div>
   </section>
 
-  <!-- SECURITY CALLOUT -->
-  <section class="border-t border-coal-2">
-    <div class="mx-auto max-w-6xl px-4 py-12 lg:py-20">
-      <div class="relative overflow-hidden border border-coal-4 bg-coal-1 p-8 lg:p-12">
-        <!-- Corner accent -->
-        <div class="absolute top-0 right-0 h-px w-24 bg-acid"></div>
-        <div class="absolute top-0 right-0 h-24 w-px bg-acid"></div>
-
-        <div class="grid lg:grid-cols-2 gap-8 items-center">
-          <div>
-            <div class="mb-4 inline-flex items-center gap-2 border border-acid/20 bg-acid/5 px-3 py-1.5">
-              <svg class="h-3.5 w-3.5 text-acid" viewBox="0 0 24 24" fill="none">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-              </svg>
-              <span class="font-mono text-xs text-acid">Security-first</span>
-            </div>
-            <h2 class="mb-4 font-display text-4xl tracking-wider text-[#e8e8e8]">SANITIZE ON BY DEFAULT</h2>
-            <p class="text-zinc-muted leading-relaxed">
-              The <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">sanitize</code> prop is
-              <span class="text-[#e8e8e8]"> enabled by default</span>. It strips{" "}
-              <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">&lt;script&gt;</code>,
-              <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">&lt;foreignObject&gt;</code>,
-              inline event handlers, and unsafe <code class="bg-coal-2 px-1.5 py-0.5 font-mono text-xs text-[#e8e8e8]">href</code>s
-              from every SVG. Only disable it when you fully trust the source.
-            </p>
-          </div>
-                          <CodeBlock code={`// ✓ Safe, untrusted source
-<SVG
-  src={untrustedMarkup}
-  // sanitize={true} is default
-/>
-
-// ⚠ Only for trusted content
-<SVG
-  src={trustedMarkup}
-  sanitize={false}
-/>`} lang="tsx" />
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- ICON CATALOG -->
+  <HomeCatalog />
 
   <!-- CTA FOOTER BAND -->
   <section class="border-t border-coal-2 bg-[#0d0d0d]">

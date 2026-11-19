@@ -5,13 +5,14 @@ interface Props {
   tabs: { id: string; label: string }[];
   query?: string;
   storageKey?: string;
+  picker?: boolean;
 }
 
-const { id, label, tabs, query, storageKey } = Astro.props;
+const { id, label, tabs, query, storageKey, picker = true } = Astro.props;
 ---
 
 <better-svg-tabs class="block" data-query={query} data-storage-key={storageKey}>
-  <div class="relative border-b border-coal-4 sm:hidden">
+  {picker && <div class="relative border-b border-coal-4 sm:hidden">
     <select
       data-tab-select
       aria-label={label}
@@ -22,8 +23,8 @@ const { id, label, tabs, query, storageKey } = Astro.props;
     <svg class="pointer-events-none absolute top-1/2 right-4 h-3 w-3 -translate-y-1/2 text-zinc-400" viewBox="0 0 12 12" fill="none" aria-hidden="true">
       <path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
-  </div>
-  <div role="tablist" aria-label={label} class="hidden gap-x-1 border-b border-coal-4 px-2 sm:flex">
+  </div>}
+  <div role="tablist" aria-label={label} class:list={["gap-x-1 border-b border-coal-4 px-2", picker ? "hidden sm:flex" : "flex"]}>
     {tabs.map((tab, index) => (
       <button
         type="button"

@@ -533,25 +533,6 @@ code {
   background: rgba(185, 255, 75, 0.02);
 }
 
-/* Sidebar nav */
-.sidebar-link {
-  display: block;
-  padding: 6px 12px;
-  font-size: 0.8125rem;
-  font-family: "JetBrains Mono", monospace;
-  color: #6b6b6b;
-  border-left: 2px solid transparent;
-  text-decoration: none;
-  transition:
-    color 0.2s,
-    border-color 0.2s;
-}
-.sidebar-link:hover,
-.sidebar-link.active {
-  color: #b9ff4b;
-  border-left-color: #b9ff4b;
-}
-
 /* Glow effect */
 .acid-glow {
   text-shadow: 0 0 30px rgba(185, 255, 75, 0.4);

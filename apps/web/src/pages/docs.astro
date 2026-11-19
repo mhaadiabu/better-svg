@@ -47,6 +47,9 @@ const strippedElements = [
 
 import CodeBlock from "../components/CodeBlock.astro";
 import PmTabs from "../components/PmTabs.astro";
+import TOC from "../components/ui/toc/TOC.astro";
+
+const tocHeadings = sections.map((s) => ({ depth: 2, slug: s.id, text: s.label, show: s.frameworks }));
 ---
 
 
@@ -98,14 +101,7 @@ import PmTabs from "../components/PmTabs.astro";
       />
     </div>
 
-    <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
-    <nav class="flex flex-col gap-0.5">
-      {sections.map((s) => (
-        <a href={`#${s.id}`} class="sidebar-link mobile-sidebar-link" data-section={s.id} data-fw-show={s.frameworks}>
-          {s.label}
-        </a>
-      ))}
-    </nav>
+    <TOC headings={tocHeadings} class="px-3" />
   </div>
 
   <div class="min-h-screen overflow-x-clip">
@@ -1456,15 +1452,8 @@ export function IconGallery() {
     </div>
 
     <!-- RIGHT SIDEBAR (fixed) -->
-    <div class="hidden lg:block fixed right-0 top-16.25 bottom-0 w-48 overflow-y-auto py-8 border-l border-coal-2">
-      <p class="mb-3 pl-6 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
-      <nav class="flex flex-col gap-0.5 -ml-px">
-        {sections.map((s) => (
-          <a href={`#${s.id}`} class="sidebar-link text-xs pl-6" data-toc={s.id} data-fw-show={s.frameworks}>
-            {s.label}
-          </a>
-        ))}
-      </nav>
+    <div class="hidden lg:block fixed right-0 top-16.25 bottom-0 w-48 overflow-y-auto py-8 pr-4 pl-5" data-nb-toc-scroll-host>
+      <TOC headings={tocHeadings} />
     </div>
 </Base>
 
@@ -1508,11 +1497,11 @@ export function IconGallery() {
 
     // ── Active sidebar highlight on scroll ────────────────────────
     const sectionEls = document.querySelectorAll<HTMLElement>("section[id]");
-    const sidebarLinks = document.querySelectorAll(".sidebar-link");
+    const tocLinks = document.querySelectorAll<HTMLElement>("[data-nb-toc-link]");
     const sectionLabels: Record<string, string> = {};
-    sidebarLinks.forEach((a) => {
-      const id = a.getAttribute("data-section") || a.getAttribute("data-toc");
-      if (id) sectionLabels[id] = a.textContent?.trim() ?? id;
+    tocLinks.forEach((a) => {
+      const id = a.dataset.nbSlug;
+      if (id) sectionLabels[id] = a.querySelector("span")?.textContent?.trim() ?? id;
     });
 
     // ── Mobile sidebar (declare before use to avoid TDZ) ─────────
@@ -1533,10 +1522,6 @@ export function IconGallery() {
           break;
         }
       }
-      sidebarLinks.forEach((a) => {
-        const id = a.getAttribute("data-section") || a.getAttribute("data-toc");
-        a.classList.toggle("active", id === active);
-      });
       if (mobileSection) {
         mobileSection.textContent = sectionLabels[active] || "Overview";
       }
@@ -1545,22 +1530,6 @@ export function IconGallery() {
     window.addEventListener("scroll", updateActive, { passive: true });
     updateActive();
 
-    // ── Instant active feedback on click (before smooth scroll settles) ─
-    function sidebarClickHandler(this: HTMLAnchorElement) {
-      const id = this.getAttribute("data-section") || this.getAttribute("data-toc");
-      if (!id) return;
-      sidebarLinks.forEach((link) => {
-        const linkId = link.getAttribute("data-section") || link.getAttribute("data-toc");
-        link.classList.toggle("active", linkId === id);
-      });
-      if (mobileSection) {
-        mobileSection.textContent = sectionLabels[id] || "Overview";
-      }
-    }
-    sidebarLinks.forEach((a) => {
-      a.addEventListener("click", sidebarClickHandler);
-    });
-
     // ── Mobile sidebar ────────────────────────────────────────────
     function openMobileSidebar() {
       mobileOverlay?.classList.add("open");
@@ -1568,7 +1537,7 @@ export function IconGallery() {
       document.body.style.overflow = "hidden";
       mobileChevron?.classList.add("rotate-180");
       window.setTimeout(() => {
-        const firstLink = mobilePanel?.querySelector<HTMLElement>(".mobile-sidebar-link");
+        const firstLink = mobilePanel?.querySelector<HTMLElement>("[data-nb-toc-link]");
         (firstLink || mobilePanel)?.focus();
       }, 0);
     }
@@ -1582,7 +1551,7 @@ export function IconGallery() {
 
     mobileSidebarBtn?.addEventListener("click", openMobileSidebar);
     mobileOverlay?.addEventListener("click", closeMobileSidebar);
-    const mobileLinks = Array.from(document.querySelectorAll(".mobile-sidebar-link"));
+    const mobileLinks = Array.from(mobilePanel?.querySelectorAll("[data-nb-toc-link]") ?? []);
     mobileLinks.forEach((link) => {
       link.addEventListener("click", closeMobileSidebar);
     });
@@ -1686,9 +1655,6 @@ export function IconGallery() {
       mobileOverlay?.removeEventListener("click", closeMobileSidebar);
       mobileLinks.forEach((link) => {
         link.removeEventListener("click", closeMobileSidebar);
-      });
-      sidebarLinks.forEach((a) => {
-        a.removeEventListener("click", sidebarClickHandler);
       });
       searchInput?.removeEventListener("input", onSearchInput);
       searchInput?.removeEventListener("keydown", onSearchKeydown);

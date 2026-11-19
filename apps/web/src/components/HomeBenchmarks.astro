@@ -1,5 +1,5 @@
 ---
-import Tabs from "./Tabs.astro";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { kb, rows } from "../data/benchmarks";
 
 const timing = (value: number) => `${value.toFixed(1)} ms`;
@@ -17,7 +17,10 @@ const benchmarks = [
     <h2 id="home-benchmark-heading" class="text-sm font-semibold">React benchmarks</h2>
     <a href="/benchmarks" class="text-xs text-zinc-400 underline underline-offset-4 hover:text-acid">Full results</a>
   </div>
-  <Tabs id="home-benchmark" label="Benchmark" tabs={[...benchmarks]}>
+  <Tabs>
+    <TabsList aria-label="Benchmark">
+      {benchmarks.map((benchmark) => <TabsTrigger value={benchmark.id} class="px-2 text-xs">{benchmark.label}</TabsTrigger>)}
+    </TabsList>
     {benchmarks.map((benchmark, index) => {
       const entries = results.filter((row) => row.mode === benchmark.mode).map((row) => {
         const value = row[benchmark.metric];
@@ -27,13 +30,11 @@ const benchmarks = [
       const max = Math.max(...entries.map((entry) => entry.value));
 
       return (
-        <div
-          role="tabpanel"
-          id={`home-benchmark-panel-${benchmark.id}`}
-          aria-labelledby={`home-benchmark-tab-${benchmark.id}`}
+        <TabsContent
+          value={benchmark.id}
           tabindex="0"
           hidden={index !== 0}
-          class="px-4 pt-3 pb-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid"
+          class="mt-0 px-4 pt-3 pb-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid"
         >
           <p class="mb-3 text-xs text-zinc-400">{benchmark.description}. Lower is better.</p>
           <ul role="list" class="space-y-2.5">
@@ -53,7 +54,7 @@ const benchmarks = [
               </li>
             ))}
           </ul>
-        </div>
+        </TabsContent>
       );
     })}
   </Tabs>
@@ -92,9 +93,13 @@ const benchmarks = [
     if (!section || section.dataset.init) return;
     section.dataset.init = "true";
 
-    section.querySelector("better-svg-tabs")?.addEventListener("tabchange", (event) => {
-      if (event instanceof CustomEvent && event.detail.panel instanceof Element) grow(event.detail.panel, 400);
+    const panels = section.querySelectorAll<HTMLElement>("[role=tabpanel]");
+    const switches = new MutationObserver((records) => {
+      for (const { target } of records) {
+        if (target instanceof HTMLElement && !target.hidden && section.dataset.revealed !== undefined) grow(target, 400);
+      }
     });
+    panels.forEach((panel) => switches.observe(panel, { attributes: true, attributeFilter: ["hidden"] }));
 
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry?.isIntersecting) return;

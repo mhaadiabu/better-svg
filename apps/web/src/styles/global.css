@@ -14,6 +14,12 @@
   --color-coal-4: #2e2e2e;
   --color-zinc-muted: #6b6b6b;
 
+  --color-border: #2e2e2e;
+  --color-brand: #b9ff4b;
+  --color-foreground: #e8e8e8;
+  --color-muted-foreground: #a1a1aa;
+  --color-ring: #b9ff4b;
+
   --font-display: "Bebas Neue", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-sans: "DM Sans", sans-serif;

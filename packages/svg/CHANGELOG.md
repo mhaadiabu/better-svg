@@ -1,46 +1,34 @@
 # Changelog
 
-## 0.6.2
-
-### Fixed
-
-- Render inline, registered, data-URL, and publicly cached SVGs in the first React client commit instead of an empty loading commit followed by an asynchronous render. Server rendering and hydration retain the loading placeholder, and load callbacks still run after commit.
-- Preserve SVG child DOM when only root props change, avoiding unnecessary HTML replacement while retaining sanitization, ID scoping, accessibility labels, and paint overrides.
-
-## 0.6.1
-
-### Fixed
-
-- Share concurrent URL loads for explicitly public SVG responses without letting one caller's cancellation abort other callers. Custom fetch options and private, unmarked, or non-cacheable responses remain independent.
-- Keep URL requests and cached markup separate for each redirect policy so a cached redirect-following response cannot bypass a stricter caller's policy.
-
-## 0.6.0
+## 0.5.0-beta.1
 
 ### Added
 
-- Generate editor suggestions for installed icon collections at Vite configuration startup, before the first icon is written. `catalog.collections` narrows suggestions without restricting registered source literals. `catalog.types: false` disables generation, and a relative declaration path relocates the file. Suggestions remain open to arbitrary strings and dynamic names.
-- Refresh suggestions when package manifests or lockfiles change, clear stale declarations when the last installed or selected collection disappears, and preserve user-owned files. Identical generated content is not rewritten.
-- `bundleCatalogIcons` writes name suggestions for exactly the bundled icons by default when `out` is set. Empty bundles clear stale generated suggestions. In-memory calls write nothing unless `types` explicitly requests a file.
+- Automatically register catalog icons referenced by literal names with `svgPlugin()`. Generate TypeScript suggestions for installed collections before the first icon is used. Configure both through `catalog`. The existing `localSvgs()` alias still works.
+- Generate TypeScript suggestions for the icons in a catalog bundle when `bundleCatalogIcons` writes an output file.
+- Register or bundle a whole icon collection or a prefix of it with a trailing wildcard such as `lucide:*` or `lucide:arrow*`.
+- Import an SVG file as a server-renderable React component with `?better-svg`. The component uses Better SVG's size, accessibility, paint override, and ID scoping props.
+- Use `precompiled: "tree"` to ship a compact parsed tree. Load callbacks receive reserialized XML. Use `precompiled: true` for the original registered markup.
 
-## 0.5.0
+### Changed
 
-### Added
+- Keep unused local SVGs out of initial browser JavaScript by default. Local icons missed by the source scan load from a deferred chunk. Set `pruneLocal: false` to include the full registry up front.
+- Render ready React sources in the first client commit. Root-only prop changes preserve SVG child nodes.
+- Share eligible public URL loads while keeping cancellation independent. Private, varying, and non-cacheable responses, browser CORS responses, and requests with custom fetch options stay independent.
 
-- Auto-register catalog icons from complete source literals and `name` attributes by default. `catalog: false` opts out. Local registrations keep precedence, and scanned icons use the same SVGO and precompilation options as local files.
-- Use `svgPlugin()` from `@mhaadi/svg/vite/plugin` for local discovery and catalog registration. `localSvgs()` and `LocalSvgOptions` remain compatible aliases for `svgPlugin()` and `SvgPluginOptions`.
-- Report missing packages for explicit icon names, warn about typos in installed collections, and explain manual registration for dynamic names, including dynamic-only collections. `catalog.strict` turns typo warnings into build errors. Comments, prose, documentation examples, classes, declarations, tests, and stories do not register icons.
-- Expand catalog names with a single trailing wildcard: `registerCatalogIcons(["lucide:*"])` registers every name the installed source serves, `["lucide:arrow*"]` matches a name prefix, and `bundleCatalogIcons` expands the same form. Expansion logs the icon count and approximate markup size above 250 icons or 256 KB, wildcards that match nothing warn about the missing package, and explicit names in the same list still fail the bundle when they cannot resolve.
+### Fixed
 
-## 0.4.3
+- Keep URL caches separate by redirect policy and let queued callers make independent requests if the first fetch fails.
+- Watch local icon directories in Vite development without treating directories as module imports.
+- Preserve alternate XLink namespace references when inserting SVG markup and scoping IDs.
+- Seed legacy precompiled SVGs without adding the server XML parser to browser builds.
 
 ### Security
 
-- Decode CSS tokens before checking style URLs, so escaped function names and escaped targets cannot bypass fragment-only filtering.
-- Reject malformed CSS URL syntax and resource-selection functions such as `image-set()`, `image()`, and `src()` in sanitized styles.
+- Decode CSS tokens before validating resource URLs. Reject malformed CSS URLs and resource-selection functions in sanitized styles.
+- Check Vite's filesystem policy before reading files for static React imports in development.
 
-### Fixed
-
-- Canonicalize alternate XLink namespace prefixes so references survive HTML insertion and per-instance ID rewriting.
+See the [React benchmark results](https://svg.mhaadi.dev/benchmarks) for bundle sizes and browser timings against 0.4.2 and other tools.
 
 ## 0.4.2
 

@@ -97,18 +97,6 @@ const summary: {
   },
 ];
 
-const betterStatic = ready("better-static", repeated);
-const betterRaw = ready("better-raw", repeated);
-const ssrProfiles = profiles.filter(({ ssr }) => ssr.rendered === ssr.expected);
-const sparse = (id: ProfileId) => getProfile(id).sparseJavascript.initialGzip;
-
-const tradeoffs = [
-  `BetterSVG static imports took ${maybe(betterStatic, ms)} to render 1,000 copies of one icon. vite-plugin-svgr took ${maybe(ready("svgr-raw", repeated), ms)} and unplugin-icons took ${maybe(ready("unplugin-icons", repeated), ms)}.`,
-  `Named icons are still slower than static imports. In ${benchmarkRelease}, 1,000 raw named icons took ${maybe(betterRaw, ms)}, against ${maybe(betterStatic, ms)} for static imports.`,
-  `Only ${ssrProfiles.length} profiles rendered SVG in the Node SSR probe, and all of them are static imports or inline React. Named icons and runtime URLs emitted nothing on the server.`,
-  `A one-icon build with BetterSVG static imports loads ${kb(sparse("better-static"))} of initial gzip JavaScript. SVGR loads ${kb(sparse("svgr-raw"))}. Raw named icons load ${kb(sparse("better-raw"))}.`,
-];
-
 const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Paint p95", "Update p50", "Update p95", "First ready"];
 ---
 
@@ -207,11 +195,6 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
             The URL rows need care. A resource entry can be a cache hit or a coalesced fetch, so the drop in entries is not a drop in network traffic.
             Both versions transferred one response.
           </p>
-
-          <h3 class="mt-6 text-sm font-semibold">Where BetterSVG loses</h3>
-          <ul role="list" class="mt-2 space-y-2 border-l border-coal-4 pl-3 text-sm leading-relaxed text-zinc-400">
-            {tradeoffs.map((line) => <li>{line}</li>)}
-          </ul>
         </section>
 
         <section id="browser" aria-labelledby="browser-heading">

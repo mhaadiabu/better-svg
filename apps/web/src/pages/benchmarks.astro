@@ -140,9 +140,38 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
       </p>
     </header>
 
-    <div class="lg:mt-8 lg:grid lg:grid-cols-[9rem_minmax(0,1fr)] lg:items-start lg:gap-x-10">
-      <nav aria-label="Benchmark sections" class="sticky top-[61px] z-40 -mx-4 overflow-x-auto border-b border-coal-4 bg-coal/95 px-4 backdrop-blur-md lg:top-24 lg:mx-0 lg:overflow-visible lg:border-0 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
-        <ul role="list" class="flex gap-4 whitespace-nowrap py-2.5 text-xs lg:flex-col lg:gap-2.5 lg:py-0 lg:text-sm">
+    <div data-benchmark-navigation class="lg:mt-8 lg:grid lg:grid-cols-[9rem_minmax(0,1fr)] lg:items-start lg:gap-x-10">
+      <div class="sticky top-[61px] z-40 -mx-4 border-b border-coal-4 bg-coal/95 backdrop-blur-md lg:hidden">
+        <button type="button" data-sections-trigger aria-haspopup="dialog" aria-expanded="false" aria-controls="benchmark-sections" class="flex min-h-11 w-full items-center gap-2.5 px-4 text-left text-sm font-medium hover:text-acid focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid">
+          <svg class="size-4 text-zinc-400" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+            <path d="M5 4h8M5 8h8m-8 4h8M2 4h.01M2 8h.01M2 12h.01" />
+          </svg>
+          Sections
+        </button>
+      </div>
+
+      <dialog id="benchmark-sections" aria-labelledby="benchmark-sections-title" class="sections-drawer lg:hidden">
+        <div class="flex items-center justify-between gap-3 border-b border-coal-4 pb-3">
+          <h2 id="benchmark-sections-title" class="text-sm font-semibold">On this page</h2>
+          <form method="dialog">
+            <button type="submit" autofocus aria-label="Close sections" class="grid size-10 place-items-center text-zinc-400 hover:text-acid focus-visible:outline focus-visible:outline-acid">
+              <svg class="size-4" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="m4 4 8 8m0-8-8 8" />
+              </svg>
+            </button>
+          </form>
+        </div>
+        <nav aria-label="Benchmark sections" class="mt-2">
+          <ul role="list">
+            {sections.map(([id, title]) => (
+              <li><a href={`#${id}`} class="block px-2 py-3 text-sm text-zinc-300 hover:bg-coal-1 hover:text-acid focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid">{title}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </dialog>
+
+      <nav aria-label="Benchmark sections" class="sticky top-24 hidden lg:block">
+        <ul role="list" class="flex flex-col gap-2.5 text-sm">
           {sections.map(([id, title]) => (
             <li><a href={`#${id}`} class="text-zinc-400 hover:text-acid">{title}</a></li>
           ))}
@@ -335,3 +364,97 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
     </div>
   </main>
 </Base>
+
+<style>
+  .sections-drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(17rem, calc(100% - 3rem));
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-right: 1px solid var(--color-coal-4);
+    background: var(--color-coal);
+    color: var(--color-foreground);
+    transform: translateX(-100%);
+    transition: transform 250ms ease, display 250ms allow-discrete, overlay 250ms allow-discrete;
+  }
+
+  .sections-drawer[open] {
+    transform: translateX(0);
+  }
+
+  @starting-style {
+    .sections-drawer[open] {
+      transform: translateX(-100%);
+    }
+  }
+
+  .sections-drawer::backdrop {
+    background: rgb(0 0 0 / 60%);
+  }
+
+  :global(html:has(#benchmark-sections[open])) {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sections-drawer { transition: none; }
+  }
+</style>
+
+<script>
+  import { mount } from "@cloudflare/nimbus-docs/client";
+
+  mount("[data-benchmark-navigation]", (root) => {
+    const trigger = root.querySelector<HTMLButtonElement>("[data-sections-trigger]");
+    const drawer = root.querySelector<HTMLDialogElement>("#benchmark-sections");
+    if (!trigger || !drawer) return () => {};
+
+    const controller = new AbortController();
+    const { signal } = controller;
+    const desktop = matchMedia("(min-width: 64rem)");
+    const closeDrawer = () => {
+      drawer.close();
+      trigger.setAttribute("aria-expanded", "false");
+    };
+
+    trigger.addEventListener("click", () => {
+      drawer.showModal();
+      trigger.setAttribute("aria-expanded", "true");
+    }, { signal });
+
+    drawer.addEventListener("close", () => trigger.setAttribute("aria-expanded", "false"), { signal });
+    desktop.addEventListener("change", () => {
+      if (desktop.matches && drawer.open) closeDrawer();
+    }, { signal });
+
+    drawer.addEventListener("click", (event) => {
+      if (event.target === drawer && event.clientX > drawer.getBoundingClientRect().right) {
+        closeDrawer();
+        return;
+      }
+
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href^='#']") : null;
+      if (!link) return;
+
+      const section = document.getElementById(link.hash.slice(1));
+      if (!section) return;
+      event.preventDefault();
+      closeDrawer();
+      if (location.hash === link.hash) section.scrollIntoView();
+      else location.hash = link.hash;
+      const heading = section.querySelector("h2");
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+    }, { signal });
+
+    return () => controller.abort();
+  });
+</script>

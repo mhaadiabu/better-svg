@@ -12,7 +12,7 @@ const benchmarks = [
 ] as const;
 ---
 
-<section aria-labelledby="home-benchmark-heading" class="border border-coal-4 bg-coal">
+<section id="home-benchmarks" aria-labelledby="home-benchmark-heading" class="border border-coal-4 bg-coal">
   <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-4 pt-3 pb-2">
     <h2 id="home-benchmark-heading" class="text-sm font-semibold">React benchmarks</h2>
     <a href="/benchmarks" class="text-xs text-zinc-400 underline underline-offset-4 hover:text-acid">Full results</a>
@@ -45,8 +45,9 @@ const benchmarks = [
                 </div>
                 <div class="h-1.5 bg-coal-4" aria-hidden="true">
                   <div
-                    class:list={["h-full", entry.current ? "bg-acid" : "bg-zinc-500"]}
-                    style={{ width: `${entry.value / max * 100}%` }}
+                    data-bar
+                    class:list={["bar h-full origin-left", entry.current ? "bg-acid" : "bg-zinc-500"]}
+                    style={{ "--fill": entry.value / max }}
                   ></div>
                 </div>
               </li>
@@ -57,3 +58,54 @@ const benchmarks = [
     })}
   </Tabs>
 </section>
+
+<style>
+  .bar {
+    transform: scaleX(var(--fill));
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    #home-benchmarks:not([data-revealed]) .bar {
+      transform: scaleX(0);
+    }
+  }
+</style>
+
+<script>
+  const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+  // Grows a panel's bars from zero. The first reveal runs slower than a tab switch.
+  const grow = (panel: Element, duration: number) => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    panel.querySelectorAll<HTMLElement>("[data-bar]").forEach((bar, index) => {
+      bar.animate([{ transform: "scaleX(0)" }, { transform: `scaleX(${bar.style.getPropertyValue("--fill")})` }], {
+        duration,
+        delay: index * 60,
+        easing: ease,
+        fill: "backwards",
+      });
+    });
+  };
+
+  const initBenchmarks = () => {
+    const section = document.getElementById("home-benchmarks");
+    if (!section || section.dataset.init) return;
+    section.dataset.init = "true";
+
+    section.querySelector("better-svg-tabs")?.addEventListener("tabchange", (event) => {
+      if (event instanceof CustomEvent && event.detail.panel instanceof Element) grow(event.detail.panel, 400);
+    });
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      observer.disconnect();
+      const panel = section.querySelector("[role=tabpanel]:not([hidden])");
+      if (panel) grow(panel, 700);
+      section.dataset.revealed = "";
+    }, { threshold: 0.4 });
+    observer.observe(section);
+  };
+
+  document.addEventListener("astro:page-load", initBenchmarks);
+  initBenchmarks();
+</script>

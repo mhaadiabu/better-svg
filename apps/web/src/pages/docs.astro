@@ -1012,10 +1012,9 @@ registerCatalogIcons(["hugeicons:home-01", "hugeicons:arrow-left-01"]);`} lang="
                   <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot. Browser-only projects use <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> to write the icons into a data module instead.</li>
                   <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
                   <li>Names accept a single trailing wildcard: <code class="inline-code">registerCatalogIcons(["lucide:*"])</code> registers every name the installed lucide source can serve, <code class="inline-code">["lucide:arrow*"]</code> matches a name prefix, and <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> expands the same form for offline bundles. Wholesale expansion logs the icon count and approximate markup size once it exceeds 250 icons or 256 KB, and an explicit name in the same list still fails the bundle when it cannot resolve.</li>
-                  <li>Returns the array of names that actually registered.</li>
                 </ul>
                 <p class="text-sm text-zinc-muted mt-3">
-                  Registration <strong class="text-[#e8e8e8]">never errors</strong>. A misspelled icon or collection name is silently skipped. The name falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>, the fetch 404s, and the adapter's <code class="inline-code">fallback</code> state renders. Tell typos apart by diffing the return value against the input. Anything missing did not resolve from disk.
+                  <code class="inline-code">registerCatalogIcons</code> returns the names it resolved and registered. Unresolved names are omitted from the result and still use the normal lookup at <code class="inline-code">/assets/svg/{"{name}"}.svg</code>. If that lookup fails, the adapter renders its <code class="inline-code">fallback</code> state. Compare the returned names with your input to spot typos.
                 </p>
               </div>
 

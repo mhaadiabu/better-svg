@@ -39,6 +39,8 @@ const ready = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).r
 const update = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).update.median;
 const first = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).first;
 const devPasses = (id: ProfileId) => getProfile(id).dev.filter(({ status }) => status === "ready").length;
+const namedDevResults = (ids: readonly ProfileId[]) =>
+  `${ids.reduce((total, id) => total + devPasses(id), 0)} of ${ids.reduce((total, id) => total + getProfile(id).dev.length, 0)}`;
 
 const namedPair = ["released-raw", "better-raw"] as const;
 const treeProfiles = ["released-precompiled", "better-precompiled", "better-tree"] as const;
@@ -257,8 +259,9 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
         <section id="build" aria-labelledby="build-heading">
           <h2 id="build-heading" class="text-lg font-semibold">Build, dev &amp; SSR</h2>
           <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Across the raw and legacy precompiled named profiles, {benchmarkRelease} passed {namedDevResults(["better-raw", "better-precompiled"])} Vite dev transform runs.
+            Version {published} passed {namedDevResults(["released-raw", "released-precompiled"])}.
             Production timings cover the full-set Vite build, not fixture generation or library compilation. Dev edit time is a Vite module transform after an SVG edit, not browser HMR.
-            Both {published} named profiles failed the dev transform probe in all {runInfo.nodeRepetitions} runs.
             The SSR probe checks whether a profile emits 100 SVG elements on the server before any browser work.
           </p>
           <div class="mt-4">
@@ -330,8 +333,8 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
             <dd class="mb-3 text-zinc-400 sm:mb-0">Each of {runInfo.browserDocuments} fresh documents had one first-use sample, {runInfo.warmups} warmups, and {runInfo.repetitions} measured warm remounts. {integer.format(runInfo.validWarmSamples)} of {integer.format(runInfo.warmSamples)} warm samples were valid. Node measurements ran {runInfo.nodeRepetitions} times.</dd>
             <dt class="font-medium">Compared versions</dt>
             <dd class="mb-3 text-zinc-400 sm:mb-0">BetterSVG {benchmarkRelease} profiles use the source at <a href={runtimeSource} class="font-mono text-acid underline-offset-4 hover:underline">526a822</a>. The archive records its temporary workspace version, {runInfo.workspace}. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
-            <dt class="font-medium">Limits</dt>
-            <dd class="text-zinc-400">One desktop, one run, mostly catalog icons. Nothing here covers mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or bandwidth-limited delivery. Don't read it as a universal ranking.</dd>
+            <dt class="font-medium">Scope</dt>
+            <dd class="text-zinc-400">This run covers React in Chromium on one Linux desktop, with mostly catalog icons and requests over loopback. It doesn't measure mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or slower network conditions.</dd>
           </dl>
           <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs">
             {[["Full report", "report.md"], ["node.json", "node.json"], ["browser.json", "browser.json"]].map(([label, file]) => (

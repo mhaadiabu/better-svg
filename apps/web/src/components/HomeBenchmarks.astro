@@ -8,9 +8,9 @@ import { kb, rows } from "../data/benchmarks";
 const timing = (value: number) => `${value.toFixed(1)} ms`;
 const results = rows.filter((row) => !row.id.startsWith("released-"));
 const benchmarks = [
+  { id: "build", label: "Build time", description: "Full static icon set, median Vite build", mode: "Static import", metric: "buildMs", format: (value: number) => `${value.toFixed(0)} ms` },
   { id: "urls", label: "Runtime URLs", description: "24 icons, median warm remount", mode: "Runtime URL", metric: "median", format: timing },
   { id: "static", label: "Static imports", description: "24 icons, median warm remount", mode: "Static import", metric: "median", format: timing },
-  { id: "build", label: "Build time", description: "Full static icon set, median Vite build", mode: "Static import", metric: "buildMs", format: (value: number) => `${value.toFixed(0)} ms` },
   { id: "size", label: "JS size", description: "Full static icon set, initial JavaScript gzip", mode: "Static import", metric: "full", format: kb },
 ] as const;
 ---

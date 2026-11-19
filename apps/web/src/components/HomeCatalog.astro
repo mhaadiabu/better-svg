@@ -38,7 +38,7 @@ const steps = [
     </div>
 
     <div class="min-w-0 border border-coal-4 bg-coal" data-catalog>
-      <Tabs id="home-catalog" label="Icon pack" tabs={catalogPacks.map(({ id, label }) => ({ id, label }))} picker={false}>
+      <Tabs id="home-catalog" label="Icon pack" tabs={catalogPacks.map(({ id, label }) => ({ id, label }))}>
         {catalogPacks.map((pack, index) => (
           <div
             role="tabpanel"
@@ -58,13 +58,13 @@ const steps = [
                   title={`${pack.id}:${icon.name}`}
                   class="grid aspect-square place-items-center bg-coal text-zinc-400 transition-colors hover:bg-coal-1 hover:text-[#e8e8e8] focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid aria-pressed:bg-coal-1 aria-pressed:text-acid"
                 >
-                  <svg class="h-6 w-6" viewBox="0 0 24 24" aria-hidden="true" set:html={icon.body} />
+                  <svg class="h-6 w-6" viewBox={pack.viewBox} aria-hidden="true" set:html={icon.body} />
                 </button>
               ))}
             </div>
             <div class="flex items-center gap-5 border-t border-coal-4 bg-coal-1 p-5">
               <div class="grid h-20 w-20 shrink-0 place-items-center border border-coal-4 bg-coal text-acid">
-                <svg class="h-10 w-10" viewBox="0 0 24 24" aria-hidden="true" data-preview set:html={pack.icons[0].body} />
+                <svg class="h-10 w-10" viewBox={pack.viewBox} aria-hidden="true" data-preview set:html={pack.icons[0].body} />
               </div>
               <pre class="min-w-0 overflow-x-auto font-mono text-xs leading-6 sm:text-sm sm:leading-7"><code><span class="text-[#4a4a4a]">$ pnpm add {pack.pkg}</span>
 <span class="text-[#555]">&lt;</span><span class="text-[#79b8ff]">SVG</span> <span class="text-[#ffb347]">name</span><span class="text-[#555]">=</span><span class="text-[#76d9b0]">"<span data-code-name>{`${pack.id}:${pack.icons[0].name}`}</span>"</span> <span class="text-[#555]">/&gt;</span></code></pre>

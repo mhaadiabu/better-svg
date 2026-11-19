@@ -5,12 +5,13 @@ interface Props {
   title: string;
   columns: readonly string[];
   entries: (BenchmarkLabel & { values: (string | number)[] })[];
+  framed?: boolean;
 }
 
-const { title, columns, entries } = Astro.props;
+const { title, columns, entries, framed = true } = Astro.props;
 ---
 
-<div role="region" aria-label={title} tabindex="0" class="overflow-x-auto border border-coal-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid">
+<div role="region" aria-label={title} tabindex="0" class:list={["overflow-x-auto focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid", framed ? "border border-coal-4" : "border-t border-coal-4"]}>
   <table class="w-full border-collapse text-left text-xs">
     <caption class="sr-only">{title}</caption>
     <thead class="text-[11px] text-zinc-400">

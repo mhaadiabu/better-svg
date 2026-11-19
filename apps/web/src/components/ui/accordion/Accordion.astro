@@ -1,0 +1,57 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  open?: boolean;
+}
+
+const { id, title, open = false } = Astro.props;
+const state = open ? "open" : "closed";
+---
+
+<div data-nb-accordion data-default-open={open ? "true" : undefined} class="min-w-0">
+  <button
+    type="button"
+    data-nb-accordion-trigger
+    data-nb-state={state}
+    aria-expanded={open ? "true" : "false"}
+    aria-controls={id}
+    class="group flex w-full cursor-pointer items-center gap-3 bg-coal-1 px-4 py-3 text-start text-sm font-medium transition-colors hover:bg-coal-2 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-ring"
+  >
+    <span class="min-w-0 flex-1">{title}</span>
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      class="size-4 shrink-0 text-muted-foreground transition-[transform,color] duration-250 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:text-foreground group-data-[nb-state=open]:rotate-90 group-data-[nb-state=open]:text-foreground motion-reduce:transition-none"
+    >
+      <path d="m6 3.75 4.25 4.25L6 12.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+  <div
+    id={id}
+    data-nb-accordion-content
+    data-nb-state={state}
+    inert={!open || undefined}
+    class="grid grid-cols-[minmax(0,1fr)] grid-rows-[0fr] transition-[grid-template-rows] duration-250 ease-[cubic-bezier(0.87,0,0.13,1)] data-[nb-state=open]:grid-rows-[1fr] motion-reduce:transition-none"
+  >
+    <div class="min-h-0 overflow-hidden"><slot /></div>
+  </div>
+</div>
+
+<script>
+  import { makeDisclosure, mount } from "@cloudflare/nimbus-docs/client";
+
+  mount("[data-nb-accordion]", (root) => {
+    const trigger = root.querySelector<HTMLButtonElement>("[data-nb-accordion-trigger]");
+    const content = root.querySelector<HTMLElement>("[data-nb-accordion-content]");
+    if (!trigger || !content) return () => {};
+
+    const disclosure = makeDisclosure({
+      trigger,
+      content,
+      defaultOpen: root.getAttribute("data-default-open") === "true",
+    });
+    return () => disclosure.destroy();
+  });
+</script>

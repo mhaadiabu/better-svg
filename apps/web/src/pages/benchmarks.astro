@@ -1,6 +1,7 @@
 ---
 import BenchmarkChart from "../components/BenchmarkChart.astro";
 import BenchmarkTable from "../components/BenchmarkTable.astro";
+import Accordion from "../components/ui/accordion/Accordion.astro";
 import Base from "../layouts/Base.astro";
 import {
   archive, benchmarkRelease, kb, ms, profiles, published, resultFor,
@@ -207,14 +208,10 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
             Milliseconds. Paint is the first paint opportunity after two animation frames, not physical display. First ready is one sample in a fresh document.
             Warm figures leave out samples that failed the render or update checks.
           </p>
-          <div class="mt-3 space-y-2">
+          <div class="mt-3 divide-y divide-coal-4 border border-coal-4">
             {workloads.map(({ id, title }) => (
-              <details class="group border border-coal-4" open={id === repeated}>
-                <summary class="flex cursor-pointer items-center justify-between bg-coal-1 px-3 py-2 text-xs font-medium hover:text-acid">
-                  {title}
-                  <span aria-hidden="true" class="font-mono text-zinc-muted group-open:rotate-45">+</span>
-                </summary>
-                <BenchmarkTable title={`Timings: ${title}`} columns={timingColumns} entries={profiles.map((profile) => {
+              <Accordion id={`timings-${id}`} title={title} open={id === repeated}>
+                <BenchmarkTable framed={false} title={`Timings: ${title}`} columns={timingColumns} entries={profiles.map((profile) => {
                   const sample = resultFor(profile.id, id);
                   return { ...profile, values: [
                     `${sample.validCount}/${sample.warmCount}`,
@@ -224,7 +221,7 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
                     exactTime(sample.first?.readyMs ?? null),
                   ] };
                 })} />
-              </details>
+              </Accordion>
             ))}
           </div>
         </section>
@@ -284,18 +281,14 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
             <BenchmarkChart title="Resource entries on first use" description="1,000 copies of one SVG URL." entries={chartEntries(urlProfiles, (id) => first(id, repeated)?.requests ?? null)} format={integer.format} />
             <BenchmarkChart title="Responses transferred on first use" description="Same workload, real transfers only." entries={chartEntries(urlProfiles, (id) => first(id, repeated)?.transferredResources ?? null)} format={integer.format} />
           </div>
-          <div class="mt-4 space-y-2">
+          <div class="mt-4 divide-y divide-coal-4 border border-coal-4">
             {workloads.map(({ id, title }) => (
-              <details class="group border border-coal-4" open={id === repeated}>
-                <summary class="flex cursor-pointer items-center justify-between bg-coal-1 px-3 py-2 text-xs font-medium hover:text-acid">
-                  {title}
-                  <span aria-hidden="true" class="font-mono text-zinc-muted group-open:rotate-45">+</span>
-                </summary>
-                <BenchmarkTable title={`URL loading: ${title}`} columns={["First-use entries", "Transferred", "Transfer bytes", "Warm entries p50"]} entries={urlProfiles.map((profileId) => {
+              <Accordion id={`url-loading-${id}`} title={title} open={id === repeated}>
+                <BenchmarkTable framed={false} title={`URL loading: ${title}`} columns={["First-use entries", "Transferred", "Transfer bytes", "Warm entries p50"]} entries={urlProfiles.map((profileId) => {
                   const { first: sample, resources } = resultFor(profileId, id);
                   return { ...getProfile(profileId), values: [sample?.requests, sample?.transferredResources, sample?.transferBytes, resources.median].map(exactNumber) };
                 })} />
-              </details>
+              </Accordion>
             ))}
           </div>
         </section>

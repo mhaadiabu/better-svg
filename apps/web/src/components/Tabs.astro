@@ -5,26 +5,13 @@ interface Props {
   tabs: { id: string; label: string }[];
   query?: string;
   storageKey?: string;
-  picker?: boolean;
 }
 
-const { id, label, tabs, query, storageKey, picker = true } = Astro.props;
+const { id, label, tabs, query, storageKey } = Astro.props;
 ---
 
 <better-svg-tabs class="block" data-query={query} data-storage-key={storageKey}>
-  {picker && <div class="relative border-b border-coal-4 sm:hidden">
-    <select
-      data-tab-select
-      aria-label={label}
-      class="w-full appearance-none bg-transparent py-2.5 pr-9 pl-4 text-xs font-medium text-acid focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid"
-    >
-      {tabs.map((tab) => <option value={tab.id} class="bg-coal-1 text-[#e8e8e8]">{tab.label}</option>)}
-    </select>
-    <svg class="pointer-events-none absolute top-1/2 right-4 h-3 w-3 -translate-y-1/2 text-zinc-400" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-      <path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </div>}
-  <div role="tablist" aria-label={label} class:list={["gap-x-1 border-b border-coal-4 px-2", picker ? "hidden sm:flex" : "flex"]}>
+  <div role="tablist" aria-label={label} class="flex overflow-x-auto border-b border-coal-4 px-1 [scrollbar-width:none]">
     {tabs.map((tab, index) => (
       <button
         type="button"
@@ -34,7 +21,7 @@ const { id, label, tabs, query, storageKey, picker = true } = Astro.props;
         aria-controls={`${id}-panel-${tab.id}`}
         aria-selected={index === 0}
         tabindex={index === 0 ? 0 : -1}
-        class="border-b-2 border-transparent px-2.5 py-2.5 text-xs font-medium text-zinc-400 hover:text-[#e8e8e8] focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid aria-selected:border-acid aria-selected:text-acid"
+        class="shrink-0 whitespace-nowrap border-b-2 border-transparent px-1.5 py-2.5 text-xs font-medium text-zinc-400 hover:text-[#e8e8e8] focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid aria-selected:border-acid aria-selected:text-acid"
       >
         {tab.label}
       </button>
@@ -48,7 +35,6 @@ const { id, label, tabs, query, storageKey, picker = true } = Astro.props;
     connectedCallback() {
       const tabs = Array.from(this.querySelectorAll<HTMLButtonElement>("[data-tab]"));
       const panels = tabs.map((tab) => document.getElementById(tab.getAttribute("aria-controls") ?? ""));
-      const picker = this.querySelector<HTMLSelectElement>("[data-tab-select]");
       const { query, storageKey } = this.dataset;
 
       const select = (current: HTMLButtonElement) => {
@@ -59,7 +45,6 @@ const { id, label, tabs, query, storageKey, picker = true } = Astro.props;
           const panel = panels[index];
           if (panel) panel.hidden = !selected;
         });
-        if (picker) picker.value = current.dataset.tab ?? "";
       };
 
       const find = (id: string | null) => tabs.find((tab) => tab.dataset.tab === id);
@@ -88,13 +73,6 @@ const { id, label, tabs, query, storageKey, picker = true } = Astro.props;
           history.replaceState(history.state, "", url);
         }
       };
-
-      if (picker) {
-        picker.onchange = () => {
-          const tab = find(picker.value);
-          if (tab) activate(tab);
-        };
-      }
 
       tabs.forEach((tab, index) => {
         tab.onclick = () => activate(tab);

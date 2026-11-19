@@ -8,7 +8,10 @@ import {
   type ProfileId,
 } from "../data/benchmarks";
 
+type WorkloadId = (typeof workloads)[number]["id"];
+
 const sections = [
+  ["summary", "Summary"],
   ["browser", "Browser timings"],
   ["delivery", "Bundle size"],
   ["build", "Build, dev & SSR"],
@@ -16,6 +19,7 @@ const sections = [
   ["correctness", "SVG behavior"],
   ["methodology", "Methodology"],
 ] as const;
+
 const getProfile = (id: ProfileId) => {
   const profile = profiles.find((entry) => entry.id === id);
   if (!profile) throw new Error(`Unknown benchmark profile ${id}`);
@@ -23,29 +27,95 @@ const getProfile = (id: ProfileId) => {
 };
 const chartEntries = (ids: readonly ProfileId[], measure: (id: ProfileId) => number | null) =>
   ids.map((id) => ({ ...getProfile(id), value: measure(id) }));
+
+const integer = new Intl.NumberFormat("en-US");
+const exactTime = (value: number | null) => value === null ? "n/a" : value.toFixed(2);
+const exactNumber = (value: number | null | undefined) => value == null ? "n/a" : integer.format(value);
+const maybe = (value: number | null | undefined, format: (value: number) => string) => value == null ? "n/a" : format(value);
+
+const repeated = "repeated-1000";
+const ready = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).ready.median;
+const update = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).update.median;
+const first = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).first;
+const devPasses = (id: ProfileId) => getProfile(id).dev.filter(({ status }) => status === "ready").length;
+
 const namedPair = ["released-raw", "better-raw"] as const;
 const treeProfiles = ["released-precompiled", "better-precompiled", "better-tree"] as const;
 const staticComparison = [...staticProfiles, "svgr-optimized", "inline"] as const;
-const repeated = "repeated-1000";
-const ready = (id: ProfileId, workload: Parameters<typeof resultFor>[1]) => resultFor(id, workload).ready.median;
-const rawBefore = ready("released-raw", repeated);
-const rawAfter = ready("better-raw", repeated);
-const updateBefore = resultFor("released-raw", repeated).update.median;
-const updateAfter = resultFor("better-raw", repeated).update.median;
-const firstUrl = resultFor("better-url", repeated).first;
-const previousUrl = resultFor("released-url", repeated).first;
-const namedImprovement = rawBefore && rawAfter ? Math.round(100 * (1 - rawAfter / rawBefore)) : null;
-const exactTime = (value: number | null) => value === null ? "Not measured" : value.toFixed(2);
-const integer = new Intl.NumberFormat("en-US");
-const exactNumber = (value: number | null | undefined) => value == null ? "Not measured" : integer.format(value);
+const repeatedComparison = [...namedPair, "better-tree", ...staticProfiles, "inline"] as const;
 const fixtureCount = profiles[0].contract.length;
+
+const change = (before: number | null | undefined, after: number | null | undefined) => {
+  if (before == null || after == null || before === 0) return "";
+  const delta = Math.round(100 * (after / before - 1));
+  return delta === 0 ? "same" : `${delta > 0 ? "+" : "−"}${Math.abs(delta)}%`;
+};
+
+const summary: {
+  measure: string;
+  detail: string;
+  before: number | null | undefined;
+  after: number | null | undefined;
+  format: (value: number) => string;
+  compare?: boolean;
+}[] = [
+  {
+    measure: "Raw named icon, 1,000 copies",
+    detail: "Warm ready, p50",
+    before: ready("released-raw", repeated), after: ready("better-raw", repeated), format: ms,
+  },
+  {
+    measure: "Raw named icon, 1,000 copies",
+    detail: "Opacity update, p50",
+    before: update("released-raw", repeated), after: update("better-raw", repeated), format: ms,
+  },
+  {
+    measure: "Runtime URL, 1,000 copies",
+    detail: "First-use ready, one sample",
+    before: first("released-url", repeated)?.readyMs, after: first("better-url", repeated)?.readyMs, format: ms,
+  },
+  {
+    measure: "Runtime URL, 1,000 copies",
+    detail: "First-use resource entries",
+    before: first("released-url", repeated)?.requests, after: first("better-url", repeated)?.requests, format: integer.format, compare: false,
+  },
+  {
+    measure: "Runtime URL, 1,000 copies",
+    detail: "Responses actually transferred",
+    before: first("released-url", repeated)?.transferredResources, after: first("better-url", repeated)?.transferredResources, format: integer.format, compare: false,
+  },
+  {
+    measure: "Raw named, full icon set",
+    detail: "All JavaScript, gzip",
+    before: getProfile("released-raw").javascript.totalGzip, after: getProfile("better-raw").javascript.totalGzip, format: kb,
+  },
+  {
+    measure: "Raw named, Vite dev transform",
+    detail: "Passing runs",
+    before: devPasses("released-raw"), after: devPasses("better-raw"), format: (runs: number) => `${runs}/${runInfo.nodeRepetitions}`, compare: false,
+  },
+];
+
+const betterStatic = ready("better-static", repeated);
+const betterRaw = ready("better-raw", repeated);
+const ssrProfiles = profiles.filter(({ ssr }) => ssr.rendered === ssr.expected);
+const sparse = (id: ProfileId) => getProfile(id).sparseJavascript.initialGzip;
+
+const tradeoffs = [
+  `BetterSVG static imports took ${maybe(betterStatic, ms)} to render 1,000 copies of one icon. vite-plugin-svgr took ${maybe(ready("svgr-raw", repeated), ms)} and unplugin-icons took ${maybe(ready("unplugin-icons", repeated), ms)}.`,
+  `Named icons are still slower than static imports. In ${benchmarkRelease}, 1,000 raw named icons took ${maybe(betterRaw, ms)}, against ${maybe(betterStatic, ms)} for static imports.`,
+  `Only ${ssrProfiles.length} profiles rendered SVG in the Node SSR probe, and all of them are static imports or inline React. Named icons and runtime URLs emitted nothing on the server.`,
+  `A one-icon build with BetterSVG static imports loads ${kb(sparse("better-static"))} of initial gzip JavaScript. SVGR loads ${kb(sparse("svgr-raw"))}. Raw named icons load ${kb(sparse("better-raw"))}.`,
+];
+
+const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Paint p95", "Update p50", "Update p95", "First ready"];
 ---
 
 <Base title="React benchmarks | BetterSVG" description="Compare BetterSVG 0.5.0 with 0.4.2, SVGR, unplugin-icons, react-inlinesvg, and react-svg across React workloads.">
   <nav aria-label="Site" class="sticky top-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-y-2 px-4 py-4">
-      <a href="/" class="font-display text-xl tracking-wider text-[#e8e8e8]">BETTERSVG</a>
-      <div class="flex items-center gap-4 text-sm sm:gap-5">
+    <div class="mx-auto flex h-15 max-w-6xl items-center justify-between gap-2 px-3 sm:px-4">
+      <a href="/" class="font-display text-lg tracking-wider text-[#e8e8e8] sm:text-xl">BETTERSVG</a>
+      <div class="flex items-center gap-3 text-xs sm:gap-5 sm:text-sm">
         <a href="/docs" class="text-zinc-400 hover:text-acid transition-colors">Docs</a>
         <a href="/benchmarks" aria-current="page" class="text-acid">Benchmarks</a>
         <a href="/changelog" class="text-zinc-400 hover:text-acid transition-colors">Changelog</a>
@@ -53,119 +123,143 @@ const fixtureCount = profiles[0].contract.length;
     </div>
   </nav>
 
-  <main id="main-content" class="mx-auto max-w-6xl px-4 py-12 lg:py-20">
-    <header>
-      <p class="mb-4 font-mono text-xs tracking-widest text-acid">REACT / RELEASE COMPARISON</p>
-      <h1 class="font-display text-5xl leading-none tracking-wider sm:text-6xl">REACT BENCHMARKS</h1>
-      <p class="mt-5 max-w-2xl leading-relaxed text-zinc-400">
-        How do named icons, static imports, and runtime URLs compare? We ran BetterSVG {benchmarkRelease} source,
-        the npm release of {published}, and other React SVG tools against the same {runInfo.iconCount}-file corpus.
+  <main id="main-content" class="mx-auto max-w-6xl px-4 pb-16 pt-6 lg:pt-12">
+    <header class="border-b border-coal-4 pb-4">
+      <h1 class="font-display text-3xl leading-none tracking-wider sm:text-4xl">REACT BENCHMARKS</h1>
+      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
+        BetterSVG {benchmarkRelease} against {published} and four other React SVG tools, on one {runInfo.iconCount}-file icon corpus.
+        Medians of {runInfo.repetitions} warm remounts in Chromium on one Linux desktop.
       </p>
-      <p class="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-xs text-zinc-400">
+      <p class="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-zinc-muted">
         <time datetime={runInfo.dateTime}>{runInfo.date}</time>
-        <span>{profiles.length} profiles · {workloads.length} workloads</span>
-        <a href={archive} class="text-acid underline-offset-4 hover:underline">Run archive ↗</a>
+        <span>{profiles.length} profiles</span>
+        <span>{workloads.length} workloads</span>
+        <a href="#methodology" class="text-zinc-400 underline-offset-4 hover:text-acid hover:underline">Method</a>
+        <a href={archive} class="text-zinc-400 underline-offset-4 hover:text-acid hover:underline">Raw data ↗</a>
       </p>
     </header>
 
-    <div class="mt-8 grid gap-px border border-coal-4 bg-coal-4 sm:grid-cols-3">
-      <a href="#browser" class="block bg-coal-1 p-4 hover:bg-coal-2 sm:p-5">
-        <span class="block font-mono text-2xl font-semibold text-acid">{namedImprovement === null ? "Not measured" : `${namedImprovement}% less time`}</span>
-        <span class="mt-2 block text-sm text-zinc-400">Warm ready time for 1,000 copies of a raw named icon versus {published}.</span>
-      </a>
-      <a href="#delivery" class="block bg-coal-1 p-4 hover:bg-coal-2 sm:p-5">
-        <span class="block font-mono text-2xl font-semibold text-acid">{kb(getProfile("better-tree").javascript.initialGzip)}</span>
-        <span class="mt-2 block text-sm text-zinc-400">Initial gzip JavaScript for the full named-icon set as compact trees.</span>
-      </a>
-      <a href="#network" class="block bg-coal-1 p-4 hover:bg-coal-2 sm:p-5">
-        <span class="block font-mono text-2xl font-semibold text-acid">{exactNumber(previousUrl?.requests)} → {exactNumber(firstUrl?.requests)}</span>
-        <span class="mt-2 block text-sm text-zinc-400">First-use resource entries for 1,000 copies of one URL. Both versions transferred one response.</span>
-      </a>
-    </div>
-
-    <div class="mt-10 grid items-start gap-x-10 gap-y-7 lg:grid-cols-[10rem_minmax(0,1fr)]">
-      <nav aria-label="Benchmark sections" class="flex flex-wrap gap-2 border-b border-coal-4 pb-5 lg:sticky lg:top-24 lg:flex-col lg:border-0 lg:p-0">
-        {sections.map(([id, title]) => (
-          <a href={`#${id}`} class="border border-coal-4 px-2.5 py-1.5 text-sm text-zinc-400 hover:border-acid hover:text-acid lg:border-0 lg:px-0">{title}</a>
-        ))}
+    <div class="lg:mt-8 lg:grid lg:grid-cols-[9rem_minmax(0,1fr)] lg:items-start lg:gap-x-10">
+      <nav aria-label="Benchmark sections" class="sticky top-[61px] z-40 -mx-4 overflow-x-auto border-b border-coal-4 bg-coal/95 px-4 backdrop-blur-md lg:top-24 lg:mx-0 lg:overflow-visible lg:border-0 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">
+        <ul role="list" class="flex gap-4 whitespace-nowrap py-2.5 text-xs lg:flex-col lg:gap-2.5 lg:py-0 lg:text-sm">
+          {sections.map(([id, title]) => (
+            <li><a href={`#${id}`} class="text-zinc-400 hover:text-acid">{title}</a></li>
+          ))}
+        </ul>
       </nav>
 
-      <div class="min-w-0 space-y-14">
-        <section id="browser" aria-labelledby="browser-heading">
-          <h2 id="browser-heading" class="text-2xl font-semibold">Browser timings</h2>
-          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
-            Ready time ends when every expected SVG is present. These charts show the median of {runInfo.repetitions}
-            warm remounts. Each chart has its own zero-based scale. Lower is faster.
-          </p>
-          <div class="mt-5 grid gap-3 md:grid-cols-2">
-            <BenchmarkChart title="Static imports" description="24 icons in a grid." entries={chartEntries(staticComparison, (id) => ready(id, "grid-24"))} format={ms} />
-            <BenchmarkChart title="Precompiled named icons" description="100 unique icons." entries={chartEntries(treeProfiles, (id) => ready(id, "unique-100"))} format={ms} />
-            <BenchmarkChart title="Raw named icons" description="1,000 copies of one icon." entries={chartEntries(namedPair, (id) => ready(id, repeated))} format={ms} />
-            <BenchmarkChart title="Runtime URLs" description="1,000 copies of one SVG URL." entries={chartEntries(urlProfiles, (id) => ready(id, repeated))} format={ms} />
+      <div class="min-w-0 space-y-12 pt-5 lg:pt-0 [&>section]:scroll-mt-12 lg:[&>section]:scroll-mt-0">
+        <section id="summary" aria-labelledby="summary-heading">
+          <h2 id="summary-heading" class="text-lg font-semibold">{benchmarkRelease} against {published}</h2>
+          <div role="region" aria-label="Release summary" tabindex="0" class="mt-3 overflow-x-auto border border-coal-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid">
+            <table class="w-full border-collapse text-left text-xs">
+              <caption class="sr-only">BetterSVG {benchmarkRelease} compared with {published}</caption>
+              <thead class="bg-coal-1 text-[11px] text-zinc-400">
+                <tr>
+                  <th scope="col" class="px-3 py-2 font-medium">Measure</th>
+                  <th scope="col" class="px-3 py-2 text-right font-medium">{published}</th>
+                  <th scope="col" class="px-3 py-2 text-right font-medium text-acid">{benchmarkRelease}</th>
+                  <th scope="col" class="hidden px-3 py-2 text-right font-medium sm:table-cell">Change</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-coal-3 border-t border-coal-4">
+                {summary.map(({ measure, detail, before, after, format, compare = true }) => (
+                  <tr>
+                    <th scope="row" class="px-3 py-2 font-medium">
+                      {measure}
+                      <span class="block text-[11px] font-normal text-zinc-400">{detail}</span>
+                    </th>
+                    <td class="whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums text-zinc-400">{maybe(before, format)}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums">{maybe(after, format)}</td>
+                    <td class="hidden whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums text-zinc-400 sm:table-cell">{compare ? change(before, after) : ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <p class="mt-3 text-sm leading-relaxed text-zinc-400">
-            {updateBefore !== null && updateAfter !== null && (
-              <>Updating opacity on 1,000 raw named icons took {ms(updateAfter)} in {benchmarkRelease}, down from {ms(updateBefore)} in {published}. </>
-            )}
-            Static imports were still ready sooner than named icons in that workload.
+          <p class="mt-2 text-xs leading-relaxed text-zinc-400">
+            The URL rows need care. A resource entry can be a cache hit or a coalesced fetch, so the drop in entries is not a drop in network traffic.
+            Both versions transferred one response.
           </p>
-          <div class="mt-7">
-            <h3 class="font-semibold">Exact numbers by workload</h3>
-            <p class="mt-1 text-sm leading-relaxed text-zinc-400">
-              All timings in milliseconds. Paint measures the opportunity to paint after two animation frames, not physical display.
-              First use is one sample in a fresh document. Warm figures exclude samples that failed the render or update checks.
-            </p>
-            <div class="mt-3 space-y-2">
-              {workloads.map(({ id, title }) => (
-                <details class="border border-coal-4">
-                  <summary class="cursor-pointer bg-coal-1 px-4 py-3 text-sm font-medium hover:text-acid">{title}</summary>
-                  <BenchmarkTable title={title} columns={["Valid warm runs", "Ready p50", "Ready p95", "Paint p50", "Paint p95", "Update p50", "Update p95", "First ready"]} entries={profiles.map((profile) => {
-                    const sample = resultFor(profile.id, id);
-                    return { ...profile, values: [
-                      `${sample.validCount}/${sample.warmCount}`,
-                      exactTime(sample.ready.median), exactTime(sample.ready.p95),
-                      exactTime(sample.paint.median), exactTime(sample.paint.p95),
-                      exactTime(sample.update.median), exactTime(sample.update.p95),
-                      exactTime(sample.first?.readyMs ?? null),
-                    ] };
-                  })} />
-                </details>
-              ))}
+
+          <h3 class="mt-6 text-sm font-semibold">Where BetterSVG loses</h3>
+          <ul role="list" class="mt-2 space-y-2 border-l border-coal-4 pl-3 text-sm leading-relaxed text-zinc-400">
+            {tradeoffs.map((line) => <li>{line}</li>)}
+          </ul>
+        </section>
+
+        <section id="browser" aria-labelledby="browser-heading">
+          <h2 id="browser-heading" class="text-lg font-semibold">Browser timings</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Ready time ends when every expected SVG is in the DOM. Bars show the p50 of {runInfo.repetitions} warm remounts, and each chart has its own zero-based scale.
+          </p>
+          <div class="mt-4 space-y-3">
+            <BenchmarkChart title="1,000 copies of one icon" description="Warm ready time, p50." entries={chartEntries(repeatedComparison, (id) => ready(id, repeated))} format={ms} />
+            <div class="grid gap-3 xl:grid-cols-2">
+              <BenchmarkChart title="100 unique icons" description="Precompiled and compact-tree named icons." entries={chartEntries(treeProfiles, (id) => ready(id, "unique-100"))} format={ms} />
+              <BenchmarkChart title="24 icons in a grid" description="Static imports." entries={chartEntries(staticComparison, (id) => ready(id, "grid-24"))} format={ms} />
             </div>
+            <BenchmarkChart title="Runtime URLs, 1,000 copies" description="Warm ready time, p50. Same SVG URL in every copy." entries={chartEntries(urlProfiles, (id) => ready(id, repeated))} format={ms} />
+          </div>
+
+          <h3 class="mt-7 text-sm font-semibold">Exact timings by workload</h3>
+          <p class="mt-1 max-w-3xl text-xs leading-relaxed text-zinc-400">
+            Milliseconds. Paint is the first paint opportunity after two animation frames, not physical display. First ready is one sample in a fresh document.
+            Warm figures leave out samples that failed the render or update checks.
+          </p>
+          <div class="mt-3 space-y-2">
+            {workloads.map(({ id, title }) => (
+              <details class="group border border-coal-4" open={id === repeated}>
+                <summary class="flex cursor-pointer items-center justify-between bg-coal-1 px-3 py-2 text-xs font-medium hover:text-acid">
+                  {title}
+                  <span aria-hidden="true" class="font-mono text-zinc-muted group-open:rotate-45">+</span>
+                </summary>
+                <BenchmarkTable title={`Timings: ${title}`} columns={timingColumns} entries={profiles.map((profile) => {
+                  const sample = resultFor(profile.id, id);
+                  return { ...profile, values: [
+                    `${sample.validCount}/${sample.warmCount}`,
+                    exactTime(sample.ready.median), exactTime(sample.ready.p95),
+                    exactTime(sample.paint.median), exactTime(sample.paint.p95),
+                    exactTime(sample.update.median), exactTime(sample.update.p95),
+                    exactTime(sample.first?.readyMs ?? null),
+                  ] };
+                })} />
+              </details>
+            ))}
           </div>
         </section>
 
         <section id="delivery" aria-labelledby="delivery-heading">
-          <h2 id="delivery-heading" class="text-2xl font-semibold">Bundle size</h2>
-          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
-            Initial JavaScript is what the entry loads. All JavaScript includes deferred chunks. Both include React and the benchmark page.
-            The one-icon build uses just one icon from the same {runInfo.iconCount}-file directory. The full-set named builds disable pruning;
-            the {benchmarkRelease} one-icon named builds use default pruning and defer the rest.
+          <h2 id="delivery-heading" class="text-lg font-semibold">Bundle size</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Initial JavaScript is what the entry loads, and all JavaScript adds deferred chunks. Both include React and the benchmark page.
+            The one-icon build imports one icon from the same {runInfo.iconCount}-file directory. Full-set named builds disable pruning.
+            The {benchmarkRelease} one-icon named builds use default pruning and defer the rest.
           </p>
-          <div class="mt-5 grid gap-3 md:grid-cols-2">
-            <BenchmarkChart title="One icon" description="Initial JavaScript, gzip." entries={chartEntries([...namedPair, "better-tree"], (id) => getProfile(id).sparseJavascript.initialGzip)} format={kb} />
+          <div class="mt-4 grid gap-3 xl:grid-cols-2">
+            <BenchmarkChart title="One icon" description="Initial JavaScript, gzip." entries={chartEntries([...namedPair, "better-tree", ...staticProfiles], (id) => getProfile(id).sparseJavascript.initialGzip)} format={kb} />
             <BenchmarkChart title="Full named set" description="All emitted JavaScript, gzip." entries={chartEntries([...namedPair, ...treeProfiles.slice(1)], (id) => getProfile(id).javascript.totalGzip)} format={kb} />
           </div>
-          <div class="mt-6">
-            <BenchmarkTable title="Bundle sizes in gzip bytes" columns={["One icon initial JS", "One icon all JS", "Full set initial JS", "Full set all JS", "Full set JS chunks", "Full set all assets"]} entries={profiles.map((profile) => ({
+          <div class="mt-4">
+            <BenchmarkTable title="Bundle sizes in gzip bytes" columns={["1 icon initial", "1 icon all JS", "Full initial", "Full all JS", "Full chunks", "Full all assets"]} entries={profiles.map((profile) => ({
               ...profile,
               values: [profile.sparseJavascript.initialGzip, profile.sparseJavascript.totalGzip, profile.javascript.initialGzip, profile.javascript.totalGzip, profile.javascript.chunks, profile.totalBytes.gzip].map(exactNumber),
             }))} />
-            <p class="mt-2 text-xs leading-relaxed text-zinc-400">Sizes in gzip bytes. The all-assets column also includes HTML and separately emitted SVGs where applicable. It is not a measurement of bytes fetched on a visit.</p>
+            <p class="mt-2 text-xs leading-relaxed text-zinc-400">Gzip bytes. All assets adds HTML and separately emitted SVGs where they exist. It is not what a visit downloads.</p>
           </div>
         </section>
 
         <section id="build" aria-labelledby="build-heading">
-          <h2 id="build-heading" class="text-2xl font-semibold">Build, dev &amp; SSR</h2>
-          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
-            Production timings cover the full-set Vite build, not fixture generation or library compilation. Dev edit time measures a Vite module transform after an SVG edit, not browser HMR.
-            The two {published} named profiles failed the Vite development transform probe in all {runInfo.nodeRepetitions} runs.
-            The SSR probe checks whether the profile emits 100 SVG elements on the server before any browser work.
+          <h2 id="build-heading" class="text-lg font-semibold">Build, dev &amp; SSR</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Production timings cover the full-set Vite build, not fixture generation or library compilation. Dev edit time is a Vite module transform after an SVG edit, not browser HMR.
+            Both {published} named profiles failed the dev transform probe in all {runInfo.nodeRepetitions} runs.
+            The SSR probe checks whether a profile emits 100 SVG elements on the server before any browser work.
           </p>
-          <div class="mt-5 max-w-xl">
-            <BenchmarkChart title="Static import build time" description={`Median of ${runInfo.nodeRepetitions} Vite production builds.`} entries={chartEntries(staticComparison, (id) => getProfile(id).buildMs.median)} format={ms} />
+          <div class="mt-4">
+            <BenchmarkChart title="Static import build time" description={`p50 of ${runInfo.nodeRepetitions} Vite production builds.`} entries={chartEntries(staticComparison, (id) => getProfile(id).buildMs.median)} format={ms} />
           </div>
-          <div class="mt-6">
+          <div class="mt-4">
             <BenchmarkTable title="Build, development, and Node SSR results" columns={["Build p50", "Build p95", "Dev entry p50", "Dev edit p50", "Dev passes", "SSR SVGs", "SSR p50", "SSR gzip bytes"]} entries={profiles.map((profile) => ({
               ...profile,
               values: [
@@ -173,30 +267,33 @@ const fixtureCount = profiles[0].contract.length;
                 exactTime(profile.startupEntryMs.median), exactTime(profile.editTransformMs.median),
                 `${profile.dev.filter(({ status }) => status === "ready").length}/${profile.dev.length}`,
                 `${profile.ssr.rendered}/${profile.ssr.expected}`, exactTime(profile.ssr.milliseconds.median),
-                profile.ssr.eligible ? exactNumber(profile.ssr.htmlBytes.gzip) : "Not measured",
+                profile.ssr.eligible ? exactNumber(profile.ssr.htmlBytes.gzip) : "n/a",
               ],
             }))} />
-            <p class="mt-2 text-xs text-zinc-400">All timings in milliseconds. SSR timing and size apply only to profiles that rendered the full set in this probe.</p>
+            <p class="mt-2 text-xs text-zinc-400">Milliseconds. SSR timing and size only apply to profiles that rendered the full set.</p>
           </div>
         </section>
 
         <section id="network" aria-labelledby="network-heading">
-          <h2 id="network-heading" class="text-2xl font-semibold">URL loading</h2>
-          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
-            A resource entry can represent a cache hit or a coalesced fetch. It doesn't necessarily mean a separate network response.
-            The first-use columns count a single sample with fresh URL tokens; warm remounts keep each library's normal cache behavior.
+          <h2 id="network-heading" class="text-lg font-semibold">URL loading</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Read the two charts together. A resource entry can be a cache hit or a coalesced fetch, so it doesn't always mean a separate network response.
+            The transfer chart counts responses with a nonzero transfer size. First-use columns are one sample with fresh URL tokens, and warm remounts keep each library's normal cache.
           </p>
-          <div class="mt-5 grid gap-3 md:grid-cols-2">
-            <BenchmarkChart title="Resource entries on first use" description="1,000 copies of one SVG URL." entries={chartEntries(urlProfiles, (id) => resultFor(id, repeated).first?.requests ?? null)} format={integer.format} />
-            <BenchmarkChart title="Responses transferred on first use" description="Same workload. Responses with a nonzero transfer size." entries={chartEntries(urlProfiles, (id) => resultFor(id, repeated).first?.transferredResources ?? null)} format={integer.format} />
+          <div class="mt-4 grid gap-3 xl:grid-cols-2">
+            <BenchmarkChart title="Resource entries on first use" description="1,000 copies of one SVG URL." entries={chartEntries(urlProfiles, (id) => first(id, repeated)?.requests ?? null)} format={integer.format} />
+            <BenchmarkChart title="Responses transferred on first use" description="Same workload, real transfers only." entries={chartEntries(urlProfiles, (id) => first(id, repeated)?.transferredResources ?? null)} format={integer.format} />
           </div>
-          <div class="mt-6 space-y-2">
+          <div class="mt-4 space-y-2">
             {workloads.map(({ id, title }) => (
-              <details class="border border-coal-4" open={id === repeated}>
-                <summary class="cursor-pointer bg-coal-1 px-4 py-3 text-sm font-medium hover:text-acid">{title}</summary>
-                <BenchmarkTable title={`URL loading: ${title}`} columns={["First-use entries", "Transferred responses", "Transfer bytes", "Warm entries p50"]} entries={urlProfiles.map((profileId) => {
-                  const { first, resources } = resultFor(profileId, id);
-                  return { ...getProfile(profileId), values: [first?.requests, first?.transferredResources, first?.transferBytes, resources.median].map(exactNumber) };
+              <details class="group border border-coal-4" open={id === repeated}>
+                <summary class="flex cursor-pointer items-center justify-between bg-coal-1 px-3 py-2 text-xs font-medium hover:text-acid">
+                  {title}
+                  <span aria-hidden="true" class="font-mono text-zinc-muted group-open:rotate-45">+</span>
+                </summary>
+                <BenchmarkTable title={`URL loading: ${title}`} columns={["First-use entries", "Transferred", "Transfer bytes", "Warm entries p50"]} entries={urlProfiles.map((profileId) => {
+                  const { first: sample, resources } = resultFor(profileId, id);
+                  return { ...getProfile(profileId), values: [sample?.requests, sample?.transferredResources, sample?.transferBytes, resources.median].map(exactNumber) };
                 })} />
               </details>
             ))}
@@ -204,15 +301,13 @@ const fixtureCount = profiles[0].contract.length;
         </section>
 
         <section id="correctness" aria-labelledby="correctness-heading">
-          <h2 id="correctness-heading" class="text-2xl font-semibold">SVG behavior</h2>
-          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
-            Each profile rendered two instances of each of {fixtureCount} separate SVG fixtures. Completion means the fixtures rendered,
-            not that every tool preserved the same output. Columns count fixtures with each observation, not individual IDs.
-            The <a href={`${archive}/browser.json`} class="text-acid underline underline-offset-4">raw browser data</a> includes computed paint,
-            roles, descriptions, and foreign content. These fixtures aren't a security audit.
+          <h2 id="correctness-heading" class="text-lg font-semibold">SVG behavior</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Each profile rendered two instances of each of {fixtureCount} SVG fixtures. Rendered means the fixtures appeared, not that every tool kept the same output.
+            Columns count fixtures with each observation, not individual IDs. The <a href={`${archive}/browser.json`} class="text-acid underline underline-offset-4">raw browser data</a> has
+            computed paint, roles, descriptions, and foreign content. These fixtures are not a security audit.
           </p>
-          <details class="mt-4 border border-coal-4">
-            <summary class="cursor-pointer bg-coal-1 px-4 py-3 text-sm font-medium hover:text-acid">Observations by profile</summary>
+          <div class="mt-4">
             <BenchmarkTable title="SVG behavior observations" columns={["Fixtures rendered", "Duplicate IDs", "Unresolved SVG refs", "Unresolved ARIA labels"]} entries={profiles.map((profile) => ({
               ...profile,
               values: [
@@ -222,24 +317,24 @@ const fixtureCount = profiles[0].contract.length;
                 profile.contract.filter((entry) => entry.observations.some((observation) => observation.danglingLabels.length > 0)).length,
               ],
             }))} />
-          </details>
+          </div>
         </section>
 
-        <section id="methodology" aria-labelledby="methodology-heading" class="border-t border-coal-4 pt-7">
-          <h2 id="methodology-heading" class="text-2xl font-semibold">Methodology</h2>
-          <dl class="mt-5 grid gap-x-8 gap-y-5 text-sm leading-relaxed sm:grid-cols-[10rem_minmax(0,1fr)]">
+        <section id="methodology" aria-labelledby="methodology-heading" class="border-t border-coal-4 pt-6">
+          <h2 id="methodology-heading" class="text-lg font-semibold">Methodology</h2>
+          <dl class="mt-4 grid gap-x-8 gap-y-1 text-sm leading-relaxed sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-y-4">
             <dt class="font-medium">Machine</dt>
-            <dd class="text-zinc-400">{runInfo.cpu} on Linux. Vite {runInfo.versions.vite}, Node {runInfo.node}, React {runInfo.versions.react}, and Chromium 157.0.8103.78 at {runInfo.browserViewport.width} × {runInfo.browserViewport.height}. HTTP ran uncompressed over loopback.</dd>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">{runInfo.cpu} on Linux. Vite {runInfo.versions.vite}, Node {runInfo.node}, React {runInfo.versions.react}, and Chromium 157.0.8103.78 at {runInfo.browserViewport.width} × {runInfo.browserViewport.height}. HTTP ran uncompressed over loopback.</dd>
             <dt class="font-medium">Sampling</dt>
-            <dd class="text-zinc-400">Each of {runInfo.browserDocuments} fresh documents had one first-use sample, {runInfo.warmups} warmups, and {runInfo.repetitions} measured warm remounts. {integer.format(runInfo.validWarmSamples)} of {integer.format(runInfo.warmSamples)} warm samples were valid. Node measurements ran {runInfo.nodeRepetitions} times.</dd>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">Each of {runInfo.browserDocuments} fresh documents had one first-use sample, {runInfo.warmups} warmups, and {runInfo.repetitions} measured warm remounts. {integer.format(runInfo.validWarmSamples)} of {integer.format(runInfo.warmSamples)} warm samples were valid. Node measurements ran {runInfo.nodeRepetitions} times.</dd>
             <dt class="font-medium">Compared versions</dt>
-            <dd class="text-zinc-400">BetterSVG {benchmarkRelease} charts use the source at <a href={runtimeSource} class="font-mono text-acid underline-offset-4 hover:underline">526a822</a>. The archive records its temporary workspace version, {runInfo.workspace}. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">BetterSVG {benchmarkRelease} profiles use the source at <a href={runtimeSource} class="font-mono text-acid underline-offset-4 hover:underline">526a822</a>. The archive records its temporary workspace version, {runInfo.workspace}. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
             <dt class="font-medium">Limits</dt>
-            <dd class="text-zinc-400">One desktop and one run, mostly catalog icons. This doesn't measure mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or bandwidth-limited delivery. Don't use the results as a universal ranking.</dd>
+            <dd class="text-zinc-400">One desktop, one run, mostly catalog icons. Nothing here covers mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or bandwidth-limited delivery. Don't read it as a universal ranking.</dd>
           </dl>
-          <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-            {[["Full report", "report.md"], ["Raw Node data", "node.json"], ["Raw browser data", "browser.json"]].map(([label, file]) => (
-              <a href={`${archive}/${file}`} class="text-acid underline underline-offset-4">{label} ↗</a>
+          <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs">
+            {[["Full report", "report.md"], ["node.json", "node.json"], ["browser.json", "browser.json"]].map(([label, file]) => (
+              <a href={`${archive}/${file}`} class="text-acid underline-offset-4 hover:underline">{label} ↗</a>
             ))}
           </div>
         </section>

@@ -6,39 +6,43 @@ interface Props {
   description: string;
   entries: (BenchmarkLabel & { value: number | null })[];
   format: (value: number) => string;
+  lowerIsBetter?: boolean;
 }
 
-const { title, description, entries, format } = Astro.props;
-const largest = Math.max(...entries.map(({ value }) => value ?? 0), 1);
+const { title, description, entries, format, lowerIsBetter = true } = Astro.props;
+const measured = entries.flatMap(({ value }) => (value === null ? [] : [value]));
+const largest = Math.max(...measured, 1);
 const magnitude = 10 ** Math.floor(Math.log10(largest));
 const max = Math.ceil(largest / (magnitude / 2)) * (magnitude / 2);
-const middle = format(max / 2);
+const best = lowerIsBetter ? Math.min(...measured) : Math.max(...measured);
 ---
 
-<figure class="min-w-0 border border-coal-4 bg-coal-1 p-4 sm:p-5">
-  <figcaption>
-    <h3 class="font-semibold">{title}</h3>
-    <p class="mt-1 text-sm leading-relaxed text-zinc-400">{description}</p>
+<figure class="@container min-w-0 border border-coal-4 bg-coal-1">
+  <figcaption class="flex items-baseline justify-between gap-3 border-b border-coal-4 px-3 py-2.5 @lg:px-4">
+    <span class="min-w-0">
+      <span class="block text-sm font-semibold">{title}</span>
+      <span class="block text-xs text-zinc-400">{description}</span>
+    </span>
+    {lowerIsBetter && <span class="shrink-0 font-mono text-[10px] uppercase tracking-wider text-zinc-muted">Lower is better</span>}
   </figcaption>
-  <ul role="list" class="mt-5 space-y-3.5">
+  <ul role="list" class="space-y-2.5 px-3 py-3 @lg:px-4">
     {entries.map(({ label, mode, current, value }) => (
-      <li>
-        <div class="flex items-baseline justify-between gap-3 text-sm">
-          <div>
-            <span class:list={["font-medium", current && "text-acid"]}>{label}</span>
-            <span class="block text-xs text-zinc-400 min-[440px]:inline min-[440px]:pl-1">{mode}</span>
-          </div>
-          <span class="shrink-0 font-mono text-xs tabular-nums">{value === null ? "Not measured" : format(value)}</span>
-        </div>
-        <div aria-hidden="true" class="chart-track mt-1.5 h-1.5">
-          <div class:list={["h-full", current ? "bg-acid" : "bg-zinc-400"]} style={{ width: `${(value ?? 0) / max * 100}%` }}></div>
-        </div>
+      <li class="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-1 text-xs @lg:grid-cols-[11.5rem_minmax(0,1fr)_4.5rem] @lg:items-center">
+        <span class="min-w-0">
+          <span class:list={["font-medium", current ? "text-acid" : "text-[#e8e8e8]"]}>{label}</span>
+          <span class="text-zinc-400"> {mode}</span>
+        </span>
+        <span aria-hidden="true" class="chart-track col-span-2 row-start-2 h-2 @lg:col-span-1 @lg:col-start-2 @lg:row-start-1">
+          <span class:list={["block h-full", current ? "bg-acid" : "bg-zinc-500"]} style={{ width: `${(value ?? 0) / max * 100}%` }}></span>
+        </span>
+        <span class:list={["text-right font-mono tabular-nums @lg:col-start-3", value !== null && value === best ? "text-[#e8e8e8]" : "text-zinc-400"]}>
+          {value === null ? "n/a" : format(value)}
+        </span>
       </li>
     ))}
   </ul>
-  <div aria-hidden="true" class="mt-2 flex justify-between font-mono text-[10px] text-zinc-400">
+  <div aria-hidden="true" class="flex justify-between border-t border-coal-3 px-3 py-1.5 font-mono text-[10px] text-zinc-muted @lg:ml-[13.25rem] @lg:mr-[6.25rem] @lg:border-0 @lg:px-0 @lg:pt-0">
     <span>{format(0)}</span>
-    {middle !== format(0) && middle !== format(max) && <span>{middle}</span>}
     <span>{format(max)}</span>
   </div>
 </figure>
@@ -46,7 +50,7 @@ const middle = format(max / 2);
 <style>
   .chart-track {
     background-image: linear-gradient(to right, var(--color-coal-4) 1px, transparent 1px);
-    background-color: var(--color-coal-3);
+    background-color: var(--color-coal-2);
     background-size: 25% 100%;
   }
 </style>

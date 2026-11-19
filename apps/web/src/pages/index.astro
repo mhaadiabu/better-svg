@@ -1,8 +1,8 @@
 ---
 import { frameworks } from "../data/frameworks";
-import { adapterExamples } from "../data/adapter-examples";
 import Base from "../layouts/Base.astro";
-import FrameworkPicker from "../components/FrameworkPicker.astro";
+import HomeBenchmarks from "../components/HomeBenchmarks.astro";
+import HomeInstall from "../components/HomeInstall.astro";
 import svgPkg from "../../../../packages/svg/package.json";
 
 const version = svgPkg.version;
@@ -187,113 +187,9 @@ import CodeBlock from "../components/CodeBlock.astro";
         </div>
         </div>
 
-        <!-- Right: Tabbed code example -->
-        <div class="mt-12 lg:mt-0 animate-fade-in delay-700 min-w-0">
-          <div class="relative">
-            <!-- Floating file label -->
-            <div class="absolute -top-3 right-4 z-10 border border-coal-4 bg-coal px-2 py-0.5 font-mono text-[10px] text-zinc-muted flex items-center gap-2">
-              <span data-fw-tab-label>App.tsx</span>
-              <button
-                type="button"
-                data-fw-copy
-                class="hover:text-acid transition-colors"
-                aria-label="Copy full file"
-              >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2"/>
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                </svg>
-              </button>
-              <button
-                type="button"
-                data-fw-hero-wrap
-                class="hover:text-acid transition-colors"
-                aria-label="Toggle word wrap"
-              ></button>
-            </div>
-
-            <!-- Glow behind card -->
-            <div class="absolute -inset-px bg-linear-to-br from-acid/10 via-transparent to-transparent blur-xl"></div>
-
-            <div class="relative border border-coal-4 bg-coal">
-              <!-- Mobile: custom framework dropdown (matches docs picker) -->
-              <div class="border-b border-coal-2 px-2 py-1.5 sm:hidden" data-fw-mobile>
-                <FrameworkPicker frameworks={frameworks} initial="react" id="hero-fw-picker" />
-              </div>
-
-              <!-- Tab bar (desktop) -->
-              <div class="flex flex-wrap border-b border-coal-2 max-sm:hidden" data-fw-tabs>
-                <button type="button" class="fw-tab is-active" data-fw-tab="react">React</button>
-                <button type="button" class="fw-tab" data-fw-tab="react-native">React Native</button>
-                <button type="button" class="fw-tab" data-fw-tab="vue">Vue</button>
-                <button type="button" class="fw-tab" data-fw-tab="svelte">Svelte</button>
-                {adapterExamples.map((adapter) => <button type="button" class="fw-tab" data-fw-tab={adapter.id}>{adapter.label}</button>)}
-              </div>
-
-              <!-- Code panels -->
-              <div data-fw-panels>
-                <div data-fw-panel="react"><CodeBlock code={`import { SVG } from "@mhaadi/svg/react";
-
-<SVG
-  src="https://cdn.example.com/icon.svg"
-  className="h-6 w-6 text-current"
-  loading={"Loading…"}
-  fallback={"Failed"}
-/>`} lang="tsx" /></div>
-                <div data-fw-panel="react-native" hidden><CodeBlock code={`import { SVG } from "@mhaadi/svg/react-native";
-
-<SVG
-  name="logo"
-  width={24}
-  height={24}
-  color="#111827"
-/>`} lang="tsx" /></div>
-                <div data-fw-panel="vue" hidden><CodeBlock code={`<script setup lang="ts">
-  import { SVG } from "@mhaadi/svg/vue";
-</script>
-
-<SVG
-  src="https://cdn.example.com/icon.svg"
-  :width=24
-  :height=24
-/>`} lang="vue" /></div>
-                <div data-fw-panel="svelte" hidden><CodeBlock code={`<script lang="ts">
-  import { SVG } from "@mhaadi/svg/svelte";
-</script>
-
-<SVG
-  src="https://cdn.example.com/icon.svg"
-  width="24"
-  height="24"
-/>`} lang="svelte" /></div>
-                {adapterExamples.map((adapter) => <div data-fw-panel={adapter.id} hidden><CodeBlock code={adapter.code} lang={adapter.lang} /></div>)}
-
-              </div>
-            </div>
-
-            <!-- Rendered output strip -->
-            <div class="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border border-coal-2 bg-coal-1 px-4 py-4">
-              <span class="font-mono text-xs text-zinc-muted">rendered output →</span>
-              <svg class="h-10 w-10 text-acid animate-float" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="52" height="52" rx="0" fill="currentColor" opacity="0.15"/>
-                <path d="M20 32h24" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-                <path d="M32 20v24" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-              </svg>
-              <svg class="h-10 w-10 text-[#79b8ff] animate-float" style="animation-delay:0.8s" viewBox="0 0 64 64">
-                <circle cx="32" cy="32" r="24" fill="currentColor" opacity="0.15"/>
-                <path d="M22 32 L32 22 L42 32 L32 42Z" fill="currentColor" opacity="0.7"/>
-              </svg>
-              <svg class="h-10 w-10 text-[#f8c8d4] animate-float" style="animation-delay:1.4s" viewBox="0 0 64 64">
-                <path d="M32 8 L56 52 L8 52Z" fill="currentColor" opacity="0.15"/>
-                <path d="M32 20 L46 44 L18 44Z" fill="currentColor" opacity="0.6"/>
-              </svg>
-            </div>
-
-            <!-- Install snippet -->
-            <div class="mt-4">
-                              <CodeBlock code={`$ pnpm add @mhaadi/svg`} lang="sh" />
-            </div>
-          </div>
+        <div class="mt-12 min-w-0 space-y-4 lg:mt-0">
+          <HomeBenchmarks />
+          <HomeInstall />
         </div>
       </div>
     </div>
@@ -470,56 +366,8 @@ import CodeBlock from "../components/CodeBlock.astro";
   </footer>
 </Base>
 
-<style>
-  /* The hero strip row owns the picker's background and the collapsed trigger
-     is borderless there - only the open dropdown menu is bordered. */
-  [data-fw-mobile] :global(.fw-trigger) {
-    background-color: transparent;
-    border-color: transparent;
-  }
-  [data-fw-mobile] :global(.fw-trigger:hover),
-  [data-fw-mobile] :global(.fw-trigger[aria-expanded="true"]) {
-    background-color: transparent;
-    border-color: transparent;
-  }
-  [data-fw-mobile] :global(.fw-trigger:focus-visible) {
-    outline: none;
-    border-color: transparent;
-    background-color: transparent;
-    color: #b9ff4b;
-  }
-  /* Hero picker is names-only: no package sub imports, in trigger or menu. */
-  [data-fw-mobile] :global(.fw-trigger-content [data-fw-value-sub]),
-  [data-fw-mobile] :global(.fw-trigger-content .text-zinc-muted),
-  [data-fw-mobile] :global(.fw-option-sub) {
-    display: none;
-  }
-
-  .fw-tab {
-    flex: 1 0 auto;
-    padding: 8px 14px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.75rem;
-    color: #6b6b6b;
-    background: transparent;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: color 0.15s, border-color 0.15s;
-  }
-  .fw-tab:hover {
-    color: #e8e8e8;
-  }
-  .fw-tab.is-active {
-    color: #b9ff4b;
-    border-bottom-color: #b9ff4b;
-  }
-</style>
-
 <script>
-  import { initCodeBlocks, wrapIcons } from "../scripts/code-block";
-  import { copyToClipboard } from "../scripts/clipboard";
+  import { initCodeBlocks } from "../scripts/code-block";
 
   let cleanup = () => {};
 
@@ -556,106 +404,9 @@ import CodeBlock from "../components/CodeBlock.astro";
     // Code blocks: header, copy & wrap buttons
     initCodeBlocks();
 
-    // Framework example tabs (hero code card)
-    const fwTabs = document.querySelectorAll<HTMLButtonElement>("[data-fw-tab]");
-    const fwPanels = document.querySelectorAll<HTMLElement>("[data-fw-panel]");
-
-    const switchTo = (target: string) => {
-      fwTabs.forEach((t) => t.classList.toggle("is-active", t.dataset.fwTab === target));
-      fwPanels.forEach((p) => (p.hidden = p.dataset.fwPanel !== target));
-      if (fwLabel) fwLabel.textContent = fwLabelMap[target] ?? "App.tsx";
-    };
-
-    // The mobile FrameworkPicker (docs component) drives the same panels.
-    const onFrameworkChange = (e: Event) => {
-      switchTo((e as CustomEvent<string>).detail?.id ?? "");
-    };
-    document.addEventListener("bettersvg:framework-change", onFrameworkChange);
-
-    // Shared hero wrap toggle: one state, the strip buttons (mobile picker row +
-    // desktop tab row) stay in lockstep. Applies to every panel so switching
-    // frameworks never desyncs the button.
-    const heroWrapBtns = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-fw-hero-wrap]"));
-    const heroWrapped = () =>
-      Array.from(fwPanels).some((p) => p.querySelector(".code-block-body")?.classList.contains("is-wrapped"));
-    const syncHeroWrap = () => {
-      const on = heroWrapped();
-      heroWrapBtns.forEach((b) => {
-        b.innerHTML = on ? wrapIcons.chipOn : wrapIcons.chipOff;
-      });
-    };
-    const onHeroWrapClick = () => {
-      const next = !heroWrapped();
-      fwPanels.forEach((p) => p.querySelector(".code-block-body")?.classList.toggle("is-wrapped", next));
-      syncHeroWrap();
-    };
-    const heroWrapHandlers: Array<{ el: HTMLButtonElement; fn: () => void }> = [];
-    heroWrapBtns.forEach((b) => {
-      const fn = onHeroWrapClick;
-      b.addEventListener("click", fn);
-      heroWrapHandlers.push({ el: b, fn });
-    });
-    syncHeroWrap();
-
-    const fwLabel = document.querySelector<HTMLElement>("[data-fw-tab-label]");
-    const fwLabelMap: Record<string, string> = {
-      react: "App.tsx",
-      "react-native": "App.tsx",
-      vue: "App.vue",
-      svelte: "App.svelte",
-      solid: "App.tsx",
-      astro: "Icon.astro",
-      angular: "app.component.ts",
-    };
-
-    // Sync once up front: the picker may dispatch its initial change before this listener attaches.
-    try {
-      const saved = localStorage.getItem("bettersvg:framework");
-      if (saved && fwLabelMap[saved]) switchTo(saved);
-    } catch {}
-
-    const tabHandlers: Array<{ el: HTMLButtonElement; fn: () => void }> = [];
-    fwTabs.forEach((tab) => {
-      // Desktop tabs feed the same framework-change event that the mobile
-      // picker dispatches, so both controls and persistence share one path.
-      const fn = () => {
-        const target = tab.dataset.fwTab || "";
-        if (target) {
-          document.dispatchEvent(
-            new CustomEvent("bettersvg:framework-change", { detail: { id: target } }),
-          );
-        }
-      };
-      tab.addEventListener("click", fn);
-      tabHandlers.push({ el: tab, fn });
-    });
-
-    const fwCopyBtn = document.querySelector<HTMLButtonElement>("[data-fw-copy]");
-    const copyIcon = fwCopyBtn?.innerHTML ?? "";
-    const copyLabel = fwCopyBtn?.getAttribute("aria-label") ?? "Copy full example";
-    const copyHeroFile = () => {
-      const active = Array.from(fwPanels).find((p) => !p.hidden);
-      if (!active || !fwCopyBtn) return;
-      const text = active.querySelector("pre")?.textContent ?? "";
-      void copyToClipboard(fwCopyBtn, text, (copied) => {
-        fwCopyBtn.setAttribute("aria-label", copied ? "Copied full example" : "Copy failed");
-        fwCopyBtn.innerHTML = copied
-          ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
-          : copyIcon;
-      }, () => {
-        fwCopyBtn.innerHTML = copyIcon;
-        fwCopyBtn.setAttribute("aria-label", copyLabel);
-      });
-    };
-    fwCopyBtn?.addEventListener("click", copyHeroFile);
-
     cleanup = () => {
       btn?.removeEventListener("click", toggleMenu);
       window.removeEventListener("scroll", onScroll);
-      tabHandlers.forEach(({ el, fn }) => el.removeEventListener("click", fn));
-      document.removeEventListener("bettersvg:framework-change", onFrameworkChange);
-      heroWrapHandlers.forEach(({ el, fn }) => el.removeEventListener("click", fn));
-      fwCopyBtn?.removeEventListener("click", copyHeroFile);
     };
   }
 

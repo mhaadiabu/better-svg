@@ -1,0 +1,95 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  tabs: { id: string; label: string }[];
+  query?: string;
+  storageKey?: string;
+}
+
+const { id, label, tabs, query, storageKey } = Astro.props;
+---
+
+<better-svg-tabs class="block" data-query={query} data-storage-key={storageKey}>
+  <div role="tablist" aria-label={label} class="flex flex-wrap gap-x-1 border-b border-coal-4 px-2">
+    {tabs.map((tab, index) => (
+      <button
+        type="button"
+        role="tab"
+        id={`${id}-tab-${tab.id}`}
+        data-tab={tab.id}
+        aria-controls={`${id}-panel-${tab.id}`}
+        aria-selected={index === 0}
+        tabindex={index === 0 ? 0 : -1}
+        class="border-b-2 border-transparent px-2.5 py-2.5 text-xs font-medium text-zinc-400 hover:text-[#e8e8e8] focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid aria-selected:border-acid aria-selected:text-acid"
+      >
+        {tab.label}
+      </button>
+    ))}
+  </div>
+  <slot />
+</better-svg-tabs>
+
+<script>
+  class BetterSvgTabs extends HTMLElement {
+    connectedCallback() {
+      const tabs = Array.from(this.querySelectorAll<HTMLButtonElement>("[data-tab]"));
+      const panels = tabs.map((tab) => document.getElementById(tab.getAttribute("aria-controls") ?? ""));
+      const { query, storageKey } = this.dataset;
+
+      const select = (current: HTMLButtonElement) => {
+        tabs.forEach((tab, index) => {
+          const selected = tab === current;
+          tab.setAttribute("aria-selected", String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          const panel = panels[index];
+          if (panel) panel.hidden = !selected;
+        });
+      };
+
+      const find = (id: string | null) => tabs.find((tab) => tab.dataset.tab === id);
+      const fromUrl = query ? find(new URLSearchParams(location.search).get(query)) : undefined;
+      let saved: HTMLButtonElement | undefined;
+      if (storageKey) {
+        try {
+          saved = find(localStorage.getItem(storageKey));
+        } catch {}
+      }
+      select(fromUrl ?? saved ?? tabs[0]);
+
+      const activate = (tab: HTMLButtonElement) => {
+        select(tab);
+        const id = tab.dataset.tab ?? "";
+        if (storageKey) {
+          try {
+            localStorage.setItem(storageKey, id);
+          } catch {}
+        }
+        if (query) {
+          const url = new URL(location.href);
+          url.searchParams.set(query, id);
+          history.replaceState(history.state, "", url);
+        }
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.onclick = () => activate(tab);
+        tab.onkeydown = (event) => {
+          let next: HTMLButtonElement;
+          switch (event.key) {
+            case "ArrowLeft": next = tabs[(index + tabs.length - 1) % tabs.length]; break;
+            case "ArrowRight": next = tabs[(index + 1) % tabs.length]; break;
+            case "Home": next = tabs[0]; break;
+            case "End": next = tabs[tabs.length - 1]; break;
+            default: return;
+          }
+          event.preventDefault();
+          activate(next);
+          next.focus();
+        };
+      });
+    }
+  }
+
+  customElements.define("better-svg-tabs", BetterSvgTabs);
+</script>

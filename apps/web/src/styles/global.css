@@ -240,16 +240,6 @@ code {
   margin-block: 1rem;
 }
 
-[data-fw-panel] .code-block {
-  border: 0;
-  margin-block: 0;
-}
-
-/* Hero panels have no full header, so no fallback lang label either. */
-[data-fw-panel] .code-block::before {
-  display: none;
-}
-
 .code-group {
   background: #111111;
   border: 1px solid #2e2e2e;

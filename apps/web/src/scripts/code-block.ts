@@ -49,11 +49,9 @@ function updateWrap(body: Element) {
 }
 
 // Creates the wrap/unwrap toggle for a code block. The label flips with wrap state.
-export const wrapIcons = {
+const wrapIcons = {
   off: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg> Wrap`,
   on: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg> Unwrap`,
-  chipOff: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M16 17l3-3-3-3" stroke-width="1.5"/></svg>`,
-  chipOn: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><path d="M14 14l3 3 3-3" stroke-width="1.5"/></svg>`,
 };
 
 function createWrapButton(block: HTMLElement) {
@@ -81,12 +79,10 @@ export function initCodeBlocks() {
     block.dataset.codeBlockInit = "true";
     if (block.querySelector(".code-block-header")) return;
 
-    // Hero framework panels: no header bar; the floating file label handles copying.
-    const inHeroPanel = Boolean(block.closest("[data-fw-panel]"));
     const lang = block.getAttribute("data-lang") || "";
     const file = block.getAttribute("data-file") || "";
 
-    if (!inHeroPanel) block.classList.add("has-header");
+    block.classList.add("has-header");
 
     const blockId = `cb-${Math.random().toString(36).slice(2, 9)}`;
     const langId = `${blockId}-lang`;
@@ -147,7 +143,7 @@ export function initCodeBlocks() {
     if (pre?.parentNode) {
       pre.classList.remove("overflow-x-auto");
       (pre as HTMLElement).style.overflowX = "";
-      if (!inHeroPanel) pre.setAttribute("aria-labelledby", langId);
+      pre.setAttribute("aria-labelledby", langId);
       pre.setAttribute("tabindex", "0");
       const body = document.createElement("div");
       body.className = "code-block-body";
@@ -155,11 +151,7 @@ export function initCodeBlocks() {
       body.appendChild(pre);
     }
 
-    if (!inHeroPanel) {
-      block.insertBefore(header, block.firstChild);
-    }
-    // Hero panels: no header row at all - the strip (tab bar / mobile picker row)
-    // carries the shared wrap toggle.
+    block.insertBefore(header, block.firstChild);
 
     const bodyEl = block.querySelector(".code-block-body");
     if (bodyEl) {

@@ -1,0 +1,59 @@
+---
+import Tabs from "./Tabs.astro";
+import { kb, rows } from "../data/benchmarks";
+
+const timing = (value: number) => `${value.toFixed(1)} ms`;
+const results = rows.filter((row) => !row.id.startsWith("released-"));
+const benchmarks = [
+  { id: "urls", label: "Runtime URLs", description: "24 icons, median warm remount", mode: "Runtime URL", metric: "median", format: timing },
+  { id: "static", label: "Static imports", description: "24 icons, median warm remount", mode: "Static import", metric: "median", format: timing },
+  { id: "build", label: "Build time", description: "Full static icon set, median Vite build", mode: "Static import", metric: "buildMs", format: (value: number) => `${value.toFixed(0)} ms` },
+  { id: "size", label: "JS size", description: "Full static icon set, initial JavaScript gzip", mode: "Static import", metric: "full", format: kb },
+] as const;
+---
+
+<section aria-labelledby="home-benchmark-heading" class="border border-coal-4 bg-coal">
+  <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-4 pt-3 pb-2">
+    <h2 id="home-benchmark-heading" class="text-sm font-semibold">React benchmarks</h2>
+    <a href="/benchmarks" class="text-xs text-zinc-400 underline underline-offset-4 hover:text-acid">Full results</a>
+  </div>
+  <Tabs id="home-benchmark" label="Benchmark" tabs={[...benchmarks]}>
+    {benchmarks.map((benchmark, index) => {
+      const entries = results.filter((row) => row.mode === benchmark.mode).map((row) => {
+        const value = row[benchmark.metric];
+        if (value === null) throw new Error(`Missing ${benchmark.metric} for ${row.id}`);
+        return { ...row, value };
+      });
+      const max = Math.max(...entries.map((entry) => entry.value));
+
+      return (
+        <div
+          role="tabpanel"
+          id={`home-benchmark-panel-${benchmark.id}`}
+          aria-labelledby={`home-benchmark-tab-${benchmark.id}`}
+          tabindex="0"
+          hidden={index !== 0}
+          class="px-4 pt-3 pb-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid"
+        >
+          <p class="mb-3 text-xs text-zinc-400">{benchmark.description}. Lower is better.</p>
+          <ul role="list" class="space-y-2.5">
+            {entries.map((entry) => (
+              <li>
+                <div class="mb-1 flex justify-between gap-3 text-xs">
+                  <span class:list={["font-medium", entry.current ? "text-acid" : "text-zinc-300"]}>{entry.current ? "Better SVG" : entry.label}</span>
+                  <span class="font-mono whitespace-nowrap tabular-nums">{benchmark.format(entry.value)}</span>
+                </div>
+                <div class="h-1.5 bg-coal-4" aria-hidden="true">
+                  <div
+                    class:list={["h-full", entry.current ? "bg-acid" : "bg-zinc-500"]}
+                    style={{ width: `${entry.value / max * 100}%` }}
+                  ></div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    })}
+  </Tabs>
+</section>

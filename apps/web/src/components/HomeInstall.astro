@@ -1,0 +1,37 @@
+---
+import CodeBlock from "./CodeBlock.astro";
+import Tabs from "./Tabs.astro";
+import { frameworks } from "../data/frameworks";
+---
+
+<section aria-labelledby="home-install-heading" class="border border-coal-4 bg-coal">
+  <h2 id="home-install-heading" class="px-4 pt-3 pb-2 text-sm font-semibold">Install Better SVG</h2>
+  <Tabs id="home-install" label="Framework" tabs={frameworks} query="fw" storageKey="bettersvg:framework">
+    {frameworks.map((framework, index) => (
+      <div
+        role="tabpanel"
+        id={`home-install-panel-${framework.id}`}
+        aria-labelledby={`home-install-tab-${framework.id}`}
+        hidden={index !== 0}
+        class="install-panel"
+      >
+        <CodeBlock code={`$ pnpm add @mhaadi/svg${framework.id === "react-native" ? " react-native-svg" : ""}`} lang="sh" />
+        <p class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-t border-coal-4 px-4 py-2.5 text-xs text-zinc-400">
+          <span>Import from <code class="text-zinc-200">{framework.sub}</code></span>
+          <a href={`/docs?fw=${framework.id}#installation`} class="underline underline-offset-4 hover:text-acid">Setup docs</a>
+        </p>
+      </div>
+    ))}
+  </Tabs>
+</section>
+
+<style>
+  .install-panel :global(.code-block) {
+    margin-block: 0;
+    border: 0;
+  }
+
+  .install-panel :global(.code-block pre) {
+    white-space: pre-wrap;
+  }
+</style>

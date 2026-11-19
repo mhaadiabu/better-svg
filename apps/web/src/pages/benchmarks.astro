@@ -1,49 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
-import browser from "../../../../packages/benchmarks/baselines/2026-11-18-release-comparison/browser.json";
-import node from "../../../../packages/benchmarks/baselines/2026-11-18-release-comparison/node.json";
-
-const repository = "https://github.com/mhaadiabu/better-svg";
-const archive = `${repository}/blob/cf95a27/packages/benchmarks/baselines/2026-11-18-release-comparison`;
-const published = node.manifest.betterSvg.published;
-const workflows = [
-  { id: "released-raw", label: `Better SVG ${published}`, mode: "Named icon" },
-  { id: "better-raw", label: "Better SVG current", mode: "Named icon", current: true },
-  { id: "better-static", label: "Better SVG current", mode: "Static import", current: true },
-  { id: "svgr-raw", label: "vite-plugin-svgr", mode: "Static import" },
-  { id: "unplugin-icons", label: "unplugin-icons", mode: "Static import" },
-  { id: "released-url", label: `Better SVG ${published}`, mode: "Runtime URL" },
-  { id: "better-url", label: "Better SVG current", mode: "Runtime URL", current: true },
-  { id: "react-inlinesvg", label: "react-inlinesvg", mode: "Runtime URL" },
-  { id: "react-svg", label: "react-svg", mode: "Runtime URL" },
-];
-
-const rows = workflows.map((workflow) => {
-  const scenario = browser.runs
-    .filter((run) => run.profile === workflow.id)
-    .flatMap((run) => run.scenarios)
-    .find((run) => run.scenario === "grid-24");
-  const warmTimes = scenario?.samples
-    .filter((sample) =>
-      sample.phase === "warm" && sample.status === "ready" &&
-      sample.rendered === sample.expected && sample.updates === sample.expected &&
-      sample.sizeMismatch === 0 && sample.errors.length === 0
-    )
-    .map((sample) => sample.readyMs)
-    .sort((left, right) => left - right) ?? [];
-  const median = warmTimes[Math.floor(warmTimes.length / 2)];
-  const profile = node.profiles.find((profile) => profile.profile === workflow.id);
-  if (median === undefined || !profile) throw new Error(`Missing benchmark results for ${workflow.id}`);
-  return {
-    ...workflow,
-    median,
-    full: profile.javascript.initialGzip,
-    sparse: profile.sparseJavascript.initialGzip,
-  };
-});
+import { archive, benchmarkVite, benchmarkWorkspace, kb, published, rows } from "../data/benchmarks";
 
 const chartMax = Math.ceil(Math.max(...rows.map((row) => row.median)));
-const kb = (bytes: number) => `${(bytes / 1000).toFixed(1)} kB`;
 ---
 
 <Base title="React benchmarks | BetterSVG" description="Compare React SVG render times and JavaScript bundle sizes across Better SVG, SVGR, unplugin-icons, react-inlinesvg, and react-svg.">
@@ -123,9 +82,9 @@ const kb = (bytes: number) => `${(bytes / 1000).toFixed(1)} kB`;
     <section aria-labelledby="methodology" class="mt-14 border-t border-coal-4 pt-7">
       <h2 id="methodology" class="text-lg font-semibold">How we ran it</h2>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
-        These measurements come from one Linux desktop running Vite {node.manifest.versions.vite} and
+        These measurements come from one Linux desktop running Vite {benchmarkVite} and
         Chromium. “Better SVG current” uses the runtime source at <code>526a822</code>, the code going
-        into 0.5.0. The archived results use its temporary workspace version, {node.manifest.betterSvg.workspace}.
+        into 0.5.0. The archived results use its temporary workspace version, {benchmarkWorkspace}.
         The full report includes first-use timings, emitted bytes, build and dev timings, and Node SSR.
       </p>
       <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">

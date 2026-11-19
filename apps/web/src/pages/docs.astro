@@ -1,4 +1,5 @@
 ---
+import GitHubIcon from "../icons/github.svg";
 import Base from "../layouts/Base.astro";
 import FrameworkPicker from "../components/FrameworkPicker.astro";
 import { adapterExamples } from "../data/adapter-examples";
@@ -79,7 +80,7 @@ import PmTabs from "../components/PmTabs.astro";
         <span class="hidden sm:block font-mono text-xs text-acid border border-acid/30 rounded-none px-2 py-1">Docs</span>
         <a href="/benchmarks" class="text-sm text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>
         <a href="/changelog" class="text-sm text-zinc-muted hover:text-acid transition-colors">Changelog</a>
-        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
+        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-zinc-muted hover:text-acid transition-colors" aria-label="BetterSVG on GitHub"><GitHubIcon class="h-5 w-5" aria-hidden="true" /></a>
         <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">npm</a>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { archive, benchmarkVite, benchmarkWorkspace, kb, published, rows } from 
 const chartMax = Math.ceil(Math.max(...rows.map((row) => row.median)));
 ---
 
-<Base title="React benchmarks | BetterSVG" description="Compare React SVG render times and JavaScript bundle sizes across Better SVG, SVGR, unplugin-icons, react-inlinesvg, and react-svg.">
+<Base title="React benchmarks | BetterSVG" description="Compare React SVG render times and JavaScript bundle sizes across BetterSVG, SVGR, unplugin-icons, react-inlinesvg, and react-svg.">
   <nav class="sticky top-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-y-2 px-4 py-4">
       <a href="/" class="font-display text-xl tracking-wider text-[#e8e8e8]">BETTERSVG</a>
@@ -20,7 +20,7 @@ const chartMax = Math.ceil(Math.max(...rows.map((row) => row.median)));
   <main id="main-content" class="mx-auto max-w-5xl px-4 py-12 lg:py-20">
     <h1 class="font-display text-5xl leading-none tracking-wider sm:text-6xl">REACT BENCHMARKS</h1>
     <p class="mt-5 max-w-2xl leading-relaxed text-zinc-400">
-      Better SVG {published} and the current implementation, alongside four React SVG tools.
+      BetterSVG {published} and the current implementation, alongside four React SVG tools.
       We measured named icons, static imports, and runtime URLs on November 18, 2026.
     </p>
 
@@ -83,7 +83,7 @@ const chartMax = Math.ceil(Math.max(...rows.map((row) => row.median)));
       <h2 id="methodology" class="text-lg font-semibold">How we ran it</h2>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
         These measurements come from one Linux desktop running Vite {benchmarkVite} and
-        Chromium. “Better SVG current” uses the runtime source at <code>526a822</code>, the code going
+        Chromium. “BetterSVG current” uses the runtime source at <code>526a822</code>, the code going
         into 0.5.0. The archived results use its temporary workspace version, {benchmarkWorkspace}.
         The full report includes first-use timings, emitted bytes, build and dev timings, and Node SSR.
       </p>

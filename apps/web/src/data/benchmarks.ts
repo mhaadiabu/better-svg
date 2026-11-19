@@ -5,13 +5,13 @@ const repository = "https://github.com/mhaadiabu/better-svg";
 export const archive = `${repository}/blob/cf95a27/packages/benchmarks/baselines/2026-11-18-release-comparison`;
 export const published = node.manifest.betterSvg.published;
 const workflows = [
-  { id: "released-raw", label: `Better SVG ${published}`, mode: "Named icon" },
-  { id: "better-raw", label: "Better SVG current", mode: "Named icon", current: true },
-  { id: "better-static", label: "Better SVG current", mode: "Static import", current: true },
+  { id: "released-raw", label: `BetterSVG ${published}`, mode: "Named icon" },
+  { id: "better-raw", label: "BetterSVG current", mode: "Named icon", current: true },
+  { id: "better-static", label: "BetterSVG current", mode: "Static import", current: true },
   { id: "svgr-raw", label: "vite-plugin-svgr", mode: "Static import" },
   { id: "unplugin-icons", label: "unplugin-icons", mode: "Static import" },
-  { id: "released-url", label: `Better SVG ${published}`, mode: "Runtime URL" },
-  { id: "better-url", label: "Better SVG current", mode: "Runtime URL", current: true },
+  { id: "released-url", label: `BetterSVG ${published}`, mode: "Runtime URL" },
+  { id: "better-url", label: "BetterSVG current", mode: "Runtime URL", current: true },
   { id: "react-inlinesvg", label: "react-inlinesvg", mode: "Runtime URL" },
   { id: "react-svg", label: "react-svg", mode: "Runtime URL" },
 ];

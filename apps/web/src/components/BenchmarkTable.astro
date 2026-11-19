@@ -1,0 +1,34 @@
+---
+import type { BenchmarkLabel } from "../data/benchmarks";
+
+interface Props {
+  title: string;
+  columns: readonly string[];
+  entries: (BenchmarkLabel & { values: (string | number)[] })[];
+}
+
+const { title, columns, entries } = Astro.props;
+---
+
+<div role="region" aria-label={title} tabindex="0" class="overflow-x-auto border border-coal-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid">
+  <table class="w-full border-collapse text-left text-sm">
+    <caption class="sr-only">{title}</caption>
+    <thead class="bg-coal-1 text-xs text-zinc-400">
+      <tr>
+        <th scope="col" class="px-3 py-3 font-medium sm:px-4">Profile</th>
+        {columns.map((column) => <th scope="col" class="min-w-24 px-3 py-3 text-right font-medium sm:px-4">{column}</th>)}
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-coal-4 border-t border-coal-4">
+      {entries.map(({ label, mode, current, values }) => (
+        <tr>
+          <th scope="row" class="min-w-40 px-3 py-2.5 font-medium sm:px-4">
+            <span class:list={["block whitespace-nowrap", current && "text-acid"]}>{label}</span>
+            <span class="block min-w-0 text-xs font-normal text-zinc-400">{mode}</span>
+          </th>
+          {values.map((value) => <td class="whitespace-nowrap px-3 py-2.5 text-right font-mono text-xs tabular-nums sm:px-4">{value}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,52 @@
+---
+import type { BenchmarkLabel } from "../data/benchmarks";
+
+interface Props {
+  title: string;
+  description: string;
+  entries: (BenchmarkLabel & { value: number | null })[];
+  format: (value: number) => string;
+}
+
+const { title, description, entries, format } = Astro.props;
+const largest = Math.max(...entries.map(({ value }) => value ?? 0), 1);
+const magnitude = 10 ** Math.floor(Math.log10(largest));
+const max = Math.ceil(largest / (magnitude / 2)) * (magnitude / 2);
+const middle = format(max / 2);
+---
+
+<figure class="min-w-0 border border-coal-4 bg-coal-1 p-4 sm:p-5">
+  <figcaption>
+    <h3 class="font-semibold">{title}</h3>
+    <p class="mt-1 text-sm leading-relaxed text-zinc-400">{description}</p>
+  </figcaption>
+  <ul role="list" class="mt-5 space-y-3.5">
+    {entries.map(({ label, mode, current, value }) => (
+      <li>
+        <div class="flex items-baseline justify-between gap-3 text-sm">
+          <div>
+            <span class:list={["font-medium", current && "text-acid"]}>{label}</span>
+            <span class="block text-xs text-zinc-400 min-[440px]:inline min-[440px]:pl-1">{mode}</span>
+          </div>
+          <span class="shrink-0 font-mono text-xs tabular-nums">{value === null ? "Not measured" : format(value)}</span>
+        </div>
+        <div aria-hidden="true" class="chart-track mt-1.5 h-1.5">
+          <div class:list={["h-full", current ? "bg-acid" : "bg-zinc-400"]} style={{ width: `${(value ?? 0) / max * 100}%` }}></div>
+        </div>
+      </li>
+    ))}
+  </ul>
+  <div aria-hidden="true" class="mt-2 flex justify-between font-mono text-[10px] text-zinc-400">
+    <span>{format(0)}</span>
+    {middle !== format(0) && middle !== format(max) && <span>{middle}</span>}
+    <span>{format(max)}</span>
+  </div>
+</figure>
+
+<style>
+  .chart-track {
+    background-image: linear-gradient(to right, var(--color-coal-4) 1px, transparent 1px);
+    background-color: var(--color-coal-3);
+    background-size: 25% 100%;
+  }
+</style>

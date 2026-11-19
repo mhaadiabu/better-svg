@@ -1,4 +1,6 @@
 ---
+import GitHubIcon from "../icons/github.svg";
+import NpmIcon from "../icons/npm.svg";
 import Base from "../layouts/Base.astro";
 import FrameworkPicker from "../components/FrameworkPicker.astro";
 import { adapterExamples } from "../data/adapter-examples";
@@ -6,6 +8,7 @@ import { frameworks } from "../data/frameworks";
 import svgPkg from "../../../../packages/svg/package.json";
 
 const version = svgPkg.version;
+const prerelease = version.includes("-");
 const stateTypes: Record<string, string> = {
   react: "ReactNode",
   "react-native": "ReactNode",
@@ -45,6 +48,9 @@ const strippedElements = [
 
 import CodeBlock from "../components/CodeBlock.astro";
 import PmTabs from "../components/PmTabs.astro";
+import TOC from "../components/ui/toc/TOC.astro";
+
+const tocHeadings = sections.map((s) => ({ depth: 2, slug: s.id, text: s.label, show: s.frameworks }));
 ---
 
 
@@ -53,17 +59,18 @@ import PmTabs from "../components/PmTabs.astro";
   description="Full API reference for @mhaadi/svg, the inline SVG components for React, React Native, Vue, Svelte, Solid, Astro, and Angular."
 >
   <!-- NAV -->
-  <nav class="sticky top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 lg:px-4 py-3 lg:py-4">
-      <a href="/" class="flex items-center gap-2.5 group">
-        <svg class="h-5 w-5 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none">
+  <header id="docs-header" class="sticky top-0 z-30 bg-coal/95 backdrop-blur-md">
+  <nav aria-label="Site" class="border-b border-coal-2">
+    <div class="mx-auto flex min-h-13 max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:px-4 lg:py-4">
+      <a href="/" class="group flex shrink-0 items-center gap-1.5 sm:gap-2.5">
+        <svg class="hidden size-5 text-acid transition-transform group-hover:scale-110 min-[360px]:block" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
           <path d="M4 16 Q12 10 20 16 Q12 22 4 16Z" fill="currentColor" opacity="0.4"/>
         </svg>
         <span class="font-display text-lg tracking-wider text-[#e8e8e8]">BETTERSVG</span>
       </a>
 
-      <div class="flex items-center gap-4 md:gap-6">
+      <div class="flex shrink-0 items-center gap-2.5 sm:gap-4 md:gap-6">
         <div class="relative hidden md:block">
           <input
             id="docs-search"
@@ -76,38 +83,15 @@ import PmTabs from "../components/PmTabs.astro";
           <div id="docs-search-results" class="absolute right-0 top-full mt-2 w-72 border border-coal-4 bg-coal-1 shadow-xl hidden" role="listbox" aria-label="Search results"></div>
         </div>
         <span class="hidden sm:block font-mono text-xs text-acid border border-acid/30 rounded-none px-2 py-1">Docs</span>
-        <a href="/changelog" class="text-sm text-zinc-muted hover:text-acid transition-colors">Changelog</a>
-        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
-        <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">npm</a>
+        <a href="/benchmarks" class="text-xs text-zinc-muted hover:text-acid transition-colors sm:text-sm">Benchmarks</a>
+        <a href="/changelog" class="text-xs text-zinc-muted hover:text-acid transition-colors sm:text-sm">Changelog</a>
+        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-zinc-muted hover:text-acid transition-colors" aria-label="BetterSVG on GitHub"><GitHubIcon class="size-4 sm:size-5" aria-hidden="true" /></a>
+        <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" aria-label="BetterSVG on npm" class="transition-opacity hover:opacity-80"><NpmIcon class="size-4 sm:size-5" aria-hidden="true" /></a>
       </div>
     </div>
   </nav>
 
-  <!-- Mobile sidebar overlay -->
-  <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
-  <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden" role="dialog" aria-modal="true" aria-label="Docs menu" tabindex="-1">
-    <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
-    <div class="px-3 mb-5">
-      <FrameworkPicker
-        frameworks={frameworks}
-        initial="react"
-        id="fw-picker-mobile"
-      />
-    </div>
-
-    <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
-    <nav class="flex flex-col gap-0.5">
-      {sections.map((s) => (
-        <a href={`#${s.id}`} class="sidebar-link mobile-sidebar-link" data-section={s.id} data-fw-show={s.frameworks}>
-          {s.label}
-        </a>
-      ))}
-    </nav>
-  </div>
-
-  <div class="min-h-screen overflow-x-clip">
-    <!-- Mobile menu trigger (sticky) -->
-    <button id="docs-mobile-sidebar-btn" class="lg:hidden sticky top-13 z-30 w-full flex items-center justify-between gap-2 border-b border-coal-2 bg-coal/95 backdrop-blur-md px-4 py-2.5 text-xs font-mono text-zinc-muted hover:text-acid transition-colors">
+    <button type="button" id="docs-mobile-sidebar-btn" aria-controls="docs-mobile-panel" aria-expanded="false" aria-haspopup="dialog" class="flex w-full items-center justify-between gap-2 border-b border-coal-2 px-3 py-2.5 font-mono text-xs text-zinc-muted transition-colors hover:text-acid sm:px-4 lg:hidden">
       <span class="flex items-center gap-2 min-w-0">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="shrink-0">
           <line x1="8" y1="6" x2="21" y2="6"/>
@@ -127,6 +111,18 @@ import PmTabs from "../components/PmTabs.astro";
         <path d="m6 9 6 6 6-6"/>
       </svg>
     </button>
+  </header>
+
+  <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
+  <div id="docs-mobile-panel" data-nb-toc-scroll-host class="mobile-sidebar-panel lg:hidden" role="dialog" aria-modal="true" aria-label="Docs menu" tabindex="-1" inert>
+    <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
+    <div class="px-3 mb-5">
+      <FrameworkPicker frameworks={frameworks} initial="react" id="fw-picker-mobile" />
+    </div>
+    <TOC headings={tocHeadings} class="px-3" />
+  </div>
+
+  <div class="min-h-screen overflow-x-clip">
     <!-- LEFT SIDEBAR (fixed) -->
     <aside class="hidden lg:block fixed left-0 top-16.25 bottom-0 w-60 overflow-y-auto border-r border-coal-2 py-8 pr-4">
       <div class="mx-auto max-w-7xl px-4 flex flex-col h-full">
@@ -213,6 +209,12 @@ import PmTabs from "../components/PmTabs.astro";
                     { pm: "bun", cmd: "bun add @mhaadi/svg" },
                   ]}
                 />
+                {prerelease && (
+                  <p class="docs-body mt-3">
+                    To try <a href={`/changelog#${version.replaceAll(".", "")}`} class="text-acid hover:underline">{version}</a>
+                    {" "}once it is published, run <code class="inline-code">pnpm add @mhaadi/svg@{version}</code>.
+                  </p>
+                )}
                 <div class="mt-3 rounded-none border border-coal-4 bg-coal-1 p-4">
                   <p data-fw-show="react" class="font-mono text-xs text-zinc-muted">
                     <span class="text-acid">Peer (React):</span> React 18+ · TypeScript 5+ (optional)
@@ -710,13 +712,10 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
           <section id="local-discovery" class="mb-16">
             <h2 class="docs-heading">Local discovery</h2>
             <p class="docs-body" data-fw-show="react vue svelte solid astro angular">
-              The Vite plugin scans your icon directories at build time and registers them, so
-              <code class="inline-code">&lt;SVG name="social/github"&gt;</code> renders inline with no
-              fetch and no per-icon import. Add the plugin once, then use local files by name.
-              Catalog icons used anywhere in your source, such as
-              <code class="inline-code">lucide:house</code>, are registered the same way — the
-              source scan runs by default, no extra flag
-              (<a href="#catalog-auto" class="text-acid hover:underline">catalog scanning</a>).
+              Add the Vite plugin once to use local files by name, for example
+              <code class="inline-code">&lt;SVG name="social/github"&gt;</code>. The plugin also
+              <a href="#catalog-auto" class="text-acid hover:underline">scans for catalog icons</a>
+              such as <code class="inline-code">lucide:house</code> by default.
             </p>
             <p class="docs-body hidden" data-fw-show="react-native">
               React Native registers local sources ahead of build with
@@ -740,9 +739,8 @@ export default defineConfig({
   ],
 });`} lang="ts" file="vite.config.ts" />
                 <p class="text-sm text-zinc-muted mt-3">
-                  That is the whole setup. The plugin appends a <code class="inline-code">registerLocalSvgs</code>
-                  call to every evaluation of <code class="inline-code">@mhaadi/svg</code>'s local-registry module,
-                  so any <code class="inline-code">&lt;SVG name="..."&gt;</code> resolves without fetching. It also sets
+                  The plugin registers the discovered files through <code class="inline-code">@mhaadi/svg</code>'s
+                  local registry. It sets
                   <code class="inline-code">ssr.noExternal</code> and
                   <code class="inline-code">optimizeDeps.exclude</code> for <code class="inline-code">@mhaadi/svg</code>,
                   so server-rendered and dev-optimized builds pick up the registration.
@@ -774,7 +772,7 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
                   <li>Two directories listing the same name: the first configured directory wins.</li>
                   <li>Symlinked files are followed; symlink loops between directories are skipped.</li>
-                  <li>Traversal is recursive: every <code class="inline-code">.svg</code> under each directory lands in the bundle. Keep icon-only folders.</li>
+                  <li>The plugin discovers <code class="inline-code">.svg</code> files recursively. Keep icon-only folders.</li>
                   <li>Names registered by your own <code class="inline-code">registerLocalSvgs</code> calls always win, because the plugin registers with <code class="inline-code">override: false</code>.</li>
                   <li>A name the plugin did not find still falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>.</li>
                 </ul>
@@ -785,6 +783,38 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                   <code class="inline-code">icons/logo</code>. Within <code class="inline-code">dirs</code> paths
                   must be relative, slash-separated, without globs or <code class="inline-code">..</code>.
                 </p>
+              </div>
+
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="react vue svelte solid astro angular">
+                <h3 class="font-semibold text-[#e8e8e8] mb-3">Production browser bundles</h3>
+                <p class="text-sm text-zinc-muted">
+                  By default, the plugin puts the names it finds in your source in the initial registry.
+                  The other discovered files go into a separate chunk. If an icon name comes from code
+                  the scanner could not see, the first lookup loads that chunk before rendering it.
+                  A name absent from both registries still falls back to its public asset URL.
+                </p>
+                <p class="mt-3 text-sm text-zinc-muted">
+                  Dynamic names or props spreads detected in source keep the full registry up front.
+                  Development and server builds also load the full registry up front. Set
+                  <code class="inline-code">pruneLocal: false</code> to do the same in browser builds.
+                </p>
+              </div>
+
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="react">
+                <h3 class="font-semibold text-[#e8e8e8] mb-3">Static React imports</h3>
+                <p class="mb-3 text-sm text-zinc-muted">
+                  With <code class="inline-code">svgPlugin()</code> enabled, import an SVG file as a React
+                  component. Vite parses and sanitizes the file at build time. The component can render
+                  on the server and hydrate in the browser without loading an SVG parser.
+                </p>
+                <CodeBlock code={`import Logo from "./icons/logo.svg?better-svg";
+
+<Logo size={24} title="Acme" />;`} lang="tsx" />
+                <p class="mt-3 mb-3 text-sm text-zinc-muted">
+                  Add the module declaration in your TypeScript project. In development, use a version of Vite
+                  that exposes its filesystem authorization check.
+                </p>
+                <CodeBlock code={`/// <reference types="@mhaadi/svg/vite/static" />`} lang="ts" file="vite-env.d.ts" />
               </div>
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
@@ -803,9 +833,8 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <p class="text-sm text-zinc-muted mb-3">
                   Opt-in SVGO minification of files the plugin produces at build time. Install svgo yourself.
                   It is an optional peer of <code class="inline-code">@mhaadi/svg</code>, build-time only,
-                  and never ships to the browser bundle. Discovered files and scanned catalog icons are
-                  the only ones it touches: remote sources, <code class="inline-code">?raw</code> imports,
-                  and hand-registered markup are never optimized.
+                  and never ships to the browser bundle. It applies to discovered files, scanned catalog icons,
+                  and <code class="inline-code">?better-svg</code> imports.
                 </p>
                 <div class="prop-table-wrapper mt-4 overflow-x-auto">
                   <table class="prop-table">
@@ -865,21 +894,17 @@ svgPlugin({
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-semibold text-[#e8e8e8] mb-3"><code class="inline-code">precompiled</code> option</h3>
                 <p class="text-sm text-zinc-muted mb-3">
-                  Turns discovery into build-time mode. The plugin parses (with
-                  <code class="inline-code">@xmldom/xmldom</code>) and sanitizes every discovered file
-                  during the build and registers the resulting tree instead of raw markup. When
-                  <code class="inline-code">svgo</code> is on, the parse consumes the optimized markup. Mounting
-                  <code class="inline-code">&lt;SVG name="..."&gt;</code> then skips XML parsing and the
-                  sanitize pass entirely and only does per-instance work such as id scoping and color
-                  overrides. The trade is bundle size. The parsed tree travels next to the registered markup.
+                  Parse discovered SVGs and scanned catalog icons during the build. With
+                  <code class="inline-code">precompiled: true</code>, the plugin ships the sanitized tree
+                  alongside the registered markup and fills the parsed cache when it registers the icon.
+                  Use this mode to keep the original registered markup in <code class="inline-code">onSvgLoad</code>.
                 </p>
-                <CodeBlock code={`svgPlugin({ dirs: ["src/icons"], svgo: true, precompiled: true });`} lang="ts" />
-                <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Feed it only markup the plugin itself produced, never a hand-built tree.</li>
-                  <li>At runtime the registration validates and re-sanitizes each tree and rejects malformed input with a build error.</li>
-                  <li>On the server the priming parse is best-effort: a failed seed just costs a re-parse, never an error.</li>
-                  <li>Inline SVG only: each entry must be a plain inline <code class="inline-code">{"<svg>"}</code> document (<code class="inline-code">Precompiled SVG "&lt;name&gt;" expects inline svg markup.</code> otherwise).</li>
-                </ul>
+                <CodeBlock code={`svgPlugin({ dirs: ["src/icons"], precompiled: "tree" });`} lang="ts" />
+                <p class="mt-3 text-sm text-zinc-muted">
+                  With <code class="inline-code">precompiled: "tree"</code>, the plugin ships just the parsed tree.
+                  The default renderer sanitizes it on first use, and <code class="inline-code">onSvgLoad</code>
+                  receives XML serialized from the tree. Both modes are opt-in.
+                </p>
               </div>
 
               <div class="rounded-none border border-amber-900/40 bg-amber-950/20 p-5">
@@ -987,10 +1012,9 @@ registerCatalogIcons(["hugeicons:home-01", "hugeicons:arrow-left-01"]);`} lang="
                   <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot. Browser-only projects use <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> to write the icons into a data module instead.</li>
                   <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
                   <li>Names accept a single trailing wildcard: <code class="inline-code">registerCatalogIcons(["lucide:*"])</code> registers every name the installed lucide source can serve, <code class="inline-code">["lucide:arrow*"]</code> matches a name prefix, and <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> expands the same form for offline bundles. Wholesale expansion logs the icon count and approximate markup size once it exceeds 250 icons or 256 KB, and an explicit name in the same list still fails the bundle when it cannot resolve.</li>
-                  <li>Returns the array of names that actually registered.</li>
                 </ul>
                 <p class="text-sm text-zinc-muted mt-3">
-                  Registration <strong class="text-[#e8e8e8]">never errors</strong>. A misspelled icon or collection name is silently skipped. The name falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>, the fetch 404s, and the adapter's <code class="inline-code">fallback</code> state renders. Tell typos apart by diffing the return value against the input. Anything missing did not resolve from disk.
+                  <code class="inline-code">registerCatalogIcons</code> returns the names it resolved and registered. Unresolved names are omitted from the result and still use the normal lookup at <code class="inline-code">/assets/svg/{"{name}"}.svg</code>. If that lookup fails, the adapter renders its <code class="inline-code">fallback</code> state. Compare the returned names with your input to spot typos.
                 </p>
               </div>
 
@@ -1424,19 +1448,22 @@ export function IconGallery() {
     </div>
 
     <!-- RIGHT SIDEBAR (fixed) -->
-    <div class="hidden lg:block fixed right-0 top-16.25 bottom-0 w-48 overflow-y-auto py-8 border-l border-coal-2">
-      <p class="mb-3 pl-6 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">On this page</p>
-      <nav class="flex flex-col gap-0.5 -ml-px">
-        {sections.map((s) => (
-          <a href={`#${s.id}`} class="sidebar-link text-xs pl-6" data-toc={s.id} data-fw-show={s.frameworks}>
-            {s.label}
-          </a>
-        ))}
-      </nav>
+    <div class="hidden lg:block fixed right-0 top-16.25 bottom-0 w-48 overflow-y-auto py-8 pr-4 pl-5" data-nb-toc-scroll-host>
+      <TOC headings={tocHeadings} />
     </div>
 </Base>
 
 <style>
+  @media (width < 64rem) {
+    :global(html:has(#docs-header)) {
+      scroll-padding-top: 6.25rem;
+    }
+
+    :global(html:has(#docs-mobile-panel.open)) {
+      overflow: hidden;
+    }
+  }
+
   .docs-heading {
     margin-bottom: 1rem;
     font-family: var(--font-display);
@@ -1476,15 +1503,16 @@ export function IconGallery() {
 
     // ── Active sidebar highlight on scroll ────────────────────────
     const sectionEls = document.querySelectorAll<HTMLElement>("section[id]");
-    const sidebarLinks = document.querySelectorAll(".sidebar-link");
+    const tocLinks = document.querySelectorAll<HTMLElement>("[data-nb-toc-link]");
     const sectionLabels: Record<string, string> = {};
-    sidebarLinks.forEach((a) => {
-      const id = a.getAttribute("data-section") || a.getAttribute("data-toc");
-      if (id) sectionLabels[id] = a.textContent?.trim() ?? id;
+    tocLinks.forEach((a) => {
+      const id = a.dataset.nbSlug;
+      if (id) sectionLabels[id] = a.querySelector("span")?.textContent?.trim() ?? id;
     });
 
     // ── Mobile sidebar (declare before use to avoid TDZ) ─────────
     const mobileSidebarBtn = document.getElementById("docs-mobile-sidebar-btn");
+    const docsHeader = document.getElementById("docs-header");
     const mobileOverlay = document.getElementById("docs-mobile-overlay");
     const mobilePanel = document.getElementById("docs-mobile-panel");
     const mobileChevron = document.getElementById("docs-mobile-sidebar-chevron");
@@ -1492,19 +1520,15 @@ export function IconGallery() {
 
     function updateActive() {
       const els = Array.from(sectionEls).filter((el) => el.checkVisibility());
-      const trigger = window.scrollY + 80;
+      const trigger = (docsHeader?.getBoundingClientRect().bottom ?? 72) + 12;
       let active = els[0]?.id ?? "";
       for (const el of els) {
-        if (el.offsetTop <= trigger) {
+        if (el.getBoundingClientRect().top <= trigger) {
           active = el.id;
         } else {
           break;
         }
       }
-      sidebarLinks.forEach((a) => {
-        const id = a.getAttribute("data-section") || a.getAttribute("data-toc");
-        a.classList.toggle("active", id === active);
-      });
       if (mobileSection) {
         mobileSection.textContent = sectionLabels[active] || "Overview";
       }
@@ -1513,44 +1537,35 @@ export function IconGallery() {
     window.addEventListener("scroll", updateActive, { passive: true });
     updateActive();
 
-    // ── Instant active feedback on click (before smooth scroll settles) ─
-    function sidebarClickHandler(this: HTMLAnchorElement) {
-      const id = this.getAttribute("data-section") || this.getAttribute("data-toc");
-      if (!id) return;
-      sidebarLinks.forEach((link) => {
-        const linkId = link.getAttribute("data-section") || link.getAttribute("data-toc");
-        link.classList.toggle("active", linkId === id);
-      });
-      if (mobileSection) {
-        mobileSection.textContent = sectionLabels[id] || "Overview";
-      }
-    }
-    sidebarLinks.forEach((a) => {
-      a.addEventListener("click", sidebarClickHandler);
-    });
-
     // ── Mobile sidebar ────────────────────────────────────────────
     function openMobileSidebar() {
+      mobileSidebarBtn?.setAttribute("aria-expanded", "true");
       mobileOverlay?.classList.add("open");
       mobilePanel?.classList.add("open");
-      document.body.style.overflow = "hidden";
+      if (mobilePanel) mobilePanel.inert = false;
       mobileChevron?.classList.add("rotate-180");
       window.setTimeout(() => {
-        const firstLink = mobilePanel?.querySelector<HTMLElement>(".mobile-sidebar-link");
-        (firstLink || mobilePanel)?.focus();
+        const firstLink = mobilePanel?.querySelector<HTMLElement>("[data-nb-toc-link]");
+        (firstLink || mobilePanel)?.focus({ preventScroll: true });
       }, 0);
     }
     function closeMobileSidebar() {
+      mobileSidebarBtn?.setAttribute("aria-expanded", "false");
       mobileOverlay?.classList.remove("open");
       mobilePanel?.classList.remove("open");
-      document.body.style.overflow = "";
       mobileChevron?.classList.remove("rotate-180");
-      mobileSidebarBtn?.focus();
+      mobileSidebarBtn?.focus({ preventScroll: true });
+      if (mobilePanel) mobilePanel.inert = true;
+    }
+
+    function onMobileKeydown(event: KeyboardEvent) {
+      if (event.key === "Escape" && mobilePanel?.classList.contains("open")) closeMobileSidebar();
     }
 
     mobileSidebarBtn?.addEventListener("click", openMobileSidebar);
+    document.addEventListener("keydown", onMobileKeydown);
     mobileOverlay?.addEventListener("click", closeMobileSidebar);
-    const mobileLinks = Array.from(document.querySelectorAll(".mobile-sidebar-link"));
+    const mobileLinks = Array.from(mobilePanel?.querySelectorAll("[data-nb-toc-link]") ?? []);
     mobileLinks.forEach((link) => {
       link.addEventListener("click", closeMobileSidebar);
     });
@@ -1651,12 +1666,10 @@ export function IconGallery() {
     cleanup = () => {
       window.removeEventListener("scroll", updateActive);
       mobileSidebarBtn?.removeEventListener("click", openMobileSidebar);
+      document.removeEventListener("keydown", onMobileKeydown);
       mobileOverlay?.removeEventListener("click", closeMobileSidebar);
       mobileLinks.forEach((link) => {
         link.removeEventListener("click", closeMobileSidebar);
-      });
-      sidebarLinks.forEach((a) => {
-        a.removeEventListener("click", sidebarClickHandler);
       });
       searchInput?.removeEventListener("input", onSearchInput);
       searchInput?.removeEventListener("keydown", onSearchKeydown);

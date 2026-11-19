@@ -1,0 +1,71 @@
+---
+interface Props {
+  command: string;
+  class?: string;
+}
+
+const { command, class: className } = Astro.props;
+---
+
+<div class:list={["install-command flex min-w-0 items-stretch border border-coal-4 bg-coal-1 font-mono text-sm", className]}>
+  <code class="min-w-0 truncate px-4 py-2.5 text-[#e8e8e8]"><span class="select-none text-zinc-muted">$ </span>{command}</code>
+  <button
+    type="button"
+    data-copy-command={command}
+    aria-label="Copy install command"
+    class="relative grid w-10 shrink-0 place-items-center border-l border-coal-4 text-zinc-muted transition-colors hover:text-acid focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid"
+  >
+    <svg class="copy-icon h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
+    <svg class="check-icon h-3.5 w-3.5 text-acid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+    <span class="sr-only" aria-live="polite" data-copy-status></span>
+  </button>
+</div>
+
+<style>
+  .copy-icon,
+  .check-icon {
+    grid-area: 1 / 1;
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease;
+  }
+
+  .check-icon,
+  [data-copied] .copy-icon {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  [data-copied] .check-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
+
+<script>
+  import { copyToClipboard } from "../scripts/clipboard";
+
+  // Wires every install command's copy button. Safe to call again after a page swap.
+  const initInstallCommands = () => {
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-command]").forEach((button) => {
+      button.onclick = () => {
+        const status = button.querySelector("[data-copy-status]");
+        void copyToClipboard(
+          button,
+          button.dataset.copyCommand ?? "",
+          (copied) => {
+            if (status) status.textContent = copied ? "Copied" : "Copy failed";
+            button.toggleAttribute("data-copied", copied);
+          },
+          () => {
+            if (status) status.textContent = "";
+            button.removeAttribute("data-copied");
+          },
+        );
+      };
+    });
+  };
+
+  document.addEventListener("astro:page-load", initInstallCommands);
+  initInstallCommands();
+</script>

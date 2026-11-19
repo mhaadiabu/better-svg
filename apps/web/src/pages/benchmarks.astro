@@ -1,0 +1,442 @@
+---
+import BenchmarkChart from "../components/BenchmarkChart.astro";
+import BenchmarkTable from "../components/BenchmarkTable.astro";
+import Accordion from "../components/ui/accordion/Accordion.astro";
+import Base from "../layouts/Base.astro";
+import {
+  archive, benchmarkCommit, benchmarkRelease, benchmarkSource, kb, ms, profiles, published, resultFor,
+  runInfo, runtimeSource, staticProfiles, urlProfiles, workloads,
+  type ProfileId,
+} from "../data/benchmarks";
+
+type WorkloadId = (typeof workloads)[number]["id"];
+
+const sections = [
+  ["summary", "Summary"],
+  ["browser", "Browser timings"],
+  ["delivery", "Bundle size"],
+  ["build", "Build, dev & SSR"],
+  ["network", "URL loading"],
+  ["correctness", "SVG behavior"],
+  ["methodology", "Methodology"],
+] as const;
+
+const getProfile = (id: ProfileId) => {
+  const profile = profiles.find((entry) => entry.id === id);
+  if (!profile) throw new Error(`Unknown benchmark profile ${id}`);
+  return profile;
+};
+const chartEntries = (ids: readonly ProfileId[], measure: (id: ProfileId) => number | null) =>
+  ids.map((id) => ({ ...getProfile(id), value: measure(id) }));
+
+const integer = new Intl.NumberFormat("en-US");
+const exactTime = (value: number | null) => value === null ? "n/a" : value.toFixed(2);
+const exactNumber = (value: number | null | undefined) => value == null ? "n/a" : integer.format(value);
+const maybe = (value: number | null | undefined, format: (value: number) => string) => value == null ? "n/a" : format(value);
+
+const repeated = "repeated-1000";
+const ready = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).ready.median;
+const update = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).update.median;
+const first = (id: ProfileId, workload: WorkloadId) => resultFor(id, workload).first;
+const devPasses = (id: ProfileId) => getProfile(id).dev.filter(({ status }) => status === "ready").length;
+const namedDevResults = (ids: readonly ProfileId[]) =>
+  `${ids.reduce((total, id) => total + devPasses(id), 0)} of ${ids.reduce((total, id) => total + getProfile(id).dev.length, 0)}`;
+
+const namedPair = ["released-raw", "better-raw"] as const;
+const treeProfiles = ["released-precompiled", "better-precompiled", "better-tree"] as const;
+const staticComparison = [...staticProfiles, "svgr-optimized", "inline"] as const;
+const repeatedComparison = [...namedPair, "better-tree", ...staticProfiles, "inline"] as const;
+const fixtureCount = profiles[0].contract.length;
+
+const change = (before: number | null | undefined, after: number | null | undefined) => {
+  if (before == null || after == null || before === 0) return "";
+  const delta = Math.round(100 * (after / before - 1));
+  return delta === 0 ? "same" : `${delta > 0 ? "+" : "−"}${Math.abs(delta)}%`;
+};
+
+const summary: {
+  measure: string;
+  detail: string;
+  before: number | null | undefined;
+  after: number | null | undefined;
+  format: (value: number) => string;
+  compare?: boolean;
+}[] = [
+  {
+    measure: "Raw named icon, 1,000 copies",
+    detail: "Warm ready, p50",
+    before: ready("released-raw", repeated), after: ready("better-raw", repeated), format: ms,
+  },
+  {
+    measure: "Raw named icon, 1,000 copies",
+    detail: "Opacity update, p50",
+    before: update("released-raw", repeated), after: update("better-raw", repeated), format: ms,
+  },
+  {
+    measure: "Runtime URL, 1,000 copies",
+    detail: "First-use ready, one sample",
+    before: first("released-url", repeated)?.readyMs, after: first("better-url", repeated)?.readyMs, format: ms,
+  },
+  {
+    measure: "Runtime URL, 1,000 copies",
+    detail: "First-use resource entries",
+    before: first("released-url", repeated)?.requests, after: first("better-url", repeated)?.requests, format: integer.format, compare: false,
+  },
+  {
+    measure: "Runtime URL, 1,000 copies",
+    detail: "Responses actually transferred",
+    before: first("released-url", repeated)?.transferredResources, after: first("better-url", repeated)?.transferredResources, format: integer.format, compare: false,
+  },
+  {
+    measure: "Raw named, full icon set",
+    detail: "All JavaScript, gzip",
+    before: getProfile("released-raw").javascript.totalGzip, after: getProfile("better-raw").javascript.totalGzip, format: kb,
+  },
+  {
+    measure: "Raw named, Vite dev transform",
+    detail: "Passing runs",
+    before: devPasses("released-raw"), after: devPasses("better-raw"), format: (runs: number) => `${runs}/${runInfo.nodeRepetitions}`, compare: false,
+  },
+];
+
+const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Paint p95", "Update p50", "Update p95", "First ready"];
+---
+
+<Base title="React benchmarks | BetterSVG" description="Compare BetterSVG 0.5.0 with 0.4.2, SVGR, unplugin-icons, react-inlinesvg, and react-svg across React workloads.">
+  <nav data-benchmark-navigation aria-label="Site" class="sticky top-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
+    <div class="mx-auto flex h-15 max-w-6xl items-center justify-between gap-2 px-3 sm:px-4">
+      <a href="/" class="font-display text-lg tracking-wider text-[#e8e8e8] sm:text-xl">BETTERSVG</a>
+      <div class="flex items-center gap-2 text-xs min-[360px]:gap-3 sm:gap-5 sm:text-sm">
+        <a href="/docs" class="text-zinc-400 hover:text-acid transition-colors">Docs</a>
+        <a href="/benchmarks" aria-current="page" class="text-acid">Benchmarks</a>
+        <a href="/changelog" class="text-zinc-400 hover:text-acid transition-colors">Changelog</a>
+        <button type="button" data-sections-trigger aria-label="Benchmark sections" aria-haspopup="dialog" aria-expanded="false" aria-controls="benchmark-sections" class="grid size-11 shrink-0 place-items-center border-l border-coal-4 text-zinc-400 hover:text-acid focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid lg:hidden">
+          <svg class="size-5" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+            <path d="M5 4h8M5 8h8m-8 4h8M2 4h.01M2 8h.01M2 12h.01" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content" class="mx-auto max-w-6xl px-4 pb-16 pt-6 lg:pt-12">
+    <header class="border-b border-coal-4 pb-4">
+      <h1 class="font-display text-3xl leading-none tracking-wider sm:text-4xl">REACT BENCHMARKS</h1>
+      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
+        BetterSVG {benchmarkRelease} against {published} and four other React SVG tools, on one {runInfo.iconCount}-file icon corpus.
+        Medians of {runInfo.repetitions} warm remounts in Chromium on one Linux desktop.
+      </p>
+      <p class="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-zinc-muted">
+        <time datetime={runInfo.dateTime}>{runInfo.date}</time>
+        <span>{profiles.length} profiles</span>
+        <span>{workloads.length} workloads</span>
+        <a href="#methodology" class="text-zinc-400 underline-offset-4 hover:text-acid hover:underline">Method</a>
+        <a href={archive} class="text-zinc-400 underline-offset-4 hover:text-acid hover:underline">Raw data ↗</a>
+      </p>
+    </header>
+
+    <div class="lg:mt-8 lg:grid lg:grid-cols-[9rem_minmax(0,1fr)] lg:items-start lg:gap-x-10">
+      <dialog id="benchmark-sections" aria-labelledby="benchmark-sections-title" class="sections-drawer lg:hidden">
+        <div class="flex items-center justify-between gap-3 border-b border-coal-4 pb-3">
+          <h2 id="benchmark-sections-title" class="text-sm font-semibold">On this page</h2>
+          <form method="dialog">
+            <button type="submit" autofocus aria-label="Close sections" class="grid size-10 place-items-center text-zinc-400 hover:text-acid focus-visible:outline focus-visible:outline-acid">
+              <svg class="size-4" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="m4 4 8 8m0-8-8 8" />
+              </svg>
+            </button>
+          </form>
+        </div>
+        <nav aria-label="Benchmark sections" class="mt-2">
+          <ul role="list">
+            {sections.map(([id, title]) => (
+              <li><a href={`#${id}`} class="block px-2 py-3 text-sm text-zinc-300 hover:bg-coal-1 hover:text-acid focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid">{title}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </dialog>
+
+      <nav aria-label="Benchmark sections" class="sticky top-24 hidden lg:block">
+        <ul role="list" class="flex flex-col gap-2.5 text-sm">
+          {sections.map(([id, title]) => (
+            <li><a href={`#${id}`} class="text-zinc-400 hover:text-acid">{title}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="min-w-0 space-y-12 pt-5 lg:pt-0">
+        <section id="summary" aria-labelledby="summary-heading">
+          <h2 id="summary-heading" class="text-lg font-semibold">{benchmarkRelease} against {published}</h2>
+          <div role="region" aria-label="Release summary" tabindex="0" class="mt-3 overflow-x-auto border border-coal-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid">
+            <table class="w-full border-collapse text-left text-xs">
+              <caption class="sr-only">BetterSVG {benchmarkRelease} compared with {published}</caption>
+              <thead class="bg-coal-1 text-[11px] text-zinc-400">
+                <tr>
+                  <th scope="col" class="px-3 py-2 font-medium">Measure</th>
+                  <th scope="col" class="px-3 py-2 text-right font-medium">{published}</th>
+                  <th scope="col" class="px-3 py-2 text-right font-medium text-acid">{benchmarkRelease}</th>
+                  <th scope="col" class="hidden px-3 py-2 text-right font-medium sm:table-cell">Change</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-coal-3 border-t border-coal-4">
+                {summary.map(({ measure, detail, before, after, format, compare = true }) => (
+                  <tr>
+                    <th scope="row" class="px-3 py-2 font-medium">
+                      {measure}
+                      <span class="block text-[11px] font-normal text-zinc-400">{detail}</span>
+                    </th>
+                    <td class="whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums text-zinc-400">{maybe(before, format)}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums">{maybe(after, format)}</td>
+                    <td class="hidden whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums text-zinc-400 sm:table-cell">{compare ? change(before, after) : ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-2 text-xs leading-relaxed text-zinc-400">
+            The URL rows need care. A resource entry can be a cache hit or a coalesced fetch, so the drop in entries is not a drop in network traffic.
+            Both versions transferred one response.
+          </p>
+        </section>
+
+        <section id="browser" aria-labelledby="browser-heading">
+          <h2 id="browser-heading" class="text-lg font-semibold">Browser timings</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Ready time ends when every expected SVG is in the DOM. Bars show the p50 of {runInfo.repetitions} warm remounts, and each chart has its own zero-based scale.
+          </p>
+          <div class="mt-4 space-y-3">
+            <BenchmarkChart title="1,000 copies of one icon" description="Warm ready time, p50." entries={chartEntries(repeatedComparison, (id) => ready(id, repeated))} format={ms} />
+            <div class="grid gap-3 xl:grid-cols-2">
+              <BenchmarkChart title="100 unique icons" description="Precompiled and compact-tree named icons." entries={chartEntries(treeProfiles, (id) => ready(id, "unique-100"))} format={ms} />
+              <BenchmarkChart title="24 icons in a grid" description="Static imports." entries={chartEntries(staticComparison, (id) => ready(id, "grid-24"))} format={ms} />
+            </div>
+            <BenchmarkChart title="Runtime URLs, 1,000 copies" description="Warm ready time, p50. Same SVG URL in every copy." entries={chartEntries(urlProfiles, (id) => ready(id, repeated))} format={ms} />
+          </div>
+
+          <h3 class="mt-7 text-sm font-semibold">Exact timings by workload</h3>
+          <p class="mt-1 max-w-3xl text-xs leading-relaxed text-zinc-400">
+            Milliseconds. Paint is the first paint opportunity after two animation frames, not physical display. First ready is one sample in a fresh document.
+            Warm figures leave out samples that failed the render or update checks.
+          </p>
+          <div class="mt-3 divide-y divide-coal-4 border border-coal-4">
+            {workloads.map(({ id, title }) => (
+              <Accordion id={`timings-${id}`} title={title} open={id === repeated}>
+                <BenchmarkTable framed={false} title={`Timings: ${title}`} columns={timingColumns} entries={profiles.map((profile) => {
+                  const sample = resultFor(profile.id, id);
+                  return { ...profile, values: [
+                    `${sample.validCount}/${sample.warmCount}`,
+                    exactTime(sample.ready.median), exactTime(sample.ready.p95),
+                    exactTime(sample.paint.median), exactTime(sample.paint.p95),
+                    exactTime(sample.update.median), exactTime(sample.update.p95),
+                    exactTime(sample.first?.readyMs ?? null),
+                  ] };
+                })} />
+              </Accordion>
+            ))}
+          </div>
+        </section>
+
+        <section id="delivery" aria-labelledby="delivery-heading">
+          <h2 id="delivery-heading" class="text-lg font-semibold">Bundle size</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Initial JavaScript is what the entry loads, and all JavaScript adds deferred chunks. Both include React and the benchmark page.
+            The one-icon build imports one icon from the same {runInfo.iconCount}-file directory. Full-set named builds disable pruning.
+            The {benchmarkRelease} one-icon named builds use default pruning and defer the rest.
+          </p>
+          <div class="mt-4 grid gap-3 xl:grid-cols-2">
+            <BenchmarkChart title="One icon" description="Initial JavaScript, gzip." entries={chartEntries([...namedPair, "better-tree", ...staticProfiles], (id) => getProfile(id).sparseJavascript.initialGzip)} format={kb} />
+            <BenchmarkChart title="Full named set" description="All emitted JavaScript, gzip." entries={chartEntries([...namedPair, ...treeProfiles.slice(1)], (id) => getProfile(id).javascript.totalGzip)} format={kb} />
+          </div>
+          <div class="mt-4">
+            <BenchmarkTable title="Bundle sizes in gzip bytes" columns={["1 icon initial", "1 icon all JS", "Full initial", "Full all JS", "Full chunks", "Full all assets"]} entries={profiles.map((profile) => ({
+              ...profile,
+              values: [profile.sparseJavascript.initialGzip, profile.sparseJavascript.totalGzip, profile.javascript.initialGzip, profile.javascript.totalGzip, profile.javascript.chunks, profile.totalBytes.gzip].map(exactNumber),
+            }))} />
+            <p class="mt-2 text-xs leading-relaxed text-zinc-400">Gzip bytes. All assets adds HTML and separately emitted SVGs where they exist. It is not what a visit downloads.</p>
+          </div>
+        </section>
+
+        <section id="build" aria-labelledby="build-heading">
+          <h2 id="build-heading" class="text-lg font-semibold">Build, dev &amp; SSR</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Across the raw and legacy precompiled named profiles, {benchmarkRelease} passed {namedDevResults(["better-raw", "better-precompiled"])} Vite dev transform runs.
+            Version {published} passed {namedDevResults(["released-raw", "released-precompiled"])}.
+            Production timings cover the full-set Vite build, not fixture generation or library compilation. Dev edit time is a Vite module transform after an SVG edit, not browser HMR.
+            The SSR probe checks whether a profile emits 100 SVG elements on the server before any browser work.
+          </p>
+          <div class="mt-4">
+            <BenchmarkChart title="Static import build time" description={`p50 of ${runInfo.nodeRepetitions} Vite production builds.`} entries={chartEntries(staticComparison, (id) => getProfile(id).buildMs.median)} format={ms} />
+          </div>
+          <div class="mt-4">
+            <BenchmarkTable title="Build, development, and Node SSR results" columns={["Build p50", "Build p95", "Dev entry p50", "Dev edit p50", "Dev passes", "SSR SVGs", "SSR p50", "SSR gzip bytes"]} entries={profiles.map((profile) => ({
+              ...profile,
+              values: [
+                exactTime(profile.buildMs.median), exactTime(profile.buildMs.p95),
+                exactTime(profile.startupEntryMs.median), exactTime(profile.editTransformMs.median),
+                `${profile.dev.filter(({ status }) => status === "ready").length}/${profile.dev.length}`,
+                `${profile.ssr.rendered}/${profile.ssr.expected}`, exactTime(profile.ssr.milliseconds.median),
+                profile.ssr.eligible ? exactNumber(profile.ssr.htmlBytes.gzip) : "n/a",
+              ],
+            }))} />
+            <p class="mt-2 text-xs text-zinc-400">Milliseconds. SSR timing and size only apply to profiles that rendered the full set.</p>
+          </div>
+        </section>
+
+        <section id="network" aria-labelledby="network-heading">
+          <h2 id="network-heading" class="text-lg font-semibold">URL loading</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Read the two charts together. A resource entry can be a cache hit or a coalesced fetch, so it doesn't always mean a separate network response.
+            The transfer chart counts responses with a nonzero transfer size. First-use columns are one sample with fresh URL tokens, and warm remounts keep each library's normal cache.
+          </p>
+          <div class="mt-4 grid gap-3 xl:grid-cols-2">
+            <BenchmarkChart title="Resource entries on first use" description="1,000 copies of one SVG URL." entries={chartEntries(urlProfiles, (id) => first(id, repeated)?.requests ?? null)} format={integer.format} />
+            <BenchmarkChart title="Responses transferred on first use" description="Same workload, real transfers only." entries={chartEntries(urlProfiles, (id) => first(id, repeated)?.transferredResources ?? null)} format={integer.format} />
+          </div>
+          <div class="mt-4 divide-y divide-coal-4 border border-coal-4">
+            {workloads.map(({ id, title }) => (
+              <Accordion id={`url-loading-${id}`} title={title} open={id === repeated}>
+                <BenchmarkTable framed={false} title={`URL loading: ${title}`} columns={["First-use entries", "Transferred", "Transfer bytes", "Warm entries p50"]} entries={urlProfiles.map((profileId) => {
+                  const { first: sample, resources } = resultFor(profileId, id);
+                  return { ...getProfile(profileId), values: [sample?.requests, sample?.transferredResources, sample?.transferBytes, resources.median].map(exactNumber) };
+                })} />
+              </Accordion>
+            ))}
+          </div>
+        </section>
+
+        <section id="correctness" aria-labelledby="correctness-heading">
+          <h2 id="correctness-heading" class="text-lg font-semibold">SVG behavior</h2>
+          <p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-400">
+            Each profile rendered two instances of each of {fixtureCount} SVG fixtures. Rendered means the fixtures appeared, not that every tool kept the same output.
+            Columns count fixtures with each observation, not individual IDs. The <a href={`${archive}/browser.json`} class="text-acid underline underline-offset-4">raw browser data</a> has
+            computed paint, roles, descriptions, and foreign content. These fixtures are not a security audit.
+          </p>
+          <div class="mt-4">
+            <BenchmarkTable title="SVG behavior observations" columns={["Fixtures rendered", "Duplicate IDs", "Unresolved SVG refs", "Unresolved ARIA labels"]} entries={profiles.map((profile) => ({
+              ...profile,
+              values: [
+                `${profile.contract.filter((entry) => entry.status === "ready" && entry.rendered === 2).length}/${profile.contract.length}`,
+                profile.contract.filter((entry) => entry.duplicateIds.length > 0).length,
+                profile.contract.filter((entry) => entry.observations.some((observation) => observation.dangling.length > 0)).length,
+                profile.contract.filter((entry) => entry.observations.some((observation) => observation.danglingLabels.length > 0)).length,
+              ],
+            }))} />
+          </div>
+        </section>
+
+        <section id="methodology" aria-labelledby="methodology-heading" class="border-t border-coal-4 pt-6">
+          <h2 id="methodology-heading" class="text-lg font-semibold">Methodology</h2>
+          <dl class="mt-4 grid gap-x-8 gap-y-1 text-sm leading-relaxed sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-y-4">
+            <dt class="font-medium">Machine</dt>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">{runInfo.cpu} on Linux. Vite {runInfo.versions.vite}, Node {runInfo.node}, React {runInfo.versions.react}, and Chromium 157.0.8103.78 at {runInfo.browserViewport.width} × {runInfo.browserViewport.height}. HTTP ran uncompressed over loopback.</dd>
+            <dt class="font-medium">Sampling</dt>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">Each of {runInfo.browserDocuments} fresh documents had one first-use sample, {runInfo.warmups} warmups, and {runInfo.repetitions} measured warm remounts. {integer.format(runInfo.validWarmSamples)} of {integer.format(runInfo.warmSamples)} warm samples were valid. Node measurements ran {runInfo.nodeRepetitions} times.</dd>
+            <dt class="font-medium">Compared versions</dt>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">BetterSVG {benchmarkRelease} profiles use the runtime source at <a href={runtimeSource} class="font-mono text-acid underline-offset-4 hover:underline">526a822</a>. We ran the <a href={benchmarkSource} class="text-acid underline-offset-4 hover:underline">benchmark scripts at <code>{benchmarkCommit.slice(0, 7)}</code></a> with the temporary workspace version {runInfo.workspace}. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
+            <dt class="font-medium">Scope</dt>
+            <dd class="text-zinc-400">This run covers React in Chromium on one Linux desktop, with mostly catalog icons and requests over loopback. It doesn't measure mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or slower network conditions.</dd>
+          </dl>
+          <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs">
+            {[["Full report", "report.md"], ["node.json", "node.json"], ["browser.json", "browser.json"]].map(([label, file]) => (
+              <a href={`${archive}/${file}`} class="text-acid underline-offset-4 hover:underline">{label} ↗</a>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .sections-drawer {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(17rem, calc(100% - 3rem));
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-left: 1px solid var(--color-coal-4);
+    background: var(--color-coal);
+    color: var(--color-foreground);
+    transform: translateX(100%);
+    transition: transform 250ms ease, display 250ms allow-discrete, overlay 250ms allow-discrete;
+  }
+
+  .sections-drawer[open] {
+    transform: translateX(0);
+  }
+
+  @starting-style {
+    .sections-drawer[open] {
+      transform: translateX(100%);
+    }
+  }
+
+  .sections-drawer::backdrop {
+    background: rgb(0 0 0 / 60%);
+  }
+
+  :global(html:has(#benchmark-sections[open])) {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sections-drawer { transition: none; }
+  }
+</style>
+
+<script>
+  import { mount } from "@cloudflare/nimbus-docs/client";
+
+  mount("[data-benchmark-navigation]", (root) => {
+    const trigger = root.querySelector<HTMLButtonElement>("[data-sections-trigger]");
+    const drawer = document.querySelector<HTMLDialogElement>("#benchmark-sections");
+    if (!trigger || !drawer) return () => {};
+
+    const controller = new AbortController();
+    const { signal } = controller;
+    const desktop = matchMedia("(min-width: 64rem)");
+    const closeDrawer = () => {
+      drawer.close();
+      trigger.setAttribute("aria-expanded", "false");
+    };
+
+    trigger.addEventListener("click", () => {
+      drawer.showModal();
+      trigger.setAttribute("aria-expanded", "true");
+    }, { signal });
+
+    drawer.addEventListener("close", () => trigger.setAttribute("aria-expanded", "false"), { signal });
+    desktop.addEventListener("change", () => {
+      if (desktop.matches && drawer.open) closeDrawer();
+    }, { signal });
+
+    drawer.addEventListener("click", (event) => {
+      if (event.target === drawer && event.clientX < drawer.getBoundingClientRect().left) {
+        closeDrawer();
+        return;
+      }
+
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href^='#']") : null;
+      if (!link) return;
+
+      const section = document.getElementById(link.hash.slice(1));
+      if (!section) return;
+      event.preventDefault();
+      closeDrawer();
+      if (location.hash === link.hash) section.scrollIntoView();
+      else location.hash = link.hash;
+      const heading = section.querySelector("h2");
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+    }, { signal });
+
+    return () => controller.abort();
+  });
+</script>

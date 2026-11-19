@@ -1,0 +1,35 @@
+---
+import type { BenchmarkLabel } from "../data/benchmarks";
+
+interface Props {
+  title: string;
+  columns: readonly string[];
+  entries: (BenchmarkLabel & { values: (string | number)[] })[];
+  framed?: boolean;
+}
+
+const { title, columns, entries, framed = true } = Astro.props;
+---
+
+<div role="region" aria-label={title} tabindex="0" class:list={["overflow-x-auto focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid", framed ? "border border-coal-4" : "border-t border-coal-4"]}>
+  <table class="w-full border-collapse text-left text-xs">
+    <caption class="sr-only">{title}</caption>
+    <thead class="text-[11px] text-zinc-400">
+      <tr>
+        <th scope="col" class="sticky left-0 z-10 border-r border-coal-4 bg-coal-1 px-3 py-2 font-medium">Profile</th>
+        {columns.map((column) => <th scope="col" class="min-w-20 bg-coal-1 px-3 py-2 text-right align-bottom font-medium">{column}</th>)}
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-coal-3 border-t border-coal-4">
+      {entries.map(({ label, mode, current, values }) => (
+        <tr class:list={["hover:bg-coal-2", current ? "bg-acid/[0.03]" : "bg-coal"]}>
+          <th scope="row" class:list={["sticky left-0 z-10 w-36 min-w-36 border-r border-coal-4 px-3 py-2 font-medium sm:w-auto sm:min-w-48", current ? "bg-[#0d0f0a]" : "bg-coal"]}>
+            <span class:list={["block whitespace-nowrap", current && "text-acid"]}>{label}</span>
+            <span class="block text-[11px] font-normal leading-snug text-zinc-400">{mode}</span>
+          </th>
+          {values.map((value) => <td class="whitespace-nowrap px-3 py-2 text-right font-mono tabular-nums">{value}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

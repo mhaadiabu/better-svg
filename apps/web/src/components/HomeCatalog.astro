@@ -1,0 +1,109 @@
+---
+import Tabs from "./ui/tabs/Tabs.astro";
+import TabsList from "./ui/tabs/TabsList.astro";
+import TabsTrigger from "./ui/tabs/TabsTrigger.astro";
+import TabsContent from "./ui/tabs/TabsContent.astro";
+import { catalogPacks } from "../data/catalog-icons";
+
+const steps = [
+  { label: "Install a pack", code: "pnpm add lucide-static" },
+  { label: "Add the Vite plugin", code: "plugins: [svgPlugin()]" },
+  { label: "Render by name", code: '<SVG name="lucide:house" />' },
+];
+---
+
+<section id="catalog" class="border-t border-coal-2">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2 lg:gap-16 lg:py-24">
+    <div>
+      <p class="mb-2 font-mono text-xs tracking-widest text-acid uppercase">Icon catalog</p>
+      <h2 class="font-display text-5xl tracking-wider text-[#e8e8e8]">USE ICON PACKS BY NAME</h2>
+      <p class="mt-5 max-w-md leading-relaxed text-zinc-muted">
+        Lucide, Tabler, Phosphor, Hugeicons, or any Iconify set. Your editor suggests every name, and the
+        Vite plugin registers only the icons your code uses. No per-icon imports, no network requests.
+      </p>
+      <ol class="mt-8 max-w-md space-y-3">
+        {steps.map((step, index) => (
+          <li class="flex items-baseline gap-4">
+            <span class="font-mono text-xs text-acid">0{index + 1}</span>
+            <span class="min-w-0">
+              <span class="block text-sm text-[#e8e8e8]">{step.label}</span>
+              <code class="block truncate font-mono text-xs text-zinc-muted">{step.code}</code>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <a href="/docs#icon-catalog" class="group mt-8 inline-flex items-center gap-2 text-sm text-zinc-muted transition-colors hover:text-acid">
+        Catalog docs
+        <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="min-w-0 border border-coal-4 bg-coal" data-catalog>
+      <Tabs>
+        <TabsList aria-label="Icon pack" class="grid grid-cols-4">
+          {catalogPacks.map((pack) => <TabsTrigger value={pack.id} class="min-w-0 px-1 text-xs sm:px-2.5">{pack.label}</TabsTrigger>)}
+        </TabsList>
+        {catalogPacks.map((pack, index) => (
+          <TabsContent value={pack.id} hidden={index !== 0} data-pack={pack.id} class="mt-0">
+            <div class="grid grid-cols-6 gap-px bg-coal-4" role="group" aria-label={`${pack.label} icons`}>
+              {pack.icons.map((icon, iconIndex) => (
+                <button
+                  type="button"
+                  data-icon={iconIndex}
+                  data-name={`${pack.id}:${icon.name}`}
+                  aria-label={`${pack.id}:${icon.name}`}
+                  aria-pressed={iconIndex === 0}
+                  class="grid aspect-square place-items-center bg-coal text-zinc-400 transition-colors hover:bg-coal-1 hover:text-[#e8e8e8] focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid aria-pressed:bg-coal-1 aria-pressed:text-acid"
+                >
+                  <svg class="h-6 w-6" viewBox={pack.viewBox} aria-hidden="true" set:html={icon.body} />
+                </button>
+              ))}
+            </div>
+            <div class="flex items-center gap-1 border-t border-coal-4 bg-coal-1 px-1 py-2 min-[360px]:gap-2 min-[360px]:px-2 sm:gap-5 sm:p-5">
+              <div class="grid size-6 shrink-0 place-items-center border border-coal-4 bg-coal text-acid min-[360px]:size-8 sm:size-20">
+                <svg class="size-4 min-[360px]:size-5 sm:size-10" viewBox={pack.viewBox} aria-hidden="true" data-preview set:html={pack.icons[0].body} />
+              </div>
+              <pre class="min-w-0 overflow-x-auto font-mono text-[11px] leading-5 whitespace-pre sm:text-sm sm:leading-7"><code><span class="text-zinc-muted">$ pnpm add {pack.pkg}</span>
+<span class="text-[#555]">&lt;</span><span class="text-[#79b8ff]">SVG</span> <span class="text-[#ffb347]">name</span><span class="text-[#555]">=</span><span class="text-[#76d9b0]">"<span data-code-name>{`${pack.id}:${pack.icons[0].name}`}</span>"</span> <span class="text-[#555]">/&gt;</span></code></pre>
+            </div>
+          </TabsContent>
+        ))}
+      </Tabs>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Keeps one selected icon index across packs, so switching packs shows the same icon in the other style.
+  const initCatalog = () => {
+    const root = document.querySelector<HTMLElement>("[data-catalog]");
+    if (!root || root.dataset.init) return;
+    root.dataset.init = "true";
+    let selected = 0;
+
+    const sync = () => {
+      root.querySelectorAll<HTMLElement>("[data-pack]").forEach((panel) => {
+        const buttons = panel.querySelectorAll<HTMLButtonElement>("[data-icon]");
+        buttons.forEach((button, index) => button.setAttribute("aria-pressed", String(index === selected)));
+        const current = buttons[selected];
+        const preview = panel.querySelector("[data-preview]");
+        const name = panel.querySelector("[data-code-name]");
+        const body = current?.querySelector("svg")?.innerHTML;
+        if (preview && body) preview.innerHTML = body;
+        if (name && current) name.textContent = current.dataset.name ?? "";
+      });
+    };
+
+    root.addEventListener("click", (event) => {
+      const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("[data-icon]") : null;
+      if (!button) return;
+      selected = Number(button.dataset.icon);
+      sync();
+    });
+  };
+
+  document.addEventListener("astro:page-load", initCatalog);
+  initCatalog();
+</script>

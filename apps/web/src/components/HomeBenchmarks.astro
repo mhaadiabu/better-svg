@@ -1,0 +1,119 @@
+---
+import Tabs from "./ui/tabs/Tabs.astro";
+import TabsList from "./ui/tabs/TabsList.astro";
+import TabsTrigger from "./ui/tabs/TabsTrigger.astro";
+import TabsContent from "./ui/tabs/TabsContent.astro";
+import { kb, rows } from "../data/benchmarks";
+
+const timing = (value: number) => `${value.toFixed(1)} ms`;
+const results = rows.filter((row) => !row.id.startsWith("released-"));
+const benchmarks = [
+  { id: "build", label: "Build time", description: "Full static icon set, median Vite build", mode: "Static import", metric: "buildMs", format: (value: number) => `${value.toFixed(0)} ms` },
+  { id: "urls", label: "Runtime URLs", description: "24 icons, median warm remount", mode: "Runtime URL", metric: "median", format: timing },
+  { id: "static", label: "Static imports", description: "24 icons, median warm remount", mode: "Static import", metric: "median", format: timing },
+  { id: "size", label: "JS size", description: "Full static icon set, initial JavaScript gzip", mode: "Static import", metric: "full", format: kb },
+] as const;
+---
+
+<section id="home-benchmarks" aria-labelledby="home-benchmark-heading" class="border border-coal-4 bg-coal">
+  <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-4 pt-3 pb-2">
+    <h2 id="home-benchmark-heading" class="text-sm font-semibold">React benchmarks</h2>
+    <a href="/benchmarks" class="text-xs text-zinc-400 underline underline-offset-4 hover:text-acid">Full results</a>
+  </div>
+  <Tabs>
+    <TabsList aria-label="Benchmark">
+      {benchmarks.map((benchmark) => <TabsTrigger value={benchmark.id} class="px-2 text-xs">{benchmark.label}</TabsTrigger>)}
+    </TabsList>
+    {benchmarks.map((benchmark, index) => {
+      const entries = results.filter((row) => row.mode === benchmark.mode).map((row) => {
+        const value = row[benchmark.metric];
+        if (value === null) throw new Error(`Missing ${benchmark.metric} for ${row.id}`);
+        return { ...row, value };
+      });
+      const max = Math.max(...entries.map((entry) => entry.value));
+
+      return (
+        <TabsContent
+          value={benchmark.id}
+          tabindex="0"
+          hidden={index !== 0}
+          class="mt-0 px-4 pt-3 pb-4 focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-acid"
+        >
+          <p class="mb-3 text-xs text-zinc-400">{benchmark.description}. Lower is better.</p>
+          <ul role="list" class="space-y-2.5">
+            {entries.map((entry) => (
+              <li>
+                <div class="mb-1 flex justify-between gap-3 text-xs">
+                  <span class:list={["font-medium", entry.current ? "text-acid" : "text-zinc-300"]}>{entry.current ? "BetterSVG" : entry.label}</span>
+                  <span class="font-mono whitespace-nowrap tabular-nums">{benchmark.format(entry.value)}</span>
+                </div>
+                <div class="h-1.5 bg-coal-4" aria-hidden="true">
+                  <div
+                    data-bar
+                    class:list={["bar h-full origin-left", entry.current ? "bg-acid" : "bg-zinc-500"]}
+                    style={{ "--fill": entry.value / max }}
+                  ></div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </TabsContent>
+      );
+    })}
+  </Tabs>
+</section>
+
+<style>
+  .bar {
+    transform: scaleX(var(--fill));
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    #home-benchmarks:not([data-revealed]) .bar {
+      transform: scaleX(0);
+    }
+  }
+</style>
+
+<script>
+  const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+  // Grows a panel's bars from zero. The first reveal runs slower than a tab switch.
+  const grow = (panel: Element, duration: number) => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    panel.querySelectorAll<HTMLElement>("[data-bar]").forEach((bar, index) => {
+      bar.animate([{ transform: "scaleX(0)" }, { transform: `scaleX(${bar.style.getPropertyValue("--fill")})` }], {
+        duration,
+        delay: index * 60,
+        easing: ease,
+        fill: "backwards",
+      });
+    });
+  };
+
+  const initBenchmarks = () => {
+    const section = document.getElementById("home-benchmarks");
+    if (!section || section.dataset.init) return;
+    section.dataset.init = "true";
+
+    const panels = section.querySelectorAll<HTMLElement>("[role=tabpanel]");
+    const switches = new MutationObserver((records) => {
+      for (const { target } of records) {
+        if (target instanceof HTMLElement && !target.hidden && section.dataset.revealed !== undefined) grow(target, 400);
+      }
+    });
+    panels.forEach((panel) => switches.observe(panel, { attributes: true, attributeFilter: ["hidden"] }));
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      observer.disconnect();
+      const panel = section.querySelector("[role=tabpanel]:not([hidden])");
+      if (panel) grow(panel, 700);
+      section.dataset.revealed = "";
+    }, { threshold: 0.4 });
+    observer.observe(section);
+  };
+
+  document.addEventListener("astro:page-load", initBenchmarks);
+  initBenchmarks();
+</script>

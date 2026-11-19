@@ -89,6 +89,7 @@ import CodeBlock from "../components/CodeBlock.astro";
 
       <div class="hidden items-center gap-8 md:flex">
         <a href="/docs" class="link-underline text-sm text-zinc-muted hover:text-[#e8e8e8] transition-colors">Docs</a>
+        <a href="/benchmarks" class="link-underline text-sm text-zinc-muted hover:text-[#e8e8e8] transition-colors">Benchmarks</a>
         <a href="/changelog" class="link-underline text-sm text-zinc-muted hover:text-[#e8e8e8] transition-colors">Changelog</a>
         <a href="https://github.com/mhaadiabu/better-svg" class="link-underline text-sm text-zinc-muted hover:text-[#e8e8e8] transition-colors" target="_blank">GitHub</a>
         <a
@@ -110,6 +111,7 @@ import CodeBlock from "../components/CodeBlock.astro";
     <div id="mobile-menu" class="hidden border-t border-coal-2 px-4 py-4 md:hidden">
       <div class="flex flex-col gap-4">
         <a href="/docs" class="text-sm text-zinc-muted hover:text-acid transition-colors">Docs</a>
+        <a href="/benchmarks" class="text-sm text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>
         <a href="/changelog" class="text-sm text-zinc-muted hover:text-acid transition-colors">Changelog</a>
         <a href="https://github.com/mhaadiabu/better-svg" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
         <a href="/docs" class="text-sm font-medium text-acid">Get started →</a>
@@ -145,7 +147,7 @@ import CodeBlock from "../components/CodeBlock.astro";
         <!-- Badge -->
         <div class="mb-8 inline-flex items-center gap-2 border border-coal-4 bg-coal-1 px-3 py-1.5 animate-fade-in delay-100">
           <span class="h-1.5 w-1.5 bg-acid animate-pulse"></span>
-          <a href={`/changelog#${version.replaceAll(".", "")}`} aria-label={`Release notes for version ${version}`} class="font-mono text-xs text-zinc-muted hover:text-acid transition-colors">v{version}</a>
+          <a href={`/changelog#${version.replaceAll(".", "")}`} aria-label={`Release notes for version ${version}`} class="font-mono text-xs text-zinc-muted hover:text-acid transition-colors">v{version}{version.includes("-") && " prerelease"}</a>
         </div>
 
         <!-- Headline -->
@@ -456,8 +458,9 @@ import CodeBlock from "../components/CodeBlock.astro";
         </svg>
         <span class="font-display tracking-wider text-[#e8e8e8]">BETTERSVG</span>
       </div>
-      <div class="flex items-center gap-6">
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
         <a href="/docs" class="text-xs text-zinc-muted hover:text-acid transition-colors">Docs</a>
+        <a href="/benchmarks" class="text-xs text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>
         <a href="/changelog" class="text-xs text-zinc-muted hover:text-acid transition-colors">Changelog</a>
         <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-xs text-zinc-muted hover:text-acid transition-colors">GitHub</a>
         <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-xs text-zinc-muted hover:text-acid transition-colors">npm</a>

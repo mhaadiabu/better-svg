@@ -7,10 +7,11 @@ const versions = getHeadings().filter((heading) => heading.depth === 2);
 
 <Base title="Changelog | BetterSVG" description="Version history and changes to @mhaadi/svg.">
   <nav id="changelog-header" class="sticky top-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-y-2 px-4 py-4">
       <a href="/" class="font-display text-xl tracking-wider text-[#e8e8e8]">BETTERSVG</a>
       <div class="flex items-center gap-5 text-sm">
         <a href="/docs" class="text-zinc-muted hover:text-acid transition-colors">Docs</a>
+        <a href="/benchmarks" class="text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>
         <a href="/changelog" aria-current="page" class="text-acid">Changelog</a>
         <a href="https://github.com/mhaadiabu/better-svg" class="hidden text-zinc-muted hover:text-acid transition-colors sm:block">GitHub</a>
       </div>

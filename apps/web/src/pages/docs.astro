@@ -6,6 +6,7 @@ import { frameworks } from "../data/frameworks";
 import svgPkg from "../../../../packages/svg/package.json";
 
 const version = svgPkg.version;
+const prerelease = version.includes("-");
 const stateTypes: Record<string, string> = {
   react: "ReactNode",
   "react-native": "ReactNode",
@@ -54,7 +55,7 @@ import PmTabs from "../components/PmTabs.astro";
 >
   <!-- NAV -->
   <nav class="sticky top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 lg:px-4 py-3 lg:py-4">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-y-2 px-4 py-3 lg:py-4">
       <a href="/" class="flex items-center gap-2.5 group">
         <svg class="h-5 w-5 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none">
           <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
@@ -76,6 +77,7 @@ import PmTabs from "../components/PmTabs.astro";
           <div id="docs-search-results" class="absolute right-0 top-full mt-2 w-72 border border-coal-4 bg-coal-1 shadow-xl hidden" role="listbox" aria-label="Search results"></div>
         </div>
         <span class="hidden sm:block font-mono text-xs text-acid border border-acid/30 rounded-none px-2 py-1">Docs</span>
+        <a href="/benchmarks" class="text-sm text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>
         <a href="/changelog" class="text-sm text-zinc-muted hover:text-acid transition-colors">Changelog</a>
         <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">GitHub</a>
         <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">npm</a>
@@ -213,6 +215,12 @@ import PmTabs from "../components/PmTabs.astro";
                     { pm: "bun", cmd: "bun add @mhaadi/svg" },
                   ]}
                 />
+                {prerelease && (
+                  <p class="docs-body mt-3">
+                    To try <a href={`/changelog#${version.replaceAll(".", "")}`} class="text-acid hover:underline">{version}</a>
+                    {" "}once it is published, run <code class="inline-code">pnpm add @mhaadi/svg@{version}</code>.
+                  </p>
+                )}
                 <div class="mt-3 rounded-none border border-coal-4 bg-coal-1 p-4">
                   <p data-fw-show="react" class="font-mono text-xs text-zinc-muted">
                     <span class="text-acid">Peer (React):</span> React 18+ · TypeScript 5+ (optional)
@@ -710,13 +718,10 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
           <section id="local-discovery" class="mb-16">
             <h2 class="docs-heading">Local discovery</h2>
             <p class="docs-body" data-fw-show="react vue svelte solid astro angular">
-              The Vite plugin scans your icon directories at build time and registers them, so
-              <code class="inline-code">&lt;SVG name="social/github"&gt;</code> renders inline with no
-              fetch and no per-icon import. Add the plugin once, then use local files by name.
-              Catalog icons used anywhere in your source, such as
-              <code class="inline-code">lucide:house</code>, are registered the same way — the
-              source scan runs by default, no extra flag
-              (<a href="#catalog-auto" class="text-acid hover:underline">catalog scanning</a>).
+              Add the Vite plugin once to use local files by name, for example
+              <code class="inline-code">&lt;SVG name="social/github"&gt;</code>. The plugin also
+              <a href="#catalog-auto" class="text-acid hover:underline">scans for catalog icons</a>
+              such as <code class="inline-code">lucide:house</code> by default.
             </p>
             <p class="docs-body hidden" data-fw-show="react-native">
               React Native registers local sources ahead of build with
@@ -740,9 +745,8 @@ export default defineConfig({
   ],
 });`} lang="ts" file="vite.config.ts" />
                 <p class="text-sm text-zinc-muted mt-3">
-                  That is the whole setup. The plugin appends a <code class="inline-code">registerLocalSvgs</code>
-                  call to every evaluation of <code class="inline-code">@mhaadi/svg</code>'s local-registry module,
-                  so any <code class="inline-code">&lt;SVG name="..."&gt;</code> resolves without fetching. It also sets
+                  The plugin registers the discovered files through <code class="inline-code">@mhaadi/svg</code>'s
+                  local registry. It sets
                   <code class="inline-code">ssr.noExternal</code> and
                   <code class="inline-code">optimizeDeps.exclude</code> for <code class="inline-code">@mhaadi/svg</code>,
                   so server-rendered and dev-optimized builds pick up the registration.
@@ -774,7 +778,7 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
                   <li>Two directories listing the same name: the first configured directory wins.</li>
                   <li>Symlinked files are followed; symlink loops between directories are skipped.</li>
-                  <li>Traversal is recursive: every <code class="inline-code">.svg</code> under each directory lands in the bundle. Keep icon-only folders.</li>
+                  <li>The plugin discovers <code class="inline-code">.svg</code> files recursively. Keep icon-only folders.</li>
                   <li>Names registered by your own <code class="inline-code">registerLocalSvgs</code> calls always win, because the plugin registers with <code class="inline-code">override: false</code>.</li>
                   <li>A name the plugin did not find still falls back to <code class="inline-code">/assets/svg/{"{name}"}.svg</code>.</li>
                 </ul>
@@ -785,6 +789,38 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                   <code class="inline-code">icons/logo</code>. Within <code class="inline-code">dirs</code> paths
                   must be relative, slash-separated, without globs or <code class="inline-code">..</code>.
                 </p>
+              </div>
+
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="react vue svelte solid astro angular">
+                <h3 class="font-semibold text-[#e8e8e8] mb-3">Production browser bundles</h3>
+                <p class="text-sm text-zinc-muted">
+                  By default, the plugin puts the names it finds in your source in the initial registry.
+                  The other discovered files go into a separate chunk. If an icon name comes from code
+                  the scanner could not see, the first lookup loads that chunk before rendering it.
+                  A name absent from both registries still falls back to its public asset URL.
+                </p>
+                <p class="mt-3 text-sm text-zinc-muted">
+                  Dynamic names or props spreads detected in source keep the full registry up front.
+                  Development and server builds also load the full registry up front. Set
+                  <code class="inline-code">pruneLocal: false</code> to do the same in browser builds.
+                </p>
+              </div>
+
+              <div class="rounded-none border border-coal-4 bg-coal-1 p-5" data-fw-show="react">
+                <h3 class="font-semibold text-[#e8e8e8] mb-3">Static React imports</h3>
+                <p class="mb-3 text-sm text-zinc-muted">
+                  With <code class="inline-code">svgPlugin()</code> enabled, import an SVG file as a React
+                  component. Vite parses and sanitizes the file at build time. The component can render
+                  on the server and hydrate in the browser without loading an SVG parser.
+                </p>
+                <CodeBlock code={`import Logo from "./icons/logo.svg?better-svg";
+
+<Logo size={24} title="Acme" />;`} lang="tsx" />
+                <p class="mt-3 mb-3 text-sm text-zinc-muted">
+                  Add the module declaration in your TypeScript project. In development, use a version of Vite
+                  that exposes its filesystem authorization check.
+                </p>
+                <CodeBlock code={`/// <reference types="@mhaadi/svg/vite/static" />`} lang="ts" file="vite-env.d.ts" />
               </div>
 
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
@@ -803,9 +839,8 @@ src/icons/social/github.svg        → name="social/github"`} lang="text" />
                 <p class="text-sm text-zinc-muted mb-3">
                   Opt-in SVGO minification of files the plugin produces at build time. Install svgo yourself.
                   It is an optional peer of <code class="inline-code">@mhaadi/svg</code>, build-time only,
-                  and never ships to the browser bundle. Discovered files and scanned catalog icons are
-                  the only ones it touches: remote sources, <code class="inline-code">?raw</code> imports,
-                  and hand-registered markup are never optimized.
+                  and never ships to the browser bundle. It applies to discovered files, scanned catalog icons,
+                  and <code class="inline-code">?better-svg</code> imports.
                 </p>
                 <div class="prop-table-wrapper mt-4 overflow-x-auto">
                   <table class="prop-table">
@@ -865,21 +900,17 @@ svgPlugin({
               <div class="rounded-none border border-coal-4 bg-coal-1 p-5">
                 <h3 class="font-semibold text-[#e8e8e8] mb-3"><code class="inline-code">precompiled</code> option</h3>
                 <p class="text-sm text-zinc-muted mb-3">
-                  Turns discovery into build-time mode. The plugin parses (with
-                  <code class="inline-code">@xmldom/xmldom</code>) and sanitizes every discovered file
-                  during the build and registers the resulting tree instead of raw markup. When
-                  <code class="inline-code">svgo</code> is on, the parse consumes the optimized markup. Mounting
-                  <code class="inline-code">&lt;SVG name="..."&gt;</code> then skips XML parsing and the
-                  sanitize pass entirely and only does per-instance work such as id scoping and color
-                  overrides. The trade is bundle size. The parsed tree travels next to the registered markup.
+                  Parse discovered SVGs and scanned catalog icons during the build. With
+                  <code class="inline-code">precompiled: true</code>, the plugin ships the sanitized tree
+                  alongside the registered markup and fills the parsed cache when it registers the icon.
+                  Use this mode to keep the original registered markup in <code class="inline-code">onSvgLoad</code>.
                 </p>
-                <CodeBlock code={`svgPlugin({ dirs: ["src/icons"], svgo: true, precompiled: true });`} lang="ts" />
-                <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Feed it only markup the plugin itself produced, never a hand-built tree.</li>
-                  <li>At runtime the registration validates and re-sanitizes each tree and rejects malformed input with a build error.</li>
-                  <li>On the server the priming parse is best-effort: a failed seed just costs a re-parse, never an error.</li>
-                  <li>Inline SVG only: each entry must be a plain inline <code class="inline-code">{"<svg>"}</code> document (<code class="inline-code">Precompiled SVG "&lt;name&gt;" expects inline svg markup.</code> otherwise).</li>
-                </ul>
+                <CodeBlock code={`svgPlugin({ dirs: ["src/icons"], precompiled: "tree" });`} lang="ts" />
+                <p class="mt-3 text-sm text-zinc-muted">
+                  With <code class="inline-code">precompiled: "tree"</code>, the plugin ships just the parsed tree.
+                  The default renderer sanitizes it on first use, and <code class="inline-code">onSvgLoad</code>
+                  receives XML serialized from the tree. Both modes are opt-in.
+                </p>
               </div>
 
               <div class="rounded-none border border-amber-900/40 bg-amber-950/20 p-5">

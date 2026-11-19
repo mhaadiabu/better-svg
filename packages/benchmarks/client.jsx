@@ -108,7 +108,18 @@ const runSuite = async ({ repetitions = 15, warmups = 3, scenario: selectedScena
     throw new Error("repetitions must be an integer between 1 and 100");
   if (!Number.isInteger(warmups) || warmups < 0 || warmups > 20)
     throw new Error("warmups must be between 0 and 20");
-  if (selectedScenario && !["one", "repeated-1000", "unique-100"].includes(selectedScenario))
+  const workloads = [
+    ["one", [0]],
+    ["grid-24", Array.from({ length: 24 }, (_unused, index) => index % 8)],
+    ["repeated-1000", Array(1000).fill(0)],
+    [
+      "unique-100",
+      Array.from({ length: Math.min(100, names.length) }, (_unused, index) =>
+        Math.floor((index * (names.length - 1)) / (Math.min(100, names.length) - 1 || 1)),
+      ),
+    ],
+  ];
+  if (selectedScenario && !workloads.some(([name]) => name === selectedScenario))
     throw new Error(`Unknown scenario: ${selectedScenario}`);
   if (document.visibilityState !== "visible") throw new Error("The benchmark page must be visible");
   const heapBefore = performance.memory?.usedJSHeapSize ?? null;
@@ -142,16 +153,7 @@ const runSuite = async ({ repetitions = 15, warmups = 3, scenario: selectedScena
     warmups,
     scenarios: [],
   };
-  for (const [scenario, indices] of [
-    ["one", [0]],
-    ["repeated-1000", Array(1000).fill(0)],
-    [
-      "unique-100",
-      Array.from({ length: Math.min(100, names.length) }, (_unused, index) =>
-        Math.floor((index * (names.length - 1)) / (Math.min(100, names.length) - 1 || 1)),
-      ),
-    ],
-  ]) {
+  for (const [scenario, indices] of workloads) {
     if (selectedScenario && selectedScenario !== scenario) continue;
     globalThis.svgBenchmarkToken = crypto.randomUUID();
     const samples = [await sample(indices, "first-use")];

@@ -6,6 +6,8 @@ default. It uses Node scripts, Vite, and an actual browser, not a new test frame
 
 The [November 13 pilot](baselines/2026-11-13/README.md) contains findings, raw
 measurements, and the generated report. It is a decision aid, not a leaderboard.
+The [published versus current comparison](baselines/2026-11-18-release-comparison/README.md)
+adds the npm release and groups competitors by workflow.
 
 ## Run it
 
@@ -56,15 +58,17 @@ collection reject tracked changes to benchmark inputs or a different source comm
 
 ## Comparison groups
 
-- Static assets: Better SVG with optimization off, its current configuration, and
-  an experimental narrow configuration. The precompiled tree and static React
-  import profiles use the same corpus. Named Better SVG profiles disable
-  pruning for the full-catalog comparison.
-  Compare with SVGR with its optimizer disabled and enabled, plus a React inline
-  markup control. The control uses `dangerouslySetInnerHTML`, not generated React
-  child elements, and does not sanitize or scope IDs.
-- Runtime URLs: Better SVG and `react-svg`, loading the same same-origin files.
-  Both retain their normal library caches. Fresh URLs isolate the first sample
+- Static assets: Better SVG and the published Vite SVGR plugin with optimization
+  off and on, plus unplugin-icons using the same local SVG files. The React inline
+  markup control uses raw HTML.
+- Named local icons: published Better SVG and the workspace with optimization off,
+  plus the workspace's current and narrow configurations.
+  Legacy precompiled and current tree-precompiled profiles use the same corpus.
+  Named profiles disable pruning for the full-set comparison and use each
+  package's default behavior for the page that references one icon.
+- Runtime URLs: published and workspace Better SVG, `react-svg`, and
+  `react-inlinesvg` load the same same-origin files. The profiles retain their
+  normal library caches. Fresh URLs isolate the first sample
   from the browser's HTTP cache; later samples reuse the URL.
 - Node SSR: count rendered SVGs before comparing timings. An empty or wrapper-only
   response is unsupported for static SSR, not a performance win.

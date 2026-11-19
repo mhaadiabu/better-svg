@@ -1,0 +1,5297 @@
+{
+  "manifest": {
+    "sourceCommit": "605c0ec33914926704105eb5d2d8971028c8896d",
+    "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+    "entries": [
+      {
+        "name": "lucide-a-arrow-down",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "4a7ffddafbe2f1476c54163bd9ae96c99ab4098ddeb36f04765d06964fc077c6",
+        "bytes": 295
+      },
+      {
+        "name": "lucide-align-horizontal-distribute-end",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "c175529c2f6fe49c1b0ee86e4df80545567a36d1cf7842586580d3ad074c069f",
+        "bytes": 339
+      },
+      {
+        "name": "lucide-ampersand",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "216ba078e5dcbae89bb2f2aee613767b3c58c35606f1e3609a2bd6bdd1389855",
+        "bytes": 315
+      },
+      {
+        "name": "lucide-arrow-big-down-dash",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "bd02da23690a2aa1769f56b6a1176e178b045977a85db3eead4d74e8deeddf20",
+        "bytes": 397
+      },
+      {
+        "name": "lucide-arrow-left-right",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "dd343c9cf410f17db4ee809069b7717ab7c76679a57bc16179e93c4c3dcfeb68",
+        "bytes": 259
+      },
+      {
+        "name": "lucide-asterism",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "aa0b5dcb433d7f49b70b6753d69aefc0d960302a29bfc2b9616a3a6605ff4162",
+        "bytes": 299
+      },
+      {
+        "name": "lucide-badge-exclamation-point",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "e3e362b528f2e57afd2a8a3cb5a4c1510513beae249cb87dea38fec8a2a07eed",
+        "bytes": 392
+      },
+      {
+        "name": "lucide-banknote-arrow-up",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "a95662370f1bd2ff57f9370dde33088512352abba646b3dcd34e96fcc0dcbdfd",
+        "bytes": 355
+      },
+      {
+        "name": "lucide-bean-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "8c65b5860e74ff1861e2a99bc5b1c6d47e4af244674af1622e4e340e74140b8d",
+        "bytes": 445
+      },
+      {
+        "name": "lucide-biceps-flexed",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "06f991a4ae598e937d54946222461d6989e26a587d48bcaebc8a6a27cd00e37d",
+        "bytes": 496
+      },
+      {
+        "name": "lucide-book-audio",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "2921d00203c0a9b130d730e602801b5eca9eefa7fe6456e5430337dd7fe43439",
+        "bytes": 324
+      },
+      {
+        "name": "lucide-book-up",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "65934bf2f4c4165041563f3c7a1a08a4776af6462762f13eaaff312d6b2f1aba",
+        "bytes": 345
+      },
+      {
+        "name": "lucide-brain",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "ea05a01dc7c1a45fcc2c6d64779060519b5522835392e0b6968b43db5b2b2b14",
+        "bytes": 556
+      },
+      {
+        "name": "lucide-bug-play",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "60cb9d4d1c2ebf0ccedec459bc2854c919f0fda623b60fa1905b3bfc83455356",
+        "bytes": 529
+      },
+      {
+        "name": "lucide-calendar-clock",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "ceaa9d9fd8d3e154dba528056fbd25a8539871040b71d940db08d304ff576541",
+        "bytes": 359
+      },
+      {
+        "name": "lucide-candy",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "10291078dd5a018553e910822cd1443789af2e29d9884bdfc91ef64f20e2f894",
+        "bytes": 595
+      },
+      {
+        "name": "lucide-cat",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "6610423f660d184e37c474638b46b708f0cc38bbab6393536f46b6eb7cc445de",
+        "bytes": 477
+      },
+      {
+        "name": "lucide-chart-no-axes-column-decreasing",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "8f7637b0e163cf2f9ff1a3d098ddb399dee4117b669c7e567998221b33dc5030",
+        "bytes": 241
+      },
+      {
+        "name": "lucide-chevron-down",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "539bd8bd16e70bb48ee008f964a0d8e737ed059fea2be5e54f0e645fe140bcde",
+        "bytes": 231
+      },
+      {
+        "name": "lucide-circle-arrow-down-left-exit",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "0b87214a7aef9225d3c7f203aefdcb791c476a982b6f855edeb6b80fafca27ce",
+        "bytes": 263
+      },
+      {
+        "name": "lucide-circle-dot",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "e597bf6a703ce047b4453795dea018564b83767b06fc933c2c0ab49696c42287",
+        "bytes": 277
+      },
+      {
+        "name": "lucide-circle-letter-k",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "067a928c1a13b5f1a38d7c2d254f3e565799bb28e758179fcf5d6e43ec838d9e",
+        "bytes": 282
+      },
+      {
+        "name": "lucide-circle-pile",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "a3021937171d980a8ce42a1f31dcfe5a31225ea763befbb60ed4d0fcef9f18dc",
+        "bytes": 397
+      },
+      {
+        "name": "lucide-clipboard-check",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "449b86002a40e9765405ea441777b73d7f729d6e20338dfefa0f7674c011edeb",
+        "bytes": 377
+      },
+      {
+        "name": "lucide-clock-7",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "aeeabb171c1850dfbdb4ad9b1ac7b29083d4e08e5f28e69e494c1fdd8aba9db0",
+        "bytes": 270
+      },
+      {
+        "name": "lucide-cloud-moon",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "15ea509d904a611e110947ef7cbe165b4617e3d764bf90f77bf00947ca6b3c27",
+        "bytes": 395
+      },
+      {
+        "name": "lucide-columns-3",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "402af3b012eae7de3733ed9e9e4464c4d9d53ec2d2719cc483fcb0cc7395913e",
+        "bytes": 290
+      },
+      {
+        "name": "lucide-copy-slash",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "ee2f28b810a60b1932511d5581a4e37b7c7c64ca5c5c85a2d4c95ca5ec33260a",
+        "bytes": 359
+      },
+      {
+        "name": "lucide-croissant",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "4d7ddfc5b017ee4dc5a90807fea6038815c435f70ec3126547cc78553cf64d3f",
+        "bytes": 613
+      },
+      {
+        "name": "lucide-decimals-arrow-left",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "04869b7a1161ce5e0344e2b5700c080bfe44098e0eb5c6d862a79fd728cc614d",
+        "bytes": 306
+      },
+      {
+        "name": "lucide-disc-3",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "7149c1f5d871d339f974d4d259abb90a3a43cd1d094d10df3f99fd14f6cb5ecb",
+        "bytes": 353
+      },
+      {
+        "name": "lucide-drill",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "7db93adbe052ebf2cc358e21c64a880bfa39cdaa81686162f43f0cb25f41191d",
+        "bytes": 449
+      },
+      {
+        "name": "lucide-ellipsis",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "45ffad1d939f434d8c4247d1877c3caf574017e559b20868fdcf08c838eb4d94",
+        "bytes": 306
+      },
+      {
+        "name": "lucide-face-grinning",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "c192a8a8dce2dbc8f2bca5f5b4023317aaff70a93170956bee12f02d1f1e6fa4",
+        "bytes": 360
+      },
+      {
+        "name": "lucide-file-box",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "2522e57488d68cfdf78f06640e88eddcaa5ab8467c3bb6e18fe38dc2df35598e",
+        "bytes": 602
+      },
+      {
+        "name": "lucide-file-image",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "2e0f5c7ff0fbe5fa3592c16f4efbecdd8cc70ce3f18bbccc044b12816b41c9ec",
+        "bytes": 462
+      },
+      {
+        "name": "lucide-file-scan",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "6edf452f3aae2606a259e49e1594cd84b072cc969e044fad2e7941810760e7a2",
+        "bytes": 438
+      },
+      {
+        "name": "lucide-file-x-2",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "3fae28dc373f9f25910e1b0260bbc207e133c1e6873301d7b85e568ce734ccfc",
+        "bytes": 328
+      },
+      {
+        "name": "lucide-flask-conical-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "14bd01941f82aec7a3b4932e2c5778f917db75ab7016c615037ff8fe1c0fa1db",
+        "bytes": 325
+      },
+      {
+        "name": "lucide-folder-heart",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "8b82fa6b6b7f052bc6e9500e60729ed847b120595e19d6388b63faa0e9cb50bd",
+        "bytes": 450
+      },
+      {
+        "name": "lucide-folders",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "25db1305a0b18e51d6143c8f8df5496532c456f9a654cc78acc4ea6a6c55a227",
+        "bytes": 419
+      },
+      {
+        "name": "lucide-gap-horizontal",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "caa4d309f6b76a73576392c8e7a759ae2ca5cef39e9e68a69847ed3c2a5cafd4",
+        "bytes": 324
+      },
+      {
+        "name": "lucide-git-pull-request",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "6e1ea5f17bcab656c0bec916ad6af8a67ba33035514347bd049d4cef8a0605e8",
+        "bytes": 316
+      },
+      {
+        "name": "lucide-grape",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "3501950db95490b002dfe5eb3449231d0368a504abd4620bd843fb4b7ebe7a20",
+        "bytes": 525
+      },
+      {
+        "name": "lucide-hand-coins",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "32a74ab769a89061de313c41c4e6ceb0ee40e2346a58b43480273bfa3956d9fd",
+        "bytes": 447
+      },
+      {
+        "name": "lucide-heading-2",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "304e8f32d41f4d0b832e2d95069a6215ad298d732b1d9068063fcc4abe4fe2d8",
+        "bytes": 276
+      },
+      {
+        "name": "lucide-hockey-stick",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "678f0208c487d5ae6a015fec68835e5ee1666443c1e5baf095b19656b274ae07",
+        "bytes": 475
+      },
+      {
+        "name": "lucide-image-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "4b9afd8c4eaf13f0b67735b39140f6ea0a8a754e7ff58d5f0984d0d04abc46cc",
+        "bytes": 397
+      },
+      {
+        "name": "lucide-kanban",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "fdc7f832f3e738e0adbda511290773ee11150cbe27b5cd39d96432b74e6e21b6",
+        "bytes": 240
+      },
+      {
+        "name": "lucide-laptop-minimal-check",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "0bbea20e7f1a6edd9ce03e571dbe6cde5ca3e6aa6d63da5729c96b13f876d3d2",
+        "bytes": 296
+      },
+      {
+        "name": "lucide-layout-panel-top",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "ba6616b1557cca4cf77fee89b1236e56b1a51b2fc342033f116f37307d9e1cde",
+        "bytes": 359
+      },
+      {
+        "name": "lucide-letter-n",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "dd6232025f8f15f47b297e50255a1a949b86c3f9c72da0b75cb0cc9994f1e33b",
+        "bytes": 290
+      },
+      {
+        "name": "lucide-lightbulb-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "5fa99951ebbe6bbf6abdfdbd4f64a1b066fed354d34e614dc29bec5f36f5a479",
+        "bytes": 341
+      },
+      {
+        "name": "lucide-list-end",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "83db55bf4e3d974c3507907fcf142239d7827a99c3b04168e86b74cba662c3fa",
+        "bytes": 297
+      },
+      {
+        "name": "lucide-locate-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "10ccae92078018c6a4bd814cf6ce26076459264fa17afbc944b2b8a2e599a47b",
+        "bytes": 317
+      },
+      {
+        "name": "lucide-mail-question-mark",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "7589ffaf340712e68fbfbb43d8120725618767a2f185aff8ed5dd9eb3f5ad687",
+        "bytes": 400
+      },
+      {
+        "name": "lucide-map-pinned",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "8e0e779f7fe91c63074a64de6fe3ed4de4c8581ecfd8511cead7b19bdb155fc2",
+        "bytes": 509
+      },
+      {
+        "name": "lucide-message-circle-check",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "38a169a006edb4e2bc553fba6b79d5272f2bfad067f1801893ecf28b2686b647",
+        "bytes": 380
+      },
+      {
+        "name": "lucide-message-square-lock",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "0a6f0b573e44dcf37ef99035492a6c7891eca7682280d4cd9bd95de30d6a4810",
+        "bytes": 415
+      },
+      {
+        "name": "lucide-milestone",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "9ea25402eac25bebdfe58ef91092222e8cc72d25c467cf4c189ee2cfedac372d",
+        "bytes": 362
+      },
+      {
+        "name": "lucide-monitor-up",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "cca3a2f645645cffbd94de5c8044fac8805f3eb40ff4622d03efb770f96679ac",
+        "bytes": 322
+      },
+      {
+        "name": "lucide-mouth",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "7d26e91e57b04ecd8b5f68f94e2753ab8d48cd85a79767e39a51fb6e15fcc837",
+        "bytes": 496
+      },
+      {
+        "name": "lucide-navigation-2-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "5ae7a316e90f789e0ec82fed6bb466e0d4e21f678f64a8c223e67dbac87b07b5",
+        "bytes": 289
+      },
+      {
+        "name": "lucide-omega",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "f51f560fa56f7df61f3db2f904d22a8b12e736719481561445425a29b67cdfd3",
+        "bytes": 341
+      },
+      {
+        "name": "lucide-panel-bottom",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "9144e4425169d19bff2b10da1edbe46f60001ca68c409b5cf707c3a18d34f059",
+        "bytes": 283
+      },
+      {
+        "name": "lucide-paper-bag",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "6ef3e92dc894e7d2d6f465f2468f97f7e540f60742d2f2cdd55314cf27141fae",
+        "bytes": 499
+      },
+      {
+        "name": "lucide-person-standing",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "8b203338ea8b35c2524a2d43afb0b3fbb59e27e82ff40eddeefda3907c82c830",
+        "bytes": 288
+      },
+      {
+        "name": "lucide-pill",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "20b4520676fda5022751d45c3ae44bc3b4124b10282a942924943c32679cf718",
+        "bytes": 292
+      },
+      {
+        "name": "lucide-podcast",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "a855ad859f442c54160e4c1234ff3f87fe28dfdb67115cf60041e331873afbf0",
+        "bytes": 411
+      },
+      {
+        "name": "lucide-radar",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "ca2743521283c3f514a8ce3dd22e9f92c5f8d35b8d8072eaa98dde5790795af9",
+        "bytes": 448
+      },
+      {
+        "name": "lucide-receipt-turkish-lira",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "1e7d17d5536cb7b62ce63db82db941a95ac46c87fffa89a50ea9b225305c59d9",
+        "bytes": 707
+      },
+      {
+        "name": "lucide-replace",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "d42e303589783a99ada1274544be26d066df7901731b135f6678061412223b30",
+        "bytes": 394
+      },
+      {
+        "name": "lucide-route",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "afd2a574f6a6d2ee9102a8149d731d67aff8ee2d3b71c29c43322e9bccc61a9a",
+        "bytes": 329
+      },
+      {
+        "name": "lucide-save-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "cc1b6f077ab8872ddd7ca978fafcd668f92fcdb82190c40ac79829e364f98b8b",
+        "bytes": 404
+      },
+      {
+        "name": "lucide-scooter",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "c6b4549f2e3129efc1636205d7e3d59c52d29d050b3afdba865a2d660394adc2",
+        "bytes": 384
+      },
+      {
+        "name": "lucide-server-crash",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "990977d34df184e51a9bb388f5fe26560b9f6e8f85fa07e17507c73b42fc3bfe",
+        "bytes": 419
+      },
+      {
+        "name": "lucide-shield-keyhole",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "dadfebf98eec9071866df2a1bb9d5148d4ed93ee7f9a84dae235c0eba95fd6d3",
+        "bytes": 425
+      },
+      {
+        "name": "lucide-shrimp-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "416cd155cd86df69b4f5015f3c91414350bb96de63ebb64ec1185be32444d08a",
+        "bytes": 546
+      },
+      {
+        "name": "lucide-slice",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "0fe5a93c2e212d0237e014ddf7e5d5718697242b089fec8be2fb01a2222d4236",
+        "bytes": 309
+      },
+      {
+        "name": "lucide-spell-check-2",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "38f93727e1a7f734496397e7857bead7097903b9e143bda8e528eaa7dfa21a81",
+        "bytes": 366
+      },
+      {
+        "name": "lucide-square-arrow-left-enter",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "48a3485e93302dcb9a368abad76ec7d908308b8be56826f107f8cf5793839643",
+        "bytes": 332
+      },
+      {
+        "name": "lucide-square-check-big",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "fefe9401977dfc7f5c7060a645f45546bb7f5bf986c2ee32e2732937ff586e1d",
+        "bytes": 318
+      },
+      {
+        "name": "lucide-square-divide",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "6c5f081f674b15a304d9ca26b44c864e37c1c2511c59052876e2c5f8d4a8ef3b",
+        "bytes": 300
+      },
+      {
+        "name": "lucide-square-letter-o",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "8690441519792db8e90b3878691bc0f33a9f554d812872d0fa70bd1644dad80e",
+        "bytes": 294
+      },
+      {
+        "name": "lucide-square-padding-horizontal",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "3c35199763260f6c364f4371c0877738d518c5ac1a7272751905d70afcc79220",
+        "bytes": 290
+      },
+      {
+        "name": "lucide-square-square",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "d20bdc85b2a627f0106f13063a38d1242a3efb7b3252eadef0424f5711cb2e49",
+        "bytes": 310
+      },
+      {
+        "name": "lucide-star-off",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "8537e8fc84309a02e1c8e35d7e055430d2a923b3262ef1d3ce1d7b04b8e73748",
+        "bytes": 570
+      },
+      {
+        "name": "lucide-stroke-line-cap-square",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "4b2ad660e2e3dafcdad2c208766d16f1f55e4180ec615e99fa2263367a5d7815",
+        "bytes": 284
+      },
+      {
+        "name": "lucide-table-cells-merge",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "d43832a7da60f94c86bd260854358fa4589a0e57b167b805cddfe2c1357991b3",
+        "bytes": 305
+      },
+      {
+        "name": "lucide-tent",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "b572095674ad4e63b92f0c3d71e779e82da3fd97bffd75ec16e433761313b9df",
+        "bytes": 271
+      },
+      {
+        "name": "lucide-theater",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "d8970a2f65864f58afe007c0c2001709ac0a233af6b0fdf3c812df2ee6cefd2e",
+        "bytes": 420
+      },
+      {
+        "name": "lucide-toilet",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "ba99c510ed49302782f5d266ecd9a60e3249a5caffa5b625698a656fed89c34b",
+        "bytes": 416
+      },
+      {
+        "name": "lucide-trash",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "a916633f584a6d1b315ea4e9e65b945651d38b01a75e9ce6c4d2e8be2608348c",
+        "bytes": 318
+      },
+      {
+        "name": "lucide-turntable",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "9df1bedec5b1abd0be66c16e8086914b3cc82998d8c7e13ea230509e8a77d685",
+        "bytes": 343
+      },
+      {
+        "name": "lucide-upload",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "a963104d1f2ced18bcab6c288fe79759e6ac7f2d21d73a00384460b817b9be60",
+        "bytes": 281
+      },
+      {
+        "name": "lucide-user-round-pen",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "11f3183ba54adf6807114640b0c828e90d79944ff68c4a7012bdc31f658b1f71",
+        "bytes": 409
+      },
+      {
+        "name": "lucide-vector-square",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "c95cfad85b01d911da191dc35b36c1238a733435299b681cb1ea2b59666a27b4",
+        "bytes": 475
+      },
+      {
+        "name": "lucide-wallet-cards",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "d694c780ca6e77c616c774ea3dbdda3f1e964f0ccb9fbfe7d16f667a4a21544e",
+        "bytes": 357
+      },
+      {
+        "name": "lucide-wheat",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "bc60ac5c0e1f02b08c598dfc4091075f113b221b78f1d7984150a23423a04429",
+        "bytes": 771
+      },
+      {
+        "name": "lucide-wrench",
+        "group": "catalog",
+        "source": "@iconify-json/lucide@1.2.154",
+        "sha256": "145cacb87decea2f95bc8e6527ab277bd1dd5eb43734598f69e898d064fd9a09",
+        "bytes": 412
+      },
+      {
+        "name": "repository-favicon",
+        "group": "repository",
+        "source": "apps/web/public/favicon.svg",
+        "sha256": "42bda13d390e065c7ec421e4b8dbe06651de8b4eb6a12ce59854a8b84c243d57",
+        "bytes": 272
+      },
+      {
+        "name": "repository-logo",
+        "group": "repository",
+        "source": "apps/web/public/assets/svg/logo.svg",
+        "sha256": "ec4dc889a23e9b9412522bbbab595ea191c9a46ddeb463d1b41d7ae368d25f78",
+        "bytes": 288
+      },
+      {
+        "name": "accessible",
+        "group": "capability",
+        "source": "fixtures/accessible.svg",
+        "sha256": "aa4c1da5908f757e8b5618d40a36a52fa2f88c8796a812d4df3a1c5a9a827591",
+        "bytes": 219
+      },
+      {
+        "name": "caller-gradient",
+        "group": "capability",
+        "source": "fixtures/caller-gradient.svg",
+        "sha256": "8e6442318ea4ad3e9e5b42e594e22f5bb4eab0d4dba33dd966ca2be831e17a6f",
+        "bytes": 238
+      },
+      {
+        "name": "css-hierarchy",
+        "group": "capability",
+        "source": "fixtures/css-hierarchy.svg",
+        "sha256": "2f5acdc8f6bd02eb588729f766a109f1ab5a996ca9c3b72a4eeec0568d8a286e",
+        "bytes": 162
+      },
+      {
+        "name": "css-shape",
+        "group": "capability",
+        "source": "fixtures/css-shape.svg",
+        "sha256": "afca1248e088ce57e93d5dfd66897500c3075818d226519eb08192e373ad9e73",
+        "bytes": 147
+      },
+      {
+        "name": "foreign-content",
+        "group": "capability",
+        "source": "fixtures/foreign-content.svg",
+        "sha256": "4b706227452a02a34229f86c8ca3b44f60b3f35666277580b5adeb5d86a5d8f5",
+        "bytes": 241
+      },
+      {
+        "name": "mask-paint",
+        "group": "capability",
+        "source": "fixtures/mask-paint.svg",
+        "sha256": "18d9d5d889c8c82ae8547115af2a88ea863ef12b8bb6ce94db76e523812c183f",
+        "bytes": 276
+      },
+      {
+        "name": "paint-none",
+        "group": "capability",
+        "source": "fixtures/paint-none.svg",
+        "sha256": "9695468ce28c9be66cda01bf75c472ebe8133a13d35132b0f2e71c4064f9ad73",
+        "bytes": 140
+      },
+      {
+        "name": "references",
+        "group": "capability",
+        "source": "fixtures/references.svg",
+        "sha256": "937242feb53af3cf495a4b2d32f10417219086a198f3eedb0ed4522aa47b439f",
+        "bytes": 251
+      }
+    ],
+    "versions": {
+      "react": "19.2.6",
+      "react-dom": "19.2.6",
+      "react-svg": "19.2.7",
+      "react-inlinesvg": "4.6.0",
+      "vite-plugin-svgr": "5.2.0",
+      "unplugin-icons": "24.0.0",
+      "@svgr/core": "8.1.0",
+      "svgo": "4.1.0",
+      "vite": "8.3.8"
+    },
+    "betterSvg": {
+      "published": "0.4.2",
+      "workspace": "0.6.2"
+    },
+    "svgrSvgo": "3.3.5",
+    "experimentHash": "959072e83b00ea78645fe1de9c97ce7d6104d5af2d527a0c88782238129e0797"
+  },
+  "environment": {
+    "node": "v26.13.1",
+    "platform": "linux",
+    "release": "7.3.4-arch1-2",
+    "cpu": "Intel(R) Core(TM) i7-4600U CPU @ 2.10GHz",
+    "logicalCpus": 4,
+    "sourceCommit": "605c0ec33914926704105eb5d2d8971028c8896d"
+  },
+  "repetitions": 5,
+  "profiles": [
+    {
+      "profile": "released-raw",
+      "buildMs": {
+        "samples": [
+          210.79839899999996,
+          178.02757700000075,
+          162.85742699999537,
+          149.14829100000497,
+          144.2389489999914
+        ],
+        "median": 162.85742699999537,
+        "p95": 210.79839899999996
+      },
+      "dev": [
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-raw/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=fff3c7ea\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-raw/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=9da30880\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-raw/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=664cdc05\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-raw/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=4b5b25b1\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-raw/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=449c2752\". Does the file exist?"
+        }
+      ],
+      "javascript": {
+        "initialGzip": 76632,
+        "totalGzip": 106999,
+        "chunks": 2
+      },
+      "sparseJavascript": {
+        "initialGzip": 73813,
+        "totalGzip": 104183,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-Dhbamuaq.js",
+          "raw": 256119,
+          "gzip": 76632,
+          "brotli": 72405
+        },
+        {
+          "name": "xml-BBeLmOph.js",
+          "raw": 85179,
+          "gzip": 30367,
+          "brotli": 28351
+        },
+        {
+          "name": "index.html",
+          "raw": 411,
+          "gzip": 279,
+          "brotli": 208
+        }
+      ],
+      "totalBytes": {
+        "raw": 341709,
+        "gzip": 107278,
+        "brotli": 100964
+      },
+      "startupEntryMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "released-precompiled",
+      "buildMs": {
+        "samples": [
+          182.91382599999997,
+          470.3685009999972,
+          158.97906100000546,
+          236.55075099998794,
+          178.84565000000293
+        ],
+        "median": 182.91382599999997,
+        "p95": 470.3685009999972
+      },
+      "dev": [
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-precompiled/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=af28e6dc\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-precompiled/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=8058e6a5\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-precompiled/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=f515e133\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-precompiled/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=c1072206\". Does the file exist?"
+        },
+        {
+          "status": "error",
+          "startupEntryMs": null,
+          "editTransformMs": null,
+          "error": "Failed to resolve import \"/home/haadi/Code/better-svg/packages/benchmarks/.cache/released-precompiled/icons\" from \"../../node_modules/.pnpm/@mhaadi+svg@0.4.2_@angular+common@20.3.35_@angular+core@20.3.35_@angular+compiler@20.3._39ca3c8ecfead3fca6f41385349e176e/node_modules/@mhaadi/svg/dist/core/local.js?v=c54b8903\". Does the file exist?"
+        }
+      ],
+      "javascript": {
+        "initialGzip": 84549,
+        "totalGzip": 114917,
+        "chunks": 2
+      },
+      "sparseJavascript": {
+        "initialGzip": 81583,
+        "totalGzip": 111953,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-DCyFb7Gr.js",
+          "raw": 328731,
+          "gzip": 84549,
+          "brotli": 74977
+        },
+        {
+          "name": "xml-DHdCm29X.js",
+          "raw": 85179,
+          "gzip": 30368,
+          "brotli": 28351
+        },
+        {
+          "name": "index.html",
+          "raw": 419,
+          "gzip": 285,
+          "brotli": 213
+        }
+      ],
+      "totalBytes": {
+        "raw": 414329,
+        "gzip": 115202,
+        "brotli": 103541
+      },
+      "startupEntryMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "released-url",
+      "buildMs": {
+        "samples": [
+          122.6336940000001,
+          323.05072199999995,
+          153.10952100000577,
+          139.6775570000027,
+          141.62432600000466
+        ],
+        "median": 141.62432600000466,
+        "p95": 323.05072199999995
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 188.010268,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 235.81368999999995,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 207.78084099999995,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 172.58723400000002,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 305.5522920000001,
+          "editTransformMs": null
+        }
+      ],
+      "javascript": {
+        "initialGzip": 67655,
+        "totalGzip": 67655,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 64803,
+        "totalGzip": 64803,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-DWFeIN30.js",
+          "raw": 212141,
+          "gzip": 67655,
+          "brotli": 64322
+        },
+        {
+          "name": "lucide-a-arrow-down.svg",
+          "raw": 295,
+          "gzip": 217,
+          "brotli": 182
+        },
+        {
+          "name": "lucide-align-horizontal-distribute-end.svg",
+          "raw": 339,
+          "gzip": 208,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-ampersand.svg",
+          "raw": 315,
+          "gzip": 224,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-arrow-big-down-dash.svg",
+          "raw": 397,
+          "gzip": 245,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-arrow-left-right.svg",
+          "raw": 259,
+          "gzip": 191,
+          "brotli": 156
+        },
+        {
+          "name": "lucide-asterism.svg",
+          "raw": 299,
+          "gzip": 199,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-badge-exclamation-point.svg",
+          "raw": 392,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-banknote-arrow-up.svg",
+          "raw": 355,
+          "gzip": 242,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-bean-off.svg",
+          "raw": 445,
+          "gzip": 287,
+          "brotli": 254
+        },
+        {
+          "name": "lucide-biceps-flexed.svg",
+          "raw": 496,
+          "gzip": 318,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-book-audio.svg",
+          "raw": 324,
+          "gzip": 224,
+          "brotli": 192
+        },
+        {
+          "name": "lucide-book-up.svg",
+          "raw": 345,
+          "gzip": 233,
+          "brotli": 200
+        },
+        {
+          "name": "lucide-brain.svg",
+          "raw": 556,
+          "gzip": 292,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-bug-play.svg",
+          "raw": 529,
+          "gzip": 312,
+          "brotli": 283
+        },
+        {
+          "name": "lucide-calendar-clock.svg",
+          "raw": 359,
+          "gzip": 245,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-candy.svg",
+          "raw": 595,
+          "gzip": 303,
+          "brotli": 272
+        },
+        {
+          "name": "lucide-cat.svg",
+          "raw": 477,
+          "gzip": 316,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-chart-no-axes-column-decreasing.svg",
+          "raw": 241,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-chevron-down.svg",
+          "raw": 231,
+          "gzip": 168,
+          "brotli": 136
+        },
+        {
+          "name": "lucide-circle-arrow-down-left-exit.svg",
+          "raw": 263,
+          "gzip": 190,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-circle-dot.svg",
+          "raw": 277,
+          "gzip": 178,
+          "brotli": 149
+        },
+        {
+          "name": "lucide-circle-letter-k.svg",
+          "raw": 282,
+          "gzip": 204,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-circle-pile.svg",
+          "raw": 397,
+          "gzip": 196,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-clipboard-check.svg",
+          "raw": 377,
+          "gzip": 236,
+          "brotli": 206
+        },
+        {
+          "name": "lucide-clock-7.svg",
+          "raw": 270,
+          "gzip": 192,
+          "brotli": 165
+        },
+        {
+          "name": "lucide-cloud-moon.svg",
+          "raw": 395,
+          "gzip": 270,
+          "brotli": 237
+        },
+        {
+          "name": "lucide-columns-3.svg",
+          "raw": 290,
+          "gzip": 199,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-copy-slash.svg",
+          "raw": 359,
+          "gzip": 237,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-croissant.svg",
+          "raw": 613,
+          "gzip": 332,
+          "brotli": 305
+        },
+        {
+          "name": "lucide-decimals-arrow-left.svg",
+          "raw": 306,
+          "gzip": 216,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-disc-3.svg",
+          "raw": 353,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-drill.svg",
+          "raw": 449,
+          "gzip": 263,
+          "brotli": 231
+        },
+        {
+          "name": "lucide-ellipsis.svg",
+          "raw": 306,
+          "gzip": 183,
+          "brotli": 155
+        },
+        {
+          "name": "lucide-face-grinning.svg",
+          "raw": 360,
+          "gzip": 243,
+          "brotli": 216
+        },
+        {
+          "name": "lucide-file-box.svg",
+          "raw": 602,
+          "gzip": 338,
+          "brotli": 313
+        },
+        {
+          "name": "lucide-file-image.svg",
+          "raw": 462,
+          "gzip": 284,
+          "brotli": 250
+        },
+        {
+          "name": "lucide-file-scan.svg",
+          "raw": 438,
+          "gzip": 259,
+          "brotli": 226
+        },
+        {
+          "name": "lucide-file-x-2.svg",
+          "raw": 328,
+          "gzip": 221,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-flask-conical-off.svg",
+          "raw": 325,
+          "gzip": 231,
+          "brotli": 198
+        },
+        {
+          "name": "lucide-folder-heart.svg",
+          "raw": 450,
+          "gzip": 278,
+          "brotli": 245
+        },
+        {
+          "name": "lucide-folders.svg",
+          "raw": 419,
+          "gzip": 250,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-gap-horizontal.svg",
+          "raw": 324,
+          "gzip": 205,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-git-pull-request.svg",
+          "raw": 316,
+          "gzip": 210,
+          "brotli": 180
+        },
+        {
+          "name": "lucide-grape.svg",
+          "raw": 525,
+          "gzip": 262,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-hand-coins.svg",
+          "raw": 447,
+          "gzip": 289,
+          "brotli": 261
+        },
+        {
+          "name": "lucide-heading-2.svg",
+          "raw": 276,
+          "gzip": 202,
+          "brotli": 172
+        },
+        {
+          "name": "lucide-hockey-stick.svg",
+          "raw": 475,
+          "gzip": 318,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-image-off.svg",
+          "raw": 397,
+          "gzip": 262,
+          "brotli": 233
+        },
+        {
+          "name": "lucide-kanban.svg",
+          "raw": 240,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-laptop-minimal-check.svg",
+          "raw": 296,
+          "gzip": 207,
+          "brotli": 178
+        },
+        {
+          "name": "lucide-layout-panel-top.svg",
+          "raw": 359,
+          "gzip": 193,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-letter-n.svg",
+          "raw": 290,
+          "gzip": 203,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-lightbulb-off.svg",
+          "raw": 341,
+          "gzip": 239,
+          "brotli": 204
+        },
+        {
+          "name": "lucide-list-end.svg",
+          "raw": 297,
+          "gzip": 211,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-locate-off.svg",
+          "raw": 317,
+          "gzip": 220,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-mail-question-mark.svg",
+          "raw": 400,
+          "gzip": 255,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-map-pinned.svg",
+          "raw": 509,
+          "gzip": 317,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-message-circle-check.svg",
+          "raw": 380,
+          "gzip": 257,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-message-square-lock.svg",
+          "raw": 415,
+          "gzip": 264,
+          "brotli": 232
+        },
+        {
+          "name": "lucide-milestone.svg",
+          "raw": 362,
+          "gzip": 238,
+          "brotli": 207
+        },
+        {
+          "name": "lucide-monitor-up.svg",
+          "raw": 322,
+          "gzip": 219,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-mouth.svg",
+          "raw": 496,
+          "gzip": 298,
+          "brotli": 269
+        },
+        {
+          "name": "lucide-navigation-2-off.svg",
+          "raw": 289,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-omega.svg",
+          "raw": 341,
+          "gzip": 228,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-panel-bottom.svg",
+          "raw": 283,
+          "gzip": 193,
+          "brotli": 164
+        },
+        {
+          "name": "lucide-paper-bag.svg",
+          "raw": 499,
+          "gzip": 309,
+          "brotli": 280
+        },
+        {
+          "name": "lucide-person-standing.svg",
+          "raw": 288,
+          "gzip": 209,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-pill.svg",
+          "raw": 292,
+          "gzip": 200,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-podcast.svg",
+          "raw": 411,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-radar.svg",
+          "raw": 448,
+          "gzip": 290,
+          "brotli": 263
+        },
+        {
+          "name": "lucide-receipt-turkish-lira.svg",
+          "raw": 707,
+          "gzip": 289,
+          "brotli": 255
+        },
+        {
+          "name": "lucide-replace.svg",
+          "raw": 394,
+          "gzip": 245,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-route.svg",
+          "raw": 329,
+          "gzip": 219,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-save-off.svg",
+          "raw": 404,
+          "gzip": 261,
+          "brotli": 229
+        },
+        {
+          "name": "lucide-scooter.svg",
+          "raw": 384,
+          "gzip": 252,
+          "brotli": 222
+        },
+        {
+          "name": "lucide-server-crash.svg",
+          "raw": 419,
+          "gzip": 239,
+          "brotli": 212
+        },
+        {
+          "name": "lucide-shield-keyhole.svg",
+          "raw": 425,
+          "gzip": 286,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-shrimp-off.svg",
+          "raw": 546,
+          "gzip": 337,
+          "brotli": 309
+        },
+        {
+          "name": "lucide-slice.svg",
+          "raw": 309,
+          "gzip": 218,
+          "brotli": 183
+        },
+        {
+          "name": "lucide-spell-check-2.svg",
+          "raw": 366,
+          "gzip": 208,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-square-arrow-left-enter.svg",
+          "raw": 332,
+          "gzip": 219,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-square-check-big.svg",
+          "raw": 318,
+          "gzip": 217,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-square-divide.svg",
+          "raw": 300,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-square-letter-o.svg",
+          "raw": 294,
+          "gzip": 196,
+          "brotli": 168
+        },
+        {
+          "name": "lucide-square-padding-horizontal.svg",
+          "raw": 290,
+          "gzip": 197,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-square-square.svg",
+          "raw": 310,
+          "gzip": 191,
+          "brotli": 158
+        },
+        {
+          "name": "lucide-star-off.svg",
+          "raw": 570,
+          "gzip": 330,
+          "brotli": 301
+        },
+        {
+          "name": "lucide-stroke-line-cap-square.svg",
+          "raw": 284,
+          "gzip": 204,
+          "brotli": 170
+        },
+        {
+          "name": "lucide-table-cells-merge.svg",
+          "raw": 305,
+          "gzip": 215,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-tent.svg",
+          "raw": 271,
+          "gzip": 194,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-theater.svg",
+          "raw": 420,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-toilet.svg",
+          "raw": 416,
+          "gzip": 254,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-trash.svg",
+          "raw": 318,
+          "gzip": 215,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-turntable.svg",
+          "raw": 343,
+          "gzip": 233,
+          "brotli": 202
+        },
+        {
+          "name": "lucide-upload.svg",
+          "raw": 281,
+          "gzip": 201,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-user-round-pen.svg",
+          "raw": 409,
+          "gzip": 271,
+          "brotli": 241
+        },
+        {
+          "name": "lucide-vector-square.svg",
+          "raw": 475,
+          "gzip": 250,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-wallet-cards.svg",
+          "raw": 357,
+          "gzip": 239,
+          "brotli": 210
+        },
+        {
+          "name": "lucide-wheat.svg",
+          "raw": 771,
+          "gzip": 313,
+          "brotli": 274
+        },
+        {
+          "name": "lucide-wrench.svg",
+          "raw": 412,
+          "gzip": 266,
+          "brotli": 236
+        },
+        {
+          "name": "repository-favicon.svg",
+          "raw": 272,
+          "gzip": 188,
+          "brotli": 161
+        },
+        {
+          "name": "repository-logo.svg",
+          "raw": 288,
+          "gzip": 187,
+          "brotli": 160
+        },
+        {
+          "name": "index.html",
+          "raw": 411,
+          "gzip": 282,
+          "brotli": 212
+        }
+      ],
+      "totalBytes": {
+        "raw": 251076,
+        "gzip": 92319,
+        "brotli": 85787
+      },
+      "startupEntryMs": {
+        "samples": [
+          188.010268,
+          235.81368999999995,
+          207.78084099999995,
+          172.58723400000002,
+          305.5522920000001
+        ],
+        "median": 207.78084099999995,
+        "p95": 305.5522920000001
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-raw",
+      "buildMs": {
+        "samples": [
+          126.74271499999986,
+          213.0774599999968,
+          153.63815699999395,
+          139.30458900000667,
+          133.964009000003
+        ],
+        "median": 139.30458900000667,
+        "p95": 213.0774599999968
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 195.17643600000002,
+          "editTransformMs": 100.19273499999997
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 201.940404,
+          "editTransformMs": 104.81732
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 196.840841,
+          "editTransformMs": 113.6389650000001
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 169.57545200000004,
+          "editTransformMs": 85.72138400000006
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 172.77212599999996,
+          "editTransformMs": 76.70295900000008
+        }
+      ],
+      "javascript": {
+        "initialGzip": 80815,
+        "totalGzip": 80815,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 71691,
+        "totalGzip": 78728,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-LsxCvbnF.js",
+          "raw": 274736,
+          "gzip": 80815,
+          "brotli": 76369
+        },
+        {
+          "name": "index.html",
+          "raw": 409,
+          "gzip": 279,
+          "brotli": 210
+        }
+      ],
+      "totalBytes": {
+        "raw": 275145,
+        "gzip": 81094,
+        "brotli": 76579
+      },
+      "startupEntryMs": {
+        "samples": [
+          195.17643600000002,
+          201.940404,
+          196.840841,
+          169.57545200000004,
+          172.77212599999996
+        ],
+        "median": 195.17643600000002,
+        "p95": 201.940404
+      },
+      "editTransformMs": {
+        "samples": [
+          100.19273499999997,
+          104.81732,
+          113.6389650000001,
+          85.72138400000006,
+          76.70295900000008
+        ],
+        "median": 100.19273499999997,
+        "p95": 113.6389650000001
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-current",
+      "buildMs": {
+        "samples": [
+          489.90930100000014,
+          389.95723200000066,
+          235.43767300000036,
+          178.44909399999597,
+          157.46639299999515
+        ],
+        "median": 235.43767300000036,
+        "p95": 489.90930100000014
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 159.53875399999998,
+          "editTransformMs": 233.82391700000005
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 235.321007,
+          "editTransformMs": 296.11929899999996
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 203.356832,
+          "editTransformMs": 277.0791489999999
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 128.930569,
+          "editTransformMs": 152.611361
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 120.67237699999998,
+          "editTransformMs": 140.8745429999999
+        }
+      ],
+      "javascript": {
+        "initialGzip": 80757,
+        "totalGzip": 80757,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 71691,
+        "totalGzip": 78683,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-C66VNF7O.js",
+          "raw": 274612,
+          "gzip": 80757,
+          "brotli": 76328
+        },
+        {
+          "name": "index.html",
+          "raw": 413,
+          "gzip": 284,
+          "brotli": 210
+        }
+      ],
+      "totalBytes": {
+        "raw": 275025,
+        "gzip": 81041,
+        "brotli": 76538
+      },
+      "startupEntryMs": {
+        "samples": [
+          159.53875399999998,
+          235.321007,
+          203.356832,
+          128.930569,
+          120.67237699999998
+        ],
+        "median": 159.53875399999998,
+        "p95": 235.321007
+      },
+      "editTransformMs": {
+        "samples": [
+          233.82391700000005,
+          296.11929899999996,
+          277.0791489999999,
+          152.611361,
+          140.8745429999999
+        ],
+        "median": 233.82391700000005,
+        "p95": 296.11929899999996
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-narrow",
+      "buildMs": {
+        "samples": [
+          167.59081399999923,
+          263.70698300000004,
+          185.5768640000024,
+          144.0273840000009,
+          144.59399700000358
+        ],
+        "median": 167.59081399999923,
+        "p95": 263.70698300000004
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 237.80220500000001,
+          "editTransformMs": 160.98313099999996
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 206.90371699999997,
+          "editTransformMs": 180.18292999999994
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 205.18226299999998,
+          "editTransformMs": 173.19507999999996
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 176.262273,
+          "editTransformMs": 143.46481900000003
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 161.786712,
+          "editTransformMs": 156.33142999999995
+        }
+      ],
+      "javascript": {
+        "initialGzip": 80764,
+        "totalGzip": 80764,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 71688,
+        "totalGzip": 78685,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-DUAMu9au.js",
+          "raw": 274684,
+          "gzip": 80764,
+          "brotli": 76335
+        },
+        {
+          "name": "index.html",
+          "raw": 412,
+          "gzip": 283,
+          "brotli": 209
+        }
+      ],
+      "totalBytes": {
+        "raw": 275096,
+        "gzip": 81047,
+        "brotli": 76544
+      },
+      "startupEntryMs": {
+        "samples": [
+          237.80220500000001,
+          206.90371699999997,
+          205.18226299999998,
+          176.262273,
+          161.786712
+        ],
+        "median": 205.18226299999998,
+        "p95": 237.80220500000001
+      },
+      "editTransformMs": {
+        "samples": [
+          160.98313099999996,
+          180.18292999999994,
+          173.19507999999996,
+          143.46481900000003,
+          156.33142999999995
+        ],
+        "median": 160.98313099999996,
+        "p95": 180.18292999999994
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-precompiled",
+      "buildMs": {
+        "samples": [
+          150.47093899999982,
+          179.8767549999975,
+          166.67010899999877,
+          150.52344299999822,
+          139.35379300000204
+        ],
+        "median": 150.52344299999822,
+        "p95": 179.8767549999975
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 200.84866600000004,
+          "editTransformMs": 89.97383100000002
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 229.64281900000003,
+          "editTransformMs": 144.242977
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 205.773623,
+          "editTransformMs": 124.88567999999998
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 184.366422,
+          "editTransformMs": 92.39192400000002
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 171.52304000000004,
+          "editTransformMs": 122.72610899999995
+        }
+      ],
+      "javascript": {
+        "initialGzip": 88574,
+        "totalGzip": 88574,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 71803,
+        "totalGzip": 86126,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-B1uhUwKa.js",
+          "raw": 347340,
+          "gzip": 88574,
+          "brotli": 78902
+        },
+        {
+          "name": "index.html",
+          "raw": 417,
+          "gzip": 284,
+          "brotli": 214
+        }
+      ],
+      "totalBytes": {
+        "raw": 347757,
+        "gzip": 88858,
+        "brotli": 79116
+      },
+      "startupEntryMs": {
+        "samples": [
+          200.84866600000004,
+          229.64281900000003,
+          205.773623,
+          184.366422,
+          171.52304000000004
+        ],
+        "median": 200.84866600000004,
+        "p95": 229.64281900000003
+      },
+      "editTransformMs": {
+        "samples": [
+          89.97383100000002,
+          144.242977,
+          124.88567999999998,
+          92.39192400000002,
+          122.72610899999995
+        ],
+        "median": 122.72610899999995,
+        "p95": 144.242977
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-precompiled-current",
+      "buildMs": {
+        "samples": [
+          437.7914120000005,
+          293.7968050000054,
+          240.7040840000045,
+          185.37816399999429,
+          266.001820999998
+        ],
+        "median": 266.001820999998,
+        "p95": 437.7914120000005
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 232.34333199999998,
+          "editTransformMs": 467.62728100000004
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 137.046174,
+          "editTransformMs": 198.976678
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 140.29028900000003,
+          "editTransformMs": 235.71754599999986
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 122.93003900000002,
+          "editTransformMs": 181.47331099999997
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 118.10934900000001,
+          "editTransformMs": 182.75295199999994
+        }
+      ],
+      "javascript": {
+        "initialGzip": 88475,
+        "totalGzip": 88475,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 71807,
+        "totalGzip": 86034,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-C4RqAD08.js",
+          "raw": 346667,
+          "gzip": 88475,
+          "brotli": 78818
+        },
+        {
+          "name": "index.html",
+          "raw": 425,
+          "gzip": 290,
+          "brotli": 217
+        }
+      ],
+      "totalBytes": {
+        "raw": 347092,
+        "gzip": 88765,
+        "brotli": 79035
+      },
+      "startupEntryMs": {
+        "samples": [
+          232.34333199999998,
+          137.046174,
+          140.29028900000003,
+          122.93003900000002,
+          118.10934900000001
+        ],
+        "median": 137.046174,
+        "p95": 232.34333199999998
+      },
+      "editTransformMs": {
+        "samples": [
+          467.62728100000004,
+          198.976678,
+          235.71754599999986,
+          181.47331099999997,
+          182.75295199999994
+        ],
+        "median": 198.976678,
+        "p95": 467.62728100000004
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-precompiled-narrow",
+      "buildMs": {
+        "samples": [
+          170.3783829999993,
+          191.73492600000463,
+          161.40213199999562,
+          152.62490900000557,
+          161.35825200000545
+        ],
+        "median": 161.40213199999562,
+        "p95": 191.73492600000463
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 159.655916,
+          "editTransformMs": 162.50263199999995
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 204.018392,
+          "editTransformMs": 198.30755999999997
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 182.53151200000002,
+          "editTransformMs": 167.36947400000008
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 170.10159400000003,
+          "editTransformMs": 161.09402
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 196.206616,
+          "editTransformMs": 166.48511499999995
+        }
+      ],
+      "javascript": {
+        "initialGzip": 88492,
+        "totalGzip": 88492,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 71805,
+        "totalGzip": 86049,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-CQVLNZyw.js",
+          "raw": 346898,
+          "gzip": 88492,
+          "brotli": 78845
+        },
+        {
+          "name": "index.html",
+          "raw": 424,
+          "gzip": 292,
+          "brotli": 220
+        }
+      ],
+      "totalBytes": {
+        "raw": 347322,
+        "gzip": 88784,
+        "brotli": 79065
+      },
+      "startupEntryMs": {
+        "samples": [
+          159.655916,
+          204.018392,
+          182.53151200000002,
+          170.10159400000003,
+          196.206616
+        ],
+        "median": 182.53151200000002,
+        "p95": 204.018392
+      },
+      "editTransformMs": {
+        "samples": [
+          162.50263199999995,
+          198.30755999999997,
+          167.36947400000008,
+          161.09402,
+          166.48511499999995
+        ],
+        "median": 166.48511499999995,
+        "p95": 198.30755999999997
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-tree",
+      "buildMs": {
+        "samples": [
+          132.03899400000046,
+          163.23464599999716,
+          147.46443600000202,
+          157.59511199999542,
+          149.22308799999882
+        ],
+        "median": 149.22308799999882,
+        "p95": 163.23464599999716
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 154.840215,
+          "editTransformMs": 90.00076999999999
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 197.10128999999995,
+          "editTransformMs": 127.82501400000001
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 208.22589399999998,
+          "editTransformMs": 106.34342300000003
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 184.291897,
+          "editTransformMs": 92.61592299999995
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 172.68835900000005,
+          "editTransformMs": 102.43426099999999
+        }
+      ],
+      "javascript": {
+        "initialGzip": 80642,
+        "totalGzip": 80642,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 71337,
+        "totalGzip": 78539,
+        "chunks": 2
+      },
+      "assets": [
+        {
+          "name": "index-Cui00-lv.js",
+          "raw": 280531,
+          "gzip": 80642,
+          "brotli": 76079
+        },
+        {
+          "name": "index.html",
+          "raw": 410,
+          "gzip": 278,
+          "brotli": 207
+        }
+      ],
+      "totalBytes": {
+        "raw": 280941,
+        "gzip": 80920,
+        "brotli": 76286
+      },
+      "startupEntryMs": {
+        "samples": [
+          154.840215,
+          197.10128999999995,
+          208.22589399999998,
+          184.291897,
+          172.68835900000005
+        ],
+        "median": 184.291897,
+        "p95": 208.22589399999998
+      },
+      "editTransformMs": {
+        "samples": [
+          90.00076999999999,
+          127.82501400000001,
+          106.34342300000003,
+          92.61592299999995,
+          102.43426099999999
+        ],
+        "median": 102.43426099999999,
+        "p95": 127.82501400000001
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "better-static",
+      "buildMs": {
+        "samples": [
+          141.52194299999974,
+          166.34122400000342,
+          200.0081910000008,
+          142.04753999999957,
+          153.14507199999935
+        ],
+        "median": 153.14507199999935,
+        "p95": 200.0081910000008
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 221.846554,
+          "editTransformMs": 35.05325199999993
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 219.668228,
+          "editTransformMs": 40.36383699999999
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 232.00112500000006,
+          "editTransformMs": 48.13793599999997
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 211.03195599999998,
+          "editTransformMs": 44.37392999999997
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 191.959272,
+          "editTransformMs": 45.07108999999991
+        }
+      ],
+      "javascript": {
+        "initialGzip": 73985,
+        "totalGzip": 73985,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 62973,
+        "totalGzip": 62973,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-CPtuhqJ9.js",
+          "raw": 279045,
+          "gzip": 73985,
+          "brotli": 69700
+        },
+        {
+          "name": "index.html",
+          "raw": 412,
+          "gzip": 282,
+          "brotli": 210
+        }
+      ],
+      "totalBytes": {
+        "raw": 279457,
+        "gzip": 74267,
+        "brotli": 69910
+      },
+      "startupEntryMs": {
+        "samples": [
+          221.846554,
+          219.668228,
+          232.00112500000006,
+          211.03195599999998,
+          191.959272
+        ],
+        "median": 219.668228,
+        "p95": 232.00112500000006
+      },
+      "editTransformMs": {
+        "samples": [
+          35.05325199999993,
+          40.36383699999999,
+          48.13793599999997,
+          44.37392999999997,
+          45.07108999999991
+        ],
+        "median": 44.37392999999997,
+        "p95": 48.13793599999997
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 100,
+        "eligible": true,
+        "htmlBytes": {
+          "raw": 37964,
+          "gzip": 5818,
+          "brotli": 5886
+        },
+        "milliseconds": {
+          "samples": [
+            0.8728879999835044,
+            0.7987020000000484,
+            0.6839259999978822,
+            0.7610680000216234,
+            0.6486310000182129,
+            0.6166800000064541,
+            0.6309569999866653,
+            0.5988380000053439,
+            0.7298120000050403,
+            6.669093000004068,
+            0.6986949999991339,
+            0.5927650000085123,
+            0.5829580000136048,
+            0.5967069999896921,
+            0.5974050000077114,
+            0.593388999986928,
+            0.575622000003932,
+            0.7954259999969508,
+            0.5873919999867212,
+            0.5741010000056121,
+            0.5810880000062753,
+            0.6387720000057016,
+            0.5838670000084676,
+            0.5850630000059027,
+            0.5729369999899063,
+            0.5820369999855757,
+            0.5790059999853838,
+            0.5780120000126772,
+            0.6296609999844804,
+            1.103201000019908
+          ],
+          "median": 0.5988380000053439,
+          "p95": 1.103201000019908
+        }
+      }
+    },
+    {
+      "profile": "svgr-raw",
+      "buildMs": {
+        "samples": [
+          680.0087549999989,
+          360.59846200000175,
+          415.97998400000506,
+          319.5260069999931,
+          329.75817699999607
+        ],
+        "median": 360.59846200000175,
+        "p95": 680.0087549999989
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 248.69248399999998,
+          "editTransformMs": 39.56140800000003
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 194.85195700000003,
+          "editTransformMs": 46.2586960000001
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 228.64078000000006,
+          "editTransformMs": 107.82391499999994
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 185.431622,
+          "editTransformMs": 26.398038999999926
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 188.87539200000003,
+          "editTransformMs": 40.7369799999999
+        }
+      ],
+      "javascript": {
+        "initialGzip": 69997,
+        "totalGzip": 69997,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 59594,
+        "totalGzip": 59594,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-BJYMMDAF.js",
+          "raw": 244604,
+          "gzip": 69997,
+          "brotli": 66188
+        },
+        {
+          "name": "index.html",
+          "raw": 407,
+          "gzip": 282,
+          "brotli": 211
+        }
+      ],
+      "totalBytes": {
+        "raw": 245011,
+        "gzip": 70279,
+        "brotli": 66399
+      },
+      "startupEntryMs": {
+        "samples": [
+          248.69248399999998,
+          194.85195700000003,
+          228.64078000000006,
+          185.431622,
+          188.87539200000003
+        ],
+        "median": 194.85195700000003,
+        "p95": 248.69248399999998
+      },
+      "editTransformMs": {
+        "samples": [
+          39.56140800000003,
+          46.2586960000001,
+          107.82391499999994,
+          26.398038999999926,
+          40.7369799999999
+        ],
+        "median": 40.7369799999999,
+        "p95": 107.82391499999994
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 100,
+        "eligible": true,
+        "htmlBytes": {
+          "raw": 39357,
+          "gzip": 5899,
+          "brotli": 5977
+        },
+        "milliseconds": {
+          "samples": [
+            1.1228619999892544,
+            0.9847690000024159,
+            1.5498419999785256,
+            1.724577999993926,
+            1.3695390000066254,
+            0.7483979999960866,
+            0.7298960000043735,
+            0.8629100000252947,
+            0.8628750000207219,
+            1.3717750000068918,
+            1.670895000017481,
+            1.460259000014048,
+            1.4615540000086185,
+            1.4991790000058245,
+            1.3627709999855142,
+            0.9328600000008009,
+            1.4751680000044871,
+            1.1314799999818206,
+            0.680900000006659,
+            0.7654040000052191,
+            0.9111949999933131,
+            0.6782489999895915,
+            0.6919409999973141,
+            1.0397360000060871,
+            1.1200069999904372,
+            0.7665209999831859,
+            0.6903980000060983,
+            0.6273459999938495,
+            0.6239760000025854,
+            0.6075429999909829
+          ],
+          "median": 0.9847690000024159,
+          "p95": 1.670895000017481
+        }
+      }
+    },
+    {
+      "profile": "svgr-optimized",
+      "buildMs": {
+        "samples": [
+          576.0743679999978,
+          472.4157150000028,
+          654.3524900000048,
+          376.8639569999941,
+          539.9606629999907
+        ],
+        "median": 539.9606629999907,
+        "p95": 654.3524900000048
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 168.81926299999998,
+          "editTransformMs": 43.778187000000116
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 214.37735700000002,
+          "editTransformMs": 34.61323000000016
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 213.05814000000004,
+          "editTransformMs": 25.230141000000003
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 180.926869,
+          "editTransformMs": 28.37524399999984
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 205.73043,
+          "editTransformMs": 29.05351299999984
+        }
+      ],
+      "javascript": {
+        "initialGzip": 69859,
+        "totalGzip": 69859,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 59577,
+        "totalGzip": 59577,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-Db6O1iWt.js",
+          "raw": 242494,
+          "gzip": 69859,
+          "brotli": 66131
+        },
+        {
+          "name": "index.html",
+          "raw": 413,
+          "gzip": 283,
+          "brotli": 216
+        }
+      ],
+      "totalBytes": {
+        "raw": 242907,
+        "gzip": 70142,
+        "brotli": 66347
+      },
+      "startupEntryMs": {
+        "samples": [
+          168.81926299999998,
+          214.37735700000002,
+          213.05814000000004,
+          180.926869,
+          205.73043
+        ],
+        "median": 205.73043,
+        "p95": 214.37735700000002
+      },
+      "editTransformMs": {
+        "samples": [
+          43.778187000000116,
+          34.61323000000016,
+          25.230141000000003,
+          28.37524399999984,
+          29.05351299999984
+        ],
+        "median": 29.05351299999984,
+        "p95": 43.778187000000116
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 100,
+        "eligible": true,
+        "htmlBytes": {
+          "raw": 37330,
+          "gzip": 5855,
+          "brotli": 5935
+        },
+        "milliseconds": {
+          "samples": [
+            0.7847909999836702,
+            0.8123889999988023,
+            1.6171500000054948,
+            1.0038550000172108,
+            0.8990730000077747,
+            0.5604590000002645,
+            0.6156409999821335,
+            0.5476220000127796,
+            0.7600549999915529,
+            1.0143779999925755,
+            1.0534630000183824,
+            0.9927779999852646,
+            0.5746900000085589,
+            0.5340629999991506,
+            0.5421209999767598,
+            0.5259880000085104,
+            0.5775810000195634,
+            0.5226470000052359,
+            0.5487620000203606,
+            0.5315789999731351,
+            0.560289000015473,
+            0.5357829999993555,
+            0.5170829999842681,
+            0.5364300000073854,
+            4.885221000004094,
+            0.5688700000173412,
+            0.5209890000114683,
+            0.5112599999993108,
+            0.510428999987198,
+            0.68540600000415
+          ],
+          "median": 0.5688700000173412,
+          "p95": 1.6171500000054948
+        }
+      }
+    },
+    {
+      "profile": "unplugin-icons",
+      "buildMs": {
+        "samples": [
+          594.2823760000028,
+          392.1780230000004,
+          343.56951300000947,
+          375.9091610000032,
+          334.61354500000016
+        ],
+        "median": 375.9091610000032,
+        "p95": 594.2823760000028
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 323.790965,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 197.408476,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 174.497364,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 312.491074,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 178.68023700000003,
+          "editTransformMs": null
+        }
+      ],
+      "javascript": {
+        "initialGzip": 70315,
+        "totalGzip": 70315,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 59668,
+        "totalGzip": 59668,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-BjSAKmC-.js",
+          "raw": 256690,
+          "gzip": 70315,
+          "brotli": 66313
+        },
+        {
+          "name": "index.html",
+          "raw": 413,
+          "gzip": 284,
+          "brotli": 210
+        }
+      ],
+      "totalBytes": {
+        "raw": 257103,
+        "gzip": 70599,
+        "brotli": 66523
+      },
+      "startupEntryMs": {
+        "samples": [
+          323.790965,
+          197.408476,
+          174.497364,
+          312.491074,
+          178.68023700000003
+        ],
+        "median": 197.408476,
+        "p95": 323.790965
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 100,
+        "eligible": true,
+        "htmlBytes": {
+          "raw": 39357,
+          "gzip": 5899,
+          "brotli": 5977
+        },
+        "milliseconds": {
+          "samples": [
+            1.3534590000053868,
+            1.018102000001818,
+            1.3287710000004154,
+            1.4323680000088643,
+            1.050797000003513,
+            0.6535060000023805,
+            0.6424449999758508,
+            0.6264789999986533,
+            0.724936999991769,
+            0.6803960000106599,
+            0.6399789999995846,
+            0.7131830000143964,
+            0.6862890000047628,
+            0.7421930000127759,
+            1.2130729999917094,
+            1.269780999980867,
+            1.2012880000111181,
+            1.216986999992514,
+            1.284546999988379,
+            1.304714999976568,
+            0.7948579999792855,
+            0.6508860000176355,
+            0.6964919999882113,
+            0.6672250000119675,
+            0.6286090000066906,
+            0.6453310000069905,
+            0.6311220000206959,
+            0.6355779999867082,
+            7.1613519999955315,
+            0.6956270000082441
+          ],
+          "median": 0.724936999991769,
+          "p95": 1.4323680000088643
+        }
+      }
+    },
+    {
+      "profile": "inline",
+      "buildMs": {
+        "samples": [
+          174.1723290000009,
+          117.21742200000153,
+          122.4014540000062,
+          143.00233699999808,
+          157.7831470000092
+        ],
+        "median": 143.00233699999808,
+        "p95": 174.1723290000009
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 193.36735900000002,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 181.343053,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 168.91805900000003,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 195.55819999999994,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 227.468794,
+          "editTransformMs": null
+        }
+      ],
+      "javascript": {
+        "initialGzip": 69920,
+        "totalGzip": 69920,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 59494,
+        "totalGzip": 59494,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-B3s4WfDY.js",
+          "raw": 239848,
+          "gzip": 69920,
+          "brotli": 66197
+        },
+        {
+          "name": "index.html",
+          "raw": 405,
+          "gzip": 278,
+          "brotli": 206
+        }
+      ],
+      "totalBytes": {
+        "raw": 240253,
+        "gzip": 70198,
+        "brotli": 66403
+      },
+      "startupEntryMs": {
+        "samples": [
+          193.36735900000002,
+          181.343053,
+          168.91805900000003,
+          195.55819999999994,
+          227.468794
+        ],
+        "median": 193.36735900000002,
+        "p95": 227.468794
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 100,
+        "eligible": true,
+        "htmlBytes": {
+          "raw": 37964,
+          "gzip": 5818,
+          "brotli": 5886
+        },
+        "milliseconds": {
+          "samples": [
+            0.24041999998735264,
+            0.2350060000026133,
+            0.2451349999755621,
+            0.23551800000132062,
+            0.2319159999897238,
+            0.2313750000030268,
+            0.2332590000005439,
+            0.2438419999962207,
+            0.233607000001939,
+            0.23502399999415502,
+            0.4204710000194609,
+            0.27691700001014397,
+            0.2344159999920521,
+            0.23135799998999573,
+            0.2494519999891054,
+            0.23482299997704104,
+            0.23230400000466034,
+            0.23261800000909716,
+            0.2398410000023432,
+            0.2349839999806136,
+            0.23222599999280646,
+            0.23275299998931587,
+            0.22326699999393895,
+            0.23377699998673052,
+            0.22531700000399724,
+            0.22387700001127087,
+            0.22446500000660308,
+            0.23433599999407306,
+            0.2241809999977704,
+            0.2238729999808129
+          ],
+          "median": 0.23377699998673052,
+          "p95": 0.27691700001014397
+        }
+      }
+    },
+    {
+      "profile": "better-url",
+      "buildMs": {
+        "samples": [
+          146.47259099999792,
+          135.79344100000162,
+          195.79775399999926,
+          126.46194000000833,
+          197.57955200001015
+        ],
+        "median": 146.47259099999792,
+        "p95": 197.57955200001015
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 258.04420799999997,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 223.78642100000002,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 252.94985299999996,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 198.05871300000004,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 189.38491600000003,
+          "editTransformMs": null
+        }
+      ],
+      "javascript": {
+        "initialGzip": 72452,
+        "totalGzip": 72452,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 69550,
+        "totalGzip": 69550,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-ByiX6snl.js",
+          "raw": 232579,
+          "gzip": 72452,
+          "brotli": 68831
+        },
+        {
+          "name": "lucide-a-arrow-down.svg",
+          "raw": 295,
+          "gzip": 217,
+          "brotli": 182
+        },
+        {
+          "name": "lucide-align-horizontal-distribute-end.svg",
+          "raw": 339,
+          "gzip": 208,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-ampersand.svg",
+          "raw": 315,
+          "gzip": 224,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-arrow-big-down-dash.svg",
+          "raw": 397,
+          "gzip": 245,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-arrow-left-right.svg",
+          "raw": 259,
+          "gzip": 191,
+          "brotli": 156
+        },
+        {
+          "name": "lucide-asterism.svg",
+          "raw": 299,
+          "gzip": 199,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-badge-exclamation-point.svg",
+          "raw": 392,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-banknote-arrow-up.svg",
+          "raw": 355,
+          "gzip": 242,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-bean-off.svg",
+          "raw": 445,
+          "gzip": 287,
+          "brotli": 254
+        },
+        {
+          "name": "lucide-biceps-flexed.svg",
+          "raw": 496,
+          "gzip": 318,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-book-audio.svg",
+          "raw": 324,
+          "gzip": 224,
+          "brotli": 192
+        },
+        {
+          "name": "lucide-book-up.svg",
+          "raw": 345,
+          "gzip": 233,
+          "brotli": 200
+        },
+        {
+          "name": "lucide-brain.svg",
+          "raw": 556,
+          "gzip": 292,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-bug-play.svg",
+          "raw": 529,
+          "gzip": 312,
+          "brotli": 283
+        },
+        {
+          "name": "lucide-calendar-clock.svg",
+          "raw": 359,
+          "gzip": 245,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-candy.svg",
+          "raw": 595,
+          "gzip": 303,
+          "brotli": 272
+        },
+        {
+          "name": "lucide-cat.svg",
+          "raw": 477,
+          "gzip": 316,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-chart-no-axes-column-decreasing.svg",
+          "raw": 241,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-chevron-down.svg",
+          "raw": 231,
+          "gzip": 168,
+          "brotli": 136
+        },
+        {
+          "name": "lucide-circle-arrow-down-left-exit.svg",
+          "raw": 263,
+          "gzip": 190,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-circle-dot.svg",
+          "raw": 277,
+          "gzip": 178,
+          "brotli": 149
+        },
+        {
+          "name": "lucide-circle-letter-k.svg",
+          "raw": 282,
+          "gzip": 204,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-circle-pile.svg",
+          "raw": 397,
+          "gzip": 196,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-clipboard-check.svg",
+          "raw": 377,
+          "gzip": 236,
+          "brotli": 206
+        },
+        {
+          "name": "lucide-clock-7.svg",
+          "raw": 270,
+          "gzip": 192,
+          "brotli": 165
+        },
+        {
+          "name": "lucide-cloud-moon.svg",
+          "raw": 395,
+          "gzip": 270,
+          "brotli": 237
+        },
+        {
+          "name": "lucide-columns-3.svg",
+          "raw": 290,
+          "gzip": 199,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-copy-slash.svg",
+          "raw": 359,
+          "gzip": 237,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-croissant.svg",
+          "raw": 613,
+          "gzip": 332,
+          "brotli": 305
+        },
+        {
+          "name": "lucide-decimals-arrow-left.svg",
+          "raw": 306,
+          "gzip": 216,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-disc-3.svg",
+          "raw": 353,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-drill.svg",
+          "raw": 449,
+          "gzip": 263,
+          "brotli": 231
+        },
+        {
+          "name": "lucide-ellipsis.svg",
+          "raw": 306,
+          "gzip": 183,
+          "brotli": 155
+        },
+        {
+          "name": "lucide-face-grinning.svg",
+          "raw": 360,
+          "gzip": 243,
+          "brotli": 216
+        },
+        {
+          "name": "lucide-file-box.svg",
+          "raw": 602,
+          "gzip": 338,
+          "brotli": 313
+        },
+        {
+          "name": "lucide-file-image.svg",
+          "raw": 462,
+          "gzip": 284,
+          "brotli": 250
+        },
+        {
+          "name": "lucide-file-scan.svg",
+          "raw": 438,
+          "gzip": 259,
+          "brotli": 226
+        },
+        {
+          "name": "lucide-file-x-2.svg",
+          "raw": 328,
+          "gzip": 221,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-flask-conical-off.svg",
+          "raw": 325,
+          "gzip": 231,
+          "brotli": 198
+        },
+        {
+          "name": "lucide-folder-heart.svg",
+          "raw": 450,
+          "gzip": 278,
+          "brotli": 245
+        },
+        {
+          "name": "lucide-folders.svg",
+          "raw": 419,
+          "gzip": 250,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-gap-horizontal.svg",
+          "raw": 324,
+          "gzip": 205,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-git-pull-request.svg",
+          "raw": 316,
+          "gzip": 210,
+          "brotli": 180
+        },
+        {
+          "name": "lucide-grape.svg",
+          "raw": 525,
+          "gzip": 262,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-hand-coins.svg",
+          "raw": 447,
+          "gzip": 289,
+          "brotli": 261
+        },
+        {
+          "name": "lucide-heading-2.svg",
+          "raw": 276,
+          "gzip": 202,
+          "brotli": 172
+        },
+        {
+          "name": "lucide-hockey-stick.svg",
+          "raw": 475,
+          "gzip": 318,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-image-off.svg",
+          "raw": 397,
+          "gzip": 262,
+          "brotli": 233
+        },
+        {
+          "name": "lucide-kanban.svg",
+          "raw": 240,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-laptop-minimal-check.svg",
+          "raw": 296,
+          "gzip": 207,
+          "brotli": 178
+        },
+        {
+          "name": "lucide-layout-panel-top.svg",
+          "raw": 359,
+          "gzip": 193,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-letter-n.svg",
+          "raw": 290,
+          "gzip": 203,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-lightbulb-off.svg",
+          "raw": 341,
+          "gzip": 239,
+          "brotli": 204
+        },
+        {
+          "name": "lucide-list-end.svg",
+          "raw": 297,
+          "gzip": 211,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-locate-off.svg",
+          "raw": 317,
+          "gzip": 220,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-mail-question-mark.svg",
+          "raw": 400,
+          "gzip": 255,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-map-pinned.svg",
+          "raw": 509,
+          "gzip": 317,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-message-circle-check.svg",
+          "raw": 380,
+          "gzip": 257,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-message-square-lock.svg",
+          "raw": 415,
+          "gzip": 264,
+          "brotli": 232
+        },
+        {
+          "name": "lucide-milestone.svg",
+          "raw": 362,
+          "gzip": 238,
+          "brotli": 207
+        },
+        {
+          "name": "lucide-monitor-up.svg",
+          "raw": 322,
+          "gzip": 219,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-mouth.svg",
+          "raw": 496,
+          "gzip": 298,
+          "brotli": 269
+        },
+        {
+          "name": "lucide-navigation-2-off.svg",
+          "raw": 289,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-omega.svg",
+          "raw": 341,
+          "gzip": 228,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-panel-bottom.svg",
+          "raw": 283,
+          "gzip": 193,
+          "brotli": 164
+        },
+        {
+          "name": "lucide-paper-bag.svg",
+          "raw": 499,
+          "gzip": 309,
+          "brotli": 280
+        },
+        {
+          "name": "lucide-person-standing.svg",
+          "raw": 288,
+          "gzip": 209,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-pill.svg",
+          "raw": 292,
+          "gzip": 200,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-podcast.svg",
+          "raw": 411,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-radar.svg",
+          "raw": 448,
+          "gzip": 290,
+          "brotli": 263
+        },
+        {
+          "name": "lucide-receipt-turkish-lira.svg",
+          "raw": 707,
+          "gzip": 289,
+          "brotli": 255
+        },
+        {
+          "name": "lucide-replace.svg",
+          "raw": 394,
+          "gzip": 245,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-route.svg",
+          "raw": 329,
+          "gzip": 219,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-save-off.svg",
+          "raw": 404,
+          "gzip": 261,
+          "brotli": 229
+        },
+        {
+          "name": "lucide-scooter.svg",
+          "raw": 384,
+          "gzip": 252,
+          "brotli": 222
+        },
+        {
+          "name": "lucide-server-crash.svg",
+          "raw": 419,
+          "gzip": 239,
+          "brotli": 212
+        },
+        {
+          "name": "lucide-shield-keyhole.svg",
+          "raw": 425,
+          "gzip": 286,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-shrimp-off.svg",
+          "raw": 546,
+          "gzip": 337,
+          "brotli": 309
+        },
+        {
+          "name": "lucide-slice.svg",
+          "raw": 309,
+          "gzip": 218,
+          "brotli": 183
+        },
+        {
+          "name": "lucide-spell-check-2.svg",
+          "raw": 366,
+          "gzip": 208,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-square-arrow-left-enter.svg",
+          "raw": 332,
+          "gzip": 219,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-square-check-big.svg",
+          "raw": 318,
+          "gzip": 217,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-square-divide.svg",
+          "raw": 300,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-square-letter-o.svg",
+          "raw": 294,
+          "gzip": 196,
+          "brotli": 168
+        },
+        {
+          "name": "lucide-square-padding-horizontal.svg",
+          "raw": 290,
+          "gzip": 197,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-square-square.svg",
+          "raw": 310,
+          "gzip": 191,
+          "brotli": 158
+        },
+        {
+          "name": "lucide-star-off.svg",
+          "raw": 570,
+          "gzip": 330,
+          "brotli": 301
+        },
+        {
+          "name": "lucide-stroke-line-cap-square.svg",
+          "raw": 284,
+          "gzip": 204,
+          "brotli": 170
+        },
+        {
+          "name": "lucide-table-cells-merge.svg",
+          "raw": 305,
+          "gzip": 215,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-tent.svg",
+          "raw": 271,
+          "gzip": 194,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-theater.svg",
+          "raw": 420,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-toilet.svg",
+          "raw": 416,
+          "gzip": 254,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-trash.svg",
+          "raw": 318,
+          "gzip": 215,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-turntable.svg",
+          "raw": 343,
+          "gzip": 233,
+          "brotli": 202
+        },
+        {
+          "name": "lucide-upload.svg",
+          "raw": 281,
+          "gzip": 201,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-user-round-pen.svg",
+          "raw": 409,
+          "gzip": 271,
+          "brotli": 241
+        },
+        {
+          "name": "lucide-vector-square.svg",
+          "raw": 475,
+          "gzip": 250,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-wallet-cards.svg",
+          "raw": 357,
+          "gzip": 239,
+          "brotli": 210
+        },
+        {
+          "name": "lucide-wheat.svg",
+          "raw": 771,
+          "gzip": 313,
+          "brotli": 274
+        },
+        {
+          "name": "lucide-wrench.svg",
+          "raw": 412,
+          "gzip": 266,
+          "brotli": 236
+        },
+        {
+          "name": "repository-favicon.svg",
+          "raw": 272,
+          "gzip": 188,
+          "brotli": 161
+        },
+        {
+          "name": "repository-logo.svg",
+          "raw": 288,
+          "gzip": 187,
+          "brotli": 160
+        },
+        {
+          "name": "index.html",
+          "raw": 409,
+          "gzip": 279,
+          "brotli": 209
+        }
+      ],
+      "totalBytes": {
+        "raw": 271512,
+        "gzip": 97113,
+        "brotli": 90293
+      },
+      "startupEntryMs": {
+        "samples": [
+          258.04420799999997,
+          223.78642100000002,
+          252.94985299999996,
+          198.05871300000004,
+          189.38491600000003
+        ],
+        "median": 223.78642100000002,
+        "p95": 258.04420799999997
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "react-svg",
+      "buildMs": {
+        "samples": [
+          159.22334399999818,
+          152.41232599999785,
+          154.740942000004,
+          130.93317699999898,
+          135.3774940000003
+        ],
+        "median": 152.41232599999785,
+        "p95": 159.22334399999818
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 207.492934,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 215.56713100000002,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 174.818891,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 177.75928599999997,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 216.05977000000001,
+          "editTransformMs": null
+        }
+      ],
+      "javascript": {
+        "initialGzip": 65842,
+        "totalGzip": 65842,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 62830,
+        "totalGzip": 62830,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-C6PhahDb.js",
+          "raw": 208136,
+          "gzip": 65842,
+          "brotli": 62439
+        },
+        {
+          "name": "lucide-a-arrow-down.svg",
+          "raw": 295,
+          "gzip": 217,
+          "brotli": 182
+        },
+        {
+          "name": "lucide-align-horizontal-distribute-end.svg",
+          "raw": 339,
+          "gzip": 208,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-ampersand.svg",
+          "raw": 315,
+          "gzip": 224,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-arrow-big-down-dash.svg",
+          "raw": 397,
+          "gzip": 245,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-arrow-left-right.svg",
+          "raw": 259,
+          "gzip": 191,
+          "brotli": 156
+        },
+        {
+          "name": "lucide-asterism.svg",
+          "raw": 299,
+          "gzip": 199,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-badge-exclamation-point.svg",
+          "raw": 392,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-banknote-arrow-up.svg",
+          "raw": 355,
+          "gzip": 242,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-bean-off.svg",
+          "raw": 445,
+          "gzip": 287,
+          "brotli": 254
+        },
+        {
+          "name": "lucide-biceps-flexed.svg",
+          "raw": 496,
+          "gzip": 318,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-book-audio.svg",
+          "raw": 324,
+          "gzip": 224,
+          "brotli": 192
+        },
+        {
+          "name": "lucide-book-up.svg",
+          "raw": 345,
+          "gzip": 233,
+          "brotli": 200
+        },
+        {
+          "name": "lucide-brain.svg",
+          "raw": 556,
+          "gzip": 292,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-bug-play.svg",
+          "raw": 529,
+          "gzip": 312,
+          "brotli": 283
+        },
+        {
+          "name": "lucide-calendar-clock.svg",
+          "raw": 359,
+          "gzip": 245,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-candy.svg",
+          "raw": 595,
+          "gzip": 303,
+          "brotli": 272
+        },
+        {
+          "name": "lucide-cat.svg",
+          "raw": 477,
+          "gzip": 316,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-chart-no-axes-column-decreasing.svg",
+          "raw": 241,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-chevron-down.svg",
+          "raw": 231,
+          "gzip": 168,
+          "brotli": 136
+        },
+        {
+          "name": "lucide-circle-arrow-down-left-exit.svg",
+          "raw": 263,
+          "gzip": 190,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-circle-dot.svg",
+          "raw": 277,
+          "gzip": 178,
+          "brotli": 149
+        },
+        {
+          "name": "lucide-circle-letter-k.svg",
+          "raw": 282,
+          "gzip": 204,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-circle-pile.svg",
+          "raw": 397,
+          "gzip": 196,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-clipboard-check.svg",
+          "raw": 377,
+          "gzip": 236,
+          "brotli": 206
+        },
+        {
+          "name": "lucide-clock-7.svg",
+          "raw": 270,
+          "gzip": 192,
+          "brotli": 165
+        },
+        {
+          "name": "lucide-cloud-moon.svg",
+          "raw": 395,
+          "gzip": 270,
+          "brotli": 237
+        },
+        {
+          "name": "lucide-columns-3.svg",
+          "raw": 290,
+          "gzip": 199,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-copy-slash.svg",
+          "raw": 359,
+          "gzip": 237,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-croissant.svg",
+          "raw": 613,
+          "gzip": 332,
+          "brotli": 305
+        },
+        {
+          "name": "lucide-decimals-arrow-left.svg",
+          "raw": 306,
+          "gzip": 216,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-disc-3.svg",
+          "raw": 353,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-drill.svg",
+          "raw": 449,
+          "gzip": 263,
+          "brotli": 231
+        },
+        {
+          "name": "lucide-ellipsis.svg",
+          "raw": 306,
+          "gzip": 183,
+          "brotli": 155
+        },
+        {
+          "name": "lucide-face-grinning.svg",
+          "raw": 360,
+          "gzip": 243,
+          "brotli": 216
+        },
+        {
+          "name": "lucide-file-box.svg",
+          "raw": 602,
+          "gzip": 338,
+          "brotli": 313
+        },
+        {
+          "name": "lucide-file-image.svg",
+          "raw": 462,
+          "gzip": 284,
+          "brotli": 250
+        },
+        {
+          "name": "lucide-file-scan.svg",
+          "raw": 438,
+          "gzip": 259,
+          "brotli": 226
+        },
+        {
+          "name": "lucide-file-x-2.svg",
+          "raw": 328,
+          "gzip": 221,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-flask-conical-off.svg",
+          "raw": 325,
+          "gzip": 231,
+          "brotli": 198
+        },
+        {
+          "name": "lucide-folder-heart.svg",
+          "raw": 450,
+          "gzip": 278,
+          "brotli": 245
+        },
+        {
+          "name": "lucide-folders.svg",
+          "raw": 419,
+          "gzip": 250,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-gap-horizontal.svg",
+          "raw": 324,
+          "gzip": 205,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-git-pull-request.svg",
+          "raw": 316,
+          "gzip": 210,
+          "brotli": 180
+        },
+        {
+          "name": "lucide-grape.svg",
+          "raw": 525,
+          "gzip": 262,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-hand-coins.svg",
+          "raw": 447,
+          "gzip": 289,
+          "brotli": 261
+        },
+        {
+          "name": "lucide-heading-2.svg",
+          "raw": 276,
+          "gzip": 202,
+          "brotli": 172
+        },
+        {
+          "name": "lucide-hockey-stick.svg",
+          "raw": 475,
+          "gzip": 318,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-image-off.svg",
+          "raw": 397,
+          "gzip": 262,
+          "brotli": 233
+        },
+        {
+          "name": "lucide-kanban.svg",
+          "raw": 240,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-laptop-minimal-check.svg",
+          "raw": 296,
+          "gzip": 207,
+          "brotli": 178
+        },
+        {
+          "name": "lucide-layout-panel-top.svg",
+          "raw": 359,
+          "gzip": 193,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-letter-n.svg",
+          "raw": 290,
+          "gzip": 203,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-lightbulb-off.svg",
+          "raw": 341,
+          "gzip": 239,
+          "brotli": 204
+        },
+        {
+          "name": "lucide-list-end.svg",
+          "raw": 297,
+          "gzip": 211,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-locate-off.svg",
+          "raw": 317,
+          "gzip": 220,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-mail-question-mark.svg",
+          "raw": 400,
+          "gzip": 255,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-map-pinned.svg",
+          "raw": 509,
+          "gzip": 317,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-message-circle-check.svg",
+          "raw": 380,
+          "gzip": 257,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-message-square-lock.svg",
+          "raw": 415,
+          "gzip": 264,
+          "brotli": 232
+        },
+        {
+          "name": "lucide-milestone.svg",
+          "raw": 362,
+          "gzip": 238,
+          "brotli": 207
+        },
+        {
+          "name": "lucide-monitor-up.svg",
+          "raw": 322,
+          "gzip": 219,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-mouth.svg",
+          "raw": 496,
+          "gzip": 298,
+          "brotli": 269
+        },
+        {
+          "name": "lucide-navigation-2-off.svg",
+          "raw": 289,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-omega.svg",
+          "raw": 341,
+          "gzip": 228,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-panel-bottom.svg",
+          "raw": 283,
+          "gzip": 193,
+          "brotli": 164
+        },
+        {
+          "name": "lucide-paper-bag.svg",
+          "raw": 499,
+          "gzip": 309,
+          "brotli": 280
+        },
+        {
+          "name": "lucide-person-standing.svg",
+          "raw": 288,
+          "gzip": 209,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-pill.svg",
+          "raw": 292,
+          "gzip": 200,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-podcast.svg",
+          "raw": 411,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-radar.svg",
+          "raw": 448,
+          "gzip": 290,
+          "brotli": 263
+        },
+        {
+          "name": "lucide-receipt-turkish-lira.svg",
+          "raw": 707,
+          "gzip": 289,
+          "brotli": 255
+        },
+        {
+          "name": "lucide-replace.svg",
+          "raw": 394,
+          "gzip": 245,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-route.svg",
+          "raw": 329,
+          "gzip": 219,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-save-off.svg",
+          "raw": 404,
+          "gzip": 261,
+          "brotli": 229
+        },
+        {
+          "name": "lucide-scooter.svg",
+          "raw": 384,
+          "gzip": 252,
+          "brotli": 222
+        },
+        {
+          "name": "lucide-server-crash.svg",
+          "raw": 419,
+          "gzip": 239,
+          "brotli": 212
+        },
+        {
+          "name": "lucide-shield-keyhole.svg",
+          "raw": 425,
+          "gzip": 286,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-shrimp-off.svg",
+          "raw": 546,
+          "gzip": 337,
+          "brotli": 309
+        },
+        {
+          "name": "lucide-slice.svg",
+          "raw": 309,
+          "gzip": 218,
+          "brotli": 183
+        },
+        {
+          "name": "lucide-spell-check-2.svg",
+          "raw": 366,
+          "gzip": 208,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-square-arrow-left-enter.svg",
+          "raw": 332,
+          "gzip": 219,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-square-check-big.svg",
+          "raw": 318,
+          "gzip": 217,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-square-divide.svg",
+          "raw": 300,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-square-letter-o.svg",
+          "raw": 294,
+          "gzip": 196,
+          "brotli": 168
+        },
+        {
+          "name": "lucide-square-padding-horizontal.svg",
+          "raw": 290,
+          "gzip": 197,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-square-square.svg",
+          "raw": 310,
+          "gzip": 191,
+          "brotli": 158
+        },
+        {
+          "name": "lucide-star-off.svg",
+          "raw": 570,
+          "gzip": 330,
+          "brotli": 301
+        },
+        {
+          "name": "lucide-stroke-line-cap-square.svg",
+          "raw": 284,
+          "gzip": 204,
+          "brotli": 170
+        },
+        {
+          "name": "lucide-table-cells-merge.svg",
+          "raw": 305,
+          "gzip": 215,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-tent.svg",
+          "raw": 271,
+          "gzip": 194,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-theater.svg",
+          "raw": 420,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-toilet.svg",
+          "raw": 416,
+          "gzip": 254,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-trash.svg",
+          "raw": 318,
+          "gzip": 215,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-turntable.svg",
+          "raw": 343,
+          "gzip": 233,
+          "brotli": 202
+        },
+        {
+          "name": "lucide-upload.svg",
+          "raw": 281,
+          "gzip": 201,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-user-round-pen.svg",
+          "raw": 409,
+          "gzip": 271,
+          "brotli": 241
+        },
+        {
+          "name": "lucide-vector-square.svg",
+          "raw": 475,
+          "gzip": 250,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-wallet-cards.svg",
+          "raw": 357,
+          "gzip": 239,
+          "brotli": 210
+        },
+        {
+          "name": "lucide-wheat.svg",
+          "raw": 771,
+          "gzip": 313,
+          "brotli": 274
+        },
+        {
+          "name": "lucide-wrench.svg",
+          "raw": 412,
+          "gzip": 266,
+          "brotli": 236
+        },
+        {
+          "name": "repository-favicon.svg",
+          "raw": 272,
+          "gzip": 188,
+          "brotli": 161
+        },
+        {
+          "name": "repository-logo.svg",
+          "raw": 288,
+          "gzip": 187,
+          "brotli": 160
+        },
+        {
+          "name": "index.html",
+          "raw": 408,
+          "gzip": 279,
+          "brotli": 210
+        }
+      ],
+      "totalBytes": {
+        "raw": 247068,
+        "gzip": 90503,
+        "brotli": 83902
+      },
+      "startupEntryMs": {
+        "samples": [
+          207.492934,
+          215.56713100000002,
+          174.818891,
+          177.75928599999997,
+          216.05977000000001
+        ],
+        "median": 207.492934,
+        "p95": 216.05977000000001
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 3400,
+          "gzip": 77,
+          "brotli": 40
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    },
+    {
+      "profile": "react-inlinesvg",
+      "buildMs": {
+        "samples": [
+          159.04806499999904,
+          217.9731879999963,
+          138.11863599999924,
+          156.64991800001008,
+          171.94084799999837
+        ],
+        "median": 159.04806499999904,
+        "p95": 217.9731879999963
+      },
+      "dev": [
+        {
+          "status": "ready",
+          "startupEntryMs": 257.839056,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 218.74350099999998,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 175.08159700000004,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 175.63251400000001,
+          "editTransformMs": null
+        },
+        {
+          "status": "ready",
+          "startupEntryMs": 193.01993999999996,
+          "editTransformMs": null
+        }
+      ],
+      "javascript": {
+        "initialGzip": 69914,
+        "totalGzip": 69914,
+        "chunks": 1
+      },
+      "sparseJavascript": {
+        "initialGzip": 66926,
+        "totalGzip": 66926,
+        "chunks": 1
+      },
+      "assets": [
+        {
+          "name": "index-AvZPsJe1.js",
+          "raw": 219663,
+          "gzip": 69914,
+          "brotli": 66021
+        },
+        {
+          "name": "lucide-a-arrow-down.svg",
+          "raw": 295,
+          "gzip": 217,
+          "brotli": 182
+        },
+        {
+          "name": "lucide-align-horizontal-distribute-end.svg",
+          "raw": 339,
+          "gzip": 208,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-ampersand.svg",
+          "raw": 315,
+          "gzip": 224,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-arrow-big-down-dash.svg",
+          "raw": 397,
+          "gzip": 245,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-arrow-left-right.svg",
+          "raw": 259,
+          "gzip": 191,
+          "brotli": 156
+        },
+        {
+          "name": "lucide-asterism.svg",
+          "raw": 299,
+          "gzip": 199,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-badge-exclamation-point.svg",
+          "raw": 392,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-banknote-arrow-up.svg",
+          "raw": 355,
+          "gzip": 242,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-bean-off.svg",
+          "raw": 445,
+          "gzip": 287,
+          "brotli": 254
+        },
+        {
+          "name": "lucide-biceps-flexed.svg",
+          "raw": 496,
+          "gzip": 318,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-book-audio.svg",
+          "raw": 324,
+          "gzip": 224,
+          "brotli": 192
+        },
+        {
+          "name": "lucide-book-up.svg",
+          "raw": 345,
+          "gzip": 233,
+          "brotli": 200
+        },
+        {
+          "name": "lucide-brain.svg",
+          "raw": 556,
+          "gzip": 292,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-bug-play.svg",
+          "raw": 529,
+          "gzip": 312,
+          "brotli": 283
+        },
+        {
+          "name": "lucide-calendar-clock.svg",
+          "raw": 359,
+          "gzip": 245,
+          "brotli": 213
+        },
+        {
+          "name": "lucide-candy.svg",
+          "raw": 595,
+          "gzip": 303,
+          "brotli": 272
+        },
+        {
+          "name": "lucide-cat.svg",
+          "raw": 477,
+          "gzip": 316,
+          "brotli": 286
+        },
+        {
+          "name": "lucide-chart-no-axes-column-decreasing.svg",
+          "raw": 241,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-chevron-down.svg",
+          "raw": 231,
+          "gzip": 168,
+          "brotli": 136
+        },
+        {
+          "name": "lucide-circle-arrow-down-left-exit.svg",
+          "raw": 263,
+          "gzip": 190,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-circle-dot.svg",
+          "raw": 277,
+          "gzip": 178,
+          "brotli": 149
+        },
+        {
+          "name": "lucide-circle-letter-k.svg",
+          "raw": 282,
+          "gzip": 204,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-circle-pile.svg",
+          "raw": 397,
+          "gzip": 196,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-clipboard-check.svg",
+          "raw": 377,
+          "gzip": 236,
+          "brotli": 206
+        },
+        {
+          "name": "lucide-clock-7.svg",
+          "raw": 270,
+          "gzip": 192,
+          "brotli": 165
+        },
+        {
+          "name": "lucide-cloud-moon.svg",
+          "raw": 395,
+          "gzip": 270,
+          "brotli": 237
+        },
+        {
+          "name": "lucide-columns-3.svg",
+          "raw": 290,
+          "gzip": 199,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-copy-slash.svg",
+          "raw": 359,
+          "gzip": 237,
+          "brotli": 211
+        },
+        {
+          "name": "lucide-croissant.svg",
+          "raw": 613,
+          "gzip": 332,
+          "brotli": 305
+        },
+        {
+          "name": "lucide-decimals-arrow-left.svg",
+          "raw": 306,
+          "gzip": 216,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-disc-3.svg",
+          "raw": 353,
+          "gzip": 227,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-drill.svg",
+          "raw": 449,
+          "gzip": 263,
+          "brotli": 231
+        },
+        {
+          "name": "lucide-ellipsis.svg",
+          "raw": 306,
+          "gzip": 183,
+          "brotli": 155
+        },
+        {
+          "name": "lucide-face-grinning.svg",
+          "raw": 360,
+          "gzip": 243,
+          "brotli": 216
+        },
+        {
+          "name": "lucide-file-box.svg",
+          "raw": 602,
+          "gzip": 338,
+          "brotli": 313
+        },
+        {
+          "name": "lucide-file-image.svg",
+          "raw": 462,
+          "gzip": 284,
+          "brotli": 250
+        },
+        {
+          "name": "lucide-file-scan.svg",
+          "raw": 438,
+          "gzip": 259,
+          "brotli": 226
+        },
+        {
+          "name": "lucide-file-x-2.svg",
+          "raw": 328,
+          "gzip": 221,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-flask-conical-off.svg",
+          "raw": 325,
+          "gzip": 231,
+          "brotli": 198
+        },
+        {
+          "name": "lucide-folder-heart.svg",
+          "raw": 450,
+          "gzip": 278,
+          "brotli": 245
+        },
+        {
+          "name": "lucide-folders.svg",
+          "raw": 419,
+          "gzip": 250,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-gap-horizontal.svg",
+          "raw": 324,
+          "gzip": 205,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-git-pull-request.svg",
+          "raw": 316,
+          "gzip": 210,
+          "brotli": 180
+        },
+        {
+          "name": "lucide-grape.svg",
+          "raw": 525,
+          "gzip": 262,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-hand-coins.svg",
+          "raw": 447,
+          "gzip": 289,
+          "brotli": 261
+        },
+        {
+          "name": "lucide-heading-2.svg",
+          "raw": 276,
+          "gzip": 202,
+          "brotli": 172
+        },
+        {
+          "name": "lucide-hockey-stick.svg",
+          "raw": 475,
+          "gzip": 318,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-image-off.svg",
+          "raw": 397,
+          "gzip": 262,
+          "brotli": 233
+        },
+        {
+          "name": "lucide-kanban.svg",
+          "raw": 240,
+          "gzip": 178,
+          "brotli": 145
+        },
+        {
+          "name": "lucide-laptop-minimal-check.svg",
+          "raw": 296,
+          "gzip": 207,
+          "brotli": 178
+        },
+        {
+          "name": "lucide-layout-panel-top.svg",
+          "raw": 359,
+          "gzip": 193,
+          "brotli": 162
+        },
+        {
+          "name": "lucide-letter-n.svg",
+          "raw": 290,
+          "gzip": 203,
+          "brotli": 171
+        },
+        {
+          "name": "lucide-lightbulb-off.svg",
+          "raw": 341,
+          "gzip": 239,
+          "brotli": 204
+        },
+        {
+          "name": "lucide-list-end.svg",
+          "raw": 297,
+          "gzip": 211,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-locate-off.svg",
+          "raw": 317,
+          "gzip": 220,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-mail-question-mark.svg",
+          "raw": 400,
+          "gzip": 255,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-map-pinned.svg",
+          "raw": 509,
+          "gzip": 317,
+          "brotli": 285
+        },
+        {
+          "name": "lucide-message-circle-check.svg",
+          "raw": 380,
+          "gzip": 257,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-message-square-lock.svg",
+          "raw": 415,
+          "gzip": 264,
+          "brotli": 232
+        },
+        {
+          "name": "lucide-milestone.svg",
+          "raw": 362,
+          "gzip": 238,
+          "brotli": 207
+        },
+        {
+          "name": "lucide-monitor-up.svg",
+          "raw": 322,
+          "gzip": 219,
+          "brotli": 190
+        },
+        {
+          "name": "lucide-mouth.svg",
+          "raw": 496,
+          "gzip": 298,
+          "brotli": 269
+        },
+        {
+          "name": "lucide-navigation-2-off.svg",
+          "raw": 289,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-omega.svg",
+          "raw": 341,
+          "gzip": 228,
+          "brotli": 196
+        },
+        {
+          "name": "lucide-panel-bottom.svg",
+          "raw": 283,
+          "gzip": 193,
+          "brotli": 164
+        },
+        {
+          "name": "lucide-paper-bag.svg",
+          "raw": 499,
+          "gzip": 309,
+          "brotli": 280
+        },
+        {
+          "name": "lucide-person-standing.svg",
+          "raw": 288,
+          "gzip": 209,
+          "brotli": 177
+        },
+        {
+          "name": "lucide-pill.svg",
+          "raw": 292,
+          "gzip": 200,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-podcast.svg",
+          "raw": 411,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-radar.svg",
+          "raw": 448,
+          "gzip": 290,
+          "brotli": 263
+        },
+        {
+          "name": "lucide-receipt-turkish-lira.svg",
+          "raw": 707,
+          "gzip": 289,
+          "brotli": 255
+        },
+        {
+          "name": "lucide-replace.svg",
+          "raw": 394,
+          "gzip": 245,
+          "brotli": 219
+        },
+        {
+          "name": "lucide-route.svg",
+          "raw": 329,
+          "gzip": 219,
+          "brotli": 189
+        },
+        {
+          "name": "lucide-save-off.svg",
+          "raw": 404,
+          "gzip": 261,
+          "brotli": 229
+        },
+        {
+          "name": "lucide-scooter.svg",
+          "raw": 384,
+          "gzip": 252,
+          "brotli": 222
+        },
+        {
+          "name": "lucide-server-crash.svg",
+          "raw": 419,
+          "gzip": 239,
+          "brotli": 212
+        },
+        {
+          "name": "lucide-shield-keyhole.svg",
+          "raw": 425,
+          "gzip": 286,
+          "brotli": 260
+        },
+        {
+          "name": "lucide-shrimp-off.svg",
+          "raw": 546,
+          "gzip": 337,
+          "brotli": 309
+        },
+        {
+          "name": "lucide-slice.svg",
+          "raw": 309,
+          "gzip": 218,
+          "brotli": 183
+        },
+        {
+          "name": "lucide-spell-check-2.svg",
+          "raw": 366,
+          "gzip": 208,
+          "brotli": 174
+        },
+        {
+          "name": "lucide-square-arrow-left-enter.svg",
+          "raw": 332,
+          "gzip": 219,
+          "brotli": 187
+        },
+        {
+          "name": "lucide-square-check-big.svg",
+          "raw": 318,
+          "gzip": 217,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-square-divide.svg",
+          "raw": 300,
+          "gzip": 205,
+          "brotli": 175
+        },
+        {
+          "name": "lucide-square-letter-o.svg",
+          "raw": 294,
+          "gzip": 196,
+          "brotli": 168
+        },
+        {
+          "name": "lucide-square-padding-horizontal.svg",
+          "raw": 290,
+          "gzip": 197,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-square-square.svg",
+          "raw": 310,
+          "gzip": 191,
+          "brotli": 158
+        },
+        {
+          "name": "lucide-star-off.svg",
+          "raw": 570,
+          "gzip": 330,
+          "brotli": 301
+        },
+        {
+          "name": "lucide-stroke-line-cap-square.svg",
+          "raw": 284,
+          "gzip": 204,
+          "brotli": 170
+        },
+        {
+          "name": "lucide-table-cells-merge.svg",
+          "raw": 305,
+          "gzip": 215,
+          "brotli": 181
+        },
+        {
+          "name": "lucide-tent.svg",
+          "raw": 271,
+          "gzip": 194,
+          "brotli": 166
+        },
+        {
+          "name": "lucide-theater.svg",
+          "raw": 420,
+          "gzip": 253,
+          "brotli": 225
+        },
+        {
+          "name": "lucide-toilet.svg",
+          "raw": 416,
+          "gzip": 254,
+          "brotli": 228
+        },
+        {
+          "name": "lucide-trash.svg",
+          "raw": 318,
+          "gzip": 215,
+          "brotli": 184
+        },
+        {
+          "name": "lucide-turntable.svg",
+          "raw": 343,
+          "gzip": 233,
+          "brotli": 202
+        },
+        {
+          "name": "lucide-upload.svg",
+          "raw": 281,
+          "gzip": 201,
+          "brotli": 169
+        },
+        {
+          "name": "lucide-user-round-pen.svg",
+          "raw": 409,
+          "gzip": 271,
+          "brotli": 241
+        },
+        {
+          "name": "lucide-vector-square.svg",
+          "raw": 475,
+          "gzip": 250,
+          "brotli": 221
+        },
+        {
+          "name": "lucide-wallet-cards.svg",
+          "raw": 357,
+          "gzip": 239,
+          "brotli": 210
+        },
+        {
+          "name": "lucide-wheat.svg",
+          "raw": 771,
+          "gzip": 313,
+          "brotli": 274
+        },
+        {
+          "name": "lucide-wrench.svg",
+          "raw": 412,
+          "gzip": 266,
+          "brotli": 236
+        },
+        {
+          "name": "repository-favicon.svg",
+          "raw": 272,
+          "gzip": 188,
+          "brotli": 161
+        },
+        {
+          "name": "repository-logo.svg",
+          "raw": 288,
+          "gzip": 187,
+          "brotli": 160
+        },
+        {
+          "name": "index.html",
+          "raw": 414,
+          "gzip": 284,
+          "brotli": 213
+        }
+      ],
+      "totalBytes": {
+        "raw": 258601,
+        "gzip": 94580,
+        "brotli": 87487
+      },
+      "startupEntryMs": {
+        "samples": [
+          257.839056,
+          218.74350099999998,
+          175.08159700000004,
+          175.63251400000001,
+          193.01993999999996
+        ],
+        "median": 193.01993999999996,
+        "p95": 257.839056
+      },
+      "editTransformMs": {
+        "samples": [],
+        "median": null,
+        "p95": null
+      },
+      "ssr": {
+        "expected": 100,
+        "rendered": 0,
+        "eligible": false,
+        "htmlBytes": {
+          "raw": 0,
+          "gzip": 20,
+          "brotli": 1
+        },
+        "milliseconds": {
+          "samples": [],
+          "median": null,
+          "p95": null
+        }
+      }
+    }
+  ]
+}

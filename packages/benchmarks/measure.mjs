@@ -1,7 +1,7 @@
 import { fork } from "node:child_process";
 import { readFile, readdir, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { performance } from "node:perf_hooks";
 import { cpus, platform, release } from "node:os";
 import { gzipSync, brotliCompressSync, constants } from "node:zlib";
@@ -29,13 +29,18 @@ if (worker !== -1) {
     const startupEntryMs = performance.now() - start;
     const target =
       profile.kind === "better"
-        ? resolve(directory, "../svg/dist/core/local.js")
+        ? profile.released
+          ? join(
+              dirname(fileURLToPath(import.meta.resolve("@mhaadi/svg-released/local"))),
+              "core/local.js",
+            )
+          : resolve(directory, "../svg/dist/core/local.js")
         : profile.kind === "svgr" || profile.kind === "static"
           ? join(config.root, "icons", "lucide-a-arrow-down.svg")
           : null;
     let editTransformMs = null;
     if (target) {
-      const query = profile.kind === "static" ? "better-svg" : "component";
+      const query = profile.kind === "static" ? "better-svg" : "react";
       const request =
         profile.kind === "better" ? `/@fs${target}` : `/icons/lucide-a-arrow-down.svg?${query}`;
       await server.transformRequest(request);
@@ -113,6 +118,31 @@ if (worker !== -1) {
   const results = new Map(
     profiles.map((profile) => [profile.id, { profile: profile.id, buildMs: [], dev: [] }]),
   );
+  const jsBytes = (buildOutput) => {
+    const chunks = new Map(
+      buildOutput.output
+        .filter((item) => item.type === "chunk")
+        .map((chunk) => [chunk.fileName, chunk]),
+    );
+    const initial = new Set();
+    const visit = (file) => {
+      if (initial.has(file) || !chunks.has(file)) return;
+      initial.add(file);
+      chunks.get(file).imports.forEach(visit);
+    };
+    for (const [file, chunk] of chunks) if (chunk.isEntry) visit(file);
+    const sizes = [...chunks.values()].map((chunk) => ({
+      initial: initial.has(chunk.fileName),
+      gzip: bytes(Buffer.from(chunk.code)).gzip,
+    }));
+    return {
+      initialGzip: sizes
+        .filter((chunk) => chunk.initial)
+        .reduce((total, chunk) => total + chunk.gzip, 0),
+      totalGzip: sizes.reduce((total, chunk) => total + chunk.gzip, 0),
+      chunks: sizes.length,
+    };
+  };
   for (let repetition = 0; repetition < repetitions; repetition++) {
     const order = profiles
       .slice(repetition % profiles.length)
@@ -120,14 +150,18 @@ if (worker !== -1) {
     for (const profile of order) {
       const result = results.get(profile.id);
       const start = performance.now();
-      await build(viteConfig(profile));
+      const production = await build(viteConfig(profile));
       result.buildMs.push(performance.now() - start);
+      if (repetition === repetitions - 1) result.javascript = jsBytes(production);
       result.dev.push(await runWorker(profile));
       console.log(`${repetition + 1}/${repetitions} ${profile.id}`);
     }
   }
   for (const profile of profiles) {
     const result = results.get(profile.id);
+    result.sparseJavascript = jsBytes(
+      await build(viteConfig({ ...profile, id: `sparse-${profile.id}`, sparse: true })),
+    );
     const assets = await files(join(cache, profile.id, "dist"));
     result.assets = assets.map(({ name, data }) => ({ name, ...bytes(data) }));
     result.totalBytes = result.assets.reduce(

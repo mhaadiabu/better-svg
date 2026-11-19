@@ -55,6 +55,9 @@ export const narrow = {
 };
 
 export const profiles = [
+  { id: "released-raw", kind: "better", released: true, svgo: false },
+  { id: "released-precompiled", kind: "better", released: true, svgo: false, precompiled: true },
+  { id: "released-url", kind: "url", released: true },
   { id: "better-raw", kind: "better", svgo: false },
   { id: "better-current", kind: "better", svgo: true },
   { id: "better-narrow", kind: "better", svgo: narrow },
@@ -65,9 +68,11 @@ export const profiles = [
   { id: "better-static", kind: "static", svgo: false },
   { id: "svgr-raw", kind: "svgr", svgo: false },
   { id: "svgr-optimized", kind: "svgr", svgo: true },
+  { id: "unplugin-icons", kind: "unplugin" },
   { id: "inline", kind: "inline" },
   { id: "better-url", kind: "url" },
   { id: "react-svg", kind: "injector" },
+  { id: "react-inlinesvg", kind: "inlinesvg" },
 ];
 
 export const summarize = (values) => {

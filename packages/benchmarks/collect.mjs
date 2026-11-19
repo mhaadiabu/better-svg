@@ -29,7 +29,7 @@ const run = async ({ repetitions = 15, warmups = 3 } = {}) => {
       runs: [],
       contracts: [],
     };
-    const scenarios = ["one", "repeated-1000", "unique-100"];
+    const scenarios = ["one", "grid-24", "repeated-1000", "unique-100"];
     for (const [index, scenario] of scenarios.entries()) {
       const order = configuration.profiles
         .slice(index)

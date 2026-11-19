@@ -1,5 +1,8 @@
 ---
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
+import Tabs from "./ui/tabs/Tabs.astro";
+import TabsList from "./ui/tabs/TabsList.astro";
+import TabsTrigger from "./ui/tabs/TabsTrigger.astro";
+import TabsContent from "./ui/tabs/TabsContent.astro";
 import { kb, rows } from "../data/benchmarks";
 
 const timing = (value: number) => `${value.toFixed(1)} ms`;

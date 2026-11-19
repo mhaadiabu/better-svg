@@ -1,5 +1,6 @@
 ---
 import GitHubIcon from "../icons/github.svg";
+import NpmIcon from "../icons/npm.svg";
 import Base from "../layouts/Base.astro";
 import FrameworkPicker from "../components/FrameworkPicker.astro";
 import { adapterExamples } from "../data/adapter-examples";
@@ -58,17 +59,18 @@ const tocHeadings = sections.map((s) => ({ depth: 2, slug: s.id, text: s.label, 
   description="Full API reference for @mhaadi/svg, the inline SVG components for React, React Native, Vue, Svelte, Solid, Astro, and Angular."
 >
   <!-- NAV -->
-  <nav class="sticky top-0 left-0 right-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
-    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-y-2 px-4 py-3 lg:py-4">
-      <a href="/" class="flex items-center gap-2.5 group">
-        <svg class="h-5 w-5 text-acid group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none">
+  <header id="docs-header" class="sticky top-0 z-30 bg-coal/95 backdrop-blur-md">
+  <nav aria-label="Site" class="border-b border-coal-2">
+    <div class="mx-auto flex min-h-13 max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:px-4 lg:py-4">
+      <a href="/" class="group flex shrink-0 items-center gap-1.5 sm:gap-2.5">
+        <svg class="hidden size-5 text-acid transition-transform group-hover:scale-110 min-[360px]:block" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 8 Q12 2 20 8 Q12 14 4 8Z" fill="currentColor" opacity="0.9"/>
           <path d="M4 16 Q12 10 20 16 Q12 22 4 16Z" fill="currentColor" opacity="0.4"/>
         </svg>
         <span class="font-display text-lg tracking-wider text-[#e8e8e8]">BETTERSVG</span>
       </a>
 
-      <div class="flex items-center gap-4 md:gap-6">
+      <div class="flex shrink-0 items-center gap-2.5 sm:gap-4 md:gap-6">
         <div class="relative hidden md:block">
           <input
             id="docs-search"
@@ -81,32 +83,15 @@ const tocHeadings = sections.map((s) => ({ depth: 2, slug: s.id, text: s.label, 
           <div id="docs-search-results" class="absolute right-0 top-full mt-2 w-72 border border-coal-4 bg-coal-1 shadow-xl hidden" role="listbox" aria-label="Search results"></div>
         </div>
         <span class="hidden sm:block font-mono text-xs text-acid border border-acid/30 rounded-none px-2 py-1">Docs</span>
-        <a href="/benchmarks" class="text-sm text-zinc-muted hover:text-acid transition-colors">Benchmarks</a>
-        <a href="/changelog" class="text-sm text-zinc-muted hover:text-acid transition-colors">Changelog</a>
-        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-zinc-muted hover:text-acid transition-colors" aria-label="BetterSVG on GitHub"><GitHubIcon class="h-5 w-5" aria-hidden="true" /></a>
-        <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" class="text-sm text-zinc-muted hover:text-acid transition-colors">npm</a>
+        <a href="/benchmarks" class="text-xs text-zinc-muted hover:text-acid transition-colors sm:text-sm">Benchmarks</a>
+        <a href="/changelog" class="text-xs text-zinc-muted hover:text-acid transition-colors sm:text-sm">Changelog</a>
+        <a href="https://github.com/mhaadiabu/better-svg" target="_blank" class="text-zinc-muted hover:text-acid transition-colors" aria-label="BetterSVG on GitHub"><GitHubIcon class="size-4 sm:size-5" aria-hidden="true" /></a>
+        <a href="https://www.npmjs.com/package/@mhaadi/svg" target="_blank" aria-label="BetterSVG on npm" class="transition-opacity hover:opacity-80"><NpmIcon class="size-4 sm:size-5" aria-hidden="true" /></a>
       </div>
     </div>
   </nav>
 
-  <!-- Mobile sidebar overlay -->
-  <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
-  <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden" role="dialog" aria-modal="true" aria-label="Docs menu" tabindex="-1">
-    <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
-    <div class="px-3 mb-5">
-      <FrameworkPicker
-        frameworks={frameworks}
-        initial="react"
-        id="fw-picker-mobile"
-      />
-    </div>
-
-    <TOC headings={tocHeadings} class="px-3" />
-  </div>
-
-  <div class="min-h-screen overflow-x-clip">
-    <!-- Mobile menu trigger (sticky) -->
-    <button id="docs-mobile-sidebar-btn" class="lg:hidden sticky top-13 z-30 w-full flex items-center justify-between gap-2 border-b border-coal-2 bg-coal/95 backdrop-blur-md px-4 py-2.5 text-xs font-mono text-zinc-muted hover:text-acid transition-colors">
+    <button type="button" id="docs-mobile-sidebar-btn" aria-controls="docs-mobile-panel" aria-expanded="false" aria-haspopup="dialog" class="flex w-full items-center justify-between gap-2 border-b border-coal-2 px-3 py-2.5 font-mono text-xs text-zinc-muted transition-colors hover:text-acid sm:px-4 lg:hidden">
       <span class="flex items-center gap-2 min-w-0">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="shrink-0">
           <line x1="8" y1="6" x2="21" y2="6"/>
@@ -126,6 +111,18 @@ const tocHeadings = sections.map((s) => ({ depth: 2, slug: s.id, text: s.label, 
         <path d="m6 9 6 6 6-6"/>
       </svg>
     </button>
+  </header>
+
+  <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
+  <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden" role="dialog" aria-modal="true" aria-label="Docs menu" tabindex="-1" inert>
+    <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
+    <div class="px-3 mb-5">
+      <FrameworkPicker frameworks={frameworks} initial="react" id="fw-picker-mobile" />
+    </div>
+    <TOC headings={tocHeadings} class="px-3" />
+  </div>
+
+  <div class="min-h-screen overflow-x-clip">
     <!-- LEFT SIDEBAR (fixed) -->
     <aside class="hidden lg:block fixed left-0 top-16.25 bottom-0 w-60 overflow-y-auto border-r border-coal-2 py-8 pr-4">
       <div class="mx-auto max-w-7xl px-4 flex flex-col h-full">
@@ -1458,6 +1455,16 @@ export function IconGallery() {
 </Base>
 
 <style>
+  @media (width < 64rem) {
+    :global(html:has(#docs-header)) {
+      scroll-padding-top: 6.25rem;
+    }
+
+    :global(html:has(#docs-mobile-panel.open)) {
+      overflow: hidden;
+    }
+  }
+
   .docs-heading {
     margin-bottom: 1rem;
     font-family: var(--font-display);
@@ -1506,6 +1513,7 @@ export function IconGallery() {
 
     // ── Mobile sidebar (declare before use to avoid TDZ) ─────────
     const mobileSidebarBtn = document.getElementById("docs-mobile-sidebar-btn");
+    const docsHeader = document.getElementById("docs-header");
     const mobileOverlay = document.getElementById("docs-mobile-overlay");
     const mobilePanel = document.getElementById("docs-mobile-panel");
     const mobileChevron = document.getElementById("docs-mobile-sidebar-chevron");
@@ -1513,10 +1521,10 @@ export function IconGallery() {
 
     function updateActive() {
       const els = Array.from(sectionEls).filter((el) => el.checkVisibility());
-      const trigger = window.scrollY + 80;
+      const trigger = (docsHeader?.getBoundingClientRect().bottom ?? 72) + 12;
       let active = els[0]?.id ?? "";
       for (const el of els) {
-        if (el.offsetTop <= trigger) {
+        if (el.getBoundingClientRect().top <= trigger) {
           active = el.id;
         } else {
           break;
@@ -1532,24 +1540,31 @@ export function IconGallery() {
 
     // ── Mobile sidebar ────────────────────────────────────────────
     function openMobileSidebar() {
+      mobileSidebarBtn?.setAttribute("aria-expanded", "true");
       mobileOverlay?.classList.add("open");
       mobilePanel?.classList.add("open");
-      document.body.style.overflow = "hidden";
+      if (mobilePanel) mobilePanel.inert = false;
       mobileChevron?.classList.add("rotate-180");
       window.setTimeout(() => {
         const firstLink = mobilePanel?.querySelector<HTMLElement>("[data-nb-toc-link]");
-        (firstLink || mobilePanel)?.focus();
+        (firstLink || mobilePanel)?.focus({ preventScroll: true });
       }, 0);
     }
     function closeMobileSidebar() {
+      mobileSidebarBtn?.setAttribute("aria-expanded", "false");
       mobileOverlay?.classList.remove("open");
       mobilePanel?.classList.remove("open");
-      document.body.style.overflow = "";
       mobileChevron?.classList.remove("rotate-180");
-      mobileSidebarBtn?.focus();
+      mobileSidebarBtn?.focus({ preventScroll: true });
+      if (mobilePanel) mobilePanel.inert = true;
+    }
+
+    function onMobileKeydown(event: KeyboardEvent) {
+      if (event.key === "Escape" && mobilePanel?.classList.contains("open")) closeMobileSidebar();
     }
 
     mobileSidebarBtn?.addEventListener("click", openMobileSidebar);
+    document.addEventListener("keydown", onMobileKeydown);
     mobileOverlay?.addEventListener("click", closeMobileSidebar);
     const mobileLinks = Array.from(mobilePanel?.querySelectorAll("[data-nb-toc-link]") ?? []);
     mobileLinks.forEach((link) => {
@@ -1652,6 +1667,7 @@ export function IconGallery() {
     cleanup = () => {
       window.removeEventListener("scroll", updateActive);
       mobileSidebarBtn?.removeEventListener("click", openMobileSidebar);
+      document.removeEventListener("keydown", onMobileKeydown);
       mobileOverlay?.removeEventListener("click", closeMobileSidebar);
       mobileLinks.forEach((link) => {
         link.removeEventListener("click", closeMobileSidebar);

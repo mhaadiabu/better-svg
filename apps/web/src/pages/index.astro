@@ -24,24 +24,6 @@ const logos = [
   { id: "angular", label: "Angular", Logo: AngularLogo },
 ];
 
-const marqueeItems = [
-  "React",
-  "React Native",
-  "Vue",
-  "Svelte",
-  "Solid",
-  "Astro",
-  "Angular",
-  "inline rendering",
-  "real <svg> elements",
-  "sanitized by default",
-  "remote URLs",
-  "local names",
-  "data: URIs",
-  "memory caching",
-  "loading & fallback",
-];
-
 const featureCards = [
   {
     icon: `<path d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.728 12.728.707.707M1 12h2m18 0h2M4.22 19.78l.707-.707M18.071 5.929l.707-.707" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
@@ -214,24 +196,6 @@ const featureCards = [
       </div>
     </div>
   </section>
-
-  <!-- MARQUEE strip -->
-  <div class="overflow-hidden border-y border-coal-2 bg-coal-1 py-3">
-    <div class="marquee-track flex whitespace-nowrap gap-0">
-      {
-        Array.from({ length: 2 }).map((_, index) => (
-          <span class="marquee-group" aria-hidden={index > 0 ? "true" : undefined}>
-            {marqueeItems.map((item) => (
-              <span class="inline-flex items-center gap-4 px-4 font-mono text-xs text-zinc-muted uppercase tracking-widest">
-                <span class="h-1 w-1 bg-acid/40 shrink-0"></span>
-                {item}
-              </span>
-            ))}
-          </span>
-        ))
-      }
-    </div>
-  </div>
 
   <!-- FRAMEWORKS -->
   <section id="frameworks" class="border-y border-coal-2 bg-coal-1">

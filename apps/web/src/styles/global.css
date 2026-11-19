@@ -474,34 +474,6 @@ code {
   animation-delay: 0.45s;
 }
 
-/* Horizontal marquee */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 18s linear infinite;
-  will-change: transform;
-}
-.marquee-group {
-  display: flex;
-  flex-shrink: 0;
-  min-width: 100vw;
-  justify-content: space-around;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .marquee-track:hover {
-    animation-play-state: paused;
-  }
-}
-
 /* Scan line for hero */
 .scan-line {
   position: absolute;
@@ -515,22 +487,6 @@ code {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-    width: 100%;
-    will-change: auto;
-  }
-  .marquee-group {
-    min-width: 0;
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
-    row-gap: 0.75rem;
-    white-space: normal;
-  }
-  .marquee-group[aria-hidden="true"] {
-    display: none;
-  }
   .scan-line {
     animation: none;
     opacity: 0.5;

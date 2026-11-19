@@ -26,9 +26,6 @@ function initToc(root: HTMLElement): () => void {
     .map((slug, index) => ({ el: document.getElementById(slug), index }))
     .filter((o): o is { el: HTMLElement; index: number } => o.el !== null);
   if (observed.length === 0) return () => {};
-  const indexOfEl = new Map<HTMLElement, number>(
-    observed.map((o) => [o.el, o.index]),
-  );
 
   let segments: { start: number; length: number }[] = [];
   let totalLength = 0;
@@ -167,32 +164,26 @@ function initToc(root: HTMLElement): () => void {
     hasApplied = true;
   }
 
-  const inBand = new Set<number>();
   let observedIndex = 0;
   let atBottom = false;
   let pinnedIndex: number | null = null;
   let pinnedEnteredViewport = false;
 
   function resolve() {
+    releaseStalePin();
     if (pinnedIndex !== null) {
       setActive(pinnedIndex);
       return;
     }
     // At the bottom, the last heading on the page, not the last link: a link
     // whose heading has no target can't be the one being read.
-    setActive(atBottom ? observed.at(-1)!.index : observedIndex);
+    const lastVisible = atBottom ? observed.findLast(({ el }) => el.checkVisibility()) : undefined;
+    setActive(lastVisible?.index ?? observedIndex);
   }
 
-  // rootMargin collapses the root to the top band; deepest in-band heading wins.
   const spy = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        const i = indexOfEl.get(entry.target as HTMLElement);
-        if (i === undefined) continue;
-        if (entry.isIntersecting) inBand.add(i);
-        else inBand.delete(i);
-      }
-      if (inBand.size > 0) observedIndex = Math.max(...inBand);
+    () => {
+      updateObservedIndex();
       resolve();
     },
     { rootMargin: `0px 0px -${(1 - READING_BAND) * 100}% 0px`, threshold: 0 },
@@ -213,18 +204,21 @@ function initToc(root: HTMLElement): () => void {
 
   function updateObservedIndex() {
     const bandBottom = window.innerHeight * READING_BAND;
-    let nextIndex = 0;
+    let firstVisible = -1;
+    let nextIndex = -1;
     for (const o of observed) {
+      if (!o.el.checkVisibility()) continue;
+      if (firstVisible === -1) firstVisible = o.index;
       if (o.el.getBoundingClientRect().top <= bandBottom) nextIndex = o.index;
       else break;
     }
-    observedIndex = nextIndex;
+    observedIndex = nextIndex === -1 ? firstVisible : nextIndex;
   }
 
   function releaseStalePin() {
     if (pinnedIndex === null) return;
     const heading = document.getElementById(slugs[pinnedIndex]);
-    if (!heading) {
+    if (!heading?.checkVisibility()) {
       pinnedIndex = null;
       pinnedEnteredViewport = false;
       return;
@@ -250,7 +244,6 @@ function initToc(root: HTMLElement): () => void {
     requestAnimationFrame(() => {
       updateObservedIndex();
       updateBottom();
-      releaseStalePin();
       resolve();
       ticking = false;
     });
@@ -260,7 +253,6 @@ function initToc(root: HTMLElement): () => void {
     buildRail();
     updateObservedIndex();
     updateBottom();
-    releaseStalePin();
     resolve();
     if (currentIndex >= 0) {
       applyActive(currentIndex, true);
@@ -329,6 +321,9 @@ function initToc(root: HTMLElement): () => void {
     passive: true,
     signal: controller.signal,
   });
+  document.addEventListener("bettersvg:framework-change", onLayoutChange, {
+    signal: controller.signal,
+  });
   // Content that loads later (the API home's parts) dispatches
   // `nb:toc-headings`: track the headings that have appeared since.
   document.addEventListener(
@@ -340,7 +335,6 @@ function initToc(root: HTMLElement): () => void {
         const el = document.getElementById(slug);
         if (!el) return;
         observed.push({ el, index });
-        indexOfEl.set(el, index);
         spy.observe(el);
         added = true;
       });

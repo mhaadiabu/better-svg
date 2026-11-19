@@ -114,7 +114,7 @@ const tocHeadings = sections.map((s) => ({ depth: 2, slug: s.id, text: s.label, 
   </header>
 
   <div id="docs-mobile-overlay" class="mobile-sidebar-overlay lg:hidden"></div>
-  <div id="docs-mobile-panel" class="mobile-sidebar-panel lg:hidden" role="dialog" aria-modal="true" aria-label="Docs menu" tabindex="-1" inert>
+  <div id="docs-mobile-panel" data-nb-toc-scroll-host class="mobile-sidebar-panel lg:hidden" role="dialog" aria-modal="true" aria-label="Docs menu" tabindex="-1" inert>
     <p class="px-3 mb-2 font-mono text-[10px] tracking-widest text-[#3a3a3a] uppercase">Framework</p>
     <div class="px-3 mb-5">
       <FrameworkPicker frameworks={frameworks} initial="react" id="fw-picker-mobile" />

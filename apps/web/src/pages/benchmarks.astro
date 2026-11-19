@@ -4,7 +4,7 @@ import BenchmarkTable from "../components/BenchmarkTable.astro";
 import Accordion from "../components/ui/accordion/Accordion.astro";
 import Base from "../layouts/Base.astro";
 import {
-  archive, benchmarkRelease, kb, ms, profiles, published, resultFor,
+  archive, benchmarkCommit, benchmarkRelease, benchmarkSource, kb, ms, profiles, published, resultFor,
   runInfo, runtimeSource, staticProfiles, urlProfiles, workloads,
   type ProfileId,
 } from "../data/benchmarks";
@@ -332,7 +332,7 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
             <dt class="font-medium">Sampling</dt>
             <dd class="mb-3 text-zinc-400 sm:mb-0">Each of {runInfo.browserDocuments} fresh documents had one first-use sample, {runInfo.warmups} warmups, and {runInfo.repetitions} measured warm remounts. {integer.format(runInfo.validWarmSamples)} of {integer.format(runInfo.warmSamples)} warm samples were valid. Node measurements ran {runInfo.nodeRepetitions} times.</dd>
             <dt class="font-medium">Compared versions</dt>
-            <dd class="mb-3 text-zinc-400 sm:mb-0">BetterSVG {benchmarkRelease} profiles use the source at <a href={runtimeSource} class="font-mono text-acid underline-offset-4 hover:underline">526a822</a>. The archive records its temporary workspace version, {runInfo.workspace}. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">BetterSVG {benchmarkRelease} profiles use the runtime source at <a href={runtimeSource} class="font-mono text-acid underline-offset-4 hover:underline">526a822</a>. We ran the <a href={benchmarkSource} class="text-acid underline-offset-4 hover:underline">benchmark scripts at <code>{benchmarkCommit.slice(0, 7)}</code></a> with the temporary workspace version {runInfo.workspace}. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
             <dt class="font-medium">Scope</dt>
             <dd class="text-zinc-400">This run covers React in Chromium on one Linux desktop, with mostly catalog icons and requests over loopback. It doesn't measure mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or slower network conditions.</dd>
           </dl>

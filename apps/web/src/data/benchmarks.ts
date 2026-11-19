@@ -4,6 +4,8 @@ import node from "../../../../packages/benchmarks/baselines/2026-11-18-release-c
 const repository = "https://github.com/mhaadiabu/better-svg";
 export const archive = `${repository}/blob/cf95a27/packages/benchmarks/baselines/2026-11-18-release-comparison`;
 export const runtimeSource = `${repository}/commit/526a822`;
+export const benchmarkCommit = node.manifest.sourceCommit;
+export const benchmarkSource = `${repository}/tree/${benchmarkCommit}/packages/benchmarks`;
 export const published = node.manifest.betterSvg.published;
 export const benchmarkRelease = "0.5.0";
 const previous = `BetterSVG ${published}`;

@@ -48,7 +48,7 @@ function initTabContainer(container: HTMLElement): () => void {
       btn.setAttribute("data-nb-tabs-trigger", "");
       btn.dataset.slot = "tabs-trigger";
 
-      const panelId = `${id}-panel-${i}`;
+      const panelId = panel.id || `${id}-panel-${i}`;
       const tabId = `${id}-tab-${i}`;
       btn.id = tabId;
       btn.setAttribute("aria-controls", panelId);

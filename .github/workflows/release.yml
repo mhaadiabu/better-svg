@@ -32,6 +32,8 @@ jobs:
       - name: Install npm with trusted publishing support
         run: npm install --global npm@11
       - name: Verify release version and prepare notes
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           node --input-type=module <<'NODE'
           import { execFileSync } from 'node:child_process';
@@ -53,11 +55,11 @@ jobs:
             throw new Error('Release notes need a change section and at least one entry');
           }
 
-          const previous = execFileSync('git', [
-            'describe', '--tags', '--abbrev=0', '--match', '@mhaadi/svg@*', '--match', 'v*',
-            `${process.env.GITHUB_SHA}^`,
+          const repository = process.env.GITHUB_REPOSITORY;
+          const previous = execFileSync('gh', [
+            'api', `repos/${repository}/releases/latest`, '--jq', '.tag_name',
           ], { encoding: 'utf8' }).trim();
-          notes += `\n\n**Full Changelog**: https://github.com/${process.env.GITHUB_REPOSITORY}/compare/${previous}...${tag}\n`;
+          notes += `\n\n**Full Changelog**: https://github.com/${repository}/compare/${previous}...${tag}\n`;
           writeFileSync(join(process.env.RUNNER_TEMP, 'release-notes.md'), notes);
           NODE
       - run: pnpm install --frozen-lockfile

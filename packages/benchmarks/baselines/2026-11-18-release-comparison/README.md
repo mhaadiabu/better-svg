@@ -5,7 +5,7 @@ at **0.6.2**, whose runtime source matches main at `526a822`. The harness was ru
 from `605c0ec`. It used the published Vite SVGR plugin 5.2.0, unplugin-icons 24.0.0,
 react-svg 19.2.7, react-inlinesvg 4.6.0, and a raw inline React control.
 
-[All profile and workload numbers](report.md)
+[All profile and workload numbers](report.md) · [Raw Node results](node.json) · [Raw browser results](browser.json)
 
 The same 102 SVGs were available to all profiles. The one-icon build imported
 or named only one of them. Named Better SVG profiles disabled pruning for the

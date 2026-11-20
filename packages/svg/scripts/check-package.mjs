@@ -55,7 +55,7 @@ try {
     [
       "--input-type=module",
       "-e",
-      'for (const entry of ["local", "catalog", "vite/plugin", "astro/integration"]) await import(`@mhaadi/svg/${entry}`);',
+      'for (const entry of ["local", "catalog", "vite/plugin", "astro/integration", "next"]) await import(`@mhaadi/svg/${entry}`);',
     ],
     { cwd: packageRoot, stdio: "pipe" },
   );

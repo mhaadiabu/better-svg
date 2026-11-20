@@ -10,7 +10,7 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.mts"],
   "exclude": [
     "node_modules",
     "dist",

@@ -1,11 +1,12 @@
 import { createHash } from "node:crypto";
 import { readFile, realpath } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { dirname, relative, resolve, sep } from "node:path";
+import { relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin, ViteDevServer } from "vite";
 import { clearCatalogCache } from "../core/catalog.js";
 import {
+  catalogDependencyFiles,
   classifyScan,
   collectionOf,
   emitCatalogReport,
@@ -129,26 +130,9 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       let pending: ReturnType<typeof setTimeout> | undefined;
       let closed = false;
       const warn = (message: string) => server.config.logger.warn(message);
-      const dependencyFiles = new Set<string>();
-      for (const searchPath of searchPaths()) {
-        let directory = resolve(searchPath);
-        for (;;) {
-          for (const name of [
-            "package.json",
-            "pnpm-lock.yaml",
-            "package-lock.json",
-            "yarn.lock",
-            "bun.lock",
-            "bun.lockb",
-          ]) {
-            const file = resolve(directory, name);
-            if (existsSync(file)) dependencyFiles.add(file);
-          }
-          const parent = dirname(directory);
-          if (parent === directory) break;
-          directory = parent;
-        }
-      }
+      const dependencyFiles = catalogOptions
+        ? catalogDependencyFiles(searchPaths())
+        : new Set<string>();
       if (catalogOptions) server.watcher.add([...dependencyFiles]);
       const recatalog = (file: string) => {
         if (!catalogOptions) return;

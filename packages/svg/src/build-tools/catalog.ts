@@ -1,4 +1,5 @@
-import { resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import {
   collectionIconNames,
   installedCollections,
@@ -140,4 +141,28 @@ export const strictError = (outcome: CatalogOutcome) => {
   return new Error(
     `No source found for these catalog icons: ${names.join(", ")} (catalog scan strict mode). The collections are installed; check the spelling in ${files || "the scanned sources"}.`,
   );
+};
+
+export const catalogDependencyFiles = (searchPaths: readonly string[]) => {
+  const files = new Set<string>();
+  for (const searchPath of searchPaths) {
+    let directory = resolve(searchPath);
+    for (;;) {
+      for (const name of [
+        "package.json",
+        "pnpm-lock.yaml",
+        "package-lock.json",
+        "yarn.lock",
+        "bun.lock",
+        "bun.lockb",
+      ]) {
+        const file = resolve(directory, name);
+        if (existsSync(file)) files.add(file);
+      }
+      const parent = dirname(directory);
+      if (parent === directory) break;
+      directory = parent;
+    }
+  }
+  return files;
 };

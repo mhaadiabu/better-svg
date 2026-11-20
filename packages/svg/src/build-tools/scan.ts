@@ -226,7 +226,7 @@ export const scanCatalogNames = async (
   return { names, references, files, filesBy, explicitNames, dynamic };
 };
 
-export const scanLocalSvgNames = async (root: string, hooks: ScanHooks) => {
+export const scanLocalSvgNames = async (root: string, hooks: ScanHooks, exclude?: string[]) => {
   const names = new Set<string>();
   let dynamic = false;
   const keepAll = () => {
@@ -234,7 +234,7 @@ export const scanLocalSvgNames = async (root: string, hooks: ScanHooks) => {
   };
   await scanSources(
     root,
-    { extensions: [...defaultExtensions, "cjs", "mts", "cts"] },
+    { extensions: [...defaultExtensions, "cjs", "mts", "cts"], exclude },
     hooks,
     (source, extension) => {
       if (dynamic) return;

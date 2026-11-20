@@ -83,8 +83,10 @@ references change. Production builds send locally used icons up front and
 load the remaining local icons on demand. Dynamic JSX names the scanner can
 detect cause it to keep the full local registry up front. Set `pruneLocal:
 false` to opt out of pruning. Catalog auto-registration scans literal names,
-and the wrapper generates `svg-catalog.d.ts` for installed collections. Use
-`catalog` to change the scan scope, configure strict mode, or disable scanning.
+and the wrapper generates declarations for installed collections. It writes
+`src/svg-catalog.d.ts` when `src` exists, or `svg-catalog.d.ts` at the project
+root. Use `catalog.types` to choose a different location or turn off generation.
+Use `catalog` to change the scan scope, configure strict mode, or disable scanning.
 
 Set `dirs` to change the local folders. `precompiled: true` keeps the
 original registered XML for load callbacks, and `"tree"` ships a packed tree

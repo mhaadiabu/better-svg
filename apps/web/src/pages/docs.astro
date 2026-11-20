@@ -613,9 +613,11 @@ export default function Page() {
                     initial registry and defer the rest. Detected dynamic JSX names keep the
                     full local registry up front. Set <code class="inline-code">pruneLocal: false</code>{" "}
                     to always include it. Catalog auto-registration scans literal names and
-                    generates <code class="inline-code">svg-catalog.d.ts</code> for installed
-                    collections. Use <code class="inline-code">catalog</code> to adjust the scan or
-                    disable it. Include the declaration in your TypeScript project for autocomplete.
+                    generates <code class="inline-code">src/svg-catalog.d.ts</code> for installed
+                    collections when the project has a <code class="inline-code">src</code> directory.
+                    Otherwise it writes the declaration at the project root. Use{" "}
+                    <code class="inline-code">catalog.types</code> to change the location or disable
+                    generation.
                   </p>
                   <p class="docs-body">
                     Use <code class="inline-code">dirs</code> to change the icon folders and{" "}

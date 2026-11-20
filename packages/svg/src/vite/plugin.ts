@@ -36,6 +36,7 @@ export type CatalogScanOptions = {
 
 const pluginPrefix = "[@mhaadi/svg]";
 const deferredRegistryPrefix = "\0better-svg:deferred-local:";
+const devRegistryId = "\0better-svg:dev-local.js";
 
 const validatePathList = (kind: string, entries: readonly string[]) => {
   if (!Array.isArray(entries) || entries.some((entry) => typeof entry !== "string")) {
@@ -488,9 +489,10 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       });
     },
     resolveId(id) {
-      if (deferredRegistries.has(id)) return id;
+      if (id === devRegistryId || deferredRegistries.has(id)) return id;
     },
     async load(id) {
+      if (id === devRegistryId) return "";
       const registry = deferredRegistries.get(id);
       if (registry !== undefined) return registry;
       if (!id.endsWith(".svg?better-svg")) return;
@@ -519,13 +521,26 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
 export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
     },
     async transform(code, id, transformOptions) {
-      const path = id.split("?")[0]?.replace(/\\/g, "/");
+      const [path = ""] = id.replace(/\\/g, "/").split("?");
+      const isDevRegistry = id === devRegistryId;
       if (
-        !path ||
-        path.startsWith("\0") ||
-        !/(?:\/@mhaadi\/svg|\/packages\/svg)\/(?:dist|src)\/core\/local\.(?:js|ts)$/.test(path)
+        !isDevRegistry &&
+        (path.startsWith("\0") ||
+          !/(?:\/@mhaadi\/svg|\/packages\/svg)\/(?:dist|src)\/core\/local\.(?:js|ts)$/.test(path))
       )
         return;
+      if (
+        !isDevRegistry &&
+        devServer &&
+        !transformOptions?.ssr &&
+        this.environment?.config.consumer !== "server"
+      ) {
+        // Vite can cache this dependency as immutable, so keep the generated data in a virtual module.
+        return {
+          code: `${code}\nimport registerDevSvgs from ${JSON.stringify(devRegistryId)};\nregisterDevSvgs(registerLocalSvgs, registerLocalSvgTrees);\n`,
+          map: null,
+        };
+      }
       const usedNames =
         pruneLocal &&
         !transformOptions?.ssr &&
@@ -607,7 +622,8 @@ export default function register() {
       if (catalogOptions) {
         const emit = (message: string) => this.warn(message);
         const outcome = await ensureOutcome(false, watch);
-        signatureState.value = outcomeSignature(outcome);
+        // Let the watcher compare against the previous registration even if a transform runs first.
+        signatureState.value ??= outcomeSignature(outcome);
         emitCatalogReport(outcome, emit);
         syncCatalogTypes();
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
@@ -633,6 +649,12 @@ export default function register() {
         }
       }
 
+      if (isDevRegistry) {
+        return {
+          code: `export default function register(registerLocalSvgs, registerLocalSvgTrees) {${appended}}\n`,
+          map: null,
+        };
+      }
       return { code: code + appended, map: null };
     },
   };

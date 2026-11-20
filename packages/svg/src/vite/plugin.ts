@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin, ViteDevServer } from "vite";
@@ -29,7 +29,7 @@ export type CatalogScanOptions = {
   searchPaths?: string[];
   strict?: boolean;
   maxFileBytes?: number;
-  /** Generated name types. On by default (svg-catalog.d.ts at the root); a string relocates the file, false disables. */
+  /** Generated name types. Defaults to src/svg-catalog.d.ts when src exists, or svg-catalog.d.ts at the root. Pass a relative path or false to override. */
   types?: boolean | string;
   collections?: readonly string[];
 };
@@ -330,7 +330,11 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const syncCatalogTypes = () => {
     const option = catalogOptions?.types;
     if (!catalogOptions || option === false || !root) return;
-    const label = typeof option === "string" ? option : "svg-catalog.d.ts";
+    let label = "svg-catalog.d.ts";
+    if (typeof option === "string") label = option;
+    else if (statSync(resolve(root, "src"), { throwIfNoEntry: false })?.isDirectory()) {
+      label = `src/${label}`;
+    }
     const collections =
       catalogOptions.collections ?? installedCollections({ searchPaths: searchPaths() });
     const entries: CatalogNameEntry[] = [];

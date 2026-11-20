@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1
+
+### Fixed
+
+- Generate catalog autocomplete declarations inside `src` in standard Vite TypeScript projects.
+
 ## 0.5.0
 
 ### Added

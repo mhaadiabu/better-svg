@@ -23,6 +23,9 @@ const localTrees = new Map<string, { node: SvgNode; sanitized?: SvgNode | null }
 
 const keyFor = (source: string, sanitize: boolean) => `${sanitize ? "s:" : "u:"}${source}`;
 
+const parsedKeyFor = (source: string, sanitize: boolean) =>
+  sanitize && source.charCodeAt(0) !== 0 ? source : `\0${sanitize ? "s" : "u"}${source}`;
+
 const touch = <V>(map: Map<string, V>, key: string): V | undefined => {
   const value = map.get(key);
   if (value === undefined) return undefined;
@@ -44,7 +47,7 @@ const setBounded = <V>(map: Map<string, V>, key: string, value: V, limit: number
 const getParsedEntry = (source: string, sanitize: boolean) => {
   if (mostRecentParsed?.source === source && mostRecentParsed.sanitize === sanitize)
     return mostRecentParsed;
-  const entry = touch(parsedCache, keyFor(source, sanitize));
+  const entry = touch(parsedCache, parsedKeyFor(source, sanitize));
   if (entry) mostRecentParsed = entry;
   return entry;
 };
@@ -60,7 +63,7 @@ export const cacheParsedSvg = (
   parser: typeof parseInlineSvg | null = parseInlineSvg,
 ): void => {
   const entry = { source, sanitize, parsed, markup, parser };
-  setBounded(parsedCache, keyFor(source, sanitize), entry, PARSED_CACHE_LIMIT);
+  setBounded(parsedCache, parsedKeyFor(source, sanitize), entry, PARSED_CACHE_LIMIT);
   mostRecentParsed = entry;
 };
 

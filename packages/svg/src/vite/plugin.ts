@@ -516,7 +516,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       }
       const name = relative(root, path).split(sep).join("/").slice(0, -4);
       const source = await optimizeSvg(await readFile(path, "utf8"), name);
-      const { node } = buildPrecompiledSvg(source, name);
+      const node = buildPackedSvg(source, name, true);
       const runtime = fileURLToPath(new URL("../react-static.js", import.meta.url)).replace(
         /\\/g,
         "/",

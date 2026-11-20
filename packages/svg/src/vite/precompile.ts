@@ -14,5 +14,5 @@ export const buildPrecompiledSvg = (markup: string, name: string): PrecompiledLo
   node: parsePrecompiledSvg(markup, name, true),
 });
 
-export const buildPackedSvg = (markup: string, name: string) =>
-  packSvgNode(parsePrecompiledSvg(markup, name, false));
+export const buildPackedSvg = (markup: string, name: string, sanitize = false) =>
+  packSvgNode(parsePrecompiledSvg(markup, name, sanitize));

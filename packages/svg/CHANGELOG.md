@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.2
+
+### Changed
+
+- Reduce the JavaScript needed for pages that import many static React SVGs with `?better-svg`.
+
 ## 0.5.1
 
 ### Fixed

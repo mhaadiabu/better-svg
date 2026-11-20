@@ -47,6 +47,17 @@ Server rendering and the initial hydration render keep the loading placeholder.
 Load and error callbacks run after commit, including for immediately available
 sources. Root-only prop updates preserve the existing SVG child elements.
 
+### Next.js App Router
+
+Wrap `@mhaadi/svg/react` in a `"use client"` module. A Node.js Server Component
+can read local SVG files or call `resolveIconSource` from `@mhaadi/svg/catalog`,
+then pass the markup as a `src` string. For lookup by `name` in the browser, run
+`bundleCatalogIcons` in a Node.js build script and register the generated data
+with `registerLocalSvgs` in your Client Component. The browser can also fetch
+unregistered local names from `public/assets/svg/`.
+
+[Next.js setup examples](https://svg.mhaadi.dev/docs#nextjs)
+
 ## React Native
 
 Requires `react-native` and `react-native-svg` as peer dependencies.
@@ -480,13 +491,6 @@ registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell", "hugei
 <SVG name="lucide:house" width={24} height={24} />
 ```
 
-```tsx
-// React server components: register in a module loaded on the server.
-import { registerCatalogIcons } from "@mhaadi/svg/catalog";
-
-registerCatalogIcons(["lucide:house", "tabler:settings"]);
-```
-
 For each name, resolution checks installed packages in this order: the official
 `@hugeicons/core-free-icons` package for hugeicons (kebab-case names are accepted,
 `arrow-left-01` for its `ArrowLeft01Icon` module), the `@iconify-json/<collection>`
@@ -495,11 +499,12 @@ package, then plain SVG files shipped by the icon packages themselves:
 `lucide-static` for lucide, `@tabler/icons` (outline first, then filled) for
 tabler, and the regular weight of `@phosphor-icons/core` for phosphor.
 
-Registration runs in Node only, where reading `node_modules` is possible: Astro
-SSR, server components, or your own build-time glue. Browser-only bundles need
-the Vite plugin from [Automatic local discovery](#automatic-local-discovery)
-instead. Local files discovered by the plugin keep precedence over catalog
-icons, and an unregistered catalog name falls back to the
+Registration runs in Node.js and reads `node_modules`. For browser lookup by
+name, use [the Vite plugin](#automatic-local-discovery) or
+[an offline icon bundle](#offline-icon-bundles). For React Server Components,
+see the [Next.js App Router example](#nextjs-app-router) for passing markup to
+the React adapter. Local files discovered by the plugin keep precedence over
+catalog icons, and an unregistered catalog name falls back to the
 `/assets/svg/{name}.svg` URL like any missing local name.
 
 A name that resolves to no installed source is skipped, not rejected: a

@@ -573,6 +573,83 @@ export function MyIcon() {
 import { SvgName } from "@mhaadi/svg";
 
 const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
+
+                <div class="mt-6 space-y-3">
+                  <h3 id="nextjs" class="font-semibold text-[#e8e8e8]">Next.js App Router</h3>
+                  <p class="docs-body">
+                    Put the React adapter behind a <code class="inline-code">"use client"</code>
+                    boundary. The server and the initial hydration render show the loading state.
+                    The browser renders the SVG after hydration.
+                  </p>
+                  <CodeBlock code={`"use client";
+
+export { SVG } from "@mhaadi/svg/react";`} lang="tsx" file="app/svg.tsx" />
+                  <p class="docs-body">
+                    For a public local file, put <code class="inline-code">logo.svg</code> in
+                    <code class="inline-code">public/assets/svg/</code> and render
+                    <code class="inline-code">&lt;SVG name="logo" /&gt;</code> using the wrapper above.
+                    The browser fetches it from <code class="inline-code">/assets/svg/logo.svg</code>.
+                  </p>
+                  <p class="docs-body">
+                    To read a local file on the server, put it in <code class="inline-code">app/assets/svg/</code>
+                    and pass its markup as <code class="inline-code">src</code>. A Node.js Server Component
+                    can also resolve catalog markup. Install <code class="inline-code">@iconify-json/lucide</code>
+                    alongside <code class="inline-code">@mhaadi/svg</code> for this example and make the icon
+                    files and catalog data available wherever the server code runs.
+                  </p>
+                  <CodeBlock code={`import "server-only";
+
+import { readFileSync } from "node:fs";
+import { resolveIconSource } from "@mhaadi/svg/catalog";
+import { SVG } from "./svg";
+
+export default function Page() {
+  const logo = readFileSync("app/assets/svg/logo.svg", "utf8");
+  const house = resolveIconSource("lucide:house");
+
+  return (
+    <>
+      <SVG src={logo} />
+      {house && <SVG src={house} />}
+    </>
+  );
+}`} lang="tsx" file="app/page.tsx" />
+                  <p class="docs-body">
+                    The server and browser have separate registries. For catalog lookup by
+                    <code class="inline-code">name</code> in the browser, run this script from your
+                    app root with <code class="inline-code">node scripts/generate-icons.mjs</code>
+                    before <code class="inline-code">next dev</code> or <code class="inline-code">next build</code>.
+                  </p>
+                  <CodeBlock code={`import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
+
+bundleCatalogIcons({
+  names: ["lucide:house"],
+  out: "./app/generated/icons.ts",
+});`} lang="js" file="scripts/generate-icons.mjs" />
+                  <p class="docs-body">
+                    Import the generated strings into a Client Component and register them before
+                    rendering. Keep <code class="inline-code">@mhaadi/svg/catalog</code> in your
+                    Node.js code. The script also writes <code class="inline-code">svg-catalog.d.ts</code>
+                    beside the bundle by default. Include it in your TypeScript project for
+                    autocomplete for the bundled names.
+                  </p>
+                  <CodeBlock code={`"use client";
+
+import { registerLocalSvgs } from "@mhaadi/svg/local";
+import { SVG } from "./svg";
+import { bundledIcons } from "./generated/icons";
+
+registerLocalSvgs(bundledIcons, { override: false });
+
+export default function CatalogIcon() {
+  return <SVG name="lucide:house" />;
+}`} lang="tsx" file="app/catalog-icon.tsx" />
+                  <p class="docs-body">
+                    Render <code class="inline-code">CatalogIcon</code> from your page. To use
+                    local files by name without a fetch, register a map of local names to SVG
+                    strings with <code class="inline-code">registerLocalSvgs</code> in the same way.
+                  </p>
+                </div>
               </div>
 
               <!-- React Native -->
@@ -1009,7 +1086,7 @@ registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} la
 
 registerCatalogIcons(["hugeicons:home-01", "hugeicons:arrow-left-01"]);`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Runs in Node only, inside Astro SSR, React server components, or your build loop. It reads <code class="inline-code">node_modules</code>, which a browser bundle cannot. Browser-only projects use <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> to write the icons into a data module instead.</li>
+                  <li>Runs in Node.js and reads <code class="inline-code">node_modules</code>. For browser lookup by name, use the Vite plugin or <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a>. In a Next.js Server Component, resolve the markup and pass it to the React adapter as <code class="inline-code">src</code>.</li>
                   <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
                   <li>Names accept a single trailing wildcard: <code class="inline-code">registerCatalogIcons(["lucide:*"])</code> registers every name the installed lucide source can serve, <code class="inline-code">["lucide:arrow*"]</code> matches a name prefix, and <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> expands the same form for offline bundles. Wholesale expansion logs the icon count and approximate markup size once it exceeds 250 icons or 256 KB, and an explicit name in the same list still fails the bundle when it cannot resolve.</li>
                 </ul>

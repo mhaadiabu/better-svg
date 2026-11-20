@@ -173,22 +173,31 @@ export const classifyScan = (
   searchPaths: readonly string[],
 ): CatalogOutcome => {
   const resolved = new Map<string, string>();
-  const unresolved: string[] = [];
+  const unresolved = new Map<string, string[]>();
   for (const name of result.names) {
     const markup = resolveIconSource(name, { searchPaths });
-    if (markup) resolved.set(name, markup);
-    else unresolved.push(name);
+    if (markup) {
+      resolved.set(name, markup);
+      continue;
+    }
+    const collection = collectionOf(name);
+    const names = unresolved.get(collection);
+    if (names) names.push(name);
+    else unresolved.set(collection, [name]);
   }
-  const collections = [...new Set(unresolved.map(collectionOf))].sort();
   const typos: CatalogOutcome["typos"] = [];
   const uninstalled: CatalogOutcome["uninstalled"] = [];
-  const installed = new Set<string>();
-  for (const collection of collections) {
-    if (installedCollectionRoot(collection, searchPaths)) installed.add(collection);
-  }
-  for (const collection of collections) {
-    const names = unresolved.filter((name) => collectionOf(name) === collection);
-    if (installed.has(collection)) typos.push({ collection, names });
+  const installed = new Map<string, boolean>();
+  const isInstalled = (collection: string) => {
+    const cached = installed.get(collection);
+    if (cached !== undefined) return cached;
+    const found = installedCollectionRoot(collection, searchPaths) !== undefined;
+    installed.set(collection, found);
+    return found;
+  };
+  const groups = [...unresolved].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  for (const [collection, names] of groups) {
+    if (isInstalled(collection)) typos.push({ collection, names });
     else {
       const sample = names.find((name) => result.explicitNames.has(name));
       if (sample) uninstalled.push({ collection, sample });
@@ -197,14 +206,9 @@ export const classifyScan = (
   const known = new Set([
     ...[...resolved.keys()].map(collectionOf),
     ...[...result.explicitNames].map(collectionOf),
-    ...installed,
   ]);
   const hints = result.dynamic.filter((hint) => {
-    return (
-      hint.explicit ||
-      known.has(hint.collection) ||
-      installedCollectionRoot(hint.collection, searchPaths) !== undefined
-    );
+    return hint.explicit || known.has(hint.collection) || isInstalled(hint.collection);
   });
   return {
     resolved,
@@ -250,7 +254,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const deferredRegistries = new Map<string, string>();
   const deferredRegistryByPath = new Map<string, string>();
   const scanState: { dirty: boolean; outcome?: CatalogOutcome } = { dirty: true };
-  const signatureState: { value?: string } = { value: undefined };
+  let lastRegistration: { resolved: CatalogOutcome["resolved"]; strictTypos?: string } | undefined;
   const reported = new Set<string>();
   const searchPaths = () => catalogOptions?.searchPaths ?? [root];
 
@@ -291,8 +295,25 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     return result;
   };
 
-  const outcomeSignature = (outcome: CatalogOutcome) =>
-    JSON.stringify({ resolved: [...outcome.resolved], typos: catalogStrict ? outcome.typos : [] });
+  const registration = (outcome: CatalogOutcome) => ({
+    resolved: outcome.resolved,
+    strictTypos: catalogStrict ? JSON.stringify(outcome.typos) : undefined,
+  });
+
+  const sameRegistration = (
+    previous: NonNullable<typeof lastRegistration>,
+    current: NonNullable<typeof lastRegistration>,
+  ) => {
+    if (
+      previous.strictTypos !== current.strictTypos ||
+      previous.resolved.size !== current.resolved.size
+    )
+      return false;
+    for (const [name, markup] of current.resolved) {
+      if (previous.resolved.get(name) !== markup) return false;
+    }
+    return true;
+  };
 
   const emitCatalogReport = (outcome: CatalogOutcome, warn?: (message: string) => void) => {
     for (const entry of outcome.typos) {
@@ -467,9 +488,9 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
                 err: { message: strictError(outcome).message, stack: "", plugin: "@mhaadi/svg" },
               });
             }
-            const signature = outcomeSignature(outcome);
-            if (signatureState.value !== undefined && signature === signatureState.value) return;
-            signatureState.value = signature;
+            const previous = lastRegistration;
+            lastRegistration = registration(outcome);
+            if (previous && sameRegistration(previous, lastRegistration)) return;
             server.moduleGraph.invalidateAll();
             server.ws.send({ type: "full-reload" });
           })().catch((cause: unknown) => {
@@ -627,7 +648,7 @@ export default function register() {
         const emit = (message: string) => this.warn(message);
         const outcome = await ensureOutcome(false, watch);
         // Let the watcher compare against the previous registration even if a transform runs first.
-        signatureState.value ??= outcomeSignature(outcome);
+        lastRegistration ??= registration(outcome);
         emitCatalogReport(outcome, emit);
         syncCatalogTypes();
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);

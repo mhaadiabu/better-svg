@@ -6,7 +6,7 @@ export type CatalogScanOptions = {
   searchPaths?: string[];
   strict?: boolean;
   maxFileBytes?: number;
-  /** Generated name types. On by default (svg-catalog.d.ts at the root); a string relocates the file, false disables. */
+  /** Generated name types. Defaults to src/svg-catalog.d.ts when src exists, or svg-catalog.d.ts at the root. Pass a relative path or false to override. */
   types?: boolean | string;
   collections?: readonly string[];
 };

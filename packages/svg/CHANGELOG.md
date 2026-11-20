@@ -7,6 +7,13 @@
 - Discover local SVGs and register literal catalog names with `withSvg` in Next.js. The integration supports webpack and Turbopack, refreshes the registry during development, defers unused local icons in production, and generates catalog name types.
 - Use `?better-svg` in a Next.js Client Component to render an SVG inline in the initial HTML. Configure SVGO and precompilation through the Next.js integration.
 
+## 0.5.1
+
+### Fixed
+
+- Generate catalog autocomplete declarations inside `src` in standard Vite TypeScript projects.
+- Refresh catalog icons after a Vite development reload when source references change.
+
 ## 0.5.0
 
 ### Added

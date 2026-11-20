@@ -36,7 +36,8 @@
     "README.md",
     "CHANGELOG.md",
     "LICENSE",
-    "src/**/*.mts"
+    "src/**/*.mts",
+    "src/next/config.cjs"
   ],
   "type": "module",
   "sideEffects": [
@@ -110,7 +111,8 @@
     },
     "./next": {
       "types": "./dist/next/index.d.ts",
-      "import": "./dist/next/index.js"
+      "import": "./dist/next/index.js",
+      "require": "./src/next/config.cjs"
     },
     "./next/client": {
       "types": "./dist/next/client.d.ts",

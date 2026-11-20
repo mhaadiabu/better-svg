@@ -59,7 +59,15 @@ try {
     ],
     { cwd: packageRoot, stdio: "pipe" },
   );
-  console.log("Verified packed Node ESM entry points without a bundler.");
+  execFileSync(
+    process.execPath,
+    [
+      "-e",
+      'const { withSvg } = require("@mhaadi/svg/next"); withSvg()("phase-production-server", {}).catch((error) => { throw error; });',
+    ],
+    { cwd: packageRoot, stdio: "pipe" },
+  );
+  console.log("Verified packed Node entry points without a bundler.");
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }

@@ -107,13 +107,65 @@ const scanSources = async (
   const isExcluded = (path: string) =>
     excludes.some((entry) => path === entry.path || path.startsWith(entry.prefix));
 
-  const files: SourceEntry[] = [];
+  const read = async (entry: SourceEntry) => {
+    let source: Awaited<ReturnType<typeof readSourceFile>>;
+    try {
+      hooks.onFile?.(entry.path);
+      source = await readSourceFile(entry, maxFileBytes, isExcluded);
+    } catch {
+      onSkipped?.();
+      return;
+    }
+    if (!source) {
+      onSkipped?.();
+      return;
+    }
+    if (visitedFiles.has(source.id)) return;
+    visitedFiles.add(source.id);
+    if (source.id !== entry.path) hooks.onFile?.(source.id);
+    const file = relative(root, source.id).split(sep).join("/");
+    onSource(source.text, entry.extension, file);
+  };
+
+  const limit = 64;
+  const pending = new Set<Promise<void>>();
+  let slot: Promise<void> | undefined;
+  let releaseSlot: (() => void) | undefined;
+  let failed: { cause: unknown } | undefined;
+  const queue = (entry: SourceEntry) => {
+    const task = read(entry)
+      .catch((cause: unknown) => {
+        failed ??= { cause };
+      })
+      .finally(() => {
+        pending.delete(task);
+        const release = releaseSlot;
+        slot = undefined;
+        releaseSlot = undefined;
+        release?.();
+      });
+    pending.add(task);
+  };
+
   const addFile = (path: string, name: string, symlink: boolean) => {
     const dot = name.lastIndexOf(".");
     const extension = dot < 0 ? "" : name.slice(dot + 1).toLowerCase();
     if (!extensions.has(extension) || isExcluded(path)) return;
     if (/\.(?:test|spec|stories)\.[^.]+$/.test(name) || name.endsWith(".d.ts")) return;
-    files.push({ path, extension, symlink });
+    const entry = { path, extension, symlink };
+    if (pending.size < limit) {
+      queue(entry);
+      return;
+    }
+    return (async () => {
+      while (pending.size >= limit) {
+        slot ??= new Promise<void>((resolve) => {
+          releaseSlot = resolve;
+        });
+        await slot;
+      }
+      queue(entry);
+    })();
   };
 
   const visit = async (directory: string, ancestors: Set<string>): Promise<void> => {
@@ -145,7 +197,7 @@ const scanSources = async (
         throw cause;
       }
       if (info.isDirectory()) await visitDirectory(path);
-      else if (info.isFile()) addFile(path, name, true);
+      else if (info.isFile()) await addFile(path, name, true);
     };
 
     const pending: Promise<void>[] = [];
@@ -156,38 +208,18 @@ const scanSources = async (
       else if (child.isDirectory()) {
         const visit = visitDirectory(path);
         if (visit) pending.push(visit);
-      } else if (child.isFile()) addFile(path, child.name, false);
+      } else if (child.isFile()) {
+        const queued = addFile(path, child.name, false);
+        if (queued) await queued;
+      }
     }
     await Promise.all(pending);
   };
 
-  const read = async (entry: SourceEntry) => {
-    let source: Awaited<ReturnType<typeof readSourceFile>>;
-    try {
-      hooks.onFile?.(entry.path);
-      source = await readSourceFile(entry, maxFileBytes, isExcluded);
-    } catch {
-      onSkipped?.();
-      return;
-    }
-    if (!source) {
-      onSkipped?.();
-      return;
-    }
-    if (visitedFiles.has(source.id)) return;
-    visitedFiles.add(source.id);
-    if (source.id !== entry.path) hooks.onFile?.(source.id);
-    const file = relative(root, source.id).split(sep).join("/");
-    onSource(source.text, entry.extension, file);
-  };
-
-  const batchSize = 64;
   for (const dir of include) {
     await visit(resolve(root, dir), new Set());
-    for (let index = 0; index < files.length; index += batchSize) {
-      await Promise.all(files.slice(index, index + batchSize).map(read));
-    }
-    files.length = 0;
+    await Promise.all(pending);
+    if (failed) throw failed.cause;
   }
 };
 

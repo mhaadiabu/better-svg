@@ -1,8 +1,8 @@
-import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rename, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it, expect, beforeEach } from "vitest";
-import { scanCatalogNames } from "./scan";
+import { createCatalogScanner, scanCatalogNames } from "./scan";
 
 const write = async (root: string, file: string, content: string) => {
   await mkdir(join(root, file, ".."), { recursive: true });
@@ -34,6 +34,22 @@ describe("catalog usage scan", () => {
       "src/ui/nav.tsx",
     ]);
     expect(result.dynamic).toEqual([]);
+  });
+
+  it("reuses scan results without hiding same-size edits, renames, or removals", async () => {
+    const scan = createCatalogScanner();
+    const path = join(root, "src/nav.tsx");
+    const moved = join(root, "src/moved.tsx");
+    await write(root, "src/nav.tsx", '<SVG name="lucide:home" />');
+    expect(await scan(root)).toEqual(await scanCatalogNames(root));
+    const { atime, mtime } = await stat(path);
+    await writeFile(path, '<SVG name="lucide:menu" />');
+    await utimes(path, atime, mtime);
+    expect((await scan(root)).names).toEqual(["lucide:menu"]);
+    await rename(path, moved);
+    expect(await scan(root)).toEqual(await scanCatalogNames(root));
+    await rm(moved);
+    expect((await scan(root)).names).toEqual([]);
   });
 
   it("scans astro, vue, svelte, and html template surfaces", async () => {

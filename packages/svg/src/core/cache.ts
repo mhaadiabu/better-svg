@@ -13,8 +13,6 @@ export const deferredLocalSvgPrefix = "better-svg:local:";
 const PARSED_CACHE_LIMIT = 500;
 const NODE_CACHE_LIMIT = 200;
 
-type Variants<V> = { sanitized?: V; raw?: V };
-
 class BoundedCache<V> {
   readonly #entries = new Map<string, V>();
   #newest: string | undefined;
@@ -34,10 +32,6 @@ class BoundedCache<V> {
     return value;
   }
 
-  peek(key: string): V | undefined {
-    return this.#entries.get(key);
-  }
-
   set(key: string, value: V): void {
     if (this.#entries.has(key)) {
       this.#entries.delete(key);
@@ -55,8 +49,8 @@ class BoundedCache<V> {
   }
 }
 
-const parsedCache = new BoundedCache<Variants<ParsedCacheEntry>>(PARSED_CACHE_LIMIT);
-const nodeCache = new BoundedCache<Variants<{ node: SvgNode; markup: string; parser: NodeParser }>>(
+const parsedCache = new BoundedCache<ParsedCacheEntry>(PARSED_CACHE_LIMIT);
+const nodeCache = new BoundedCache<{ node: SvgNode; markup: string; parser: NodeParser }>(
   NODE_CACHE_LIMIT,
 );
 const markupCache = new BoundedCache<string>(PARSED_CACHE_LIMIT);
@@ -64,22 +58,11 @@ const localTrees = new BoundedCache<{ node: SvgNode; sanitized?: SvgNode | null 
   PARSED_CACHE_LIMIT,
 );
 
-const getVariant = <V>(cache: BoundedCache<Variants<V>>, source: string, sanitize: boolean) =>
-  cache.get(source)?.[sanitize ? "sanitized" : "raw"];
-
-const setVariant = <V>(
-  cache: BoundedCache<Variants<V>>,
-  source: string,
-  sanitize: boolean,
-  value: V,
-) => {
-  const variants = cache.peek(source) ?? {};
-  variants[sanitize ? "sanitized" : "raw"] = value;
-  cache.set(source, variants);
-};
+const keyFor = (source: string, sanitize: boolean) =>
+  sanitize && source.charCodeAt(0) !== 0 ? source : `\0${sanitize ? "s" : "u"}${source}`;
 
 export const getCachedParsedSvg = (source: string, sanitize: boolean): ParsedInlineSvg | null =>
-  getVariant(parsedCache, source, sanitize)?.parsed ?? null;
+  parsedCache.get(keyFor(source, sanitize))?.parsed ?? null;
 
 export const cacheParsedSvg = (
   source: string,
@@ -88,7 +71,7 @@ export const cacheParsedSvg = (
   markup?: string,
   parser: typeof parseInlineSvg | null = parseInlineSvg,
 ): void => {
-  setVariant(parsedCache, source, sanitize, { parsed, markup, parser });
+  parsedCache.set(keyFor(source, sanitize), { parsed, markup, parser });
 };
 
 export const getCachedMarkup = (
@@ -136,7 +119,7 @@ export const ensureParsedSvg = (
 ): ParsedInlineSvg | null => {
   if (!cache) return parse(markup, sanitize);
   if (source.startsWith(deferredLocalSvgPrefix)) source = markup;
-  const cached = getVariant(parsedCache, source, sanitize);
+  const cached = parsedCache.get(keyFor(source, sanitize));
   if (cached?.markup === markup && (cached.parser === parse || cached.parser === null))
     return cached.parsed;
   const tree = getLocalSvgTree(source, markup, sanitize);
@@ -154,10 +137,11 @@ export const ensureParsedNode = (
 ): SvgNode | null => {
   if (cache) {
     if (source.startsWith(deferredLocalSvgPrefix)) source = markup;
-    const entry = getVariant(nodeCache, source, sanitize);
+    const key = keyFor(source, sanitize);
+    const entry = nodeCache.get(key);
     if (entry?.markup === markup && entry.parser === parse) return entry.node;
     const node = getLocalSvgTree(source, markup, sanitize) ?? parse(markup, sanitize);
-    if (node) setVariant(nodeCache, source, sanitize, { node, markup, parser: parse });
+    if (node) nodeCache.set(key, { node, markup, parser: parse });
     return node;
   }
   return parse(markup, sanitize);

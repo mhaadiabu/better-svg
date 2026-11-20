@@ -4,7 +4,12 @@ import { existsSync, statSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin, ViteDevServer } from "vite";
-import { buildPackedSvg, buildPrecompiledSvg } from "./precompile.js";
+import {
+  buildPackedRegistrySvg,
+  buildPackedSvg,
+  buildPrecompiledSvg,
+  registrySvgTokens,
+} from "./precompile.js";
 import { runSvgoPass, type SvgoOption } from "./svgo.js";
 import {
   scanCatalogNames,
@@ -143,8 +148,11 @@ export type { SvgoOptions, SvgoOption } from "./svgo.js";
 
 const emitRegistration = (entries: Map<string, string>, mode: SvgPluginOptions["precompiled"]) => {
   if (mode === "tree") {
-    const trees = Array.from(entries, ([name, markup]) => [name, buildPackedSvg(markup, name)]);
-    return `\nregisterLocalSvgTrees(${JSON.stringify(trees)});\n`;
+    const encodeTokens = entries.size >= 64;
+    const pack = encodeTokens ? buildPackedRegistrySvg : buildPackedSvg;
+    const trees = Array.from(entries, ([name, markup]) => [name, pack(markup, name)]);
+    const tokens = encodeTokens ? `,${JSON.stringify(registrySvgTokens)}` : "";
+    return `\nregisterLocalSvgTrees(${JSON.stringify(trees)}${tokens});\n`;
   }
   const registration = mode
     ? JSON.stringify({

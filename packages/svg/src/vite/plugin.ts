@@ -141,31 +141,39 @@ export type LocalSvgOptions = SvgPluginOptions;
 
 export type { SvgoOptions, SvgoOption } from "./svgo.js";
 
-type CompileSvg = (name: string, markup: string, mode: "tree" | "legacy" | "static") => string;
+type SvgCompiler = {
+  compile: (
+    name: string,
+    markup: string,
+    mode: "tree" | "registry" | "legacy" | "static",
+  ) => string;
+  registryTokens: string;
+};
 
-const emitRegistration = async (
+const emitRegistration = (
   entries: Map<string, string>,
-  mode: SvgPluginOptions["precompiled"],
-  loadCompiler: () => Promise<CompileSvg>,
+  precompile?: { mode: true | "tree"; compiler: SvgCompiler },
 ) => {
-  if (mode === "tree") {
-    const compile = await loadCompiler();
+  if (precompile?.mode === "tree") {
+    const { compile, registryTokens } = precompile.compiler;
+    const useTokens = entries.size >= 64;
+    const mode = useTokens ? "registry" : "tree";
     const trees = Array.from(
       entries,
-      ([name, markup]) => `[${JSON.stringify(name)},${compile(name, markup, "tree")}]`,
+      ([name, markup]) => `[${JSON.stringify(name)},${compile(name, markup, mode)}]`,
     );
-    return `\nregisterLocalSvgTrees([${trees.join(",")}]);\n`;
+    return `\nregisterLocalSvgTrees([${trees.join(",")}]${useTokens ? registryTokens : ""});\n`;
   }
+  const markup = Object.fromEntries(entries);
   let registration = "{ override: false }";
-  if (mode) {
-    const compile = await loadCompiler();
-    const compiled = Object.fromEntries(
-      Array.from(entries, ([name, markup]) => [name, compile(name, markup, "legacy")]),
+  if (precompile) {
+    const { compile } = precompile.compiler;
+    const trees = Object.keys(markup).map(
+      (name) => `${JSON.stringify(name)}:${compile(name, markup[name]!, "legacy")}`,
     );
-    const trees = Object.entries(compiled).map(([name, json]) => `${JSON.stringify(name)}:${json}`);
     registration = `{"override":false,"precompiled":{${trees.join(",")}}}`;
   }
-  return `\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(entries))}, ${registration});\n`;
+  return `\nregisterLocalSvgs(${JSON.stringify(markup)}, ${registration});\n`;
 };
 
 const createSvgArtifactCache = () => {
@@ -266,26 +274,35 @@ export const classifyScan = (
 export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
   const artifacts = createSvgArtifactCache();
-  let compiler: Promise<CompileSvg> | undefined;
+  let compiler: Promise<SvgCompiler> | undefined;
   const loadCompiler = () =>
-    (compiler ??= import("./precompile.js").then(
-      ({ buildPackedSvg, buildPrecompiledSvg }) =>
-        (name, markup, mode) => {
-          const key = `${mode}:${name}`;
-          return (
-            artifacts.get(key, markup) ??
-            artifacts.set(
-              key,
-              markup,
-              JSON.stringify(
-                mode === "legacy"
-                  ? buildPrecompiledSvg(markup, name)
-                  : buildPackedSvg(markup, name, mode === "static"),
-              ),
-            )
-          );
-        },
-    ));
+    (compiler ??= import("./precompile.js")
+      .then(
+        ({
+          buildPackedRegistrySvg,
+          buildPackedSvg,
+          buildPrecompiledSvg,
+          registrySvgTokens,
+        }): SvgCompiler => ({
+          registryTokens: `,${JSON.stringify(registrySvgTokens)}`,
+          compile(name, markup, mode) {
+            const key = `${mode}:${name}`;
+            const cached = artifacts.get(key, markup);
+            if (cached !== undefined) return cached;
+            const artifact =
+              mode === "legacy"
+                ? buildPrecompiledSvg(markup, name)
+                : mode === "registry"
+                  ? buildPackedRegistrySvg(markup, name)
+                  : buildPackedSvg(markup, name, mode === "static");
+            return artifacts.set(key, markup, JSON.stringify(artifact));
+          },
+        }),
+      )
+      .catch((cause: unknown) => {
+        compiler = undefined;
+        throw cause;
+      }));
   const optimizeSvg = async (markup: string, name: string) => {
     const svgo = options.svgo;
     if (!svgo) return markup;
@@ -604,7 +621,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       }
       const name = relative(root, path).split(sep).join("/").slice(0, -4);
       const source = await optimizeSvg(await readFile(path, "utf8"), name);
-      const compile = await loadCompiler();
+      const { compile } = await loadCompiler();
       const node = compile(name, source, "static");
       const runtime = fileURLToPath(new URL("../react-static.js", import.meta.url)).replace(
         /\\/g,
@@ -634,6 +651,10 @@ export default /* @__PURE__ */ createStaticSvg(${node});`;
           map: null,
         };
       }
+      const precompileMode = options.precompiled;
+      const loadingCompiler = precompileMode ? loadCompiler() : undefined;
+      // The traversal can fail before it reaches registration.
+      void loadingCompiler?.catch(() => {});
       const usedNames =
         pruneLocal &&
         !transformOptions?.ssr &&
@@ -674,7 +695,8 @@ export default /* @__PURE__ */ createStaticSvg(${node});`;
           for (const [index, source] of sources.entries()) {
             const { name, destination } = batch[index]!;
             if (source.status === "rejected") throw source.reason;
-            destination.set(name, await optimizeSvg(source.value, name));
+            const markup = options.svgo ? await optimizeSvg(source.value, name) : source.value;
+            destination.set(name, markup);
           }
           batch.length = 0;
         };
@@ -714,13 +736,17 @@ export default /* @__PURE__ */ createStaticSvg(${node});`;
         const base = resolve(root, dir);
         await visit(base, base);
       }
-      let appended = await emitRegistration(entries, options.precompiled, loadCompiler);
+      const precompile =
+        precompileMode && loadingCompiler
+          ? { mode: precompileMode, compiler: await loadingCompiler }
+          : undefined;
+      let appended = emitRegistration(entries, precompile);
       if (deferred.size > 0) {
         const register =
           options.precompiled === "tree" ? "registerLocalSvgTrees" : "registerLocalSvgs";
         const source = `import { ${register} } from ${JSON.stringify(path)};
 export default function register() {
-  ${await emitRegistration(deferred, options.precompiled, loadCompiler)}
+  ${emitRegistration(deferred, precompile)}
 }`;
         const moduleId = deferredRegistryPrefix + createHash("sha256").update(source).digest("hex");
         const previous = deferredRegistryByPath.get(path);
@@ -756,7 +782,7 @@ export default function register() {
           announce(
             `${pluginPrefix} auto-registered ${catalogEntries.size} catalog icon${catalogEntries.size === 1 ? "" : "s"} from ${outcome.files} source file${outcome.files === 1 ? "" : "s"} (${totals})`,
           );
-          appended += await emitRegistration(catalogEntries, options.precompiled, loadCompiler);
+          appended += emitRegistration(catalogEntries, precompile);
         }
       }
 

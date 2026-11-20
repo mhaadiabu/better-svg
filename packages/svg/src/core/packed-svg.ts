@@ -1,12 +1,5 @@
 import type { SvgNode } from "./ast.js";
 
-const tags = "svg g path circle rect ellipse line polygon polyline".split(" ");
-const names =
-  "xmlns viewBox width height d fill stroke stroke-linecap stroke-linejoin stroke-width cx cy r x y rx ry".split(
-    " ",
-  );
-const values = ["http://www.w3.org/2000/svg", "currentColor", "none", "round"];
-
 type PackedToken = string | number;
 
 export type PackedSvgNode =
@@ -18,38 +11,46 @@ export type PackedSvgNode =
       text?: string,
     ];
 
-const encode = (dictionary: readonly string[], value: string): PackedToken => {
-  const index = dictionary.indexOf(value);
-  return index < 0 ? value : index;
-};
+const identity = (value: string) => value;
 
-const decode = (dictionary: readonly string[], value: PackedToken): string =>
-  typeof value === "string" ? value : dictionary[value]!;
-
-export const packSvgNode = (node: SvgNode): PackedSvgNode => {
+export const packSvgNode = (
+  node: SvgNode,
+  encode: (value: string) => PackedToken = identity,
+): PackedSvgNode => {
   if (node.tag === "#text") return node.text ?? "";
   if (node.tag === "#comment") return ["#comment", null, null, node.text ?? ""];
-  const tag = encode(tags, node.tag);
+  const tag = encode(node.tag);
   const attrs = node.attrs.map(({ name, value }): [PackedToken, PackedToken] => [
-    encode(names, name),
-    encode(values, value),
+    encode(name),
+    encode(value),
   ]);
   if (node.children.length)
-    return [tag, attrs.length ? attrs : null, node.children.map(packSvgNode)];
+    return [
+      tag,
+      attrs.length ? attrs : null,
+      node.children.map((child) => packSvgNode(child, encode)),
+    ];
   return attrs.length ? [tag, attrs] : [tag];
 };
 
-export const unpackSvgNode = (packed: PackedSvgNode): SvgNode => {
+const decode = (value: PackedToken, tokens: readonly string[] | undefined) => {
+  if (typeof value === "string") return value;
+  const token = tokens?.[value];
+  if (token === undefined) throw new Error("Invalid packed SVG token.");
+  return token;
+};
+
+export const unpackSvgNode = (packed: PackedSvgNode, tokens?: readonly string[]): SvgNode => {
   if (typeof packed === "string") return { tag: "#text", attrs: [], children: [], text: packed };
   const [tag, attrs, children, text] = packed;
   return {
-    tag: decode(tags, tag),
+    tag: decode(tag, tokens),
     attrs:
       attrs?.map(([name, value]) => ({
-        name: decode(names, name),
-        value: decode(values, value),
+        name: decode(name, tokens),
+        value: decode(value, tokens),
       })) ?? [],
-    children: children?.map(unpackSvgNode) ?? [],
+    children: children?.map((child) => unpackSvgNode(child, tokens)) ?? [],
     text,
   };
 };

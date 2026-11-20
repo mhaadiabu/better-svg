@@ -9,7 +9,7 @@
 - Reuse the catalog scan results for unchanged files during Vite development.
 - Reuse optimized and precompiled SVG data across Vite rebuilds and load the XML compiler when an import needs it.
 - Reduce work when serializing SVGs, scoping IDs, and mounting repeated copies of a cached icon.
-- Emit fewer JavaScript bytes for large sets of precompiled SVGs and reuse unchanged artwork when scoping per-instance IDs.
+- Emit fewer JavaScript bytes for large precompiled SVG registries and reuse unchanged artwork when scoping per-instance IDs.
 
 ## 0.5.1
 

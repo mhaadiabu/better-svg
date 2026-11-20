@@ -197,12 +197,19 @@ export const rewriteSvgAttributes = <T extends object>(
   ids?: ReadonlyMap<string, string>,
 ): T => {
   if (!ids?.size) return attributes;
-  return Object.fromEntries(
-    Object.entries(attributes).map(([name, value]) => {
-      if (typeof value === "string") return [name, rewriteSvgValue(name, value, ids)];
-      if (name === "style" && value && typeof value === "object")
-        return [name, rewriteSvgAttributes(value, ids)];
-      return [name, value];
-    }),
-  ) as T;
+  const entries = Object.entries(attributes);
+  let rewritten: Record<string, unknown> | undefined;
+  for (const [name, value] of entries) {
+    const next =
+      typeof value === "string"
+        ? rewriteSvgValue(name, value, ids)
+        : name === "style" && value && typeof value === "object"
+          ? rewriteSvgAttributes(value, ids)
+          : value;
+    if (!Object.is(next, value)) {
+      rewritten ??= Object.fromEntries(entries);
+      rewritten[name] = next;
+    }
+  }
+  return rewritten ? (rewritten as T) : attributes;
 };

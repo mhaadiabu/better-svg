@@ -21,12 +21,31 @@ const voidTags = new Set([
   "wbr",
 ]);
 
+const templateExtensions = new Set(["astro", "vue", "svelte", "html", "mdx"]);
+const jsxExtensions = new Set(["tsx", "jsx", "js", "mjs"]);
+const tagHead = /<(\/?)([a-zA-Z][\w.:-]*|(?=>))/y;
+const openingTag = /<([a-zA-Z][\w.:-]*|(?=>))/y;
+const attributeName = /[^\s=/>]+/y;
+const unquotedAttribute = /[^\s>]+/y;
+const codeMarker = /`+/y;
+const dynamicAttribute = /\{\s*(?:\.\.\.|name\s*\})/y;
+const localSelfClosing = /<[^<]*\/>/y;
+const catalogSelfClosing = /<[^>]*\/>/y;
+
+const matchAt = (pattern: RegExp, text: string, index: number) => {
+  pattern.lastIndex = index;
+  return pattern.exec(text);
+};
+
 const scanLiterals = (
   source: string,
   extension: string,
   onDynamic?: () => void,
 ): CatalogLiteral[] => {
   const literals: CatalogLiteral[] = [];
+  const isTemplate = templateExtensions.has(extension);
+  const canContainTags = isTemplate || jsxExtensions.has(extension);
+  const selfClosingTag = onDynamic ? localSelfClosing : catalogSelfClosing;
   const text =
     extension === "mdx"
       ? source.replace(/^\s*(`{3,}|~{3,})[^\n]*\n[\s\S]*?^\s*\1[^\n]*$/gm, (block) =>
@@ -74,7 +93,7 @@ const scanLiterals = (
   };
 
   const scanTag = (start: number, limit: number) => {
-    const head = /^<(\/?)([a-zA-Z][\w.:-]*|(?=>))/.exec(text.slice(start));
+    const head = matchAt(tagHead, text, start);
     if (!head) return undefined;
     const name = head[2] ?? "";
     const iconElement =
@@ -94,12 +113,11 @@ const scanLiterals = (
       if (text[position] === ">")
         return { end: position + 1, name, closing, selfClosing: voidTags.has(name.toLowerCase()) };
       if (text[position] === "{") {
-        if (onDynamic && iconElement && /^\{\s*(?:\.\.\.|name\s*\})/.test(text.slice(position)))
-          onDynamic();
+        if (onDynamic && iconElement && matchAt(dynamicAttribute, text, position)) onDynamic();
         position = scanCode(position + 1, limit, true);
         continue;
       }
-      const attribute = /^[^\s=/>]+/.exec(text.slice(position))?.[0];
+      const attribute = matchAt(attributeName, text, position)?.[0];
       if (!attribute) {
         position++;
         continue;
@@ -130,7 +148,7 @@ const scanLiterals = (
           onDynamic();
         position = end;
       } else {
-        const value = /^[^\s>]+/.exec(text.slice(position))?.[0] ?? "";
+        const value = matchAt(unquotedAttribute, text, position)?.[0] ?? "";
         if (explicit) record(value, position, true);
         position += Math.max(1, value.length);
       }
@@ -153,7 +171,7 @@ const scanLiterals = (
       } else if (text[position] === "{") {
         position = scanCode(position + 1, limit, true);
       } else if (text[position] === "`") {
-        const marker = /^`+/.exec(text.slice(position))?.[0] ?? "`";
+        const marker = matchAt(codeMarker, text, position)?.[0] ?? "`";
         const end = text.indexOf(marker, position + marker.length);
         position = end < 0 ? position + marker.length : end + marker.length;
       } else if (text[position] === "<") {
@@ -182,39 +200,36 @@ const scanLiterals = (
     let position = start;
     let depth = expression ? 1 : 0;
     while (position < limit) {
-      if (text.startsWith("//", position)) {
+      const char = text[position];
+      if (char === "/" && text[position + 1] === "/") {
         const end = text.indexOf("\n", position + 2);
         position = end < 0 ? limit : end + 1;
-      } else if (text.startsWith("/*", position)) {
+      } else if (char === "/" && text[position + 1] === "*") {
         const end = text.indexOf("*/", position + 2);
         position = end < 0 ? limit : end + 2;
-      } else if (['"', "'", "`"].includes(text[position] ?? "")) {
+      } else if (char === '"' || char === "'" || char === "`") {
         const importing = /\b(?:from|import)\s*(?:\(\s*)?$/.test(
           text.slice(Math.max(start, position - 80), position),
         );
         position = quotedEnd(position, limit, explicit, !importing);
-      } else if (
-        text[position] === "<" &&
-        /^(?:tsx|jsx|js|mjs|astro|vue|svelte|html|mdx)$/.test(extension)
-      ) {
-        const name = /^<([a-zA-Z][\w.:-]*|(?=>))/.exec(text.slice(position))?.[1];
+      } else if (char === "<" && canContainTags) {
+        const name = matchAt(openingTag, text, position)?.[1];
         if (
           name !== undefined &&
-          ((onDynamic ? /^<[^<]*\/>/ : /^<[^>]*\/>/).test(text.slice(position)) ||
-            text.indexOf(`</${name}`, position) >= 0)
+          (matchAt(selfClosingTag, text, position) || text.indexOf(`</${name}`, position) >= 0)
         ) {
           position = scanMarkup(position, limit, name);
         } else position++;
       } else {
-        if (expression && text[position] === "{") depth++;
-        if (expression && text[position] === "}" && --depth === 0) return position + 1;
+        if (expression && char === "{") depth++;
+        if (expression && char === "}" && --depth === 0) return position + 1;
         position++;
       }
     }
     return position;
   };
 
-  if (["astro", "vue", "svelte", "html", "mdx"].includes(extension)) {
+  if (isTemplate) {
     const frontmatter = extension === "astro" ? /^---\r?\n[\s\S]*?\r?\n---/.exec(text) : undefined;
     if (frontmatter) scanCode(4, frontmatter[0].length - 3);
     scanMarkup(frontmatter?.[0].length ?? 0, text.length);
@@ -223,7 +238,9 @@ const scanLiterals = (
 };
 
 export const catalogLiterals = (source: string, extension: string) =>
-  scanLiterals(source, extension);
+  source.includes(":") ? scanLiterals(source, extension) : [];
 
 export const localSvgLiterals = (source: string, extension: string, onDynamic: () => void) =>
-  scanLiterals(source, extension, onDynamic);
+  (jsxExtensions.has(extension) || templateExtensions.has(extension)) && source.includes("<")
+    ? scanLiterals(source, extension, onDynamic)
+    : [];

@@ -6,6 +6,7 @@
 
 - Reduce the JavaScript needed for pages that import many static React SVGs with `?better-svg`.
 - Use less memory when scanning large Vite projects and reuse catalog names when refreshing TypeScript suggestions.
+- Reuse the catalog scan results for unchanged files during Vite development.
 - Reduce work when serializing SVGs, scoping IDs, and mounting repeated copies of a cached icon.
 - Emit fewer JavaScript bytes for large sets of precompiled SVGs and reuse unchanged artwork when scoping per-instance IDs.
 

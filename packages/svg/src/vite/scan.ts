@@ -1,6 +1,6 @@
 import { lstat, readFile, readdir, realpath, stat } from "node:fs/promises";
 import { relative, resolve, sep } from "node:path";
-import { catalogLiterals, localSvgLiterals } from "./extract.js";
+import { catalogLiterals, localSvgLiterals, type CatalogLiteral } from "./extract.js";
 
 export type ScanOptions = {
   include?: string[];
@@ -191,10 +191,11 @@ const scanSources = async (
   }
 };
 
-export const scanCatalogNames = async (
+const collectCatalogNames = async (
   root: string,
   options: ScanOptions = {},
-  hooks: ScanHooks = {},
+  hooks: ScanHooks,
+  literalsFor: (source: string, extension: string, file: string) => CatalogLiteral[],
 ): Promise<ScanResult> => {
   const hits = new Map<string, Set<string>>();
   const hints: ScanHint[] = [];
@@ -204,7 +205,7 @@ export const scanCatalogNames = async (
 
   await scanSources(root, options, hooks, (source, extension, file) => {
     files++;
-    for (const literal of catalogLiterals(source, extension)) {
+    for (const literal of literalsFor(source, extension, file)) {
       const collection = literal.value.slice(0, literal.value.indexOf(":"));
       if (literal.value.includes("${")) {
         hints.push({
@@ -231,6 +232,36 @@ export const scanCatalogNames = async (
     (left, right) => left.file.localeCompare(right.file) || left.line - right.line,
   );
   return { names, references, files, filesBy, explicitNames, dynamic };
+};
+
+export const scanCatalogNames = (root: string, options: ScanOptions = {}, hooks: ScanHooks = {}) =>
+  collectCatalogNames(root, options, hooks, catalogLiterals);
+
+export const createCatalogScanner = () => {
+  const capacity = 8 * 1024 * 1024;
+  let previous = new Map<
+    string,
+    { source: string; extension: string; literals: CatalogLiteral[] }
+  >();
+  return async (root: string, options: ScanOptions = {}, hooks: ScanHooks = {}) => {
+    const current: typeof previous = new Map();
+    let remaining = capacity;
+    const result = await collectCatalogNames(root, options, hooks, (source, extension, file) => {
+      const cached = previous.get(file);
+      const entry =
+        cached?.source === source && cached.extension === extension
+          ? cached
+          : { source, extension, literals: catalogLiterals(source, extension) };
+      const cost = 128 + source.length * 2 + entry.literals.length * 64;
+      if (cost <= remaining) {
+        current.set(file, entry);
+        remaining -= cost;
+      }
+      return entry.literals;
+    });
+    previous = current;
+    return result;
+  };
 };
 
 export const scanLocalSvgNames = async (root: string, hooks: ScanHooks) => {

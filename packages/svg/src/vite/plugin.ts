@@ -7,6 +7,7 @@ import type { Plugin, ViteDevServer } from "vite";
 import { buildPackedSvg, buildPrecompiledSvg } from "./precompile.js";
 import { runSvgoPass, type SvgoOption } from "./svgo.js";
 import {
+  createCatalogScanner,
   scanCatalogNames,
   scanExtensions,
   scanLocalSvgNames,
@@ -271,13 +272,11 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     console.log(message);
   };
 
+  const scanInDev = createCatalogScanner();
   const runScan = async (addDirectory?: (path: string) => void) => {
     scanState.dirty = false;
-    return scanCatalogNames(
-      root,
-      catalogOptions,
-      addDirectory ? { onDirectory: addDirectory } : undefined,
-    );
+    const scan = devServer ? scanInDev : scanCatalogNames;
+    return scan(root, catalogOptions, addDirectory ? { onDirectory: addDirectory } : undefined);
   };
 
   let scanQueue = Promise.resolve();

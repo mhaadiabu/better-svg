@@ -252,11 +252,12 @@ describe("catalog usage scan", () => {
         moduleGraph: { invalidateAll: vi.fn() },
         httpServer: new EventEmitter(),
       } as never);
-      await plugin.transform?.call(
-        { addWatchFile() {}, warn() {} } as never,
-        baseModuleCode,
-        localModuleId,
-      );
+      const registryId = "\0better-svg:dev-local.js";
+      const context = { warn() {} } as never;
+      const local = await plugin.transform?.call(context, baseModuleCode, localModuleId);
+      expect(local?.code).toContain(JSON.stringify(registryId));
+      const registry = await plugin.transform?.call(context, "", registryId);
+      expect(registry?.code).toContain('"testy:house"');
       await writeFixture("src/ui/nav.tsx", '<SVG name="testy:house" /><SVG name="ghostly:star" />');
       watcher.emit("change", join(root, "src/ui/nav.tsx"));
       await vi.advanceTimersByTimeAsync(50);

@@ -11,8 +11,11 @@ export type StaticSvgProps = SvgArtworkProps & {
 };
 
 export const createStaticSvg = (node: PackedSvgNode) => {
-  let content: ReturnType<typeof inlineSvgFromNode> | undefined;
-  const getContent = () => (content ??= inlineSvgFromNode(unpackSvgNode(node)));
+  let content: ReturnType<typeof inlineSvgFromNode> | { packed: PackedSvgNode } = { packed: node };
+  const getContent = () => {
+    if ("packed" in content) content = inlineSvgFromNode(unpackSvgNode(content.packed));
+    return content;
+  };
   let markup: string | undefined;
   const StaticSvg = React.forwardRef<SVGSVGElement, StaticSvgProps>(
     ({ uniqueIds = true, onSvgLoad, ...props }, ref) => {

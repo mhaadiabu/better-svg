@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin, ViteDevServer } from "vite";
@@ -29,13 +29,14 @@ export type CatalogScanOptions = {
   searchPaths?: string[];
   strict?: boolean;
   maxFileBytes?: number;
-  /** Generated name types. On by default (svg-catalog.d.ts at the root); a string relocates the file, false disables. */
+  /** Generated name types. Defaults to src/svg-catalog.d.ts when src exists, or svg-catalog.d.ts at the root. Pass a relative path or false to override. */
   types?: boolean | string;
   collections?: readonly string[];
 };
 
 const pluginPrefix = "[@mhaadi/svg]";
 const deferredRegistryPrefix = "\0better-svg:deferred-local:";
+const devRegistryId = "\0better-svg:dev-local.js";
 
 const validatePathList = (kind: string, entries: readonly string[]) => {
   if (!Array.isArray(entries) || entries.some((entry) => typeof entry !== "string")) {
@@ -329,7 +330,11 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const syncCatalogTypes = () => {
     const option = catalogOptions?.types;
     if (!catalogOptions || option === false || !root) return;
-    const label = typeof option === "string" ? option : "svg-catalog.d.ts";
+    let label = "svg-catalog.d.ts";
+    if (typeof option === "string") label = option;
+    else if (statSync(resolve(root, "src"), { throwIfNoEntry: false })?.isDirectory()) {
+      label = `src/${label}`;
+    }
     const collections =
       catalogOptions.collections ?? installedCollections({ searchPaths: searchPaths() });
     const entries: CatalogNameEntry[] = [];
@@ -488,9 +493,10 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       });
     },
     resolveId(id) {
-      if (deferredRegistries.has(id)) return id;
+      if (id === devRegistryId || deferredRegistries.has(id)) return id;
     },
     async load(id) {
+      if (id === devRegistryId) return "";
       const registry = deferredRegistries.get(id);
       if (registry !== undefined) return registry;
       if (!id.endsWith(".svg?better-svg")) return;
@@ -519,13 +525,26 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
 export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
     },
     async transform(code, id, transformOptions) {
-      const path = id.split("?")[0]?.replace(/\\/g, "/");
+      const [path = ""] = id.replace(/\\/g, "/").split("?");
+      const isDevRegistry = id === devRegistryId;
       if (
-        !path ||
-        path.startsWith("\0") ||
-        !/(?:\/@mhaadi\/svg|\/packages\/svg)\/(?:dist|src)\/core\/local\.(?:js|ts)$/.test(path)
+        !isDevRegistry &&
+        (path.startsWith("\0") ||
+          !/(?:\/@mhaadi\/svg|\/packages\/svg)\/(?:dist|src)\/core\/local\.(?:js|ts)$/.test(path))
       )
         return;
+      if (
+        !isDevRegistry &&
+        devServer &&
+        !transformOptions?.ssr &&
+        this.environment?.config.consumer !== "server"
+      ) {
+        // Vite can cache this dependency as immutable, so keep the generated data in a virtual module.
+        return {
+          code: `${code}\nimport registerDevSvgs from ${JSON.stringify(devRegistryId)};\nregisterDevSvgs(registerLocalSvgs, registerLocalSvgTrees);\n`,
+          map: null,
+        };
+      }
       const usedNames =
         pruneLocal &&
         !transformOptions?.ssr &&
@@ -607,7 +626,8 @@ export default function register() {
       if (catalogOptions) {
         const emit = (message: string) => this.warn(message);
         const outcome = await ensureOutcome(false, watch);
-        signatureState.value = outcomeSignature(outcome);
+        // Let the watcher compare against the previous registration even if a transform runs first.
+        signatureState.value ??= outcomeSignature(outcome);
         emitCatalogReport(outcome, emit);
         syncCatalogTypes();
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
@@ -633,6 +653,12 @@ export default function register() {
         }
       }
 
+      if (isDevRegistry) {
+        return {
+          code: `export default function register(registerLocalSvgs, registerLocalSvgTrees) {${appended}}\n`,
+          map: null,
+        };
+      }
       return { code: code + appended, map: null };
     },
   };

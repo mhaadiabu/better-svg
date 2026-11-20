@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1
+
+### Fixed
+
+- Generate catalog autocomplete declarations inside `src` in standard Vite TypeScript projects.
+- Refresh catalog icons after a Vite development reload when source references change.
+
 ## 0.5.0
 
 ### Added

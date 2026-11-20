@@ -577,78 +577,68 @@ const icons: SvgName[] = ["logo", "arrow"];`} lang="tsx" />
                 <div class="mt-6 space-y-3">
                   <h3 id="nextjs" class="font-semibold text-[#e8e8e8]">Next.js App Router</h3>
                   <p class="docs-body">
-                    Put the React adapter behind a <code class="inline-code">"use client"</code>
-                    boundary. The server and the initial hydration render show the loading state.
-                    The browser renders the SVG after hydration.
+                    On Next.js 16.4.6 or newer, add <code class="inline-code">withSvg</code> to
+                    your Next.js config. It works with Turbopack and with{" "}
+                    <code class="inline-code">next dev --webpack</code> or{" "}
+                    <code class="inline-code">next build --webpack</code>.
                   </p>
-                  <CodeBlock code={`"use client";
+                  <CodeBlock code={`import { withSvg } from "@mhaadi/svg/next";
 
-export { SVG } from "@mhaadi/svg/react";`} lang="tsx" file="app/svg.tsx" />
+export default withSvg({}, { precompiled: "tree" });`} lang="js" file="next.config.mjs" />
                   <p class="docs-body">
-                    For a public local file, put <code class="inline-code">logo.svg</code> in
-                    <code class="inline-code">public/assets/svg/</code> and render
-                    <code class="inline-code">&lt;SVG name="logo" /&gt;</code> using the wrapper above.
-                    The browser fetches it from <code class="inline-code">/assets/svg/logo.svg</code>.
+                    Put <code class="inline-code">logo.svg</code> in{" "}
+                    <code class="inline-code">src/assets/svg/</code> or{" "}
+                    <code class="inline-code">app/assets/svg/</code>. Install{" "}
+                    <code class="inline-code">@iconify-json/lucide</code> to use Lucide names.
+                    Import the client entry in a page or any component.
                   </p>
-                  <p class="docs-body">
-                    To read a local file on the server, put it in <code class="inline-code">app/assets/svg/</code>
-                    and pass its markup as <code class="inline-code">src</code>. A Node.js Server Component
-                    can also resolve catalog markup. Install <code class="inline-code">@iconify-json/lucide</code>
-                    alongside <code class="inline-code">@mhaadi/svg</code> for this example and make the icon
-                    files and catalog data available wherever the server code runs.
-                  </p>
-                  <CodeBlock code={`import "server-only";
-
-import { readFileSync } from "node:fs";
-import { resolveIconSource } from "@mhaadi/svg/catalog";
-import { SVG } from "./svg";
+                  <CodeBlock code={`import { SVG } from "@mhaadi/svg/next/client";
 
 export default function Page() {
-  const logo = readFileSync("app/assets/svg/logo.svg", "utf8");
-  const house = resolveIconSource("lucide:house");
-
   return (
     <>
-      <SVG src={logo} />
-      {house && <SVG src={house} />}
+      <SVG name="logo" width={24} height={24} />
+      <SVG name="lucide:house" width={24} height={24} />
     </>
   );
 }`} lang="tsx" file="app/page.tsx" />
                   <p class="docs-body">
-                    The server and browser have separate registries. For catalog lookup by
-                    <code class="inline-code">name</code> in the browser, run this script from your
-                    app root with <code class="inline-code">node scripts/generate-icons.mjs</code>
-                    before <code class="inline-code">next dev</code> or <code class="inline-code">next build</code>.
+                    The client entry can be rendered from a Server Component. Named icons
+                    render after hydration. Pass callbacks and refs from Client Components.
+                    Catalog resolution and filesystem access stay in the build process.
                   </p>
-                  <CodeBlock code={`import { bundleCatalogIcons } from "@mhaadi/svg/catalog";
-
-bundleCatalogIcons({
-  names: ["lucide:house"],
-  out: "./app/generated/icons.ts",
-});`} lang="js" file="scripts/generate-icons.mjs" />
                   <p class="docs-body">
-                    Import the generated strings into a Client Component and register them before
-                    rendering. Keep <code class="inline-code">@mhaadi/svg/catalog</code> in your
-                    Node.js code. The script also writes <code class="inline-code">svg-catalog.d.ts</code>
-                    beside the bundle by default. Include it in your TypeScript project for
-                    autocomplete for the bundled names.
+                    The dev server refreshes registration when icons and scanned references
+                    change. Production builds put local icons found by the source scan in the
+                    initial registry and defer the rest. Detected dynamic JSX names keep the
+                    full local registry up front. Set <code class="inline-code">pruneLocal: false</code>{" "}
+                    to always include it. Catalog auto-registration scans literal names and
+                    generates <code class="inline-code">svg-catalog.d.ts</code> for installed
+                    collections. Use <code class="inline-code">catalog</code> to adjust the scan or
+                    disable it. Include the declaration in your TypeScript project for autocomplete.
+                  </p>
+                  <p class="docs-body">
+                    Use <code class="inline-code">dirs</code> to change the icon folders and{" "}
+                    <code class="inline-code">root</code> if you run Next.js outside the project
+                    directory. With <code class="inline-code">precompiled: true</code>, load
+                    callbacks get the original registered markup. With{" "}
+                    <code class="inline-code">precompiled: "tree"</code>, they get reserialized XML.
+                    Install <code class="inline-code">svgo</code> to enable{" "}
+                    <code class="inline-code">svgo: true</code> or pass declarative SVGO options.
+                    For callbacks or custom plugins, use <code class="inline-code">svgoConfig</code>{" "}
+                    with a project-relative Node module that default-exports your SVGO option.
+                  </p>
+                  <p class="docs-body">
+                    For SVG markup in the initial HTML, import the file with{" "}
+                    <code class="inline-code">?better-svg</code> inside a Client Component module.
+                    You can then render the component from your page. Ordinary SVG imports
+                    keep Next.js image handling. If you already use a custom SVG loader,
+                    keep its rule separate from the <code class="inline-code">?better-svg</code> query.
                   </p>
                   <CodeBlock code={`"use client";
 
-import { registerLocalSvgs } from "@mhaadi/svg/local";
-import { SVG } from "./svg";
-import { bundledIcons } from "./generated/icons";
-
-registerLocalSvgs(bundledIcons, { override: false });
-
-export default function CatalogIcon() {
-  return <SVG name="lucide:house" />;
-}`} lang="tsx" file="app/catalog-icon.tsx" />
-                  <p class="docs-body">
-                    Render <code class="inline-code">CatalogIcon</code> from your page. To use
-                    local files by name without a fetch, register a map of local names to SVG
-                    strings with <code class="inline-code">registerLocalSvgs</code> in the same way.
-                  </p>
+export { default } from "./assets/svg/logo.svg?better-svg";`} lang="tsx" file="app/logo.tsx" />
+                  <CodeBlock code={`import "@mhaadi/svg/next/static";`} lang="ts" file="svg-imports.d.ts" />
                 </div>
               </div>
 
@@ -1086,7 +1076,7 @@ registerCatalogIcons(["lucide:house", "tabler:settings", "phosphor:bell"]);`} la
 
 registerCatalogIcons(["hugeicons:home-01", "hugeicons:arrow-left-01"]);`} lang="ts" />
                 <ul class="text-sm text-zinc-muted space-y-1 list-disc pl-5 mt-3">
-                  <li>Runs in Node.js and reads <code class="inline-code">node_modules</code>. For browser lookup by name, use the Vite plugin or <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a>. In a Next.js Server Component, resolve the markup and pass it to the React adapter as <code class="inline-code">src</code>.</li>
+                  <li>Runs in Node.js and reads <code class="inline-code">node_modules</code>. For browser lookup by name, use the Vite plugin or <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a>. The <a href="#nextjs" class="text-acid hover:underline">Next.js integration</a> also registers literal catalog names during the build.</li>
                   <li>Registration uses <code class="inline-code">override: false</code>, so local files and explicit <code class="inline-code">registerLocalSvgs</code> entries keep precedence over catalog icons.</li>
                   <li>Names accept a single trailing wildcard: <code class="inline-code">registerCatalogIcons(["lucide:*"])</code> registers every name the installed lucide source can serve, <code class="inline-code">["lucide:arrow*"]</code> matches a name prefix, and <a href="#catalog-bundle" class="text-acid hover:underline">bundleCatalogIcons</a> expands the same form for offline bundles. Wholesale expansion logs the icon count and approximate markup size once it exceeds 250 icons or 256 KB, and an explicit name in the same list still fails the bundle when it cannot resolve.</li>
                 </ul>

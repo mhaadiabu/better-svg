@@ -49,14 +49,51 @@ sources. Root-only prop updates preserve the existing SVG child elements.
 
 ### Next.js App Router
 
-Wrap `@mhaadi/svg/react` in a `"use client"` module. A Node.js Server Component
-can read local SVG files or call `resolveIconSource` from `@mhaadi/svg/catalog`,
-then pass the markup as a `src` string. For lookup by `name` in the browser, run
-`bundleCatalogIcons` in a Node.js build script and register the generated data
-with `registerLocalSvgs` in your Client Component. The browser can also fetch
-unregistered local names from `public/assets/svg/`.
+Use `withSvg` with Next.js 16.4.6 or newer. It configures the native
+Turbopack and webpack builds.
 
-[Next.js setup examples](https://svg.mhaadi.dev/docs#nextjs)
+```js
+// next.config.mjs
+import { withSvg } from "@mhaadi/svg/next";
+
+export default withSvg({}, { precompiled: "tree" });
+```
+
+Place `logo.svg` in `src/assets/svg/` or `app/assets/svg/`. To use catalog
+names such as `lucide:house`, install the collection, for example
+`@iconify-json/lucide`.
+
+```tsx
+// app/page.tsx
+import { SVG } from "@mhaadi/svg/next/client";
+
+export default function Page() {
+  return <SVG name="logo" width={24} height={24} />;
+}
+```
+
+The client entry can be rendered from a Server Component. Named icons render
+after hydration. To inline artwork in the initial HTML, import a file with
+`?better-svg` inside a module marked `"use client"` and render that component
+from the server. Add `import "@mhaadi/svg/next/static";` to an included
+`.d.ts` file for TypeScript. Normal `.svg` imports keep Next.js image handling.
+
+The wrapper refreshes the registry when local SVGs or scanned catalog
+references change. Production builds send locally used icons up front and
+load the remaining local icons on demand. Dynamic JSX names the scanner can
+detect cause it to keep the full local registry up front. Set `pruneLocal:
+false` to opt out of pruning. Catalog auto-registration scans literal names,
+and the wrapper generates `svg-catalog.d.ts` for installed collections. Use
+`catalog` to change the scan scope, configure strict mode, or disable scanning.
+
+Set `dirs` to change the local folders. `precompiled: true` keeps the
+original registered XML for load callbacks, and `"tree"` ships a packed tree
+with reserialized XML. Install `svgo` to use `svgo: true` or declarative
+options. For SVGO callbacks or custom plugins, set `svgoConfig` to a
+project-relative Node module that default-exports the same SVGO option
+accepted by `svgPlugin`.
+
+[Next.js setup examples](https://svg.mhaadi.dev/docs?fw=react#nextjs)
 
 ## React Native
 
@@ -499,13 +536,12 @@ package, then plain SVG files shipped by the icon packages themselves:
 `lucide-static` for lucide, `@tabler/icons` (outline first, then filled) for
 tabler, and the regular weight of `@phosphor-icons/core` for phosphor.
 
-Registration runs in Node.js and reads `node_modules`. For browser lookup by
-name, use [the Vite plugin](#automatic-local-discovery) or
-[an offline icon bundle](#offline-icon-bundles). For React Server Components,
-see the [Next.js App Router example](#nextjs-app-router) for passing markup to
-the React adapter. Local files discovered by the plugin keep precedence over
-catalog icons, and an unregistered catalog name falls back to the
-`/assets/svg/{name}.svg` URL like any missing local name.
+Catalog resolution runs in Node.js and reads `node_modules`. For browser
+lookup by name, use [the Vite plugin](#automatic-local-discovery),
+[the Next.js integration](#nextjs-app-router), or
+[an offline icon bundle](#offline-icon-bundles). Local files discovered by the
+integration keep precedence over catalog icons. An unregistered catalog name
+falls back to the `/assets/svg/{name}.svg` URL like any missing local name.
 
 A name that resolves to no installed source is skipped, not rejected: a
 misspelled icon or collection does not throw at registration. The name then

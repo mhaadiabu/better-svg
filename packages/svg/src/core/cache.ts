@@ -1,7 +1,13 @@
 import { sanitizeNode, type SvgNode } from "./ast.js";
 import { inlineSvgFromNode, parseInlineSvg, type ParsedInlineSvg } from "./sanitize.js";
 
-type CacheKey = string;
+type ParsedCacheEntry = {
+  source: string;
+  sanitize: boolean;
+  parsed: ParsedInlineSvg;
+  markup?: string;
+  parser: typeof parseInlineSvg | null;
+};
 type NodeParser = (markup: string, sanitize: boolean) => SvgNode | null;
 
 export const deferredLocalSvgPrefix = "better-svg:local:";
@@ -9,16 +15,13 @@ export const deferredLocalSvgPrefix = "better-svg:local:";
 const PARSED_CACHE_LIMIT = 500;
 const NODE_CACHE_LIMIT = 200;
 
-const parsedCache = new Map<
-  CacheKey,
-  { parsed: ParsedInlineSvg; markup?: string; parser: typeof parseInlineSvg | null }
->();
-const nodeCache = new Map<CacheKey, { node: SvgNode; markup: string; parser: NodeParser }>();
+const parsedCache = new Map<string, ParsedCacheEntry>();
+let mostRecentParsed: ParsedCacheEntry | undefined;
+const nodeCache = new Map<string, { node: SvgNode; markup: string; parser: NodeParser }>();
 const markupCache = new Map<string, string>();
 const localTrees = new Map<string, { node: SvgNode; sanitized?: SvgNode | null }>();
 
-const keyFor = (source: string, sanitize: boolean): CacheKey =>
-  `${sanitize ? "s:" : "u:"}${source}`;
+const keyFor = (source: string, sanitize: boolean) => `${sanitize ? "s:" : "u:"}${source}`;
 
 const touch = <V>(map: Map<string, V>, key: string): V | undefined => {
   const value = map.get(key);
@@ -38,10 +41,16 @@ const setBounded = <V>(map: Map<string, V>, key: string, value: V, limit: number
   map.set(key, value);
 };
 
-export const getCachedParsedSvg = (source: string, sanitize: boolean): ParsedInlineSvg | null => {
-  const key = keyFor(source, sanitize);
-  return touch(parsedCache, key)?.parsed ?? null;
+const getParsedEntry = (source: string, sanitize: boolean) => {
+  if (mostRecentParsed?.source === source && mostRecentParsed.sanitize === sanitize)
+    return mostRecentParsed;
+  const entry = touch(parsedCache, keyFor(source, sanitize));
+  if (entry) mostRecentParsed = entry;
+  return entry;
 };
+
+export const getCachedParsedSvg = (source: string, sanitize: boolean): ParsedInlineSvg | null =>
+  getParsedEntry(source, sanitize)?.parsed ?? null;
 
 export const cacheParsedSvg = (
   source: string,
@@ -50,7 +59,9 @@ export const cacheParsedSvg = (
   markup?: string,
   parser: typeof parseInlineSvg | null = parseInlineSvg,
 ): void => {
-  setBounded(parsedCache, keyFor(source, sanitize), { parsed, markup, parser }, PARSED_CACHE_LIMIT);
+  const entry = { source, sanitize, parsed, markup, parser };
+  setBounded(parsedCache, keyFor(source, sanitize), entry, PARSED_CACHE_LIMIT);
+  mostRecentParsed = entry;
 };
 
 export const getCachedMarkup = (
@@ -68,6 +79,7 @@ export const cacheMarkup = (
 
 export const clearSvgCache = (): void => {
   parsedCache.clear();
+  mostRecentParsed = undefined;
   nodeCache.clear();
   markupCache.clear();
   localTrees.clear();
@@ -98,7 +110,7 @@ export const ensureParsedSvg = (
 ): ParsedInlineSvg | null => {
   if (!cache) return parse(markup, sanitize);
   if (source.startsWith(deferredLocalSvgPrefix)) source = markup;
-  const cached = touch(parsedCache, keyFor(source, sanitize));
+  const cached = getParsedEntry(source, sanitize);
   if (cached?.markup === markup && (cached.parser === parse || cached.parser === null))
     return cached.parsed;
   const tree = getLocalSvgTree(source, markup, sanitize);

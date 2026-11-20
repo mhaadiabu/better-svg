@@ -17,7 +17,10 @@ export type ParsedInlineSvg<Style = Record<string, string>> = {
   innerHTML: string;
 };
 
-export const inlineSvgFromNode = (node: SvgNode, innerHTML?: string): ParsedInlineSvg => {
+export const inlineSvgFromNode = (
+  node: SvgNode,
+  innerHTML?: string | (() => string),
+): ParsedInlineSvg => {
   const { attributes, className, style, styleText } = splitAttributes(node.attrs);
   return {
     attrs: Object.fromEntries(attributes.map(({ name, value }) => [name, value])),
@@ -26,7 +29,10 @@ export const inlineSvgFromNode = (node: SvgNode, innerHTML?: string): ParsedInli
     styleText,
     node,
     get innerHTML() {
-      return (innerHTML ??= node.children.map(renderNode).join(""));
+      return (innerHTML =
+        typeof innerHTML === "function"
+          ? innerHTML()
+          : (innerHTML ?? node.children.map(renderNode).join("")));
     },
   };
 };

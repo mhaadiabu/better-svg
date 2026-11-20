@@ -186,14 +186,17 @@ const serializeNode = (node: SvgNode, html: boolean): string => {
   if (node.tag === "#text") {
     return encodeText(node.text ?? "");
   }
-  const attrText = node.attrs.map((attr) => ` ${attr.name}="${encodeAttr(attr.value)}"`).join("");
+  let markup = `<${node.tag}`;
+  for (const { name, value } of node.attrs) markup += ` ${name}="${encodeAttr(value)}"`;
+  if (!html && node.children.length === 0) return `${markup}/>`;
+
   const tag = node.tag.toLowerCase();
-  if (VOID_ELEMENTS.has(tag) || (!html && node.children.length === 0)) {
-    return `<${node.tag}${attrText}/>`;
-  }
+  if (VOID_ELEMENTS.has(tag)) return `${markup}/>`;
+
   const htmlChildren = tag === "foreignobject" || (html && tag !== "svg");
-  const inner = node.children.map((child) => serializeNode(child, htmlChildren)).join("");
-  return `<${node.tag}${attrText}>${inner}</${node.tag}>`;
+  markup += ">";
+  for (const child of node.children) markup += serializeNode(child, htmlChildren);
+  return `${markup}</${node.tag}>`;
 };
 
 export const renderNode = (node: SvgNode): string => serializeNode(node, false);

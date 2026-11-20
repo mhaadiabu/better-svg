@@ -13,7 +13,9 @@ type RegisterOptions = {
   precompiled?: Record<string, PrecompiledLocalSvg>;
 };
 
-type LocalSvgTree = { packed: PackedSvgNode } | { markup: string; node: SvgNode };
+type LocalSvgTree =
+  | { packed: PackedSvgNode; tokens?: readonly string[] }
+  | { markup: string; node: SvgNode };
 
 const localSvgByName = new Map<string, string | LocalSvgTree>();
 const deferredLocalSvgs = new Map<string, () => Promise<void>>();
@@ -78,10 +80,13 @@ export const registerLocalSvgs = (entries: SvgModuleMap, options: RegisterOption
   }
 };
 
-export const registerLocalSvgTrees = (entries: [name: string, node: PackedSvgNode][]) => {
+export const registerLocalSvgTrees = (
+  entries: [name: string, node: PackedSvgNode][],
+  tokens?: readonly string[],
+) => {
   for (const [key, packed] of entries) {
     const name = pathToName(key);
-    if (name && !localSvgByName.has(name)) localSvgByName.set(name, { packed });
+    if (name && !localSvgByName.has(name)) localSvgByName.set(name, { packed, tokens });
   }
 };
 
@@ -115,7 +120,7 @@ const resolveNormalizedSvgSource = (normalized: string) => {
   if (typeof local === "string" && local) return local;
   if (typeof local === "object") {
     if ("packed" in local) {
-      const node = unpackSvgNode(local.packed);
+      const node = unpackSvgNode(local.packed, local.tokens);
       local = { markup: renderNode(node), node };
       localSvgByName.set(normalized, local);
     }

@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it, expect, beforeEach } from "vitest";
-import { scanCatalogNames } from "./scan";
+import { scanCatalogNames } from "../build-tools/scan";
 
 const write = async (root: string, file: string, content: string) => {
   await mkdir(join(root, file, ".."), { recursive: true });

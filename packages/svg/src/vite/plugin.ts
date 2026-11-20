@@ -1,246 +1,48 @@
 import { createHash } from "node:crypto";
-import { readdir, readFile, realpath, stat } from "node:fs/promises";
+import { readFile, realpath } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin, ViteDevServer } from "vite";
-import { buildPackedSvg, buildPrecompiledSvg } from "./precompile.js";
-import { runSvgoPass, type SvgoOption } from "./svgo.js";
+import { clearCatalogCache } from "../core/catalog.js";
 import {
-  scanCatalogNames,
-  scanExtensions,
-  scanLocalSvgNames,
-  type ScanResult,
-  type ScanHint,
-} from "./scan.js";
+  classifyScan,
+  collectionOf,
+  emitCatalogReport,
+  strictError,
+  syncCatalogTypes,
+  type CatalogOutcome,
+} from "../build-tools/catalog.js";
 import {
-  collectionIconNames,
-  installedCollections,
-  clearCatalogCache,
-  collectionSourcePackages,
-  installedCollectionRoot,
-  resolveIconSource,
-} from "../core/catalog.js";
-import { writeCatalogNameTypes, type CatalogNameEntry } from "../core/names-codegen.js";
+  compileStaticSvg,
+  defaultSvgDirs,
+  emitRegistration,
+  optimizeSvg,
+  readLocalSvgs,
+} from "../build-tools/local.js";
+import {
+  resolveCatalogOptions,
+  validatePathList,
+  type SvgPluginOptions,
+} from "../build-tools/options.js";
+import { scanCatalogNames, scanExtensions, scanLocalSvgNames } from "../build-tools/scan.js";
 
-export type CatalogScanOptions = {
-  include?: string[];
-  exclude?: string[];
-  searchPaths?: string[];
-  strict?: boolean;
-  maxFileBytes?: number;
-  /** Generated name types. On by default (svg-catalog.d.ts at the root); a string relocates the file, false disables. */
-  types?: boolean | string;
-  collections?: readonly string[];
-};
+export type {
+  CatalogScanOptions,
+  LocalSvgOptions,
+  SvgPluginOptions,
+  SvgoOption,
+  SvgoOptions,
+} from "../build-tools/options.js";
+export { classifyScan, type CatalogOutcome } from "../build-tools/catalog.js";
+export { resolveCatalogOptions } from "../build-tools/options.js";
 
 const pluginPrefix = "[@mhaadi/svg]";
 const deferredRegistryPrefix = "\0better-svg:deferred-local:";
 
-const validatePathList = (kind: string, entries: readonly string[]) => {
-  if (!Array.isArray(entries) || entries.some((entry) => typeof entry !== "string")) {
-    throw new Error(`${kind} must be an array of relative paths.`);
-  }
-  for (const entry of entries) {
-    if (
-      !entry ||
-      entry.startsWith("/") ||
-      entry.includes("\\") ||
-      entry.split("/").includes("..") ||
-      /[*?{}[\]]/.test(entry)
-    ) {
-      throw new Error(`${kind} must be paths relative to the project root without globs or '..'.`);
-    }
-  }
-};
-
-export const resolveCatalogOptions = (
-  option: CatalogScanOptions | boolean | undefined,
-): CatalogScanOptions | undefined => {
-  // Catalog scanning is on by default: an omitted option scans with the
-  // standard defaults and registers only what resolves, so unused
-  // collections emit nothing and the output stays byte-identical.
-  // `catalog: false` is the explicit opt-out.
-  if (option === false) return undefined;
-  const chosen =
-    option === true || option === undefined
-      ? {}
-      : (() => {
-          if (typeof option !== "object" || option === null || Array.isArray(option)) {
-            throw new Error(
-              "The catalog option must be true, false, or an object of scan options.",
-            );
-          }
-          return option;
-        })();
-  validatePathList("Catalog scan directories", chosen.include ?? ["."]);
-  validatePathList("Catalog excluded directories", chosen.exclude ?? []);
-  if (
-    chosen.searchPaths !== undefined &&
-    (!Array.isArray(chosen.searchPaths) ||
-      chosen.searchPaths.some((path) => typeof path !== "string" || !path))
-  ) {
-    throw new Error("Catalog searchPaths must be an array of non-empty paths.");
-  }
-  if (chosen.strict !== undefined && typeof chosen.strict !== "boolean") {
-    throw new Error("The catalog option strict must be a boolean.");
-  }
-  if (
-    chosen.maxFileBytes !== undefined &&
-    (typeof chosen.maxFileBytes !== "number" ||
-      !Number.isFinite(chosen.maxFileBytes) ||
-      chosen.maxFileBytes <= 0)
-  ) {
-    throw new Error("The catalog option maxFileBytes must be a positive number of bytes.");
-  }
-  if (chosen.types !== undefined && chosen.types !== false && chosen.types !== true) {
-    if (typeof chosen.types !== "string") {
-      throw new Error("The catalog option types must be true or a relative .d.ts path.");
-    }
-    if (
-      !chosen.types.endsWith(".d.ts") ||
-      chosen.types.startsWith("/") ||
-      chosen.types.includes("\\") ||
-      chosen.types.split("/").includes("..") ||
-      /[*?{}[\]]/.test(chosen.types)
-    ) {
-      throw new Error(
-        "Catalog types path must be a relative path ending in .d.ts without globs or '..'.",
-      );
-    }
-  }
-  if (
-    chosen.collections !== undefined &&
-    (!Array.isArray(chosen.collections) ||
-      chosen.collections.some(
-        (collection) => typeof collection !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(collection),
-      ))
-  ) {
-    throw new Error(
-      "Catalog collections must be an array of collection prefixes, such as ['lucide'].",
-    );
-  }
-  return chosen;
-};
-
-export type SvgPluginOptions = {
-  dirs?: string[];
-  pruneLocal?: boolean;
-  svgo?: SvgoOption;
-  precompiled?: boolean | "tree";
-  /**
-   * Catalog source scan. On by default; `false` disables it and an
-   * object adjusts scope (`include`, `exclude`, `strict`,
-   * `maxFileBytes`, `searchPaths`, `types`, `collections`).
-   */
-  catalog?: boolean | CatalogScanOptions;
-};
-
-export type LocalSvgOptions = SvgPluginOptions;
-
-export type { SvgoOptions, SvgoOption } from "./svgo.js";
-
-const emitRegistration = (entries: Map<string, string>, mode: SvgPluginOptions["precompiled"]) => {
-  if (mode === "tree") {
-    const trees = Array.from(entries, ([name, markup]) => [name, buildPackedSvg(markup, name)]);
-    return `\nregisterLocalSvgTrees(${JSON.stringify(trees)});\n`;
-  }
-  const registration = mode
-    ? JSON.stringify({
-        override: false,
-        precompiled: Object.fromEntries(
-          Array.from(entries, ([name, markup]) => [name, buildPrecompiledSvg(markup, name)]),
-        ),
-      })
-    : "{ override: false }";
-  return `\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(entries))}, ${registration});\n`;
-};
-
-export type CatalogOutcome = {
-  resolved: Map<string, string>;
-  typos: { collection: string; names: string[] }[];
-  uninstalled: { collection: string; sample: string }[];
-  hints: ScanHint[];
-  files: number;
-  filesBy: Map<string, string[]>;
-};
-
-const collectionOf = (name: string) => name.slice(0, Math.max(0, name.indexOf(":")));
-
-export const classifyScan = (
-  result: ScanResult,
-  searchPaths: readonly string[],
-): CatalogOutcome => {
-  const resolved = new Map<string, string>();
-  const unresolved: string[] = [];
-  for (const name of result.names) {
-    const markup = resolveIconSource(name, { searchPaths });
-    if (markup) resolved.set(name, markup);
-    else unresolved.push(name);
-  }
-  const collections = [...new Set(unresolved.map(collectionOf))].sort();
-  const typos: CatalogOutcome["typos"] = [];
-  const uninstalled: CatalogOutcome["uninstalled"] = [];
-  const installed = new Set<string>();
-  for (const collection of collections) {
-    if (installedCollectionRoot(collection, searchPaths)) installed.add(collection);
-  }
-  for (const collection of collections) {
-    const names = unresolved.filter((name) => collectionOf(name) === collection);
-    if (installed.has(collection)) typos.push({ collection, names });
-    else {
-      const sample = names.find((name) => result.explicitNames.has(name));
-      if (sample) uninstalled.push({ collection, sample });
-    }
-  }
-  const known = new Set([
-    ...[...resolved.keys()].map(collectionOf),
-    ...[...result.explicitNames].map(collectionOf),
-    ...installed,
-  ]);
-  const hints = result.dynamic.filter((hint) => {
-    return (
-      hint.explicit ||
-      known.has(hint.collection) ||
-      installedCollectionRoot(hint.collection, searchPaths) !== undefined
-    );
-  });
-  return {
-    resolved,
-    typos,
-    uninstalled,
-    hints,
-    files: result.files,
-    filesBy: result.filesBy,
-  };
-};
-
 export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
-  const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
-  const optimizeSvg = async (markup: string, name: string) => {
-    if (!options.svgo) return markup;
-    try {
-      return await runSvgoPass(markup, name, options.svgo);
-    } catch (cause) {
-      if (cause instanceof Error)
-        throw new Error(`SVGO pass failed for "${name}": ${cause.message}`, { cause });
-      throw cause;
-    }
-  };
-  if (
-    dirs.some(
-      (dir) =>
-        !dir ||
-        dir.startsWith("/") ||
-        dir.includes("\\") ||
-        dir.split("/").includes("..") ||
-        /[*?{}[\]]/.test(dir),
-    )
-  ) {
-    throw new Error(
-      "SVG directories must be paths relative to the project root without globs or '..'.",
-    );
-  }
+  const dirs = options.dirs ?? defaultSvgDirs;
+  validatePathList("SVG directories", dirs);
   const catalogOptions = resolveCatalogOptions(options.catalog);
   const catalogStrict = catalogOptions?.strict === true;
   let root = "";
@@ -293,76 +95,6 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const outcomeSignature = (outcome: CatalogOutcome) =>
     JSON.stringify({ resolved: [...outcome.resolved], typos: catalogStrict ? outcome.typos : [] });
 
-  const emitCatalogReport = (outcome: CatalogOutcome, warn?: (message: string) => void) => {
-    for (const entry of outcome.typos) {
-      const details = entry.names
-        .slice(0, 4)
-        .map((name) => {
-          const hits = outcome.filesBy.get(name) ?? [];
-          const shown = hits.slice(0, 2).join(", ");
-          return `${name}${shown ? ` (${shown}${hits.length > 2 ? ", and more" : ""})` : ""}`;
-        })
-        .join(", ");
-      report(
-        warn,
-        `${pluginPrefix} catalog names did not resolve, but the collection is installed: ${details}. Fix the spelling; the name renders the fallback state until registered.`,
-      );
-    }
-    for (const entry of outcome.uninstalled) {
-      const packages = collectionSourcePackages(entry.collection);
-      const primary = packages[0];
-      const rest = packages.slice(1);
-      const where = outcome.filesBy.get(entry.sample)?.[0] ?? "the project";
-      report(
-        warn,
-        `${pluginPrefix} catalog collection "${entry.collection}" is referenced (e.g. ${entry.sample} in ${where}) but no icon source package is installed. Add ${primary}${rest.length ? ` (or ${rest.join(", ")})` : ""} and rerun.`,
-      );
-    }
-    for (const hint of outcome.hints) {
-      report(
-        warn,
-        `${pluginPrefix} dynamic catalog name at ${hint.file}:${hint.line} (\`${hint.snippet}\`). Scanning resolves literal names only; use registerCatalogIcons in Node build code, or generate a client map with bundleCatalogIcons and registerLocalSvgs. Otherwise the /assets/svg/{name}.svg fallback is used.`,
-      );
-    }
-  };
-
-  const syncCatalogTypes = () => {
-    const option = catalogOptions?.types;
-    if (!catalogOptions || option === false || !root) return;
-    const label = typeof option === "string" ? option : "svg-catalog.d.ts";
-    const collections =
-      catalogOptions.collections ?? installedCollections({ searchPaths: searchPaths() });
-    const entries: CatalogNameEntry[] = [];
-    for (const collection of [...new Set(collections)].sort()) {
-      const names = collectionIconNames(collection, { searchPaths: searchPaths() });
-      if (names.length > 0) entries.push([collection, names]);
-    }
-    if (writeCatalogNameTypes(resolve(root, label), entries) === "written") {
-      const totals = entries
-        .map(([collection, names]) => `${collection}: ${names.length}`)
-        .join(", ");
-      announce(
-        `${pluginPrefix} catalog name types written to ${label} (${totals || "no installed icons"})`,
-      );
-    }
-  };
-
-  const strictError = (outcome: CatalogOutcome) => {
-    const names = outcome.typos.flatMap((entry) => entry.names);
-    const files = [
-      ...new Set(
-        outcome.typos.flatMap((entry) =>
-          entry.names.flatMap((name) => outcome.filesBy.get(name) ?? []),
-        ),
-      ),
-    ]
-      .slice(0, 3)
-      .join(", ");
-    return new Error(
-      `No source found for these catalog icons: ${names.join(", ")} (catalog scan strict mode). The collections are installed; check the spelling in ${files || "the scanned sources"}.`,
-    );
-  };
-
   const watchedDirectories = new Set<string>();
   const watchedFiles = new Set<string>();
   const containsSvg = (file: string) =>
@@ -385,7 +117,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       root = config.root;
       pruneLocal = config.command === "build" && options.pruneLocal !== false;
       clearCatalogCache();
-      syncCatalogTypes();
+      syncCatalogTypes(root, catalogOptions, announce);
     },
     configureServer(server) {
       devServer = server;
@@ -454,8 +186,8 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
             if (!root || closed) return;
             const outcome = await ensureOutcome(true);
             if (closed) return;
-            syncCatalogTypes();
-            emitCatalogReport(outcome, warn);
+            syncCatalogTypes(root, catalogOptions, announce);
+            emitCatalogReport(outcome, (message) => report(warn, message));
             if (catalogStrict && outcome.typos.length > 0) {
               server.ws.send({
                 type: "error",
@@ -509,14 +241,11 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
         }
       }
       const name = relative(root, path).split(sep).join("/").slice(0, -4);
-      const source = await optimizeSvg(await readFile(path, "utf8"), name);
-      const { node } = buildPrecompiledSvg(source, name);
       const runtime = fileURLToPath(new URL("../react-static.js", import.meta.url)).replace(
         /\\/g,
         "/",
       );
-      return `import { createStaticSvg } from ${JSON.stringify(runtime)};
-export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
+      return compileStaticSvg(await readFile(path, "utf8"), name, options.svgo, runtime);
     },
     async transform(code, id, transformOptions) {
       const path = id.split("?")[0]?.replace(/\\/g, "/");
@@ -536,58 +265,26 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
               onFile: (file) => this.addWatchFile(file),
             })
           : undefined;
-      const entries = new Map<string, string>();
-      const deferred = new Map<string, string>();
       const watch = (file: string) => {
         if (devServer) devServer.watcher.add(file);
         else this.addWatchFile(file);
       };
       watchedDirectories.clear();
       watchedFiles.clear();
-      const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {
-        let files;
-        let target;
-        try {
-          target = await realpath(directory);
-          if (ancestors.has(target)) return;
-          files = await readdir(directory, { withFileTypes: true });
-        } catch (cause) {
-          if (cause instanceof Error && "code" in cause && cause.code === "ENOENT") return;
-          throw cause;
-        }
-        const nextAncestors = new Set(ancestors).add(target);
-        watchedDirectories.add(target);
-        watch(target);
-        for (const file of files.sort((a, b) => a.name.localeCompare(b.name))) {
-          const path = resolve(directory, file.name);
-          let info;
-          try {
-            info = file.isSymbolicLink() ? await stat(path) : file;
-          } catch (cause) {
-            if (cause instanceof Error && "code" in cause && cause.code === "ENOENT") continue;
-            throw cause;
-          }
-          if (info.isDirectory()) await visit(path, base, nextAncestors);
-          else if (info.isFile() && file.name.endsWith(".svg")) {
-            const name = relative(base, path).split(sep).join("/").slice(0, -4);
-            watch(path);
-            const target = await realpath(path);
-            watchedFiles.add(target);
-            if (target !== path) watch(target);
-            if (!entries.has(name) && !deferred.has(name)) {
-              const destination =
-                usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))
-                  ? deferred
-                  : entries;
-              destination.set(name, await optimizeSvg(await readFile(path, "utf8"), name));
-            }
-          }
-        }
-      };
-      for (const dir of dirs) {
-        const base = resolve(root, dir);
-        await visit(base, base);
-      }
+      const { entries, deferred } = await readLocalSvgs(
+        root,
+        dirs,
+        usedNames,
+        options.svgo,
+        (path) => {
+          watchedDirectories.add(path);
+          watch(path);
+        },
+        (path) => {
+          watchedFiles.add(path);
+          watch(path);
+        },
+      );
       let appended = emitRegistration(entries, options.precompiled);
       if (deferred.size > 0) {
         const register =
@@ -608,14 +305,14 @@ export default function register() {
         const emit = (message: string) => this.warn(message);
         const outcome = await ensureOutcome(false, watch);
         signatureState.value = outcomeSignature(outcome);
-        emitCatalogReport(outcome, emit);
-        syncCatalogTypes();
+        emitCatalogReport(outcome, (message) => report(emit, message));
+        syncCatalogTypes(root, catalogOptions, announce);
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
         if (outcome.resolved.size > 0) {
           const catalogEntries = new Map<string, string>();
           for (const [name, markup] of outcome.resolved) {
             if (deferred.has(name)) continue;
-            catalogEntries.set(name, await optimizeSvg(markup, name));
+            catalogEntries.set(name, await optimizeSvg(markup, name, options.svgo));
           }
           const tallies = new Map<string, number>();
           for (const name of catalogEntries.keys()) {

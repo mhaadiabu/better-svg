@@ -584,6 +584,8 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
       };
       watchedDirectories.clear();
       watchedFiles.clear();
+      // Custom SVGO configurations can run callbacks that inspect or change later files.
+      const readBatchSize = !options.svgo || options.svgo === true ? 32 : 1;
       const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {
         let files;
         let target;
@@ -598,6 +600,16 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
         const nextAncestors = new Set(ancestors).add(target);
         watchedDirectories.add(target);
         watch(target);
+        const batch: { path: string; name: string; destination: Map<string, string> }[] = [];
+        const registerBatch = async () => {
+          const sources = await Promise.allSettled(batch.map(({ path }) => readFile(path, "utf8")));
+          for (const [index, source] of sources.entries()) {
+            const { name, destination } = batch[index]!;
+            if (source.status === "rejected") throw source.reason;
+            destination.set(name, await optimizeSvg(source.value, name));
+          }
+          batch.length = 0;
+        };
         for (const file of files.sort((a, b) => a.name.localeCompare(b.name))) {
           const path = resolve(directory, file.name);
           let info;
@@ -607,22 +619,28 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
             if (cause instanceof Error && "code" in cause && cause.code === "ENOENT") continue;
             throw cause;
           }
-          if (info.isDirectory()) await visit(path, base, nextAncestors);
-          else if (info.isFile() && file.name.endsWith(".svg")) {
+          if (info.isDirectory()) {
+            if (batch.length) await registerBatch();
+            await visit(path, base, nextAncestors);
+          } else if (info.isFile() && file.name.endsWith(".svg")) {
             const name = relative(base, path).split(sep).join("/").slice(0, -4);
             watch(path);
-            const target = await realpath(path);
-            watchedFiles.add(target);
-            if (target !== path) watch(target);
+            const realFile = file.isSymbolicLink()
+              ? await realpath(path)
+              : resolve(target, file.name);
+            watchedFiles.add(realFile);
+            if (realFile !== path) watch(realFile);
             if (!entries.has(name) && !deferred.has(name)) {
               const destination =
                 usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))
                   ? deferred
                   : entries;
-              destination.set(name, await optimizeSvg(await readFile(path, "utf8"), name));
+              batch.push({ path, name, destination });
+              if (batch.length === readBatchSize) await registerBatch();
             }
           }
         }
+        if (batch.length) await registerBatch();
       };
       for (const dir of dirs) {
         const base = resolve(root, dir);

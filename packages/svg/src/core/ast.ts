@@ -92,11 +92,16 @@ const VOID_ELEMENTS = new Set([
   "wbr",
 ]);
 
-const encodeAttr = (value: string) =>
-  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const entities: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+};
+const encodeEntity = (character: string) => entities[character] ?? character;
 
-const encodeText = (value: string) =>
-  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const encodeAttr = (value: string) => value.replace(/[&<>"]/g, encodeEntity);
+const encodeText = (value: string) => value.replace(/[&<>]/g, encodeEntity);
 
 export const domParserAvailable = () =>
   typeof window !== "undefined" &&

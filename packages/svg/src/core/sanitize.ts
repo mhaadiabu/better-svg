@@ -35,7 +35,8 @@ export const parseInlineSvg = (markup: string, sanitize: boolean): ParsedInlineS
   if (!domParserAvailable()) return null;
   const parsedDocument = new DOMParser().parseFromString(markup, "image/svg+xml");
   if (parsedDocument.querySelector("parsererror")) return null;
-  const svg = parsedDocument.querySelector("svg");
+  const rootElement = parsedDocument.documentElement;
+  const svg = rootElement?.tagName === "svg" ? rootElement : parsedDocument.querySelector("svg");
   if (!svg) return null;
   const node = toNodeFromElement(svg);
   const root = sanitize ? sanitizeNode(node) : node;

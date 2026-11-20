@@ -18,8 +18,9 @@ const decodeCssId = (value: string) =>
     },
   );
 
-const escapeCssId = (value: string) =>
-  Array.from(value)
+const escapeCssId = (value: string) => {
+  if (!/^-?\d|[^\da-z_-]/i.test(value)) return value;
+  return Array.from(value)
     .map((character, index) => {
       if (
         /[\da-z_-]/i.test(character) &&
@@ -30,6 +31,7 @@ const escapeCssId = (value: string) =>
       return `\\${character.codePointAt(0)?.toString(16)} `;
     })
     .join("");
+};
 
 export const createSvgId = () => `svg-${instanceKey}-${++nextId}`;
 
@@ -64,6 +66,7 @@ export const rewriteSvgValue = (name: string, value: string, ids: ReadonlyMap<st
       })
       .join(";");
   }
+  if (!value.includes("#")) return value;
   return value.replace(
     /url\(\s*(['"]?)#((?:\\[\da-f]{1,6}\s?|\\.|[^\s'"()\\])+)\1\s*\)/gi,
     (match, quote: string, id: string) => {

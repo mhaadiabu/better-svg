@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { dirname, relative, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import {
@@ -39,6 +40,9 @@ export type LoaderContext = {
   async(): (error: Error | null, result?: string) => void;
 };
 
+const require = createRequire(import.meta.url);
+const configVersions = new Map<string, string>();
+
 export const loadSvg = async (context: LoaderContext, source: string) => {
   const { root, kind, dev, settings, distDir } = context.getOptions();
   const options: NextSvgOptions = JSON.parse(settings);
@@ -48,7 +52,15 @@ export const loadSvg = async (context: LoaderContext, source: string) => {
     const file = resolve(root, options.svgoConfig);
     context.addDependency(file);
     const url = pathToFileURL(file);
-    if (dev) url.searchParams.set("mtime", String((await stat(file)).mtimeMs));
+    if (dev) {
+      const { mtimeMs, ctimeMs } = await stat(file);
+      const version = `${mtimeMs}:${ctimeMs}`;
+      if (configVersions.get(file) !== version) {
+        delete require.cache[require.resolve(file)];
+        configVersions.set(file, version);
+      }
+      url.searchParams.set("version", version);
+    }
     const config: { default: SvgoOption } = await import(url.href);
     svgo = config.default;
   }

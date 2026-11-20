@@ -252,11 +252,12 @@ describe("catalog usage scan", () => {
         moduleGraph: { invalidateAll: vi.fn() },
         httpServer: new EventEmitter(),
       } as never);
-      await plugin.transform?.call(
-        { addWatchFile() {}, warn() {} } as never,
-        baseModuleCode,
-        localModuleId,
-      );
+      const registryId = "\0better-svg:dev-local.js";
+      const context = { warn() {} } as never;
+      const local = await plugin.transform?.call(context, baseModuleCode, localModuleId);
+      expect(local?.code).toContain(JSON.stringify(registryId));
+      const registry = await plugin.transform?.call(context, "", registryId);
+      expect(registry?.code).toContain('"testy:house"');
       await writeFixture("src/ui/nav.tsx", '<SVG name="testy:house" /><SVG name="ghostly:star" />');
       watcher.emit("change", join(root, "src/ui/nav.tsx"));
       await vi.advanceTimersByTimeAsync(50);
@@ -277,20 +278,20 @@ describe("catalog name types", () => {
     await setupCatalog();
     await writeFixture("src/ui/extra.tsx", '<SVG name="ghostly:star" />\n');
     const run = await runTransformWith({ catalog: {} });
-    const file = await readFile(join(root, "svg-catalog.d.ts"), "utf8");
+    const file = await readFile(join(root, "src", "svg-catalog.d.ts"), "utf8");
     expect(file).toContain('import "@mhaadi/svg/catalog-types";');
     expect(file).toContain('declare module "@mhaadi/svg/catalog-types" {');
     expect(file).toContain('"testy": "house"');
     expect(file).not.toContain('"ghostly"');
     expect(run.info.join("\n")).toContain(
-      "catalog name types written to svg-catalog.d.ts (testy: 1)",
+      "catalog name types written to src/svg-catalog.d.ts (testy: 1)",
     );
   });
 
   it("does not write types under types: false", async () => {
     await setupCatalog();
     const run = await runTransformWith({ catalog: { types: false } });
-    expect(existsSync(join(root, "svg-catalog.d.ts"))).toBe(false);
+    expect(existsSync(join(root, "src", "svg-catalog.d.ts"))).toBe(false);
     expect(run.info.join("\n")).not.toContain("catalog name types");
   });
 
@@ -327,7 +328,9 @@ describe("catalog name types", () => {
     await writeFixture("src/ui/nav.tsx", "export const empty = true;");
     const plugin = svgPlugin();
     plugin.configResolved?.({ root } as never);
-    expect(await readFile(join(root, "svg-catalog.d.ts"), "utf8")).toContain('"testy": "house"');
+    expect(await readFile(join(root, "src", "svg-catalog.d.ts"), "utf8")).toContain(
+      '"testy": "house"',
+    );
   });
 
   it("narrows suggestions without restricting registered source literals", async () => {
@@ -337,7 +340,7 @@ describe("catalog name types", () => {
       JSON.stringify({ icons: { bell: { body: "<path/>" } } }),
     );
     const run = await runTransformWith({ catalog: { collections: ["other"] } });
-    const content = await readFile(join(root, "svg-catalog.d.ts"), "utf8");
+    const content = await readFile(join(root, "src", "svg-catalog.d.ts"), "utf8");
     expect(content).toContain('"other": "bell"');
     expect(content).not.toContain('"testy"');
     expect(run.result?.code).toContain('"testy:house"');
@@ -347,7 +350,7 @@ describe("catalog name types", () => {
     await setupCatalog();
     await runTransformWith();
     await runTransformWith({ catalog: { collections: [] } });
-    expect(await readFile(join(root, "svg-catalog.d.ts"), "utf8")).toContain(
+    expect(await readFile(join(root, "src", "svg-catalog.d.ts"), "utf8")).toContain(
       "interface SvgCatalogIcons {}",
     );
   });
@@ -374,13 +377,15 @@ describe("catalog name types", () => {
       watcher.emit("change", join(root, "package.json"));
       await vi.advanceTimersByTimeAsync(50);
       await vi.waitFor(async () =>
-        expect(await readFile(join(root, "svg-catalog.d.ts"), "utf8")).toContain('"house" | "zap"'),
+        expect(await readFile(join(root, "src", "svg-catalog.d.ts"), "utf8")).toContain(
+          '"house" | "zap"',
+        ),
       );
       await rm(join(root, "node_modules/@iconify-json/testy"), { recursive: true });
       watcher.emit("change", join(root, "package.json"));
       await vi.advanceTimersByTimeAsync(50);
       await vi.waitFor(async () =>
-        expect(await readFile(join(root, "svg-catalog.d.ts"), "utf8")).toContain(
+        expect(await readFile(join(root, "src", "svg-catalog.d.ts"), "utf8")).toContain(
           "interface SvgCatalogIcons {}",
         ),
       );

@@ -83,8 +83,10 @@ references change. Production builds send locally used icons up front and
 load the remaining local icons on demand. Dynamic JSX names the scanner can
 detect cause it to keep the full local registry up front. Set `pruneLocal:
 false` to opt out of pruning. Catalog auto-registration scans literal names,
-and the wrapper generates `svg-catalog.d.ts` for installed collections. Use
-`catalog` to change the scan scope, configure strict mode, or disable scanning.
+and the wrapper generates declarations for installed collections. It writes
+`src/svg-catalog.d.ts` when `src` exists, or `svg-catalog.d.ts` at the project
+root. Use `catalog.types` to choose a different location or turn off generation.
+Use `catalog` to change the scan scope, configure strict mode, or disable scanning.
 
 Set `dirs` to change the local folders. `precompiled: true` keeps the
 original registered XML for load callbacks, and `"tree"` ships a packed tree
@@ -615,9 +617,10 @@ catalog registration is appended.
 
 Name types are on by default. When Vite resolves its configuration,
 `svgPlugin()` discovers installed icon collections and writes
-`svg-catalog.d.ts`, before any page request or registry import. The generated
-file augments `SvgName`, so typing `name="lucide:` suggests real names before
-you have written your first icon. The plugin does not install packages.
+`src/svg-catalog.d.ts` if the Vite root has a `src` directory. Otherwise it
+writes `svg-catalog.d.ts` at the Vite root. The generated file augments
+`SvgName`, so typing `name="lucide:` suggests real names before you have
+written your first icon.
 
 ```ts
 svgPlugin();
@@ -643,17 +646,17 @@ without its generated-file header.
 These are suggestions, not validation. Any string still compiles, including
 dynamic names, unknown collections, and `/assets/svg/{name}.svg` fallbacks.
 
-Include the generated file in your `tsconfig` and gitignore it. Keep any
-other existing `include` entries:
-
-```json
-{ "include": ["src", "svg-catalog.d.ts"] }
-```
+The standard Vite React TypeScript starter already includes `src` in
+`tsconfig.app.json`. If your app uses a different source layout, set
+`catalog.types` to a path relative to the Vite root that your app's
+TypeScript config includes. Add the generated file to `.gitignore`. If an
+older Vite plugin generated a root-level copy and your project now uses
+`src/svg-catalog.d.ts`, remove the old copy to avoid stale suggestions.
 
 Start Vite once to create the file. Framework template completion depends on
 its language tools. The published adapter prop types share the generated
-union; React JSX completion is also checked with TypeScript's language
-service. `bundleCatalogIcons` writes the types file in script mode
+union. React JSX completion is checked with TypeScript's language service.
+`bundleCatalogIcons` writes the types file in script mode
 by default when `out` is set, `types: false` turns it off, and in-memory calls without `out` never
 write unless `types` says so. Its unions are scoped to exactly the bundled
 names, since an offline bundle's set is fixed.

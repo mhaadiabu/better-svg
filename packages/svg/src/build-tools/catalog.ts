@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import {
   collectionIconNames,
@@ -110,7 +110,11 @@ export const syncCatalogTypes = (
   const searchPaths = catalogOptions?.searchPaths ?? [root];
   const option = catalogOptions?.types;
   if (!catalogOptions || option === false || !root) return;
-  const label = typeof option === "string" ? option : "svg-catalog.d.ts";
+  let label = "svg-catalog.d.ts";
+  if (typeof option === "string") label = option;
+  else if (statSync(resolve(root, "src"), { throwIfNoEntry: false })?.isDirectory()) {
+    label = `src/${label}`;
+  }
   const collections = catalogOptions.collections ?? installedCollections({ searchPaths });
   const entries: CatalogNameEntry[] = [];
   for (const collection of [...new Set(collections)].sort()) {

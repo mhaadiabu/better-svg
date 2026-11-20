@@ -5,6 +5,7 @@
 ### Changed
 
 - Reduce the JavaScript needed for pages that import many static React SVGs with `?better-svg`.
+- Use less memory when scanning large Vite projects and reuse catalog names when refreshing TypeScript suggestions.
 
 ## 0.5.1
 

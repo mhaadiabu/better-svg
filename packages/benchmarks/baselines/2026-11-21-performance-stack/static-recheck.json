@@ -1,0 +1,4649 @@
+[
+    {
+        "round": 1,
+        "profile": "better-static",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/better-static/assets/index-UmttLklZ.js",
+                "transferBytes": 256086,
+                "encodedBodyBytes": 255786
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226799645.6
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 23.5,
+                        "readyMs": 24.400000005960464,
+                        "paintOpportunityMs": 32.100000001490116,
+                        "updateCommitMs": 7.399999998509884,
+                        "updatePaintOpportunityMs": 19.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5.399999998509884,
+                        "readyMs": 6,
+                        "paintOpportunityMs": 32.5,
+                        "updateCommitMs": 2.399999998509884,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 7,
+                        "readyMs": 7.699999995529652,
+                        "paintOpportunityMs": 32,
+                        "updateCommitMs": 2.399999998509884,
+                        "updatePaintOpportunityMs": 32.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.899999998509884,
+                        "readyMs": 4.5,
+                        "paintOpportunityMs": 31.299999997019768,
+                        "updateCommitMs": 3.100000001490116,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 8.200000002980232,
+                        "readyMs": 8.700000002980232,
+                        "paintOpportunityMs": 31.80000000447035,
+                        "updateCommitMs": 4.100000001490116,
+                        "updatePaintOpportunityMs": 32.70000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 7.199999995529652,
+                        "readyMs": 7.699999995529652,
+                        "paintOpportunityMs": 31.69999999552965,
+                        "updateCommitMs": 2.4000000059604645,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.799999997019768,
+                        "readyMs": 5.200000002980232,
+                        "paintOpportunityMs": 31.899999998509884,
+                        "updateCommitMs": 2,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.5,
+                        "readyMs": 4.699999995529652,
+                        "paintOpportunityMs": 32.099999994039536,
+                        "updateCommitMs": 2.100000001490116,
+                        "updatePaintOpportunityMs": 32.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 7.100000001490116,
+                        "readyMs": 7.5,
+                        "paintOpportunityMs": 32,
+                        "updateCommitMs": 3.100000001490116,
+                        "updatePaintOpportunityMs": 32.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 15.200000002980232,
+                        "readyMs": 16.399999998509884,
+                        "paintOpportunityMs": 31.799999997019768,
+                        "updateCommitMs": 2.100000001490116,
+                        "updatePaintOpportunityMs": 32.70000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 5984473,
+            "heapAfter": 7976345,
+            "longTasks": [],
+            "moduleReadyMs": 62.100000001490116
+        }
+    },
+    {
+        "round": 1,
+        "profile": "svgr-raw",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/svgr-raw/assets/index-BCThsKcv.js",
+                "transferBytes": 244904,
+                "encodedBodyBytes": 244604
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226800591.2
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 18.200000002980232,
+                        "readyMs": 18.900000005960464,
+                        "paintOpportunityMs": 22.900000005960464,
+                        "updateCommitMs": 5,
+                        "updatePaintOpportunityMs": 28.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.5,
+                        "readyMs": 2.8000000044703484,
+                        "paintOpportunityMs": 32.30000000447035,
+                        "updateCommitMs": 3.5,
+                        "updatePaintOpportunityMs": 32.599999994039536,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.1999999955296516,
+                        "readyMs": 2.6999999955296516,
+                        "paintOpportunityMs": 32.099999994039536,
+                        "updateCommitMs": 1.1000000014901161,
+                        "updatePaintOpportunityMs": 32.70000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.100000001490116,
+                        "readyMs": 2.5,
+                        "paintOpportunityMs": 32.5,
+                        "updateCommitMs": 3.5,
+                        "updatePaintOpportunityMs": 32,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.3000000044703484,
+                        "readyMs": 3,
+                        "paintOpportunityMs": 31.600000001490116,
+                        "updateCommitMs": 4,
+                        "updatePaintOpportunityMs": 32.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5,
+                        "readyMs": 5.799999997019768,
+                        "paintOpportunityMs": 30.600000001490116,
+                        "updateCommitMs": 2.0999999940395355,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.7000000029802322,
+                        "readyMs": 2.899999998509884,
+                        "paintOpportunityMs": 31.899999998509884,
+                        "updateCommitMs": 1.1000000014901161,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.0999999940395355,
+                        "readyMs": 3.5,
+                        "paintOpportunityMs": 30.69999999552965,
+                        "updateCommitMs": 1.4000000059604645,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.5,
+                        "readyMs": 6.200000002980232,
+                        "paintOpportunityMs": 31.700000002980232,
+                        "updateCommitMs": 1.9000000059604645,
+                        "updatePaintOpportunityMs": 32.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.7000000029802322,
+                        "readyMs": 3.0999999940395355,
+                        "paintOpportunityMs": 31.899999998509884,
+                        "updateCommitMs": 2.2000000029802322,
+                        "updatePaintOpportunityMs": 32.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 9727045,
+            "heapAfter": 11993417,
+            "longTasks": [],
+            "moduleReadyMs": 65.20000000298023
+        }
+    },
+    {
+        "round": 1,
+        "profile": "unplugin-icons",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/unplugin-icons/assets/index-FwZobbQY.js",
+                "transferBytes": 256990,
+                "encodedBodyBytes": 256690
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226801537.1
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 14.600000001490116,
+                        "readyMs": 15.099999994039536,
+                        "paintOpportunityMs": 21.299999997019768,
+                        "updateCommitMs": 6.600000001490116,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.399999998509884,
+                        "readyMs": 5,
+                        "paintOpportunityMs": 31.799999997019768,
+                        "updateCommitMs": 2,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.3000000044703484,
+                        "readyMs": 3.7000000029802322,
+                        "paintOpportunityMs": 31.600000001490116,
+                        "updateCommitMs": 1.7999999970197678,
+                        "updatePaintOpportunityMs": 32.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5.5,
+                        "readyMs": 6.299999997019768,
+                        "paintOpportunityMs": 32.19999999552965,
+                        "updateCommitMs": 1.6999999955296516,
+                        "updatePaintOpportunityMs": 32.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 7,
+                        "readyMs": 8,
+                        "paintOpportunityMs": 31,
+                        "updateCommitMs": 2.399999998509884,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.5,
+                        "readyMs": 4.899999998509884,
+                        "paintOpportunityMs": 31.600000001490116,
+                        "updateCommitMs": 1.8000000044703484,
+                        "updatePaintOpportunityMs": 32.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.5,
+                        "readyMs": 2.7999999970197678,
+                        "paintOpportunityMs": 31.200000002980232,
+                        "updateCommitMs": 1.3999999985098839,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.299999997019768,
+                        "readyMs": 5.0999999940395355,
+                        "paintOpportunityMs": 31.899999998509884,
+                        "updateCommitMs": 4,
+                        "updatePaintOpportunityMs": 32,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.600000001490116,
+                        "readyMs": 3.2000000029802322,
+                        "paintOpportunityMs": 31.700000002980232,
+                        "updateCommitMs": 2.899999998509884,
+                        "updatePaintOpportunityMs": 34,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5,
+                        "readyMs": 5.700000002980232,
+                        "paintOpportunityMs": 29.700000002980232,
+                        "updateCommitMs": 2.1999999955296516,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 14683901,
+            "heapAfter": 16654050,
+            "longTasks": [],
+            "moduleReadyMs": 70.89999999850988
+        }
+    },
+    {
+        "round": 2,
+        "profile": "svgr-raw",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/svgr-raw/assets/index-BCThsKcv.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 244604
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226802518.3
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 8.200000002980232,
+                        "readyMs": 9.699999995529652,
+                        "paintOpportunityMs": 23.299999997019768,
+                        "updateCommitMs": 5.600000001490116,
+                        "updatePaintOpportunityMs": 32.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.1999999955296516,
+                        "readyMs": 3.399999998509884,
+                        "paintOpportunityMs": 32,
+                        "updateCommitMs": 1.7000000029802322,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.2999999970197678,
+                        "readyMs": 2.899999998509884,
+                        "paintOpportunityMs": 32.20000000298023,
+                        "updateCommitMs": 2.2999999970197678,
+                        "updatePaintOpportunityMs": 33.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.200000002980232,
+                        "readyMs": 4.700000002980232,
+                        "paintOpportunityMs": 31.600000001490116,
+                        "updateCommitMs": 1.2999999970197678,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5.799999997019768,
+                        "readyMs": 6.0999999940395355,
+                        "paintOpportunityMs": 31.5,
+                        "updateCommitMs": 1.7999999970197678,
+                        "updatePaintOpportunityMs": 32.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.899999998509884,
+                        "readyMs": 4.399999998509884,
+                        "paintOpportunityMs": 32.100000001490116,
+                        "updateCommitMs": 1.1000000014901161,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.3000000044703484,
+                        "readyMs": 2.6999999955296516,
+                        "paintOpportunityMs": 32.19999999552965,
+                        "updateCommitMs": 1.6000000014901161,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.200000002980232,
+                        "readyMs": 4.600000001490116,
+                        "paintOpportunityMs": 32.399999998509884,
+                        "updateCommitMs": 2.4000000059604645,
+                        "updatePaintOpportunityMs": 32.20000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.700000002980232,
+                        "readyMs": 5.299999997019768,
+                        "paintOpportunityMs": 31.299999997019768,
+                        "updateCommitMs": 1.9000000059604645,
+                        "updatePaintOpportunityMs": 32.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.7999999970197678,
+                        "readyMs": 4.200000002980232,
+                        "paintOpportunityMs": 31.299999997019768,
+                        "updateCommitMs": 1.7000000029802322,
+                        "updatePaintOpportunityMs": 32.900000005960464,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 17487018,
+            "heapAfter": 14970895,
+            "longTasks": [],
+            "moduleReadyMs": 44.69999999552965
+        }
+    },
+    {
+        "round": 2,
+        "profile": "unplugin-icons",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/unplugin-icons/assets/index-FwZobbQY.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 256690
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226803451
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 22.100000001490116,
+                        "readyMs": 25.099999994039536,
+                        "paintOpportunityMs": 38,
+                        "updateCommitMs": 7.100000001490116,
+                        "updatePaintOpportunityMs": 18.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.399999998509884,
+                        "readyMs": 2.7000000029802322,
+                        "paintOpportunityMs": 32.399999998509884,
+                        "updateCommitMs": 1.7000000029802322,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2,
+                        "readyMs": 2.2000000029802322,
+                        "paintOpportunityMs": 32.20000000298023,
+                        "updateCommitMs": 1.9000000059604645,
+                        "updatePaintOpportunityMs": 32.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.7999999970197678,
+                        "readyMs": 4.399999998509884,
+                        "paintOpportunityMs": 31.899999998509884,
+                        "updateCommitMs": 3.2999999970197678,
+                        "updatePaintOpportunityMs": 32.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 7.299999997019768,
+                        "readyMs": 7.700000002980232,
+                        "paintOpportunityMs": 31.799999997019768,
+                        "updateCommitMs": 1.6999999955296516,
+                        "updatePaintOpportunityMs": 34.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 8.5,
+                        "readyMs": 10,
+                        "paintOpportunityMs": 30.700000002980232,
+                        "updateCommitMs": 6.200000002980232,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 9.5,
+                        "readyMs": 10.599999994039536,
+                        "paintOpportunityMs": 34.79999999701977,
+                        "updateCommitMs": 4.200000002980232,
+                        "updatePaintOpportunityMs": 30.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.7000000029802322,
+                        "readyMs": 4.100000001490116,
+                        "paintOpportunityMs": 33,
+                        "updateCommitMs": 3.7999999970197678,
+                        "updatePaintOpportunityMs": 32.099999994039536,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.699999995529652,
+                        "readyMs": 5.5999999940395355,
+                        "paintOpportunityMs": 29.899999998509884,
+                        "updateCommitMs": 1.5,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.2999999970197678,
+                        "readyMs": 3.5999999940395355,
+                        "paintOpportunityMs": 31.5,
+                        "updateCommitMs": 1.3999999985098839,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 17275732,
+            "heapAfter": 17513321,
+            "longTasks": [],
+            "moduleReadyMs": 32
+        }
+    },
+    {
+        "round": 2,
+        "profile": "better-static",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/better-static/assets/index-UmttLklZ.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 255786
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226804390.8
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 13,
+                        "readyMs": 13.300000004470348,
+                        "paintOpportunityMs": 17.400000005960464,
+                        "updateCommitMs": 4.899999998509884,
+                        "updatePaintOpportunityMs": 24.19999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 8.300000004470348,
+                        "readyMs": 8.700000002980232,
+                        "paintOpportunityMs": 31.5,
+                        "updateCommitMs": 1.6000000014901161,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.899999998509884,
+                        "readyMs": 5.100000001490116,
+                        "paintOpportunityMs": 30.899999998509884,
+                        "updateCommitMs": 1.7000000029802322,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.700000002980232,
+                        "readyMs": 5,
+                        "paintOpportunityMs": 36.80000000447035,
+                        "updateCommitMs": 2.5,
+                        "updatePaintOpportunityMs": 28.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.5999999940395355,
+                        "readyMs": 5.199999995529652,
+                        "paintOpportunityMs": 32.399999998509884,
+                        "updateCommitMs": 2,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.8000000044703484,
+                        "readyMs": 4,
+                        "paintOpportunityMs": 32.600000001490116,
+                        "updateCommitMs": 1.5,
+                        "updatePaintOpportunityMs": 32.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.8000000044703484,
+                        "readyMs": 4.300000004470348,
+                        "paintOpportunityMs": 32.30000000447035,
+                        "updateCommitMs": 2.5,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 9.299999997019768,
+                        "readyMs": 10.5,
+                        "paintOpportunityMs": 30.899999998509884,
+                        "updateCommitMs": 1.8000000044703484,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5.399999998509884,
+                        "readyMs": 5.799999997019768,
+                        "paintOpportunityMs": 32.19999999552965,
+                        "updateCommitMs": 1.1000000014901161,
+                        "updatePaintOpportunityMs": 32.900000005960464,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.199999995529652,
+                        "readyMs": 4.699999995529652,
+                        "paintOpportunityMs": 32.5,
+                        "updateCommitMs": 2.600000001490116,
+                        "updatePaintOpportunityMs": 32.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 19861040,
+            "heapAfter": 15783710,
+            "longTasks": [],
+            "moduleReadyMs": 51.20000000298023
+        }
+    },
+    {
+        "round": 3,
+        "profile": "unplugin-icons",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/unplugin-icons/assets/index-FwZobbQY.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 256690
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226805309.4
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 7.800000004470348,
+                        "readyMs": 8,
+                        "paintOpportunityMs": 17,
+                        "updateCommitMs": 4.5,
+                        "updatePaintOpportunityMs": 32.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.7999999970197678,
+                        "readyMs": 3.100000001490116,
+                        "paintOpportunityMs": 31.5,
+                        "updateCommitMs": 3.2000000029802322,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4,
+                        "readyMs": 4.5,
+                        "paintOpportunityMs": 31.200000002980232,
+                        "updateCommitMs": 3.399999998509884,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.299999997019768,
+                        "readyMs": 4.5,
+                        "paintOpportunityMs": 31.299999997019768,
+                        "updateCommitMs": 2.600000001490116,
+                        "updatePaintOpportunityMs": 32.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.100000001490116,
+                        "readyMs": 4.5,
+                        "paintOpportunityMs": 30.19999999552965,
+                        "updateCommitMs": 1.8999999985098839,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.600000001490116,
+                        "readyMs": 2.7999999970197678,
+                        "paintOpportunityMs": 31.399999998509884,
+                        "updateCommitMs": 2.6999999955296516,
+                        "updatePaintOpportunityMs": 32.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.700000002980232,
+                        "readyMs": 5.200000002980232,
+                        "paintOpportunityMs": 32.20000000298023,
+                        "updateCommitMs": 1.3999999985098839,
+                        "updatePaintOpportunityMs": 32.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.1999999955296516,
+                        "readyMs": 2.5999999940395355,
+                        "paintOpportunityMs": 32.899999998509884,
+                        "updateCommitMs": 2.2000000029802322,
+                        "updatePaintOpportunityMs": 33.30000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 6.899999998509884,
+                        "readyMs": 8.5,
+                        "paintOpportunityMs": 29.5,
+                        "updateCommitMs": 1.5999999940395355,
+                        "updatePaintOpportunityMs": 33.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.399999998509884,
+                        "readyMs": 3.6999999955296516,
+                        "paintOpportunityMs": 31.099999994039536,
+                        "updateCommitMs": 1.1999999955296516,
+                        "updatePaintOpportunityMs": 32.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 18095339,
+            "heapAfter": 18517721,
+            "longTasks": [],
+            "moduleReadyMs": 35.599999994039536
+        }
+    },
+    {
+        "round": 3,
+        "profile": "better-static",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/better-static/assets/index-UmttLklZ.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 255786
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226806230.2
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 17,
+                        "readyMs": 18.600000001490116,
+                        "paintOpportunityMs": 29.5,
+                        "updateCommitMs": 6.899999998509884,
+                        "updatePaintOpportunityMs": 32.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 6,
+                        "readyMs": 6.299999997019768,
+                        "paintOpportunityMs": 32,
+                        "updateCommitMs": 1.8000000044703484,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.300000004470348,
+                        "readyMs": 4.700000002980232,
+                        "paintOpportunityMs": 32.30000000447035,
+                        "updateCommitMs": 2,
+                        "updatePaintOpportunityMs": 33.099999994039536,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5.100000001490116,
+                        "readyMs": 6.399999998509884,
+                        "paintOpportunityMs": 32,
+                        "updateCommitMs": 1.8000000044703484,
+                        "updatePaintOpportunityMs": 32.900000005960464,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.600000001490116,
+                        "readyMs": 4.800000004470348,
+                        "paintOpportunityMs": 32.70000000298023,
+                        "updateCommitMs": 1.8999999985098839,
+                        "updatePaintOpportunityMs": 32.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.200000002980232,
+                        "readyMs": 4.5,
+                        "paintOpportunityMs": 32.79999999701977,
+                        "updateCommitMs": 2.100000001490116,
+                        "updatePaintOpportunityMs": 32.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.600000001490116,
+                        "readyMs": 4.899999998509884,
+                        "paintOpportunityMs": 38.599999994039536,
+                        "updateCommitMs": 2.100000001490116,
+                        "updatePaintOpportunityMs": 26.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5.199999995529652,
+                        "readyMs": 5.699999995529652,
+                        "paintOpportunityMs": 32.399999998509884,
+                        "updateCommitMs": 1.1000000014901161,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5,
+                        "readyMs": 5.4000000059604645,
+                        "paintOpportunityMs": 32.20000000298023,
+                        "updateCommitMs": 2,
+                        "updatePaintOpportunityMs": 32.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 5.5,
+                        "readyMs": 5.799999997019768,
+                        "paintOpportunityMs": 32,
+                        "updateCommitMs": 3,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 20866948,
+            "heapAfter": 16523010,
+            "longTasks": [],
+            "moduleReadyMs": 35.600000001490116
+        }
+    },
+    {
+        "round": 3,
+        "profile": "svgr-raw",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/svgr-raw/assets/index-BCThsKcv.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 244604
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226807168.2
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "unique-100",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 9,
+                        "readyMs": 9.600000001490116,
+                        "paintOpportunityMs": 26.899999998509884,
+                        "updateCommitMs": 8.100000001490116,
+                        "updatePaintOpportunityMs": 29.900000005960464,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.100000001490116,
+                        "readyMs": 3.600000001490116,
+                        "paintOpportunityMs": 32.29999999701977,
+                        "updateCommitMs": 1.6999999955296516,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.199999995529652,
+                        "readyMs": 4.600000001490116,
+                        "paintOpportunityMs": 31.899999998509884,
+                        "updateCommitMs": 1.8999999985098839,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 2.2000000029802322,
+                        "readyMs": 2.600000001490116,
+                        "paintOpportunityMs": 32,
+                        "updateCommitMs": 2.100000001490116,
+                        "updatePaintOpportunityMs": 32.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.700000002980232,
+                        "readyMs": 8,
+                        "paintOpportunityMs": 31.399999998509884,
+                        "updateCommitMs": 2.2000000029802322,
+                        "updatePaintOpportunityMs": 32.80000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.2000000029802322,
+                        "readyMs": 3.5999999940395355,
+                        "paintOpportunityMs": 32.29999999701977,
+                        "updateCommitMs": 1.3000000044703484,
+                        "updatePaintOpportunityMs": 33,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 1.8000000044703484,
+                        "readyMs": 2,
+                        "paintOpportunityMs": 32.30000000447035,
+                        "updateCommitMs": 1.6000000014901161,
+                        "updatePaintOpportunityMs": 33.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 3.899999998509884,
+                        "readyMs": 4.399999998509884,
+                        "paintOpportunityMs": 31.299999997019768,
+                        "updateCommitMs": 1.1999999955296516,
+                        "updatePaintOpportunityMs": 33.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 4.700000002980232,
+                        "readyMs": 5.4000000059604645,
+                        "paintOpportunityMs": 31.200000002980232,
+                        "updateCommitMs": 1,
+                        "updatePaintOpportunityMs": 33.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 100,
+                        "expected": 100,
+                        "sizeMismatch": 0,
+                        "updates": 100,
+                        "errors": [],
+                        "mountCommitMs": 6.5,
+                        "readyMs": 6.9000000059604645,
+                        "paintOpportunityMs": 31.600000001490116,
+                        "updateCommitMs": 3.600000001490116,
+                        "updatePaintOpportunityMs": 32.20000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 384
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 17184809,
+            "heapAfter": 22169579,
+            "longTasks": [],
+            "moduleReadyMs": 38.20000000298023
+        }
+    },
+    {
+        "round": 1,
+        "profile": "better-static",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/better-static/assets/index-UmttLklZ.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 255786
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226808102.3
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 38.900000005960464,
+                        "readyMs": 42.600000001490116,
+                        "paintOpportunityMs": 65.29999999701977,
+                        "updateCommitMs": 21.100000001490116,
+                        "updatePaintOpportunityMs": 39,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 91.5,
+                        "readyMs": 107.69999999552965,
+                        "paintOpportunityMs": 155.59999999403954,
+                        "updateCommitMs": 22.399999998509884,
+                        "updatePaintOpportunityMs": 64.20000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 69,
+                        "readyMs": 76.60000000149012,
+                        "paintOpportunityMs": 125.70000000298023,
+                        "updateCommitMs": 18.399999998509884,
+                        "updatePaintOpportunityMs": 59.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 64.10000000149012,
+                        "readyMs": 67.5,
+                        "paintOpportunityMs": 120.10000000149012,
+                        "updateCommitMs": 30.80000000447035,
+                        "updatePaintOpportunityMs": 90.30000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 56,
+                        "readyMs": 64.10000000149012,
+                        "paintOpportunityMs": 110.80000000447035,
+                        "updateCommitMs": 10.199999995529652,
+                        "updatePaintOpportunityMs": 64.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 79.69999999552965,
+                        "readyMs": 90.89999999850988,
+                        "paintOpportunityMs": 143.39999999850988,
+                        "updateCommitMs": 40,
+                        "updatePaintOpportunityMs": 76.10000000149012,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 61.30000000447035,
+                        "readyMs": 64.60000000149012,
+                        "paintOpportunityMs": 115.20000000298023,
+                        "updateCommitMs": 12.199999995529652,
+                        "updatePaintOpportunityMs": 38.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 51.899999998509884,
+                        "readyMs": 55.20000000298023,
+                        "paintOpportunityMs": 95,
+                        "updateCommitMs": 49.70000000298023,
+                        "updatePaintOpportunityMs": 98.89999999850988,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 36.29999999701977,
+                        "readyMs": 42.600000001490116,
+                        "paintOpportunityMs": 73.39999999850988,
+                        "updateCommitMs": 7.0999999940395355,
+                        "updatePaintOpportunityMs": 28.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 47.5,
+                        "readyMs": 53.100000001490116,
+                        "paintOpportunityMs": 93,
+                        "updateCommitMs": 8.200000002980232,
+                        "updatePaintOpportunityMs": 30.30000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 24516518,
+            "heapAfter": 28319375,
+            "longTasks": [
+                {
+                    "startTime": 158.79999999701977,
+                    "duration": 84
+                },
+                {
+                    "startTime": 309,
+                    "duration": 141
+                },
+                {
+                    "startTime": 461.1000000014901,
+                    "duration": 58
+                },
+                {
+                    "startTime": 529.3999999985099,
+                    "duration": 127
+                },
+                {
+                    "startTime": 675.7000000029802,
+                    "duration": 131
+                },
+                {
+                    "startTime": 813.1000000014901,
+                    "duration": 155
+                },
+                {
+                    "startTime": 976.7999999970198,
+                    "duration": 57
+                },
+                {
+                    "startTime": 1045.1000000014901,
+                    "duration": 128
+                },
+                {
+                    "startTime": 1178.8999999985099,
+                    "duration": 54
+                },
+                {
+                    "startTime": 1242.7999999970198,
+                    "duration": 121
+                },
+                {
+                    "startTime": 1376,
+                    "duration": 75
+                },
+                {
+                    "startTime": 1473,
+                    "duration": 106
+                },
+                {
+                    "startTime": 1592,
+                    "duration": 52
+                },
+                {
+                    "startTime": 1660.2000000029802,
+                    "duration": 154
+                },
+                {
+                    "startTime": 1825.3999999985099,
+                    "duration": 79
+                },
+                {
+                    "startTime": 1909,
+                    "duration": 106
+                },
+                {
+                    "startTime": 2075.2999999970198,
+                    "duration": 90
+                },
+                {
+                    "startTime": 2175.39999999851,
+                    "duration": 78
+                },
+                {
+                    "startTime": 2278.60000000149,
+                    "duration": 67
+                },
+                {
+                    "startTime": 2391.7999999970198,
+                    "duration": 83
+                }
+            ],
+            "moduleReadyMs": 35.5
+        }
+    },
+    {
+        "round": 1,
+        "profile": "svgr-raw",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/svgr-raw/assets/index-BCThsKcv.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 244604
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226810661.6
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 30.299999997019768,
+                        "readyMs": 31.600000001490116,
+                        "paintOpportunityMs": 52.100000001490116,
+                        "updateCommitMs": 17.599999994039536,
+                        "updatePaintOpportunityMs": 36.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 31.100000001490116,
+                        "readyMs": 34.900000005960464,
+                        "paintOpportunityMs": 89.40000000596046,
+                        "updateCommitMs": 8.900000005960464,
+                        "updatePaintOpportunityMs": 48.400000005960464,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 20.299999997019768,
+                        "readyMs": 29.700000002980232,
+                        "paintOpportunityMs": 54.899999998509884,
+                        "updateCommitMs": 6,
+                        "updatePaintOpportunityMs": 30.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 19.399999998509884,
+                        "readyMs": 23.100000001490116,
+                        "paintOpportunityMs": 59.69999999552965,
+                        "updateCommitMs": 17.100000001490116,
+                        "updatePaintOpportunityMs": 66.40000000596046,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 27.600000001490116,
+                        "readyMs": 35.30000000447035,
+                        "paintOpportunityMs": 66.89999999850988,
+                        "updateCommitMs": 5,
+                        "updatePaintOpportunityMs": 29.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 20.200000002980232,
+                        "readyMs": 24.400000005960464,
+                        "paintOpportunityMs": 58.30000000447035,
+                        "updateCommitMs": 8.100000001490116,
+                        "updatePaintOpportunityMs": 30.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 23.5,
+                        "readyMs": 27.19999999552965,
+                        "paintOpportunityMs": 77.69999999552965,
+                        "updateCommitMs": 4.700000002980232,
+                        "updatePaintOpportunityMs": 30.700000002980232,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 14.300000004470348,
+                        "readyMs": 22.5,
+                        "paintOpportunityMs": 60.19999999552965,
+                        "updateCommitMs": 4.200000002980232,
+                        "updatePaintOpportunityMs": 32.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 17.399999998509884,
+                        "readyMs": 20.400000005960464,
+                        "paintOpportunityMs": 56.30000000447035,
+                        "updateCommitMs": 4.600000001490116,
+                        "updatePaintOpportunityMs": 30.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 25.30000000447035,
+                        "readyMs": 28.900000005960464,
+                        "paintOpportunityMs": 62.20000000298023,
+                        "updateCommitMs": 5.899999998509884,
+                        "updatePaintOpportunityMs": 29.19999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 30681786,
+            "heapAfter": 33273802,
+            "longTasks": [
+                {
+                    "startTime": 149.20000000298023,
+                    "duration": 102
+                },
+                {
+                    "startTime": 316.1000000014901,
+                    "duration": 69
+                },
+                {
+                    "startTime": 432.90000000596046,
+                    "duration": 62
+                },
+                {
+                    "startTime": 532.6000000014901,
+                    "duration": 81
+                },
+                {
+                    "startTime": 684.7000000029802,
+                    "duration": 62
+                },
+                {
+                    "startTime": 782.5,
+                    "duration": 50
+                },
+                {
+                    "startTime": 918.5,
+                    "duration": 68
+                },
+                {
+                    "startTime": 1032.5,
+                    "duration": 60
+                },
+                {
+                    "startTime": 1132.6000000014901,
+                    "duration": 65
+                },
+                {
+                    "startTime": 1249.3000000044703,
+                    "duration": 54
+                },
+                {
+                    "startTime": 1349.4000000059605,
+                    "duration": 52
+                },
+                {
+                    "startTime": 1449.5,
+                    "duration": 60
+                }
+            ],
+            "moduleReadyMs": 53.20000000298023
+        }
+    },
+    {
+        "round": 1,
+        "profile": "unplugin-icons",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/unplugin-icons/assets/index-FwZobbQY.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 256690
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226812243.8
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 44.900000005960464,
+                        "readyMs": 47,
+                        "paintOpportunityMs": 87.40000000596046,
+                        "updateCommitMs": 20.099999994039536,
+                        "updatePaintOpportunityMs": 37.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 26.899999998509884,
+                        "readyMs": 30.30000000447035,
+                        "paintOpportunityMs": 82.30000000447035,
+                        "updateCommitMs": 9,
+                        "updatePaintOpportunityMs": 42,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 17.5,
+                        "readyMs": 28,
+                        "paintOpportunityMs": 58.30000000447035,
+                        "updateCommitMs": 9,
+                        "updatePaintOpportunityMs": 45.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 25.80000000447035,
+                        "readyMs": 32.30000000447035,
+                        "paintOpportunityMs": 86.5,
+                        "updateCommitMs": 10.100000001490116,
+                        "updatePaintOpportunityMs": 59.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 41.70000000298023,
+                        "readyMs": 44,
+                        "paintOpportunityMs": 91.60000000149012,
+                        "updateCommitMs": 6.700000002980232,
+                        "updatePaintOpportunityMs": 29.900000005960464,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 31.899999998509884,
+                        "readyMs": 35.20000000298023,
+                        "paintOpportunityMs": 100.5,
+                        "updateCommitMs": 21.399999998509884,
+                        "updatePaintOpportunityMs": 75.39999999850988,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 29.5,
+                        "readyMs": 36.899999998509884,
+                        "paintOpportunityMs": 85.29999999701977,
+                        "updateCommitMs": 12.699999995529652,
+                        "updatePaintOpportunityMs": 55.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 23.5,
+                        "readyMs": 26.100000001490116,
+                        "paintOpportunityMs": 73,
+                        "updateCommitMs": 11.5,
+                        "updatePaintOpportunityMs": 29,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 30.5,
+                        "readyMs": 45.899999998509884,
+                        "paintOpportunityMs": 90.10000000149012,
+                        "updateCommitMs": 12.200000002980232,
+                        "updatePaintOpportunityMs": 48.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 31.80000000447035,
+                        "readyMs": 35.5,
+                        "paintOpportunityMs": 98.59999999403954,
+                        "updateCommitMs": 21,
+                        "updatePaintOpportunityMs": 62.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 35639419,
+            "heapAfter": 32313181,
+            "longTasks": [
+                {
+                    "startTime": 183.70000000298023,
+                    "duration": 70
+                },
+                {
+                    "startTime": 300.3999999985099,
+                    "duration": 65
+                },
+                {
+                    "startTime": 533.7000000029802,
+                    "duration": 59
+                },
+                {
+                    "startTime": 666.8999999985099,
+                    "duration": 61
+                },
+                {
+                    "startTime": 783.7000000029802,
+                    "duration": 78
+                },
+                {
+                    "startTime": 879.2000000029802,
+                    "duration": 57
+                },
+                {
+                    "startTime": 943.1000000014901,
+                    "duration": 103
+                },
+                {
+                    "startTime": 1102.6000000014901,
+                    "duration": 78
+                },
+                {
+                    "startTime": 1294.7000000029802,
+                    "duration": 77
+                },
+                {
+                    "startTime": 1450.8999999985099,
+                    "duration": 74
+                },
+                {
+                    "startTime": 1567.8999999985099,
+                    "duration": 93
+                },
+                {
+                    "startTime": 1718.7000000029802,
+                    "duration": 104
+                },
+                {
+                    "startTime": 1833.7000000029802,
+                    "duration": 62
+                }
+            ],
+            "moduleReadyMs": 51.399999998509884
+        }
+    },
+    {
+        "round": 2,
+        "profile": "svgr-raw",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/svgr-raw/assets/index-BCThsKcv.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 244604
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226814220.2
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 175.19999999552965,
+                        "readyMs": 183.39999999850988,
+                        "paintOpportunityMs": 565.1000000014901,
+                        "updateCommitMs": 107.79999999701977,
+                        "updatePaintOpportunityMs": 291.59999999403954,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 24.200000002980232,
+                        "readyMs": 26.100000001490116,
+                        "paintOpportunityMs": 1763.2000000029802,
+                        "updateCommitMs": 9.300000004470348,
+                        "updatePaintOpportunityMs": 1011.3000000044703,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 19.899999998509884,
+                        "readyMs": 22.399999998509884,
+                        "paintOpportunityMs": 776.3999999985099,
+                        "updateCommitMs": 4.600000001490116,
+                        "updatePaintOpportunityMs": 1015.1000000014901,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 34.899999998509884,
+                        "readyMs": 38.69999999552965,
+                        "paintOpportunityMs": 770.8999999985099,
+                        "updateCommitMs": 3.399999998509884,
+                        "updatePaintOpportunityMs": 1015.5999999940395,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 23,
+                        "readyMs": 25.5,
+                        "paintOpportunityMs": 770.8000000044703,
+                        "updateCommitMs": 7.899999998509884,
+                        "updatePaintOpportunityMs": 1012.2000000029802,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 20.100000001490116,
+                        "readyMs": 24.200000002980232,
+                        "paintOpportunityMs": 633.2000000029802,
+                        "updateCommitMs": 4.899999998509884,
+                        "updatePaintOpportunityMs": 1015.2999999970198,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 21.900000005960464,
+                        "readyMs": 24.200000002980232,
+                        "paintOpportunityMs": 128.10000000149012,
+                        "updateCommitMs": 34.100000001490116,
+                        "updatePaintOpportunityMs": 1267.2999999970198,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 67.69999999552965,
+                        "readyMs": 103.5,
+                        "paintOpportunityMs": 1126.6000000014901,
+                        "updateCommitMs": 31.5,
+                        "updatePaintOpportunityMs": 1120.8000000044703,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 31.5,
+                        "readyMs": 34.69999999552965,
+                        "paintOpportunityMs": 1041,
+                        "updateCommitMs": 11.5,
+                        "updatePaintOpportunityMs": 1344.6999999955297,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 26.5,
+                        "readyMs": 29.899999998509884,
+                        "paintOpportunityMs": 2015.1999999955297,
+                        "updateCommitMs": 4.300000004470348,
+                        "updatePaintOpportunityMs": 1012.1000000014901,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 34673128,
+            "heapAfter": 33843261,
+            "longTasks": [
+                {
+                    "startTime": 119.30000000447035,
+                    "duration": 184
+                },
+                {
+                    "startTime": 685.8000000044703,
+                    "duration": 192
+                },
+                {
+                    "startTime": 990.8000000044703,
+                    "duration": 121
+                },
+                {
+                    "startTime": 1140.5,
+                    "duration": 60
+                },
+                {
+                    "startTime": 1324.7000000029802,
+                    "duration": 79
+                },
+                {
+                    "startTime": 2957.89999999851,
+                    "duration": 50
+                },
+                {
+                    "startTime": 11773.70000000298,
+                    "duration": 74
+                },
+                {
+                    "startTime": 13574.20000000298,
+                    "duration": 54
+                },
+                {
+                    "startTime": 15373.5,
+                    "duration": 56
+                },
+                {
+                    "startTime": 17040.10000000149,
+                    "duration": 65
+                },
+                {
+                    "startTime": 17174.89999999851,
+                    "duration": 105
+                },
+                {
+                    "startTime": 18456.39999999851,
+                    "duration": 196
+                },
+                {
+                    "startTime": 19608.70000000298,
+                    "duration": 107
+                },
+                {
+                    "startTime": 20739.60000000149,
+                    "duration": 87
+                },
+                {
+                    "startTime": 23139.30000000447,
+                    "duration": 69
+                }
+            ],
+            "moduleReadyMs": 82.5
+        }
+    },
+    {
+        "round": 2,
+        "profile": "unplugin-icons",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/unplugin-icons/assets/index-FwZobbQY.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 256690
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226840432.9
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 61.5,
+                        "readyMs": 63.900000005960464,
+                        "paintOpportunityMs": 1663,
+                        "updateCommitMs": 48.399999998509884,
+                        "updatePaintOpportunityMs": 511.8999999985099,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 48.79999999701977,
+                        "readyMs": 72.39999999850988,
+                        "paintOpportunityMs": 206.29999999701977,
+                        "updateCommitMs": 24.69999999552965,
+                        "updatePaintOpportunityMs": 1074.2999999970198,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 23.399999998509884,
+                        "readyMs": 32.30000000447035,
+                        "paintOpportunityMs": 1141.1000000014901,
+                        "updateCommitMs": 21.80000000447035,
+                        "updatePaintOpportunityMs": 1325.6000000014901,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 38.600000001490116,
+                        "readyMs": 42.5,
+                        "paintOpportunityMs": 1095.7999999970198,
+                        "updateCommitMs": 13.299999997019768,
+                        "updatePaintOpportunityMs": 1627,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 28.399999998509884,
+                        "readyMs": 30.69999999552965,
+                        "paintOpportunityMs": 1763,
+                        "updateCommitMs": 8.800000004470348,
+                        "updatePaintOpportunityMs": 1012.6000000014901,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 21.69999999552965,
+                        "readyMs": 24.69999999552965,
+                        "paintOpportunityMs": 1394.7999999970198,
+                        "updateCommitMs": 20.100000001490116,
+                        "updatePaintOpportunityMs": 1454.8999999985099,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 29.099999994039536,
+                        "readyMs": 40.29999999701977,
+                        "paintOpportunityMs": 1466.8999999985099,
+                        "updateCommitMs": 8.5,
+                        "updatePaintOpportunityMs": 1011.3999999985099,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 14.600000001490116,
+                        "readyMs": 21.100000001490116,
+                        "paintOpportunityMs": 1075.5,
+                        "updateCommitMs": 4.399999998509884,
+                        "updatePaintOpportunityMs": 298,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 12.799999997019768,
+                        "readyMs": 15,
+                        "paintOpportunityMs": 2017.5999999940395,
+                        "updateCommitMs": 8.799999997019768,
+                        "updatePaintOpportunityMs": 1009,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 30.5,
+                        "readyMs": 41.399999998509884,
+                        "paintOpportunityMs": 407.3999999985099,
+                        "updateCommitMs": 5,
+                        "updatePaintOpportunityMs": 1178.7999999970198,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 36213094,
+            "heapAfter": 25328917,
+            "longTasks": [
+                {
+                    "startTime": 114,
+                    "duration": 65
+                },
+                {
+                    "startTime": 1778.3999999985099,
+                    "duration": 87
+                },
+                {
+                    "startTime": 2297.5,
+                    "duration": 232
+                },
+                {
+                    "startTime": 3527.7999999970198,
+                    "duration": 74
+                },
+                {
+                    "startTime": 6078,
+                    "duration": 55
+                },
+                {
+                    "startTime": 9493.5,
+                    "duration": 134
+                },
+                {
+                    "startTime": 9709.39999999851,
+                    "duration": 62
+                },
+                {
+                    "startTime": 10792.59999999404,
+                    "duration": 66
+                },
+                {
+                    "startTime": 11942.59999999404,
+                    "duration": 109
+                },
+                {
+                    "startTime": 13276.09999999404,
+                    "duration": 102
+                },
+                {
+                    "startTime": 18809.59999999404,
+                    "duration": 53
+                },
+                {
+                    "startTime": 20214.59999999404,
+                    "duration": 55
+                },
+                {
+                    "startTime": 21676.19999999553,
+                    "duration": 78
+                },
+                {
+                    "startTime": 24175.29999999702,
+                    "duration": 63
+                }
+            ],
+            "moduleReadyMs": 74.59999999403954
+        }
+    },
+    {
+        "round": 2,
+        "profile": "better-static",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/better-static/assets/index-UmttLklZ.js",
+                "transferBytes": 300,
+                "encodedBodyBytes": 0
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226870663.2
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "frame-stalled",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 67.10000000149012,
+                        "readyMs": 69.10000000149012,
+                        "paintOpportunityMs": 1042.2999999970198,
+                        "updateCommitMs": 28.19999999552965,
+                        "updatePaintOpportunityMs": 1567.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 42.5,
+                        "readyMs": 45.899999998509884,
+                        "paintOpportunityMs": 76.89999999850988,
+                        "updateCommitMs": 10.5,
+                        "updatePaintOpportunityMs": 46.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 42.70000000298023,
+                        "readyMs": 45,
+                        "paintOpportunityMs": 76,
+                        "updateCommitMs": 7.700000002980232,
+                        "updatePaintOpportunityMs": 30.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 39,
+                        "readyMs": 41,
+                        "paintOpportunityMs": 60.20000000298023,
+                        "updateCommitMs": 14.199999995529652,
+                        "updatePaintOpportunityMs": 47.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 50.30000000447035,
+                        "readyMs": 53,
+                        "paintOpportunityMs": 103.59999999403954,
+                        "updateCommitMs": 8.5,
+                        "updatePaintOpportunityMs": 31.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 41.30000000447035,
+                        "readyMs": 47.30000000447035,
+                        "paintOpportunityMs": 76.89999999850988,
+                        "updateCommitMs": 30,
+                        "updatePaintOpportunityMs": 103.90000000596046,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 55.69999999552965,
+                        "readyMs": 60.19999999552965,
+                        "paintOpportunityMs": 167.10000000149012,
+                        "updateCommitMs": 23.799999997019768,
+                        "updatePaintOpportunityMs": 59.19999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 38.19999999552965,
+                        "readyMs": 41.5,
+                        "paintOpportunityMs": 75.69999999552965,
+                        "updateCommitMs": 7.0999999940395355,
+                        "updatePaintOpportunityMs": 29.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 26.600000001490116,
+                        "readyMs": 29.700000002980232,
+                        "paintOpportunityMs": 59.30000000447035,
+                        "updateCommitMs": 8.800000004470348,
+                        "updatePaintOpportunityMs": 29.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 37.899999998509884,
+                        "readyMs": 40.899999998509884,
+                        "paintOpportunityMs": 61.100000001490116,
+                        "updateCommitMs": 14.200000002980232,
+                        "updatePaintOpportunityMs": 29.700000002980232,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 27756421,
+            "heapAfter": 42742736,
+            "longTasks": [
+                {
+                    "startTime": 118.10000000149012,
+                    "duration": 70
+                },
+                {
+                    "startTime": 2729.5,
+                    "duration": 91
+                },
+                {
+                    "startTime": 4194.60000000149,
+                    "duration": 127
+                },
+                {
+                    "startTime": 4327.80000000447,
+                    "duration": 50
+                },
+                {
+                    "startTime": 4396.20000000298,
+                    "duration": 88
+                },
+                {
+                    "startTime": 4544.5,
+                    "duration": 71
+                },
+                {
+                    "startTime": 4677.70000000298,
+                    "duration": 71
+                },
+                {
+                    "startTime": 4794.30000000447,
+                    "duration": 63
+                },
+                {
+                    "startTime": 4912.10000000149,
+                    "duration": 92
+                },
+                {
+                    "startTime": 5061.10000000149,
+                    "duration": 71
+                },
+                {
+                    "startTime": 5145.30000000447,
+                    "duration": 69
+                },
+                {
+                    "startTime": 5254.5,
+                    "duration": 168
+                },
+                {
+                    "startTime": 5430.60000000149,
+                    "duration": 60
+                },
+                {
+                    "startTime": 5496.70000000298,
+                    "duration": 66
+                },
+                {
+                    "startTime": 5611,
+                    "duration": 58
+                },
+                {
+                    "startTime": 5710.89999999851,
+                    "duration": 63
+                }
+            ],
+            "moduleReadyMs": 81.80000000447035
+        }
+    },
+    {
+        "round": 3,
+        "profile": "unplugin-icons",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/unplugin-icons/assets/index-FwZobbQY.js",
+                "transferBytes": 300,
+                "encodedBodyBytes": 0
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226876513.5
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 47.80000000447035,
+                        "readyMs": 49.5,
+                        "paintOpportunityMs": 75.39999999850988,
+                        "updateCommitMs": 29.100000001490116,
+                        "updatePaintOpportunityMs": 100.20000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 22.899999998509884,
+                        "readyMs": 34.19999999552965,
+                        "paintOpportunityMs": 76.19999999552965,
+                        "updateCommitMs": 7.299999997019768,
+                        "updatePaintOpportunityMs": 27.799999997019768,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 25.5,
+                        "readyMs": 31.700000002980232,
+                        "paintOpportunityMs": 75.5,
+                        "updateCommitMs": 6.100000001490116,
+                        "updatePaintOpportunityMs": 30.30000000447035,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 22.100000001490116,
+                        "readyMs": 23.899999998509884,
+                        "paintOpportunityMs": 70.20000000298023,
+                        "updateCommitMs": 8.199999995529652,
+                        "updatePaintOpportunityMs": 37.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 34.100000001490116,
+                        "readyMs": 37.5,
+                        "paintOpportunityMs": 62.70000000298023,
+                        "updateCommitMs": 6.299999997019768,
+                        "updatePaintOpportunityMs": 39.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 30.600000001490116,
+                        "readyMs": 34,
+                        "paintOpportunityMs": 72.5,
+                        "updateCommitMs": 8.700000002980232,
+                        "updatePaintOpportunityMs": 29.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 22.200000002980232,
+                        "readyMs": 24.299999997019768,
+                        "paintOpportunityMs": 60.399999998509884,
+                        "updateCommitMs": 5.899999998509884,
+                        "updatePaintOpportunityMs": 29.099999994039536,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 15.899999998509884,
+                        "readyMs": 26.599999994039536,
+                        "paintOpportunityMs": 64.19999999552965,
+                        "updateCommitMs": 15.5,
+                        "updatePaintOpportunityMs": 73.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 28.19999999552965,
+                        "readyMs": 36.29999999701977,
+                        "paintOpportunityMs": 76.79999999701977,
+                        "updateCommitMs": 4.899999998509884,
+                        "updatePaintOpportunityMs": 26.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 16.299999997019768,
+                        "readyMs": 23.399999998509884,
+                        "paintOpportunityMs": 59.399999998509884,
+                        "updateCommitMs": 8.799999997019768,
+                        "updatePaintOpportunityMs": 29.399999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 45119269,
+            "heapAfter": 30482743,
+            "longTasks": [
+                {
+                    "startTime": 107.89999999850988,
+                    "duration": 51
+                },
+                {
+                    "startTime": 184.79999999701977,
+                    "duration": 51
+                },
+                {
+                    "startTime": 288.29999999701977,
+                    "duration": 62
+                },
+                {
+                    "startTime": 394,
+                    "duration": 62
+                },
+                {
+                    "startTime": 494.19999999552965,
+                    "duration": 57
+                },
+                {
+                    "startTime": 610.7999999970198,
+                    "duration": 64
+                },
+                {
+                    "startTime": 727.5,
+                    "duration": 65
+                },
+                {
+                    "startTime": 844.8999999985099,
+                    "duration": 62
+                },
+                {
+                    "startTime": 963.0999999940395,
+                    "duration": 69
+                },
+                {
+                    "startTime": 1077.5999999940395,
+                    "duration": 65
+                },
+                {
+                    "startTime": 1293.8999999985099,
+                    "duration": 52
+                },
+                {
+                    "startTime": 1442.1999999955297,
+                    "duration": 66
+                },
+                {
+                    "startTime": 1560.5999999940395,
+                    "duration": 62
+                }
+            ],
+            "moduleReadyMs": 68.29999999701977
+        }
+    },
+    {
+        "round": 3,
+        "profile": "better-static",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/better-static/assets/index-UmttLklZ.js",
+                "transferBytes": 0,
+                "encodedBodyBytes": 0
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226878201
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 58.600000001490116,
+                        "readyMs": 59.900000005960464,
+                        "paintOpportunityMs": 82.40000000596046,
+                        "updateCommitMs": 28.399999998509884,
+                        "updatePaintOpportunityMs": 55.19999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 50.899999998509884,
+                        "readyMs": 64.89999999850988,
+                        "paintOpportunityMs": 130.19999999552965,
+                        "updateCommitMs": 14,
+                        "updatePaintOpportunityMs": 42.100000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 35.80000000447035,
+                        "readyMs": 48.69999999552965,
+                        "paintOpportunityMs": 78.5,
+                        "updateCommitMs": 8.800000004470348,
+                        "updatePaintOpportunityMs": 30.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 47.20000000298023,
+                        "readyMs": 51.899999998509884,
+                        "paintOpportunityMs": 77.5,
+                        "updateCommitMs": 12,
+                        "updatePaintOpportunityMs": 29.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 44.19999999552965,
+                        "readyMs": 47.600000001490116,
+                        "paintOpportunityMs": 76.39999999850988,
+                        "updateCommitMs": 10.799999997019768,
+                        "updatePaintOpportunityMs": 29.69999999552965,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 46.399999998509884,
+                        "readyMs": 49.69999999552965,
+                        "paintOpportunityMs": 92.60000000149012,
+                        "updateCommitMs": 11.399999998509884,
+                        "updatePaintOpportunityMs": 30.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 58.79999999701977,
+                        "readyMs": 62.399999998509884,
+                        "paintOpportunityMs": 113.5,
+                        "updateCommitMs": 27.299999997019768,
+                        "updatePaintOpportunityMs": 95.79999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 46,
+                        "readyMs": 50.399999998509884,
+                        "paintOpportunityMs": 74.5,
+                        "updateCommitMs": 10.799999997019768,
+                        "updatePaintOpportunityMs": 24.200000002980232,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 37.100000001490116,
+                        "readyMs": 44.19999999552965,
+                        "paintOpportunityMs": 79.60000000149012,
+                        "updateCommitMs": 9.600000001490116,
+                        "updatePaintOpportunityMs": 34.20000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 40.20000000298023,
+                        "readyMs": 43.70000000298023,
+                        "paintOpportunityMs": 85.89999999850988,
+                        "updateCommitMs": 7.700000002980232,
+                        "updatePaintOpportunityMs": 30.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 32900615,
+            "heapAfter": 40727341,
+            "longTasks": [
+                {
+                    "startTime": 50.5,
+                    "duration": 61
+                },
+                {
+                    "startTime": 134.30000000447035,
+                    "duration": 51
+                },
+                {
+                    "startTime": 192.40000000596046,
+                    "duration": 128
+                },
+                {
+                    "startTime": 407.1000000014901,
+                    "duration": 83
+                },
+                {
+                    "startTime": 540,
+                    "duration": 99
+                },
+                {
+                    "startTime": 690.4000000059605,
+                    "duration": 107
+                },
+                {
+                    "startTime": 873,
+                    "duration": 75
+                },
+                {
+                    "startTime": 989.6000000014901,
+                    "duration": 75
+                },
+                {
+                    "startTime": 1106.4000000059605,
+                    "duration": 76
+                },
+                {
+                    "startTime": 1222.9000000059605,
+                    "duration": 87
+                },
+                {
+                    "startTime": 1356.5,
+                    "duration": 103
+                },
+                {
+                    "startTime": 1478.5,
+                    "duration": 59
+                },
+                {
+                    "startTime": 1579,
+                    "duration": 75
+                },
+                {
+                    "startTime": 1689.9000000059605,
+                    "duration": 78
+                },
+                {
+                    "startTime": 1812.2000000029802,
+                    "duration": 78
+                }
+            ],
+            "moduleReadyMs": 48.80000000447035
+        }
+    },
+    {
+        "round": 3,
+        "profile": "svgr-raw",
+        "fixtureHash": "1747c509871ba55900a9c9df35f260b0c3acfe382f80447bea08527aded506cb",
+        "experimentHash": "1942c79fdf909e74ad775cd62dceaa9b1630b969627f79fe29eeae2cf90aaf15",
+        "initialResources": [
+            {
+                "name": "/svgr-raw/assets/index-BCThsKcv.js",
+                "transferBytes": 300,
+                "encodedBodyBytes": 0
+            }
+        ],
+        "environment": {
+            "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+            "viewport": {
+                "width": 1200,
+                "height": 720
+            },
+            "devicePixelRatio": 1,
+            "hardwareConcurrency": 4,
+            "visibility": "visible",
+            "timeOrigin": 1795226880171.3
+        },
+        "repetitions": 9,
+        "warmups": 3,
+        "scenarios": [
+            {
+                "scenario": "repeated-1000",
+                "samples": [
+                    {
+                        "phase": "first-use",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 28,
+                        "readyMs": 29.19999999552965,
+                        "paintOpportunityMs": 47,
+                        "updateCommitMs": 14.100000001490116,
+                        "updatePaintOpportunityMs": 39.29999999701977,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 25.899999998509884,
+                        "readyMs": 29.799999997019768,
+                        "paintOpportunityMs": 76.79999999701977,
+                        "updateCommitMs": 7.399999998509884,
+                        "updatePaintOpportunityMs": 31.5,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 24.200000002980232,
+                        "readyMs": 27.200000002980232,
+                        "paintOpportunityMs": 87.70000000298023,
+                        "updateCommitMs": 5.800000004470348,
+                        "updatePaintOpportunityMs": 32.20000000298023,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 14.5,
+                        "readyMs": 73.19999999552965,
+                        "paintOpportunityMs": 143.29999999701977,
+                        "updateCommitMs": 12.100000001490116,
+                        "updatePaintOpportunityMs": 43.899999998509884,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 20.399999998509884,
+                        "readyMs": 24.200000002980232,
+                        "paintOpportunityMs": 57.70000000298023,
+                        "updateCommitMs": 3.7000000029802322,
+                        "updatePaintOpportunityMs": 30.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 17.100000001490116,
+                        "readyMs": 19.400000005960464,
+                        "paintOpportunityMs": 58.30000000447035,
+                        "updateCommitMs": 7.300000004470348,
+                        "updatePaintOpportunityMs": 30.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 24.200000002980232,
+                        "readyMs": 27.80000000447035,
+                        "paintOpportunityMs": 58,
+                        "updateCommitMs": 3.5,
+                        "updatePaintOpportunityMs": 31,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 16.099999994039536,
+                        "readyMs": 19.399999998509884,
+                        "paintOpportunityMs": 59,
+                        "updateCommitMs": 3.899999998509884,
+                        "updatePaintOpportunityMs": 31,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 14.799999997019768,
+                        "readyMs": 17.5,
+                        "paintOpportunityMs": 60.69999999552965,
+                        "updateCommitMs": 4.700000002980232,
+                        "updatePaintOpportunityMs": 29.600000001490116,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    },
+                    {
+                        "phase": "warm",
+                        "status": "ready",
+                        "rendered": 1000,
+                        "expected": 1000,
+                        "sizeMismatch": 0,
+                        "updates": 1000,
+                        "errors": [],
+                        "mountCommitMs": 22.100000001490116,
+                        "readyMs": 38.29999999701977,
+                        "paintOpportunityMs": 57.899999998509884,
+                        "updateCommitMs": 6.700000002980232,
+                        "updatePaintOpportunityMs": 31,
+                        "requests": 0,
+                        "transferredResources": 0,
+                        "transferBytes": 0,
+                        "encodedBodyBytes": 0,
+                        "elements": 2000
+                    }
+                ]
+            }
+        ],
+        "diagnostics": {
+            "heapBefore": 43086884,
+            "heapAfter": 49559864,
+            "longTasks": [
+                {
+                    "startTime": 202.70000000298023,
+                    "duration": 78
+                },
+                {
+                    "startTime": 320.20000000298023,
+                    "duration": 54
+                },
+                {
+                    "startTime": 419.5,
+                    "duration": 60
+                },
+                {
+                    "startTime": 519.5,
+                    "duration": 74
+                },
+                {
+                    "startTime": 637,
+                    "duration": 67
+                },
+                {
+                    "startTime": 769.3999999985099,
+                    "duration": 139
+                },
+                {
+                    "startTime": 969.2999999970198,
+                    "duration": 53
+                },
+                {
+                    "startTime": 1069.2999999970198,
+                    "duration": 58
+                },
+                {
+                    "startTime": 1169.2999999970198,
+                    "duration": 63
+                },
+                {
+                    "startTime": 1269.2000000029802,
+                    "duration": 53
+                },
+                {
+                    "startTime": 1469.3999999985099,
+                    "duration": 62
+                }
+            ],
+            "moduleReadyMs": 69.10000000149012
+        }
+    }
+]

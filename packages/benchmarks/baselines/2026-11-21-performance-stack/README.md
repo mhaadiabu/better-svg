@@ -31,6 +31,27 @@ that makes every fixture use one React instance.
   100-unique-icon ready median was 19.0 ms, compared with 6.8 ms for current
   legacy precompilation and 9.7 ms for released legacy precompilation.
 
+## Static import recheck
+
+The full-matrix timing for 100 distinct static icons was noisy. We retested
+the same three built profiles in Ardia, rotating order across three rounds.
+Each round opened a fresh 1200 by 720 document per profile and recorded three
+warmups and nine measured remounts using the same benchmark controller.
+
+For 100 distinct icons, all 81 samples were valid. The median of the round
+medians was 5.4 ms for BetterSVG, 4.4 ms for raw SVGR, and 4.5 ms for
+unplugin-icons. In the 1,000-copy workload, ten samples had stalled frame
+callbacks. Excluding that round for all three profiles, the two complete
+rounds gave BetterSVG medians of 49.7 and 64.6 ms, SVGR medians of 27.2 ms in
+both rounds, and unplugin-icons medians of 31.7 and 35.2 ms.
+
+The 1,000-copy gap held across both complete rounds. The difference in the
+100-icon workload was about 1 ms in the recheck. The production bundle's
+largest BetterSVG modules by pre-minification rendered length handle ID
+rewriting, paint overrides, and presentation. Those lengths are a way to
+locate code to profile, separate from compressed transfer sizes.
+[Raw static recheck samples](static-recheck.json)
+
 ## Conditions and limits
 
 Node 26.13.1 and Vite 8.3.8 ran five repetitions for each of 18 profiles.

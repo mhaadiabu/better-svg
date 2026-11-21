@@ -1,13 +1,12 @@
-import browser from "../../../../packages/benchmarks/baselines/2026-11-18-release-comparison/browser.json";
-import node from "../../../../packages/benchmarks/baselines/2026-11-18-release-comparison/node.json";
+import browser from "../../../../packages/benchmarks/baselines/2026-11-21-performance-stack/browser.json";
+import node from "../../../../packages/benchmarks/baselines/2026-11-21-performance-stack/node.json";
 
 const repository = "https://github.com/mhaadiabu/better-svg";
-export const archive = `${repository}/blob/cf95a27/packages/benchmarks/baselines/2026-11-18-release-comparison`;
-export const runtimeSource = `${repository}/commit/526a822`;
+export const archive = `${repository}/blob/cf0154c70e894cfbf756231c12c3bb4390a4c6d0/packages/benchmarks/baselines/2026-11-21-performance-stack`;
 export const benchmarkCommit = node.manifest.sourceCommit;
 export const benchmarkSource = `${repository}/tree/${benchmarkCommit}/packages/benchmarks`;
 export const published = node.manifest.betterSvg.published;
-export const benchmarkRelease = "0.5.0";
+export const benchmarkRelease = node.manifest.betterSvg.workspace;
 const previous = `BetterSVG ${published}`;
 const current = `BetterSVG ${benchmarkRelease}`;
 
@@ -116,13 +115,13 @@ export const runInfo = {
   cpu: node.environment.cpu,
   node: node.environment.node,
   versions: node.manifest.versions,
-  workspace: node.manifest.betterSvg.workspace,
   iconCount: node.manifest.entries.filter((entry) => entry.group !== "capability").length,
   nodeRepetitions: node.repetitions,
   warmups: browser.runs[0].warmups,
   repetitions: browser.runs[0].repetitions,
   browserDocuments: browser.runs.length,
   browserViewport: browser.runs[0].environment.viewport,
+  chromiumVersion: browser.runs[0].environment.userAgent.match(/Chrome\/([\d.]+)/)?.[1] ?? "unknown",
   warmSamples: browserResults.reduce((total, result) => total + result.warmCount, 0),
   validWarmSamples: browserResults.reduce((total, result) => total + result.validCount, 0),
 };

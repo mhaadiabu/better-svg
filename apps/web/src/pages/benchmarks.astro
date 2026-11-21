@@ -5,7 +5,7 @@ import Accordion from "../components/ui/accordion/Accordion.astro";
 import Base from "../layouts/Base.astro";
 import {
   archive, benchmarkCommit, benchmarkRelease, benchmarkSource, kb, ms, profiles, published, resultFor,
-  runInfo, runtimeSource, staticProfiles, urlProfiles, workloads,
+  runInfo, staticProfiles, urlProfiles, workloads,
   type ProfileId,
 } from "../data/benchmarks";
 
@@ -102,7 +102,7 @@ const summary: {
 const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Paint p95", "Update p50", "Update p95", "First ready"];
 ---
 
-<Base title="React benchmarks | BetterSVG" description="Compare BetterSVG 0.5.0 with 0.4.2, SVGR, unplugin-icons, react-inlinesvg, and react-svg across React workloads.">
+<Base title="React benchmarks | BetterSVG" description={`Compare BetterSVG ${benchmarkRelease} with ${published}, SVGR, unplugin-icons, react-inlinesvg, and react-svg across React workloads.`}>
   <nav data-benchmark-navigation aria-label="Site" class="sticky top-0 z-50 border-b border-coal-2 bg-coal/90 backdrop-blur-md">
     <div class="mx-auto flex h-15 max-w-6xl items-center justify-between gap-2 px-3 sm:px-4">
       <a href="/" class="font-display text-lg tracking-wider text-[#e8e8e8] sm:text-xl">BETTERSVG</a>
@@ -123,7 +123,7 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
     <header class="border-b border-coal-4 pb-4">
       <h1 class="font-display text-3xl leading-none tracking-wider sm:text-4xl">REACT BENCHMARKS</h1>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-zinc-400">
-        BetterSVG {benchmarkRelease} against {published} and four other React SVG tools, on one {runInfo.iconCount}-file icon corpus.
+        The BetterSVG {benchmarkRelease} candidate, npm {published}, and four other React SVG tools on one {runInfo.iconCount}-file icon corpus.
         Medians of {runInfo.repetitions} warm remounts in Chromium on one Linux desktop.
       </p>
       <p class="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-zinc-muted">
@@ -194,8 +194,7 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
             </table>
           </div>
           <p class="mt-2 text-xs leading-relaxed text-zinc-400">
-            The URL rows need care. A resource entry can be a cache hit or a coalesced fetch, so the drop in entries is not a drop in network traffic.
-            Both versions transferred one response.
+            One transfer can produce several Resource Timing entries when requests share a response. See the transferred response count for actual network traffic.
           </p>
         </section>
 
@@ -328,11 +327,11 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
           <h2 id="methodology-heading" class="text-lg font-semibold">Methodology</h2>
           <dl class="mt-4 grid gap-x-8 gap-y-1 text-sm leading-relaxed sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-y-4">
             <dt class="font-medium">Machine</dt>
-            <dd class="mb-3 text-zinc-400 sm:mb-0">{runInfo.cpu} on Linux. Vite {runInfo.versions.vite}, Node {runInfo.node}, React {runInfo.versions.react}, and Chromium 157.0.8103.78 at {runInfo.browserViewport.width} × {runInfo.browserViewport.height}. HTTP ran uncompressed over loopback.</dd>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">{runInfo.cpu} on Linux. Vite {runInfo.versions.vite}, Node {runInfo.node}, React {runInfo.versions.react}, and Ardia Chromium {runInfo.chromiumVersion} at {runInfo.browserViewport.width} × {runInfo.browserViewport.height}. HTTP ran uncompressed over loopback.</dd>
             <dt class="font-medium">Sampling</dt>
             <dd class="mb-3 text-zinc-400 sm:mb-0">Each of {runInfo.browserDocuments} fresh documents had one first-use sample, {runInfo.warmups} warmups, and {runInfo.repetitions} measured warm remounts. {integer.format(runInfo.validWarmSamples)} of {integer.format(runInfo.warmSamples)} warm samples were valid. Node measurements ran {runInfo.nodeRepetitions} times.</dd>
             <dt class="font-medium">Compared versions</dt>
-            <dd class="mb-3 text-zinc-400 sm:mb-0">BetterSVG {benchmarkRelease} profiles use the runtime source at <a href={runtimeSource} class="font-mono text-acid underline-offset-4 hover:underline">526a822</a>. We ran the <a href={benchmarkSource} class="text-acid underline-offset-4 hover:underline">benchmark scripts at <code>{benchmarkCommit.slice(0, 7)}</code></a> with the temporary workspace version {runInfo.workspace}. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
+            <dd class="mb-3 text-zinc-400 sm:mb-0">The BetterSVG {benchmarkRelease} runtime and <a href={benchmarkSource} class="text-acid underline-offset-4 hover:underline">benchmark scripts</a> come from <code>{benchmarkCommit.slice(0, 7)}</code>. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
             <dt class="font-medium">Scope</dt>
             <dd class="text-zinc-400">This run covers React in Chromium on one Linux desktop, with mostly catalog icons and requests over loopback. It doesn't measure mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or slower network conditions.</dd>
           </dl>

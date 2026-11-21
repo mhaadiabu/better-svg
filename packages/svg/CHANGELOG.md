@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.2 (Unreleased)
+
+### Changed
+
+- Reduce the JavaScript needed for pages that import many static React SVGs with `?better-svg`.
+- Use less memory when scanning large Vite projects and reuse catalog names when refreshing TypeScript suggestions.
+- Reuse the catalog scan results for unchanged files during Vite development.
+- Reuse optimized and precompiled SVG data across Vite rebuilds and load the XML compiler when an import needs it.
+- Reduce work when serializing SVGs, scoping IDs, and looking up repeated or mixed sets of cached icons.
+- Emit fewer JavaScript bytes for large precompiled SVG registries and reuse unchanged artwork when scoping per-instance IDs.
+
 ## 0.5.1
 
 ### Fixed

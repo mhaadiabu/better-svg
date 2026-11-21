@@ -8,6 +8,8 @@ The [November 13 pilot](baselines/2026-11-13/README.md) contains findings, raw
 measurements, and the generated report. It is a decision aid, not a leaderboard.
 The [published versus current comparison](baselines/2026-11-18-release-comparison/README.md)
 adds the npm release and groups competitors by workflow.
+The [November 21 performance stack comparison](baselines/2026-11-21-performance-stack/README.md)
+reports the full Node and Ardia rerun on BetterSVG 0.5.2.
 
 ## Run it
 

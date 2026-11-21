@@ -1,7 +1,6 @@
-import type { Dirent } from "node:fs";
-import { readFile, readdir, realpath, stat } from "node:fs/promises";
+import { lstat, readFile, readdir, realpath, stat } from "node:fs/promises";
 import { relative, resolve, sep } from "node:path";
-import { catalogLiterals, localSvgLiterals } from "./extract.js";
+import { catalogLiterals, localSvgLiterals, type CatalogLiteral } from "./extract.js";
 
 export type ScanOptions = {
   include?: string[];
@@ -75,36 +74,17 @@ const lineNumberAt = (text: string, index: number) => {
   return line;
 };
 
-type Entry =
-  | { kind: "dir"; path: string }
-  | { kind: "file"; path: string; name: string }
-  | undefined;
-
-const followEntry = async (directory: string, child: Dirent): Promise<Entry> => {
-  const path = resolve(directory, child.name);
-  if (child.isDirectory()) return { kind: "dir", path };
-  if (child.isFile()) return { kind: "file", path, name: child.name };
-  if (!child.isSymbolicLink()) return;
-  let info;
-  try {
-    info = await stat(path);
-  } catch (cause) {
-    if (cause instanceof Error && "code" in cause && cause.code === "ENOENT") return;
-    throw cause;
-  }
-  if (info.isDirectory()) return { kind: "dir", path };
-  if (info.isFile()) return { kind: "file", path, name: child.name };
-  return undefined;
-};
+type SourceEntry = { path: string; extension: string; symlink: boolean };
 
 const readSourceFile = async (
-  path: string,
+  entry: SourceEntry,
   maxFileBytes: number,
   isExcluded: (path: string) => boolean,
 ) => {
-  const id = await realpath(path);
+  const localInfo = entry.symlink ? undefined : await lstat(entry.path);
+  const id = entry.symlink || localInfo?.isSymbolicLink() ? await realpath(entry.path) : entry.path;
   if (isExcluded(id)) return undefined;
-  const info = await stat(id);
+  const info = localInfo && !localInfo.isSymbolicLink() ? localInfo : await stat(id);
   if (info.size > maxFileBytes) return undefined;
   return { text: await readFile(id, "utf8"), id };
 };
@@ -119,18 +99,81 @@ const scanSources = async (
   const include = options.include ?? defaultInclude;
   const extensions = new Set(options.extensions ?? defaultExtensions);
   const maxFileBytes = options.maxFileBytes ?? defaultMaxFileBytes;
-  const excludes = new Set((options.exclude ?? []).map((entry) => resolve(root, entry)));
+  const excludes = [...new Set((options.exclude ?? []).map((entry) => resolve(root, entry)))].map(
+    (path) => ({ path, prefix: path + sep }),
+  );
   const visitedFiles = new Set<string>();
 
   const isExcluded = (path: string) =>
-    [...excludes].some((entry) => path === entry || path.startsWith(`${entry}${sep}`));
+    excludes.some((entry) => path === entry.path || path.startsWith(entry.prefix));
+
+  const read = async (entry: SourceEntry) => {
+    let source: Awaited<ReturnType<typeof readSourceFile>>;
+    try {
+      hooks.onFile?.(entry.path);
+      source = await readSourceFile(entry, maxFileBytes, isExcluded);
+    } catch {
+      onSkipped?.();
+      return;
+    }
+    if (!source) {
+      onSkipped?.();
+      return;
+    }
+    if (visitedFiles.has(source.id)) return;
+    visitedFiles.add(source.id);
+    if (source.id !== entry.path) hooks.onFile?.(source.id);
+    const file = relative(root, source.id).split(sep).join("/");
+    onSource(source.text, entry.extension, file);
+  };
+
+  const limit = 64;
+  const pending = new Set<Promise<void>>();
+  let slot: Promise<void> | undefined;
+  let releaseSlot: (() => void) | undefined;
+  let failed: { cause: unknown } | undefined;
+  const queue = (entry: SourceEntry) => {
+    const task = read(entry)
+      .catch((cause: unknown) => {
+        failed ??= { cause };
+      })
+      .finally(() => {
+        pending.delete(task);
+        const release = releaseSlot;
+        slot = undefined;
+        releaseSlot = undefined;
+        release?.();
+      });
+    pending.add(task);
+  };
+
+  const addFile = (path: string, name: string, symlink: boolean) => {
+    const dot = name.lastIndexOf(".");
+    const extension = dot < 0 ? "" : name.slice(dot + 1).toLowerCase();
+    if (!extensions.has(extension) || isExcluded(path)) return;
+    if (/\.(?:test|spec|stories)\.[^.]+$/.test(name) || name.endsWith(".d.ts")) return;
+    const entry = { path, extension, symlink };
+    if (pending.size < limit) {
+      queue(entry);
+      return;
+    }
+    return (async () => {
+      while (pending.size >= limit) {
+        slot ??= new Promise<void>((resolve) => {
+          releaseSlot = resolve;
+        });
+        await slot;
+      }
+      queue(entry);
+    })();
+  };
 
   const visit = async (directory: string, ancestors: Set<string>): Promise<void> => {
-    let target: string | undefined;
+    let target: string;
     let entries;
     try {
       target = await realpath(directory);
-      if (isExcluded(target)) return;
+      if (ancestors.has(target) || isExcluded(target)) return;
       entries = await readdir(target, { withFileTypes: true });
     } catch (cause) {
       if (
@@ -141,53 +184,50 @@ const scanSources = async (
         return;
       throw cause;
     }
-    if (ancestors.has(target)) return;
     const nextAncestors = new Set(ancestors).add(target);
     hooks.onDirectory?.(target);
-    const children = [...entries].sort((a, b) => a.name.localeCompare(b.name));
-    await Promise.all(
-      children.map(async (child) => {
-        if (ignoredDirectories.has(child.name)) return;
-        const entry = await followEntry(target, child);
-        if (!entry) return;
-        if (entry.kind === "dir") {
-          if (isExcluded(entry.path)) return;
-          await visit(entry.path, nextAncestors);
-          return;
-        }
-        const dot = entry.name.lastIndexOf(".");
-        const extension = dot < 0 ? "" : entry.name.slice(dot + 1).toLowerCase();
-        if (!extensions.has(extension) || isExcluded(entry.path)) return;
-        if (/\.(?:test|spec|stories)\.[^.]+$/.test(entry.name) || entry.name.endsWith(".d.ts"))
-          return;
-        let source: Awaited<ReturnType<typeof readSourceFile>>;
-        try {
-          hooks.onFile?.(entry.path);
-          source = await readSourceFile(entry.path, maxFileBytes, isExcluded);
-        } catch {
-          onSkipped?.();
-          return;
-        }
-        if (!source) {
-          onSkipped?.();
-          return;
-        }
-        if (visitedFiles.has(source.id)) return;
-        visitedFiles.add(source.id);
-        if (source.id !== entry.path) hooks.onFile?.(source.id);
-        const file = relative(root, source.id).split(sep).join("/");
-        onSource(source.text, extension, file);
-      }),
-    );
+    const visitDirectory = (path: string) =>
+      isExcluded(path) ? undefined : visit(path, nextAncestors);
+    const visitSymlink = async (path: string, name: string) => {
+      let info;
+      try {
+        info = await stat(path);
+      } catch (cause) {
+        if (cause instanceof Error && "code" in cause && cause.code === "ENOENT") return;
+        throw cause;
+      }
+      if (info.isDirectory()) await visitDirectory(path);
+      else if (info.isFile()) await addFile(path, name, true);
+    };
+
+    const pending: Promise<void>[] = [];
+    for (const child of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+      if (ignoredDirectories.has(child.name)) continue;
+      const path = resolve(target, child.name);
+      if (child.isSymbolicLink()) pending.push(visitSymlink(path, child.name));
+      else if (child.isDirectory()) {
+        const visit = visitDirectory(path);
+        if (visit) pending.push(visit);
+      } else if (child.isFile()) {
+        const queued = addFile(path, child.name, false);
+        if (queued) await queued;
+      }
+    }
+    await Promise.all(pending);
   };
 
-  for (const dir of include) await visit(resolve(root, dir), new Set());
+  for (const dir of include) {
+    await visit(resolve(root, dir), new Set());
+    await Promise.all(pending);
+    if (failed) throw failed.cause;
+  }
 };
 
-export const scanCatalogNames = async (
+const collectCatalogNames = async (
   root: string,
   options: ScanOptions = {},
-  hooks: ScanHooks = {},
+  hooks: ScanHooks,
+  literalsFor: (source: string, extension: string, file: string) => CatalogLiteral[],
 ): Promise<ScanResult> => {
   const hits = new Map<string, Set<string>>();
   const hints: ScanHint[] = [];
@@ -197,7 +237,7 @@ export const scanCatalogNames = async (
 
   await scanSources(root, options, hooks, (source, extension, file) => {
     files++;
-    for (const literal of catalogLiterals(source, extension)) {
+    for (const literal of literalsFor(source, extension, file)) {
       const collection = literal.value.slice(0, literal.value.indexOf(":"));
       if (literal.value.includes("${")) {
         hints.push({
@@ -224,6 +264,36 @@ export const scanCatalogNames = async (
     (left, right) => left.file.localeCompare(right.file) || left.line - right.line,
   );
   return { names, references, files, filesBy, explicitNames, dynamic };
+};
+
+export const scanCatalogNames = (root: string, options: ScanOptions = {}, hooks: ScanHooks = {}) =>
+  collectCatalogNames(root, options, hooks, catalogLiterals);
+
+export const createCatalogScanner = () => {
+  const capacity = 8 * 1024 * 1024;
+  let previous = new Map<
+    string,
+    { source: string; extension: string; literals: CatalogLiteral[] }
+  >();
+  return async (root: string, options: ScanOptions = {}, hooks: ScanHooks = {}) => {
+    const current: typeof previous = new Map();
+    let remaining = capacity;
+    const result = await collectCatalogNames(root, options, hooks, (source, extension, file) => {
+      const cached = previous.get(file);
+      const entry =
+        cached?.source === source && cached.extension === extension
+          ? cached
+          : { source, extension, literals: catalogLiterals(source, extension) };
+      const cost = 128 + source.length * 2 + entry.literals.length * 64;
+      if (cost <= remaining) {
+        current.set(file, entry);
+        remaining -= cost;
+      }
+      return entry.literals;
+    });
+    previous = current;
+    return result;
+  };
 };
 
 export const scanLocalSvgNames = async (root: string, hooks: ScanHooks) => {

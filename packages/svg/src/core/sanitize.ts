@@ -17,7 +17,10 @@ export type ParsedInlineSvg<Style = Record<string, string>> = {
   innerHTML: string;
 };
 
-export const inlineSvgFromNode = (node: SvgNode, innerHTML?: string): ParsedInlineSvg => {
+export const inlineSvgFromNode = (
+  node: SvgNode,
+  innerHTML?: string | (() => string),
+): ParsedInlineSvg => {
   const { attributes, className, style, styleText } = splitAttributes(node.attrs);
   return {
     attrs: Object.fromEntries(attributes.map(({ name, value }) => [name, value])),
@@ -26,7 +29,10 @@ export const inlineSvgFromNode = (node: SvgNode, innerHTML?: string): ParsedInli
     styleText,
     node,
     get innerHTML() {
-      return (innerHTML ??= node.children.map(renderNode).join(""));
+      return (innerHTML =
+        typeof innerHTML === "function"
+          ? innerHTML()
+          : (innerHTML ?? node.children.map(renderNode).join("")));
     },
   };
 };
@@ -35,7 +41,8 @@ export const parseInlineSvg = (markup: string, sanitize: boolean): ParsedInlineS
   if (!domParserAvailable()) return null;
   const parsedDocument = new DOMParser().parseFromString(markup, "image/svg+xml");
   if (parsedDocument.querySelector("parsererror")) return null;
-  const svg = parsedDocument.querySelector("svg");
+  const rootElement = parsedDocument.documentElement;
+  const svg = rootElement?.tagName === "svg" ? rootElement : parsedDocument.querySelector("svg");
   if (!svg) return null;
   const node = toNodeFromElement(svg);
   const root = sanitize ? sanitizeNode(node) : node;

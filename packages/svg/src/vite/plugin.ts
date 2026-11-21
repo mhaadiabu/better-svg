@@ -4,9 +4,9 @@ import { existsSync, statSync } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin, ViteDevServer } from "vite";
-import { buildPackedSvg, buildPrecompiledSvg } from "./precompile.js";
 import { runSvgoPass, type SvgoOption } from "./svgo.js";
 import {
+  createCatalogScanner,
   scanCatalogNames,
   scanExtensions,
   scanLocalSvgNames,
@@ -141,20 +141,71 @@ export type LocalSvgOptions = SvgPluginOptions;
 
 export type { SvgoOptions, SvgoOption } from "./svgo.js";
 
-const emitRegistration = (entries: Map<string, string>, mode: SvgPluginOptions["precompiled"]) => {
-  if (mode === "tree") {
-    const trees = Array.from(entries, ([name, markup]) => [name, buildPackedSvg(markup, name)]);
-    return `\nregisterLocalSvgTrees(${JSON.stringify(trees)});\n`;
+type SvgCompiler = {
+  compile: (
+    name: string,
+    markup: string,
+    mode: "tree" | "registry" | "legacy" | "static",
+  ) => string;
+  registryTokens: string;
+};
+
+const emitRegistration = (
+  entries: Map<string, string>,
+  precompile?: { mode: true | "tree"; compiler: SvgCompiler },
+) => {
+  if (precompile?.mode === "tree") {
+    const { compile, registryTokens } = precompile.compiler;
+    const useTokens = entries.size >= 64;
+    const mode = useTokens ? "registry" : "tree";
+    const trees = Array.from(
+      entries,
+      ([name, markup]) => `[${JSON.stringify(name)},${compile(name, markup, mode)}]`,
+    );
+    return `\nregisterLocalSvgTrees([${trees.join(",")}]${useTokens ? registryTokens : ""});\n`;
   }
-  const registration = mode
-    ? JSON.stringify({
-        override: false,
-        precompiled: Object.fromEntries(
-          Array.from(entries, ([name, markup]) => [name, buildPrecompiledSvg(markup, name)]),
-        ),
-      })
-    : "{ override: false }";
-  return `\nregisterLocalSvgs(${JSON.stringify(Object.fromEntries(entries))}, ${registration});\n`;
+  const markup = Object.fromEntries(entries);
+  let registration = "{ override: false }";
+  if (precompile) {
+    const { compile } = precompile.compiler;
+    const trees = Object.keys(markup).map(
+      (name) => `${JSON.stringify(name)}:${compile(name, markup[name]!, "legacy")}`,
+    );
+    registration = `{"override":false,"precompiled":{${trees.join(",")}}}`;
+  }
+  return `\nregisterLocalSvgs(${JSON.stringify(markup)}, ${registration});\n`;
+};
+
+const createSvgArtifactCache = () => {
+  const capacity = 12 * 1024 * 1024;
+  const entries = new Map<string, { source: string; output: string; bytes: number }>();
+  let used = 0;
+  return {
+    get(key: string, source: string) {
+      const hit = entries.get(key);
+      if (hit?.source !== source) return;
+      entries.delete(key);
+      entries.set(key, hit);
+      return hit.output;
+    },
+    set(key: string, source: string, output: string) {
+      const replaced = entries.get(key);
+      if (replaced) {
+        entries.delete(key);
+        used -= replaced.bytes;
+      }
+      const bytes = 128 + 2 * (key.length + source.length + output.length);
+      if (bytes > capacity) return output;
+      while (used + bytes > capacity) {
+        const oldest = entries.keys().next().value!;
+        used -= entries.get(oldest)!.bytes;
+        entries.delete(oldest);
+      }
+      entries.set(key, { source, output, bytes });
+      used += bytes;
+      return output;
+    },
+  };
 };
 
 export type CatalogOutcome = {
@@ -173,22 +224,31 @@ export const classifyScan = (
   searchPaths: readonly string[],
 ): CatalogOutcome => {
   const resolved = new Map<string, string>();
-  const unresolved: string[] = [];
+  const unresolved = new Map<string, string[]>();
   for (const name of result.names) {
     const markup = resolveIconSource(name, { searchPaths });
-    if (markup) resolved.set(name, markup);
-    else unresolved.push(name);
+    if (markup) {
+      resolved.set(name, markup);
+      continue;
+    }
+    const collection = collectionOf(name);
+    const names = unresolved.get(collection);
+    if (names) names.push(name);
+    else unresolved.set(collection, [name]);
   }
-  const collections = [...new Set(unresolved.map(collectionOf))].sort();
   const typos: CatalogOutcome["typos"] = [];
   const uninstalled: CatalogOutcome["uninstalled"] = [];
-  const installed = new Set<string>();
-  for (const collection of collections) {
-    if (installedCollectionRoot(collection, searchPaths)) installed.add(collection);
-  }
-  for (const collection of collections) {
-    const names = unresolved.filter((name) => collectionOf(name) === collection);
-    if (installed.has(collection)) typos.push({ collection, names });
+  const installed = new Map<string, boolean>();
+  const isInstalled = (collection: string) => {
+    const cached = installed.get(collection);
+    if (cached !== undefined) return cached;
+    const found = installedCollectionRoot(collection, searchPaths) !== undefined;
+    installed.set(collection, found);
+    return found;
+  };
+  const groups = [...unresolved].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  for (const [collection, names] of groups) {
+    if (isInstalled(collection)) typos.push({ collection, names });
     else {
       const sample = names.find((name) => result.explicitNames.has(name));
       if (sample) uninstalled.push({ collection, sample });
@@ -197,14 +257,9 @@ export const classifyScan = (
   const known = new Set([
     ...[...resolved.keys()].map(collectionOf),
     ...[...result.explicitNames].map(collectionOf),
-    ...installed,
   ]);
   const hints = result.dynamic.filter((hint) => {
-    return (
-      hint.explicit ||
-      known.has(hint.collection) ||
-      installedCollectionRoot(hint.collection, searchPaths) !== undefined
-    );
+    return hint.explicit || known.has(hint.collection) || isInstalled(hint.collection);
   });
   return {
     resolved,
@@ -218,10 +273,45 @@ export const classifyScan = (
 
 export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const dirs = options.dirs ?? ["src/assets/svg", "app/assets/svg"];
+  const artifacts = createSvgArtifactCache();
+  let compiler: Promise<SvgCompiler> | undefined;
+  const loadCompiler = () =>
+    (compiler ??= import("./precompile.js")
+      .then(
+        ({
+          buildPackedRegistrySvg,
+          buildPackedSvg,
+          buildPrecompiledSvg,
+          registrySvgTokens,
+        }): SvgCompiler => ({
+          registryTokens: `,${JSON.stringify(registrySvgTokens)}`,
+          compile(name, markup, mode) {
+            const key = `${mode}:${name}`;
+            const cached = artifacts.get(key, markup);
+            if (cached !== undefined) return cached;
+            const artifact =
+              mode === "legacy"
+                ? buildPrecompiledSvg(markup, name)
+                : mode === "registry"
+                  ? buildPackedRegistrySvg(markup, name)
+                  : buildPackedSvg(markup, name, mode === "static");
+            return artifacts.set(key, markup, JSON.stringify(artifact));
+          },
+        }),
+      )
+      .catch((cause: unknown) => {
+        compiler = undefined;
+        throw cause;
+      }));
   const optimizeSvg = async (markup: string, name: string) => {
-    if (!options.svgo) return markup;
+    const svgo = options.svgo;
+    if (!svgo) return markup;
+    const key = `svgo:${name}`;
+    const cached = svgo === true ? artifacts.get(key, markup) : undefined;
+    if (cached !== undefined) return cached;
     try {
-      return await runSvgoPass(markup, name, options.svgo);
+      const output = await runSvgoPass(markup, name, svgo);
+      return svgo === true ? artifacts.set(key, markup, output) : output;
     } catch (cause) {
       if (cause instanceof Error)
         throw new Error(`SVGO pass failed for "${name}": ${cause.message}`, { cause });
@@ -250,7 +340,7 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
   const deferredRegistries = new Map<string, string>();
   const deferredRegistryByPath = new Map<string, string>();
   const scanState: { dirty: boolean; outcome?: CatalogOutcome } = { dirty: true };
-  const signatureState: { value?: string } = { value: undefined };
+  let lastRegistration: { resolved: CatalogOutcome["resolved"]; strictTypos?: string } | undefined;
   const reported = new Set<string>();
   const searchPaths = () => catalogOptions?.searchPaths ?? [root];
 
@@ -267,13 +357,11 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     console.log(message);
   };
 
+  const scanInDev = createCatalogScanner();
   const runScan = async (addDirectory?: (path: string) => void) => {
     scanState.dirty = false;
-    return scanCatalogNames(
-      root,
-      catalogOptions,
-      addDirectory ? { onDirectory: addDirectory } : undefined,
-    );
+    const scan = devServer ? scanInDev : scanCatalogNames;
+    return scan(root, catalogOptions, addDirectory ? { onDirectory: addDirectory } : undefined);
   };
 
   let scanQueue = Promise.resolve();
@@ -291,8 +379,25 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
     return result;
   };
 
-  const outcomeSignature = (outcome: CatalogOutcome) =>
-    JSON.stringify({ resolved: [...outcome.resolved], typos: catalogStrict ? outcome.typos : [] });
+  const registration = (outcome: CatalogOutcome) => ({
+    resolved: outcome.resolved,
+    strictTypos: catalogStrict ? JSON.stringify(outcome.typos) : undefined,
+  });
+
+  const sameRegistration = (
+    previous: NonNullable<typeof lastRegistration>,
+    current: NonNullable<typeof lastRegistration>,
+  ) => {
+    if (
+      previous.strictTypos !== current.strictTypos ||
+      previous.resolved.size !== current.resolved.size
+    )
+      return false;
+    for (const [name, markup] of current.resolved) {
+      if (previous.resolved.get(name) !== markup) return false;
+    }
+    return true;
+  };
 
   const emitCatalogReport = (outcome: CatalogOutcome, warn?: (message: string) => void) => {
     for (const entry of outcome.typos) {
@@ -467,9 +572,9 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
                 err: { message: strictError(outcome).message, stack: "", plugin: "@mhaadi/svg" },
               });
             }
-            const signature = outcomeSignature(outcome);
-            if (signatureState.value !== undefined && signature === signatureState.value) return;
-            signatureState.value = signature;
+            const previous = lastRegistration;
+            lastRegistration = registration(outcome);
+            if (previous && sameRegistration(previous, lastRegistration)) return;
             server.moduleGraph.invalidateAll();
             server.ws.send({ type: "full-reload" });
           })().catch((cause: unknown) => {
@@ -516,13 +621,14 @@ export const svgPlugin = (options: SvgPluginOptions = {}): Plugin => {
       }
       const name = relative(root, path).split(sep).join("/").slice(0, -4);
       const source = await optimizeSvg(await readFile(path, "utf8"), name);
-      const { node } = buildPrecompiledSvg(source, name);
+      const { compile } = await loadCompiler();
+      const node = compile(name, source, "static");
       const runtime = fileURLToPath(new URL("../react-static.js", import.meta.url)).replace(
         /\\/g,
         "/",
       );
       return `import { createStaticSvg } from ${JSON.stringify(runtime)};
-export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
+export default /* @__PURE__ */ createStaticSvg(${node});`;
     },
     async transform(code, id, transformOptions) {
       const [path = ""] = id.replace(/\\/g, "/").split("?");
@@ -545,6 +651,10 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
           map: null,
         };
       }
+      const precompileMode = options.precompiled;
+      const loadingCompiler = precompileMode ? loadCompiler() : undefined;
+      // The traversal can fail before it reaches registration.
+      void loadingCompiler?.catch(() => {});
       const usedNames =
         pruneLocal &&
         !transformOptions?.ssr &&
@@ -563,6 +673,8 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
       };
       watchedDirectories.clear();
       watchedFiles.clear();
+      // Custom SVGO configurations can run callbacks that inspect or change later files.
+      const readBatchSize = !options.svgo || options.svgo === true ? 32 : 1;
       const visit = async (directory: string, base: string, ancestors = new Set<string>()) => {
         let files;
         let target;
@@ -577,6 +689,17 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
         const nextAncestors = new Set(ancestors).add(target);
         watchedDirectories.add(target);
         watch(target);
+        const batch: { path: string; name: string; destination: Map<string, string> }[] = [];
+        const registerBatch = async () => {
+          const sources = await Promise.allSettled(batch.map(({ path }) => readFile(path, "utf8")));
+          for (const [index, source] of sources.entries()) {
+            const { name, destination } = batch[index]!;
+            if (source.status === "rejected") throw source.reason;
+            const markup = options.svgo ? await optimizeSvg(source.value, name) : source.value;
+            destination.set(name, markup);
+          }
+          batch.length = 0;
+        };
         for (const file of files.sort((a, b) => a.name.localeCompare(b.name))) {
           const path = resolve(directory, file.name);
           let info;
@@ -586,34 +709,44 @@ export default /* @__PURE__ */ createStaticSvg(${JSON.stringify(node)});`;
             if (cause instanceof Error && "code" in cause && cause.code === "ENOENT") continue;
             throw cause;
           }
-          if (info.isDirectory()) await visit(path, base, nextAncestors);
-          else if (info.isFile() && file.name.endsWith(".svg")) {
+          if (info.isDirectory()) {
+            if (batch.length) await registerBatch();
+            await visit(path, base, nextAncestors);
+          } else if (info.isFile() && file.name.endsWith(".svg")) {
             const name = relative(base, path).split(sep).join("/").slice(0, -4);
             watch(path);
-            const target = await realpath(path);
-            watchedFiles.add(target);
-            if (target !== path) watch(target);
+            const realFile = file.isSymbolicLink()
+              ? await realpath(path)
+              : resolve(target, file.name);
+            watchedFiles.add(realFile);
+            if (realFile !== path) watch(realFile);
             if (!entries.has(name) && !deferred.has(name)) {
               const destination =
                 usedNames && !usedNames.has(name.trim().replace(/\.svg$/i, ""))
                   ? deferred
                   : entries;
-              destination.set(name, await optimizeSvg(await readFile(path, "utf8"), name));
+              batch.push({ path, name, destination });
+              if (batch.length === readBatchSize) await registerBatch();
             }
           }
         }
+        if (batch.length) await registerBatch();
       };
       for (const dir of dirs) {
         const base = resolve(root, dir);
         await visit(base, base);
       }
-      let appended = emitRegistration(entries, options.precompiled);
+      const precompile =
+        precompileMode && loadingCompiler
+          ? { mode: precompileMode, compiler: await loadingCompiler }
+          : undefined;
+      let appended = emitRegistration(entries, precompile);
       if (deferred.size > 0) {
         const register =
           options.precompiled === "tree" ? "registerLocalSvgTrees" : "registerLocalSvgs";
         const source = `import { ${register} } from ${JSON.stringify(path)};
 export default function register() {
-  ${emitRegistration(deferred, options.precompiled)}
+  ${emitRegistration(deferred, precompile)}
 }`;
         const moduleId = deferredRegistryPrefix + createHash("sha256").update(source).digest("hex");
         const previous = deferredRegistryByPath.get(path);
@@ -627,7 +760,7 @@ export default function register() {
         const emit = (message: string) => this.warn(message);
         const outcome = await ensureOutcome(false, watch);
         // Let the watcher compare against the previous registration even if a transform runs first.
-        signatureState.value ??= outcomeSignature(outcome);
+        lastRegistration ??= registration(outcome);
         emitCatalogReport(outcome, emit);
         syncCatalogTypes();
         if (catalogStrict && outcome.typos.length > 0) throw strictError(outcome);
@@ -649,7 +782,7 @@ export default function register() {
           announce(
             `${pluginPrefix} auto-registered ${catalogEntries.size} catalog icon${catalogEntries.size === 1 ? "" : "s"} from ${outcome.files} source file${outcome.files === 1 ? "" : "s"} (${totals})`,
           );
-          appended += emitRegistration(catalogEntries, options.precompiled);
+          appended += emitRegistration(catalogEntries, precompile);
         }
       }
 

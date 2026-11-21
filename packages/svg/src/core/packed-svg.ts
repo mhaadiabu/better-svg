@@ -1,30 +1,56 @@
 import type { SvgNode } from "./ast.js";
 
+type PackedToken = string | number;
+
 export type PackedSvgNode =
   | string
   | [
-      tag: string,
-      attrs?: [string, string][] | null,
+      tag: PackedToken,
+      attrs?: [PackedToken, PackedToken][] | null,
       children?: PackedSvgNode[] | null,
       text?: string,
     ];
 
-export const packSvgNode = (node: SvgNode): PackedSvgNode => {
+const identity = (value: string) => value;
+
+export const packSvgNode = (
+  node: SvgNode,
+  encode: (value: string) => PackedToken = identity,
+): PackedSvgNode => {
   if (node.tag === "#text") return node.text ?? "";
   if (node.tag === "#comment") return ["#comment", null, null, node.text ?? ""];
-  const attrs = node.attrs.map(({ name, value }): [string, string] => [name, value]);
+  const tag = encode(node.tag);
+  const attrs = node.attrs.map(({ name, value }): [PackedToken, PackedToken] => [
+    encode(name),
+    encode(value),
+  ]);
   if (node.children.length)
-    return [node.tag, attrs.length ? attrs : null, node.children.map(packSvgNode)];
-  return attrs.length ? [node.tag, attrs] : [node.tag];
+    return [
+      tag,
+      attrs.length ? attrs : null,
+      node.children.map((child) => packSvgNode(child, encode)),
+    ];
+  return attrs.length ? [tag, attrs] : [tag];
 };
 
-export const unpackSvgNode = (packed: PackedSvgNode): SvgNode => {
+const decode = (value: PackedToken, tokens: readonly string[] | undefined) => {
+  if (typeof value === "string") return value;
+  const token = tokens?.[value];
+  if (token === undefined) throw new Error("Invalid packed SVG token.");
+  return token;
+};
+
+export const unpackSvgNode = (packed: PackedSvgNode, tokens?: readonly string[]): SvgNode => {
   if (typeof packed === "string") return { tag: "#text", attrs: [], children: [], text: packed };
   const [tag, attrs, children, text] = packed;
   return {
-    tag,
-    attrs: attrs?.map(([name, value]) => ({ name, value })) ?? [],
-    children: children?.map(unpackSvgNode) ?? [],
+    tag: decode(tag, tokens),
+    attrs:
+      attrs?.map(([name, value]) => ({
+        name: decode(name, tokens),
+        value: decode(value, tokens),
+      })) ?? [],
+    children: children?.map((child) => unpackSvgNode(child, tokens)) ?? [],
     text,
   };
 };

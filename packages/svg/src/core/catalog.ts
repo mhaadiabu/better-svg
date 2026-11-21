@@ -361,18 +361,30 @@ const enumeratedNames = new Map<string, string[]>();
 const enumerationKey = (collection: string, roots: readonly string[]) =>
   `${collection}\u0000${roots.join("\u0001")}`;
 
+const namesByIconifyData = new WeakMap<IconifyCollection, readonly string[]>();
+
+const iconifyNames = (data: IconifyCollection) => {
+  const cached = namesByIconifyData.get(data);
+  if (cached) return cached;
+
+  const names: string[] = [];
+  for (const icon of Object.keys(data.icons)) {
+    if (!data.icons[icon]?.hidden) names.push(icon);
+  }
+  for (const alias of Object.keys(data.aliases ?? {})) {
+    if (!Object.hasOwn(data.icons, alias) && iconifyIcon(data, alias)) names.push(alias);
+  }
+  namesByIconifyData.set(data, names);
+  return names;
+};
+
 const enumerateCollection = (collection: string, roots: readonly string[]) => {
   const candidates = new Set<string>();
   for (const root of roots) {
     for (const probe of iconifyProbes(collection)) {
       const data = readIconifyCollection(join(root, probe));
       if (!data) continue;
-      for (const icon of Object.keys(data.icons)) {
-        if (iconifyMarkup(data, icon) !== undefined) candidates.add(icon);
-      }
-      for (const icon of Object.keys(data.aliases ?? {})) {
-        if (iconifyMarkup(data, icon) !== undefined) candidates.add(icon);
-      }
+      for (const icon of iconifyNames(data)) candidates.add(icon);
     }
     for (const probe of probesForCollection(collection)) {
       const entries = readEntries(join(root, probe.package, probe.dir));

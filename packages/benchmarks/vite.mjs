@@ -44,6 +44,7 @@ export const viteConfig = (profile) => {
     base: `/${profile.id}/`,
     logLevel: "silent",
     clearScreen: false,
+    resolve: { dedupe: ["react", "react-dom"] },
     plugins: [pluginFor(profile, root)],
     ssr: profile.released ? { noExternal: ["@mhaadi/svg-released"] } : undefined,
     optimizeDeps: profile.released ? { exclude: ["@mhaadi/svg-released"] } : undefined,

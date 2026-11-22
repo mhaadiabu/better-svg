@@ -1,43 +1,122 @@
 # BetterSVG
 
-Inline SVG rendering for React, React Native, Vue, Svelte, Solid, Astro, Angular, and Flutter. Same
-mental model across frameworks: `src` or `name`, optional sanitization, loading
-and fallback states, and a shared core for URL safety and markup parsing.
+Render SVGs inline in React, React Native, Vue, Svelte, Solid, Astro, and Angular. Load a URL, pass SVG markup, or use a local asset by name.
 
-## Packages
+[Documentation](https://svg.mhaadi.dev/docs) · [npm](https://www.npmjs.com/package/@mhaadi/svg) · [Changelog](./packages/svg/CHANGELOG.md)
 
-| Package                                       | Targets                                                 | Install                       |
-| --------------------------------------------- | ------------------------------------------------------- | ----------------------------- |
-| [`@mhaadi/svg`](./packages/svg/README.md)     | React, React Native, Vue, Svelte, Solid, Astro, Angular | `pnpm add @mhaadi/svg`        |
-| [`svg_flutter`](./packages/flutter/README.md) | Flutter (Dart, `flutter_svg`)                           | `flutter pub add svg_flutter` |
+## Get started
 
-The JS/TS subpath exports live in [`@mhaadi/svg`'s README](./packages/svg/README.md#entry-points).
-The Flutter widget API is documented in [`svg_flutter`'s README](./packages/flutter/README.md).
-
-## Apps
-
-- [`apps/web`](./apps/web), the documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev)
-
-## Repo Structure
-
-```text
-apps/web         Documentation site (Astro)
-packages/svg     @mhaadi/svg (React, React Native, Vue, Svelte, Solid, Astro, Angular)
-packages/ui      Shared UI primitives
-packages/flutter svg_flutter (Dart, flutter_svg)
+```bash
+pnpm add @mhaadi/svg
 ```
 
-## Scripts
+```tsx
+import { SVG } from "@mhaadi/svg/react";
 
-Use Node.js 22.23.4 or newer on the 22.x line, 24.3 or newer on the 24.x line, or
-26 or newer, and pnpm 11.15.1 for workspace development. The Astro and React Native
-development dependencies and the verification tools require these versions. The published SVG
-package still supports Node.js 18 and newer.
+export function Logo() {
+  return <SVG src="/logo.svg" size={32} title="Acme" />;
+}
+```
 
-- `pnpm run dev`: Start the workspace in development mode
-- `pnpm run build`: Build all packages and apps
-- `pnpm run check-types`: Check TypeScript types
-- `pnpm run check`: Run Oxlint and Oxfmt
+`src` accepts inline SVG markup, SVG data URLs, and URLs. BetterSVG sanitizes SVGs by default and scopes internal IDs per instance so repeated gradients, masks, and clip paths don't collide. Use `size` for both dimensions, or set `width` and `height` separately.
 
-The private [SVG workflow benchmarks](./packages/benchmarks/README.md) compare
-rendering, build costs, and optimization without changing package defaults.
+```tsx
+<SVG
+  src="https://cdn.example.com/illustration.svg"
+  width={320}
+  title="Your workspace"
+  loading={<span>Loading...</span>}
+  fallback={<span>Illustration unavailable</span>}
+/>
+```
+
+Loading and fallback APIs follow each framework's conventions. Astro renders on the server with no client JavaScript. React Native renders through `react-native-svg` and requires it as a peer dependency.
+
+## Frameworks
+
+All adapters ship in `@mhaadi/svg`. Import the adapter you use. Framework peer dependencies are optional.
+
+| Framework    | Import                                           |
+| ------------ | ------------------------------------------------ |
+| React 18+    | `import { SVG } from "@mhaadi/svg/react"`        |
+| React Native | `import { SVG } from "@mhaadi/svg/react-native"` |
+| Vue 3        | `import { SVG } from "@mhaadi/svg/vue"`          |
+| Svelte 5     | `import { SVG } from "@mhaadi/svg/svelte"`       |
+| Solid 1.9+   | `import { SVG } from "@mhaadi/svg/solid"`        |
+| Astro 5+     | `import SVG from "@mhaadi/svg/astro"`            |
+| Angular 20+  | `import { SVG } from "@mhaadi/svg/angular"`      |
+
+The root `@mhaadi/svg` import also exports the React adapter. Angular uses the `<better-svg>` selector. See the [framework guides](https://svg.mhaadi.dev/docs) for examples.
+
+## Local SVGs by name
+
+Add the Vite plugin to discover SVGs in `src/assets/svg` and `app/assets/svg`, or set your own directories:
+
+```ts
+import { defineConfig } from "vite";
+import svgPlugin from "@mhaadi/svg/vite/plugin";
+
+export default defineConfig({
+  plugins: [svgPlugin({ dirs: ["src/icons"] })],
+});
+```
+
+Then `src/icons/social/github.svg` is available as:
+
+```tsx
+<SVG name="social/github" size={24} title="GitHub" />
+```
+
+Astro projects can use `@mhaadi/svg/astro/integration` instead. Manual registration is available through `registerLocalSvgs` from `@mhaadi/svg/local`.
+
+Production builds keep statically referenced local icons in the initial bundle. Other discovered icons load from a deferred chunk. Set `pruneLocal: false` to include them all up front. Both plugins support opt-in `svgo` optimization and `precompiled: true` to parse and sanitize local assets at build time. Precompilation skips runtime parsing for those assets at the cost of larger bundles. SVGO requires a separate development dependency.
+
+## Icons from installed packages
+
+The catalog resolves names such as `lucide:house` or `hugeicons:home-01` from installed icon packages. With `svgPlugin()` enabled, literal names in source code register automatically, and the plugin generates TypeScript name suggestions. For manual registration, run this in Node, such as an Astro frontmatter block or a build script:
+
+```ts
+import { registerCatalogIcons } from "@mhaadi/svg/catalog";
+
+registerCatalogIcons(["lucide:house", "tabler:settings"]);
+```
+
+Install the matching icon data packages first, such as `@iconify-json/lucide` and `@iconify-json/tabler`. Registered icons render with `<SVG name="lucide:house" />`.
+
+For browser apps without the plugin and for React Native, use `bundleCatalogIcons` at build time to generate a data module, then register it with `registerLocalSvgs`. Icons render without runtime network or filesystem access. See the [catalog guide](https://svg.mhaadi.dev/docs#icon-catalog) for package resolution and bundling instructions.
+
+## Static React imports
+
+With the Vite plugin enabled, import a local SVG as a React component:
+
+```tsx
+import Logo from "./icons/logo.svg?better-svg";
+
+<Logo size={32} title="Acme" />;
+```
+
+The plugin sanitizes and compiles it at build time. It supports server rendering and client hydration without a runtime SVG parser or URL loader. For TypeScript, add `/// <reference types="@mhaadi/svg/vite/static" />` to `vite-env.d.ts`.
+
+## Development
+
+This repository uses pnpm workspaces and Turbo.
+
+| Directory         | Purpose                                                              |
+| ----------------- | -------------------------------------------------------------------- |
+| `packages/svg`    | The `@mhaadi/svg` npm package and framework adapters                 |
+| `apps/web`        | Astro documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev) |
+| `packages/config` | Shared TypeScript configuration                                      |
+| `packages/env`    | Environment validation                                               |
+| `packages/infra`  | Deployment configuration                                             |
+| `plans`           | Implementation plans                                                 |
+
+```bash
+pnpm install
+pnpm run dev:web
+```
+
+Run `pnpm run check-types`, `pnpm run lint`, `pnpm run test`, and `pnpm run build` to verify changes. `pnpm run check` also formats files.
+
+## License
+
+[MIT](./LICENSE)

@@ -9,7 +9,6 @@ index.
 
 | Plan | Title                                                     | Priority | Effort | Status                                                                                |
 | ---- | --------------------------------------------------------- | -------- | ------ | ------------------------------------------------------------------------------------- |
-| 004  | Fix Flutter sanitizer (discarded result + close-tag leak) | P1       | S      | BLOCKED (no flutter toolchain — verified by reading; edits committed)                 |
 | 005  | Sprite deduplication design (`<symbol>` + `<use>`, #18)   | P2       | M      | DONE (plan delivered; implementation tracked under M1+)                               |
 | 006  | SVGO default-on policy and preset research                | P2       | M      | DONE (plan delivered; implementation parked by maintainer decision until after 0.4.0) |
 | 007  | Auto-register catalog icons from source usage (Vite scan) | P2       | M      | IN PROGRESS (implemented and verified, PR #48 awaiting review)                        |
@@ -19,11 +18,6 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 
 ## Dependency notes
 
-- **004 (Flutter) has a verification gap:** no `flutter`/`dart` toolchain
-  is installed in this environment. The executor should make the code +
-  test edits and run `flutter test` if available; if not, report
-  "STOPPED: no flutter toolchain" so the reviewer can verify by reading.
-  Do not skip the edits.
 - **005 (sprite dedup) is a plan-only deliverable:** implementation is
   out of scope for this task, so no `packages/svg` version bump or
   changelog entry. Its first milestone (M1) likewise avoids touching
@@ -34,7 +28,7 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   the sprite milestone must bail out of sprite mode when
   `fill`/`stroke` props are set instead of building on that changing
   code.
-- **007 (catalog auto-registration) is independent** of 004/005/006 but
+- **007 (catalog auto-registration) is independent** of 005/006 but
   inherits the plugin's `svgo`/`precompiled` options for scanned icons
   rather than growing new ones. If 006 later changes those defaults,
   scanned catalog icons pick the change up automatically through the

@@ -540,8 +540,7 @@ iconify-json/lucide-static stand-ins already used by both suites).
   card; cross-link from "Local discovery".
 - `packages/svg/package.json` → 0.5.0 minor + `CHANGELOG.md` entry
   (consumer tone). GitHub release body mirrors it at tag time — this
-  release **requires** the tag per repo release rules; no `svg_flutter`
-  or `@better-svg/*` impact (internal packages untouched).
+  release **requires** the tag per repo release rules; no `@better-svg/*` impact (internal packages untouched).
 
 ## Verification
 

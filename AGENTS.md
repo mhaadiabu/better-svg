@@ -8,11 +8,9 @@ without re-deriving conventions from chat history.
 
 - Monorepo managed with **pnpm workspaces** + **Turbo** (`pnpm-workspace.yaml`,
   `turbo.json`).
-- Two publishable packages:
+- One publishable package:
   - [`packages/svg`](./packages/svg) — `@mhaadi/svg` on npm, versioned
     semver, published via `publishConfig`.
-  - [`packages/flutter`](./packages/flutter) — `svg_flutter` on pub.dev
-    (currently `publish_to: none`, not yet released).
 - Internal packages: `packages/config` (`@better-svg/config`),
   `packages/env` (`@better-svg/env`), `packages/infra` (`@better-svg/infra`).
 - One app: `apps/web` (Astro documentation site deployed to
@@ -60,7 +58,7 @@ without re-deriving conventions from chat history.
 - Write commit messages in the form `<type>(<scope>): <imperative summary>`
   using the same `<type>` vocabulary as branch names (`feat`, `fix`,
   `chore`, `docs`, `refactor`, `test`, `build`, `ci`).
-  - `<scope>` is the affected package or area (`svg`, `flutter`, `web`,
+  - `<scope>` is the affected package or area (`svg`, `web`,
     `infra`, `plans`, `root`, etc.).
   - Summary is lowercase, no trailing period, ≤72 chars.
   - Body (when needed) explains the _why_; the diff explains the _what_.
@@ -69,7 +67,7 @@ without re-deriving conventions from chat history.
 
 ## Releases & versioning
 
-The repo ships two consumer packages. **Any patch or update that lands in
+The repo ships one consumer package. **Any patch or update that lands in
 a package must be released as part of the same change set that merges to
 `main` (or, for major features, as part of the PR before it is merged).**
 A merged change that bumps behavior in a published package without a
@@ -86,14 +84,6 @@ Rules per package:
     and push the tag. Tags are the release trigger.
   - Build artifacts (`dist/`) are gitignored and produced by `pnpm run build`
     at publish time — do not commit them.
-
-- **`svg_flutter` (pub.dev, `packages/flutter`)**
-  - Follow semver. Bump `version` in `packages/flutter/pubspec.yaml` on
-    every change to `packages/flutter/lib/`.
-  - Update `packages/flutter/CHANGELOG.md` under a new versioned heading.
-  - While `publish_to: none` is set, no `git tag` is required; publishing
-    is gated on flipping that flag. When that happens, adopt the same
-    tag-per-version convention as `@mhaadi/svg`.
 
 - **Internal packages** (`@better-svg/config`, `@better-svg/env`,
   `@better-svg/infra`) do not need tags, but their `version` must still
@@ -145,9 +135,6 @@ Run from the repo root unless a per-package command is listed.
 - `pnpm run check` — Oxlint + Oxfmt write.
 - `pnpm run test` — Vitest via Turbo (covers `packages/svg`).
 - `pnpm run build` — Build all packages and apps.
-- For Flutter: `cd packages/flutter && flutter pub get && flutter test`
-  (only if the Flutter toolchain is available; otherwise note the gap in
-  the PR description).
 
 A change is "confirmed working" only after the relevant subset of the
 above has been run and is green. Do not open a PR on red.

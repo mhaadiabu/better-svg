@@ -434,10 +434,6 @@ and for `size`/`width`/`height` scaling).
   that ships the prop (M1 for announcement-level doc, M3 for the
   styling contract).
 - `packages/svg/src/native.tsx` (native implementation) — see M4.
-- `svg_flutter`: the Dart package renders strings through its own
-  sanitizer and has no per-instance ID scoping pass; sprite dedup there
-  would be simpler in principle but is a different package with
-  different constraints. Zero work in this plan.
 - Sprite file formats / external `.svg` sprite sheets: excluded by the
   Chromium restriction stated in "Why this matters".
 

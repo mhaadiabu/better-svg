@@ -161,7 +161,7 @@ the slowest sample, not a stable tail-latency estimate. No significance test,
 confidence interval, or cross-machine repeatability claim is made.
 
 This does not cover representative Figma or Inkscape exports, real mobile
-hardware, GPU presentation, other browser engines, React Native, Flutter, Astro,
+hardware, GPU presentation, other browser engines, React Native, Astro,
 hydration, automatic catalog discovery, bandwidth-limited delivery, unplugin-icons,
 or a custom optimizer. Those require separate experiments. No package source,
 version, changelog, release tag, or published behavior changes in this work.

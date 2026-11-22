@@ -101,14 +101,15 @@ The plugin sanitizes and compiles it at build time. It supports server rendering
 
 This repository uses pnpm workspaces and Turbo.
 
-| Directory         | Purpose                                                              |
-| ----------------- | -------------------------------------------------------------------- |
-| `packages/svg`    | The `@mhaadi/svg` npm package and framework adapters                 |
-| `apps/web`        | Astro documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev) |
-| `packages/config` | Shared TypeScript configuration                                      |
-| `packages/env`    | Environment validation                                               |
-| `packages/infra`  | Deployment configuration                                             |
-| `plans`           | Implementation plans                                                 |
+| Directory             | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `packages/svg`        | The `@mhaadi/svg` npm package and framework adapters                 |
+| `apps/web`            | Astro documentation site at [svg.mhaadi.dev](https://svg.mhaadi.dev) |
+| `packages/benchmarks` | Reproducible performance comparisons                                 |
+| `packages/config`     | Shared TypeScript configuration                                      |
+| `packages/env`        | Environment validation                                               |
+| `packages/infra`      | Deployment configuration                                             |
+| `plans`               | Implementation plans                                                 |
 
 ```bash
 pnpm install

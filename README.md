@@ -73,7 +73,7 @@ Production builds keep statically referenced local icons in the initial bundle. 
 
 ## Icons from installed packages
 
-The catalog resolves names such as `lucide:house` or `hugeicons:home-01` from installed icon packages. With `svgPlugin()` enabled, literal names in source code register automatically, and the plugin generates TypeScript name suggestions. For manual registration, run this in Node, such as an Astro frontmatter block or a build script:
+The catalog resolves names such as `lucide:house` or `hugeicons:home-01` from installed icon packages. With `svgPlugin()` enabled, literal names in source code register automatically, and the plugin generates TypeScript name suggestions. For manual registration, run this in the Node process that renders your app, such as an Astro frontmatter block:
 
 ```ts
 import { registerCatalogIcons } from "@mhaadi/svg/catalog";
@@ -99,7 +99,7 @@ The plugin sanitizes and compiles it at build time. It supports server rendering
 
 ## Development
 
-This repository uses pnpm workspaces and Turbo.
+This repository uses pnpm workspaces and Turbo. Use Node.js 22.23.4 or newer on the 22.x line, 24.3 or newer on the 24.x line, or 26 or newer, with pnpm 11.15.1. Workspace development dependencies and verification tools require these versions. The published SVG package supports Node.js 18 and newer.
 
 | Directory             | Purpose                                                              |
 | --------------------- | -------------------------------------------------------------------- |

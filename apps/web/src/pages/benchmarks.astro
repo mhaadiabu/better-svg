@@ -333,7 +333,7 @@ const timingColumns = ["Valid runs", "Ready p50", "Ready p95", "Paint p50", "Pai
             <dt class="font-medium">Compared versions</dt>
             <dd class="mb-3 text-zinc-400 sm:mb-0">The BetterSVG {benchmarkRelease} runtime and <a href={benchmarkSource} class="text-acid underline-offset-4 hover:underline">benchmark scripts</a> come from <code>{benchmarkCommit.slice(0, 7)}</code>. Other profiles use npm BetterSVG {published}, vite-plugin-svgr {runInfo.versions["vite-plugin-svgr"]}, unplugin-icons {runInfo.versions["unplugin-icons"]}, react-inlinesvg {runInfo.versions["react-inlinesvg"]}, and react-svg {runInfo.versions["react-svg"]}.</dd>
             <dt class="font-medium">Scope</dt>
-            <dd class="text-zinc-400">This run covers React in Chromium on one Linux desktop, with mostly catalog icons and requests over loopback. It doesn't measure mobile devices, React Native, Flutter, Astro SSR, hydration, other browser engines, or slower network conditions.</dd>
+            <dd class="text-zinc-400">This run covers React in Chromium on one Linux desktop, with mostly catalog icons and requests over loopback. It doesn't measure mobile devices, React Native, Astro SSR, hydration, other browser engines, or slower network conditions.</dd>
           </dl>
           <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs">
             {[["Full report", "report.md"], ["node.json", "node.json"], ["browser.json", "browser.json"]].map(([label, file]) => (

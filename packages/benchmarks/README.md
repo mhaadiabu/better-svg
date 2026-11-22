@@ -75,7 +75,7 @@ collection reject tracked changes to benchmark inputs or a different source comm
 - Node SSR: count rendered SVGs before comparing timings. An empty or wrapper-only
   response is unsupported for static SSR, not a performance win.
 
-Astro, automatic catalog discovery, React Native, Flutter, real mobile hardware,
+Astro, automatic catalog discovery, React Native, real mobile hardware,
 and browser engines other than the recorded engine require separate runs. Desktop
 viewport emulation is not a mobile-device measurement.
 

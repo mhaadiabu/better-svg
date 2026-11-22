@@ -111,7 +111,7 @@ See the [React benchmark results](https://svg.mhaadi.dev/benchmarks) for bundle 
 - Use `@xmldom/xmldom` for Astro and React Native parsing without a browser DOM. Browser adapters continue to use the browser parser.
 - Share a bounded markup cache across JavaScript adapters and reuse parsed trees without mutating them for instance IDs or labels.
 - Serialize transformed markup only when rendering needs it and reuse unchanged child markup when labels change.
-- Add website version history, framework-specific docs and search, wrapping example tabs, and debounced copy buttons. Remove Flutter from the documentation site.
+- Add website version history, framework-specific docs and search, wrapping example tabs, and debounced copy buttons.
 
 ### Fixed
 

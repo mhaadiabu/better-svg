@@ -12,10 +12,11 @@ const pluginFor = (profile, root) => {
       dirs: ["icons"],
       svgo: profile.svgo,
       precompiled: profile.precompiled,
+      pruneLocal: profile.sparse === true,
     };
     return profile.released
-      ? localSvgs({ ...options, pruneLocal: false })
-      : svgPlugin({ ...options, catalog: false, pruneLocal: profile.sparse === true });
+      ? localSvgs(options)
+      : svgPlugin({ ...options, catalog: false });
   }
   if (profile.kind === "unplugin") {
     return icons({

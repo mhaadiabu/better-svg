@@ -14,6 +14,6 @@
   "devDependencies": {
     "@better-svg/config": "workspace:*",
     "@better-svg/infra": "workspace:*",
-    "typescript": "catalog:"
+    "tsrs": "catalog:"
   }
 }

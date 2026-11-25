@@ -14,7 +14,7 @@ const pluginFor = (profile, root) => {
       precompiled: profile.precompiled,
     };
     return profile.released
-      ? localSvgs(options)
+      ? localSvgs({ ...options, pruneLocal: false })
       : svgPlugin({ ...options, catalog: false, pruneLocal: profile.sparse === true });
   }
   if (profile.kind === "unplugin") {

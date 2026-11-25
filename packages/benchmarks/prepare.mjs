@@ -26,6 +26,7 @@ const packageVersion = (name, resolver = require) => {
   }
   throw new Error(`Cannot find version of ${name}`);
 };
+const lucideVersion = packageVersion("@iconify-json/lucide");
 const collection = JSON.parse(
   await readFile(require.resolve("@iconify-json/lucide/icons.json"), "utf8"),
 );
@@ -39,7 +40,7 @@ const entries = Array.from({ length: 100 }, (_unused, index) => {
   return {
     name: `lucide-${name}`,
     group: "catalog",
-    source: "@iconify-json/lucide@1.2.154",
+    source: `@iconify-json/lucide@${lucideVersion}`,
     markup: `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="currentColor">${icon.body}</svg>`,
   };
 });
@@ -101,6 +102,7 @@ const metadata = {
       "vite-plugin-svgr",
       "unplugin-icons",
       "@svgr/core",
+      "@iconify-json/lucide",
       "svgo",
       "vite",
     ].map((name) => [name, packageVersion(name)]),

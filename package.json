@@ -7,6 +7,7 @@
   ],
   "type": "module",
   "scripts": {
+    "lint:typecheck": "TSRS_FAST=1 oxlint --type-aware --type-check",
     "dev": "turbo dev",
     "build": "turbo build",
     "check-types": "turbo check-types",
@@ -26,7 +27,7 @@
     "@better-svg/config": "workspace:*",
     "@cloudflare/workers-types": "^4.20260702.1",
     "oxfmt": "^0.46.0",
-    "oxlint": "^1.74.0",
+    "oxlint": "^1.92.0",
     "turbo": "^2.10.5",
     "tsrs": "catalog:"
   },

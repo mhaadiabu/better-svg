@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.2 (Unreleased)
+## 0.5.3 (Unreleased)
 
 ### Changed
 
@@ -10,6 +10,7 @@
 - Reuse optimized and precompiled SVG data across Vite rebuilds and load the XML compiler when an import needs it.
 - Reduce work when serializing SVGs, scoping IDs, and looking up repeated or mixed sets of cached icons.
 - Emit fewer JavaScript bytes for large precompiled SVG registries and reuse unchanged artwork when scoping per-instance IDs.
+- Refresh workspace dependencies and keep Vite registration side-effect-only.
 
 ## 0.5.1
 

@@ -28,8 +28,7 @@ const scratchConfig = JSON.stringify({
     moduleResolution: "nodenext",
     target: "es2022",
     types: [],
-    baseUrl: packageRoot,
-    paths: { "@mhaadi/svg/catalog-types": ["src/core/names.ts"] },
+    paths: { "@mhaadi/svg/catalog-types": [resolve(packageRoot, "src/core/names.ts")] },
   },
   files: ["check.ts", "fixture.d.ts"],
 });

@@ -14,5 +14,3 @@ const appSvgs = import.meta.glob("/app/assets/svg/**/*.svg", {
 
 registerLocalSvgs(srcSvgs, { override: true });
 registerLocalSvgs(appSvgs, { override: false });
-
-export {};

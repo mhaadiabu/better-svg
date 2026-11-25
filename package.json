@@ -28,7 +28,7 @@
     "oxfmt": "^0.46.0",
     "oxlint": "^1.74.0",
     "turbo": "^2.10.5",
-    "typescript": "catalog:"
+    "tsrs": "catalog:"
   },
   "packageManager": "pnpm@11.15.1"
 }

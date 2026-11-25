@@ -8,7 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsrs --noEmit"
   },
   "dependencies": {
     "@cloudflare/nimbus-docs": "0.20.0",
@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "typescript": "catalog:"
+    "tsrs": "catalog:"
   }
 }
